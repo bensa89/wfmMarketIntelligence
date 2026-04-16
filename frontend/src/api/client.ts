@@ -1,5 +1,12 @@
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
+export class ApiError extends Error {
+  constructor(public status: number, message: string) {
+    super(message);
+    this.name = 'ApiError';
+  }
+}
+
 function getCredentials(): { username: string; password: string } {
   const stored = localStorage.getItem('wfm_credentials');
   if (stored) {
@@ -41,8 +48,8 @@ export async function apiGet<T>(path: string, params?: Record<string, string>): 
     throw new ApiError(401, 'Authentication required');
   }
   if (!res.ok) {
-    const body = await res.json().catch(() => ({ detail: res.statusText }));
-    throw new ApiError(res.status, body.detail || res.statusText);
+    const errBody = await res.json().catch(() => ({ detail: res.statusText }));
+    throw new ApiError(res.status, errBody.detail || res.statusText);
   }
   return res.json();
 }
@@ -64,11 +71,11 @@ export async function apiPost<T>(path: string, body?: unknown): Promise<T> {
   return res.json();
 }
 
-export async function apiPut<T>(path: string, body: unknown): Promise<T> {
+export async function apiPut<T>(path: string, body?: unknown): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
     method: 'PUT',
     headers: headers(),
-    body: JSON.stringify(body),
+    body: body ? JSON.stringify(body) : undefined,
   });
   if (res.status === 401) {
     throw new ApiError(401, 'Authentication required');
@@ -91,13 +98,6 @@ export async function apiDelete(path: string): Promise<void> {
   if (!res.ok) {
     const errBody = await res.json().catch(() => ({ detail: res.statusText }));
     throw new ApiError(res.status, errBody.detail || res.statusText);
-  }
-}
-
-export class ApiError extends Error {
-  constructor(public status: number, message: string) {
-    super(message);
-    this.name = 'ApiError';
   }
 }
 
