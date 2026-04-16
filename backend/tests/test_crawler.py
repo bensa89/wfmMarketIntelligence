@@ -68,3 +68,69 @@ def test_extract_same_content_same_hash():
     r1 = extract_content(html, url="https://example.com/a")
     r2 = extract_content(html, url="https://example.com/b")
     assert r1.content_hash == r2.content_hash
+
+
+from app.crawler.pipeline import run_crawl_source
+
+
+def test_run_crawl_source_saves_new_document(db_session):
+    from app.models.company import Company, CompanyType
+    from app.models.source import Source, SourceType
+    from app.models.document import Document
+
+    company = Company(name="ATOSS", slug="atoss-pipe", type=CompanyType.competitor)
+    db_session.add(company)
+    db_session.commit()
+    source = Source(
+        company_id=company.id, url="https://atoss.com/pipe", source_type=SourceType.news
+    )
+    db_session.add(source)
+    db_session.commit()
+
+    mock_fetch = MagicMock(
+        return_value=MagicMock(
+            html="<html><head><title>Test</title></head><body><p>New content</p></body></html>",
+            final_url="https://atoss.com/pipe",
+            status_code=200,
+        )
+    )
+
+    with patch("app.crawler.pipeline.fetch_url", mock_fetch):
+        result = run_crawl_source(source, db_session, analyse=False)
+
+    assert result["new_documents"] == 1
+    doc = db_session.query(Document).first()
+    assert doc is not None
+    assert doc.content_markdown is not None
+    assert doc.source_id == source.id
+
+
+def test_run_crawl_source_skips_duplicate(db_session):
+    from app.models.company import Company, CompanyType
+    from app.models.source import Source, SourceType
+    from app.models.document import Document
+
+    company = Company(name="ATOSS", slug="atoss-dup2", type=CompanyType.competitor)
+    db_session.add(company)
+    db_session.commit()
+    source = Source(
+        company_id=company.id, url="https://atoss.com/dup2", source_type=SourceType.news
+    )
+    db_session.add(source)
+    db_session.commit()
+
+    html = (
+        "<html><head><title>Same</title></head><body><p>Same content</p></body></html>"
+    )
+    mock_fetch = MagicMock(
+        return_value=MagicMock(
+            html=html, final_url="https://atoss.com/dup2", status_code=200
+        )
+    )
+
+    with patch("app.crawler.pipeline.fetch_url", mock_fetch):
+        run_crawl_source(source, db_session, analyse=False)
+        result = run_crawl_source(source, db_session, analyse=False)
+
+    assert result["new_documents"] == 0
+    assert db_session.query(Document).count() == 1
