@@ -13,6 +13,7 @@ class ExtractionResult:
 
 
 def extract_content(html: str, url: str = "") -> ExtractionResult:
+    html = html.replace("\x00", "")
     soup = BeautifulSoup(html, "html.parser")
 
     title = None

@@ -30,7 +30,7 @@ def run_crawl_source(source: Source, db: Session, analyse: bool = True) -> Dict:
             url=fetch_result.final_url,
             title=extraction.title,
             content_markdown=extraction.markdown,
-            content_raw_html=fetch_result.html,
+            content_raw_html=fetch_result.html.replace("\x00", ""),
             content_hash=extraction.content_hash,
             crawled_at=datetime.now(timezone.utc),
         )
