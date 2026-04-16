@@ -1,4 +1,10 @@
+import base64
 import os
+
+os.environ["AUTH_USERNAME"] = "testuser"
+os.environ["AUTH_PASSWORD"] = "testpass"
+os.environ["DATABASE_URL"] = "sqlite:///./test_app.db"
+
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -7,6 +13,10 @@ from app.database import Base, get_db
 
 TEST_DB_PATH = "./test_app.db"
 TEST_DATABASE_URL = f"sqlite:///{TEST_DB_PATH}"
+
+AUTH_HEADER = {
+    "Authorization": "Basic " + base64.b64encode(b"testuser:testpass").decode()
+}
 
 
 @pytest.fixture(scope="function")
@@ -30,11 +40,6 @@ def db_session(db_engine):
 
 @pytest.fixture(scope="function")
 def client(db_session):
-    # Import here to avoid circular import before app is configured
-    os.environ.setdefault("AUTH_USERNAME", "testuser")
-    os.environ.setdefault("AUTH_PASSWORD", "testpass")
-    os.environ.setdefault("DATABASE_URL", TEST_DATABASE_URL)
-
     from app.main import app
 
     def override_get_db():
@@ -42,7 +47,7 @@ def client(db_session):
 
     app.dependency_overrides[get_db] = override_get_db
 
-    with TestClient(app, auth=("testuser", "testpass")) as c:
+    with TestClient(app, headers=AUTH_HEADER) as c:
         yield c
 
     app.dependency_overrides.clear()
