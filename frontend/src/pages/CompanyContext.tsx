@@ -40,13 +40,15 @@ export default function CompanyContext() {
   if (isLoading) return <p className="text-dark-muted">Loading context...</p>;
   if (!context) return <p className="text-signal-low">Failed to load context.</p>;
 
+  const ctx = context;
+
   function handleSave() {
     const payload: ContextUpdate = {};
-    if (form.company_name !== context.company_name) payload.company_name = form.company_name;
-    if (form.short_description !== context.short_description) payload.short_description = form.short_description;
+    if (form.company_name !== ctx.company_name) payload.company_name = form.company_name;
+    if (form.short_description !== ctx.short_description) payload.short_description = form.short_description;
     for (const field of listFields) {
       const key = field.key;
-      if (JSON.stringify(form[key]) !== JSON.stringify(context[key as keyof typeof context])) {
+      if (JSON.stringify(form[key]) !== JSON.stringify(ctx[key as keyof typeof ctx])) {
         (payload as Record<string, string[]>)[key as string] = form[key] as string[];
       }
     }

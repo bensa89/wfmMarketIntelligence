@@ -44,7 +44,9 @@ export default function SignalTypeIcon({ type, showLabel = true, size = 16 }: Si
 
   return (
     <span className="inline-flex items-center gap-1.5">
-      <Icon size={size} className={colorClass} />
+      <span className={colorClass}>
+        <Icon size={size} />
+      </span>
       {showLabel && <span className={`text-sm ${colorClass}`}>{labelMap[type]}</span>}
     </span>
   );
