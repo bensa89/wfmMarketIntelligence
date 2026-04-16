@@ -11,3 +11,4 @@ build/
 test.db
 node_modules/
 .superpowers/
+.worktrees/
