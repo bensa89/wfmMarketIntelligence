@@ -37,7 +37,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-from app.routers import companies, sources, documents, signals, digests, context, crawl  # noqa: E402
+from app.routers import (
+    companies,
+    sources,
+    documents,
+    signals,
+    digests,
+    context,
+    crawl,
+    discovered_pages,
+)  # noqa: E402
 
 app.include_router(companies.router, prefix="/api/companies", tags=["companies"])
 app.include_router(sources.router, prefix="/api/sources", tags=["sources"])
@@ -46,6 +55,9 @@ app.include_router(signals.router, prefix="/api/signals", tags=["signals"])
 app.include_router(digests.router, prefix="/api/digests", tags=["digests"])
 app.include_router(context.router, prefix="/api/context", tags=["context"])
 app.include_router(crawl.router, prefix="/api/crawl", tags=["crawl"])
+app.include_router(
+    discovered_pages.router, prefix="/api/discovered-pages", tags=["discovered-pages"]
+)
 
 
 @app.get("/api/health")
