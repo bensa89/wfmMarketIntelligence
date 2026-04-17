@@ -134,3 +134,19 @@ export interface CrawlSingleResult {
   document_id?: string;
   status: string;
 }
+
+export type DiscoveredPageStatus = 'new' | 'known' | 'changed' | 'ignored';
+
+export interface DiscoveredPage {
+  id: string;
+  source_id: string;
+  url: string;
+  title: string | null;
+  depth: number;
+  status: DiscoveredPageStatus;
+  is_active: boolean;
+  content_hash: string | null;
+  discovered_at: string;
+  last_crawled_at: string | null;
+  last_changed_at: string | null;
+}

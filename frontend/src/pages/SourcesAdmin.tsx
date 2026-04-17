@@ -2,14 +2,91 @@ import { useState } from 'react';
 import { useCompanies, useCreateCompany } from '../hooks/useCompanies';
 import { useSources, useCreateSource, useUpdateSource, useDeleteSource } from '../hooks/useSources';
 import { useCrawlAll, useCrawlSource } from '../hooks/useCrawl';
-import type { CompanyType, SourceType } from '../types';
-import { Plus, Play, Trash2 } from 'lucide-react';
+import { useDiscoveredPages, useToggleDiscoveredPage } from '../hooks/useDiscoveredPages';
+import type { CompanyType, SourceType, Source, DiscoveredPage } from '../types';
+import { Plus, Play, Trash2, Edit2, X, ChevronDown, ChevronRight } from 'lucide-react';
 
 const sourceTypes: SourceType[] = ['news', 'blog', 'product', 'press', 'jobs'];
 
+function DiscoveredPagesSection({
+  sourceId,
+  onToggle,
+}: {
+  sourceId: string;
+  onToggle: (pageId: string, isActive: boolean) => void;
+}) {
+  const { data: pages, isLoading } = useDiscoveredPages(sourceId);
+
+  const statusBadge = (status: DiscoveredPage['status']) => {
+    const styles: Record<string, string> = {
+      new: 'bg-signal-high/20 text-signal-high',
+      changed: 'bg-yellow-500/20 text-yellow-400',
+      known: 'bg-dark-bg text-dark-muted',
+      ignored: 'bg-dark-bg text-dark-muted',
+    };
+    return (
+      <span className={`text-xs px-1.5 py-0.5 rounded ${styles[status] ?? ''}`}>
+        {status}
+      </span>
+    );
+  };
+
+  if (isLoading) return <p className="text-xs text-dark-muted py-2 px-4">Loading…</p>;
+  if (!pages || pages.length === 0)
+    return <p className="text-xs text-dark-muted py-2 px-4">No pages discovered yet.</p>;
+
+  return (
+    <table className="w-full text-xs mt-1">
+      <thead>
+        <tr className="border-b border-dark-border/30">
+          <th className="text-left py-1 px-4 text-dark-muted font-medium">Discovered URL</th>
+          <th className="text-left py-1 text-dark-muted font-medium">Status</th>
+          <th className="text-left py-1 text-dark-muted font-medium">Depth</th>
+          <th className="text-left py-1 text-dark-muted font-medium">Last Changed</th>
+          <th className="text-left py-1 text-dark-muted font-medium">Active</th>
+        </tr>
+      </thead>
+      <tbody>
+        {pages.map((page) => (
+          <tr
+            key={page.id}
+            className={`border-b border-dark-border/20 ${!page.is_active ? 'opacity-40' : ''}`}
+          >
+            <td className="py-1 px-4 max-w-sm truncate" title={page.url}>
+              {page.url}
+            </td>
+            <td className="py-1">{statusBadge(page.status)}</td>
+            <td className="py-1 text-dark-muted">{page.depth}</td>
+            <td className="py-1 text-dark-muted">
+              {page.last_changed_at
+                ? new Date(page.last_changed_at).toLocaleDateString('de-DE')
+                : '—'}
+            </td>
+            <td className="py-1">
+              <button
+                onClick={() => onToggle(page.id, !page.is_active)}
+                className={`text-xs px-2 py-0.5 rounded ${
+                  page.is_active
+                    ? 'bg-signal-high/20 text-signal-high'
+                    : 'bg-dark-bg text-dark-muted'
+                }`}
+              >
+                {page.is_active ? 'Active' : 'Ignored'}
+              </button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
 export default function SourcesAdmin() {
-  const { data: companies, isLoading: companiesLoading } = useCompanies();
-  const { data: sources, isLoading: sourcesLoading } = useSources();
+  const { data: companies, isLoading: companiesLoading, error: companiesError, refetch: refetchCompanies } = useCompanies();
+  const { data: sources, isLoading: sourcesLoading, error: sourcesError } = useSources();
+  
+  // Debug: Log companies data
+  console.log('Companies:', companies, 'Loading:', companiesLoading, 'Error:', companiesError);
   const createCompany = useCreateCompany();
   const createSource = useCreateSource();
   const updateSource = useUpdateSource();
@@ -28,16 +105,27 @@ export default function SourcesAdmin() {
   const [newSourceLabel, setNewSourceLabel] = useState('');
   const [newSourceType, setNewSourceType] = useState<SourceType>('news');
 
+  // Edit source state
+  const [editingSource, setEditingSource] = useState<Source | null>(null);
+  const [editUrl, setEditUrl] = useState('');
+  const [editLabel, setEditLabel] = useState('');
+  const [editType, setEditType] = useState<SourceType>('news');
+
+  const [expandedSourceId, setExpandedSourceId] = useState<string | null>(null);
+  const toggleDiscoveredPage = useToggleDiscoveredPage();
+
   function handleCreateCompany(e: React.FormEvent) {
     e.preventDefault();
     if (!newCompanyName || !newCompanySlug) return;
     createCompany.mutate(
       { name: newCompanyName, slug: newCompanySlug, type: newCompanyType, website: newCompanyWebsite || null },
-      { onSuccess: () => {
+      { onSuccess: async () => {
         setNewCompanyOpen(false);
         setNewCompanyName('');
         setNewCompanySlug('');
         setNewCompanyWebsite('');
+        // Force refetch companies
+        await refetchCompanies();
       }},
     );
   }
@@ -69,6 +157,39 @@ export default function SourcesAdmin() {
     crawlSingle.mutate(sourceId);
   }
 
+  function openEditModal(source: Source) {
+    setEditingSource(source);
+    setEditUrl(source.url);
+    setEditLabel(source.label || '');
+    setEditType(source.source_type);
+  }
+
+  function closeEditModal() {
+    setEditingSource(null);
+    setEditUrl('');
+    setEditLabel('');
+    setEditType('news');
+  }
+
+  function handleSaveEdit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!editingSource) return;
+    
+    const updates: { url?: string; label?: string | null; source_type?: SourceType } = {};
+    if (editUrl !== editingSource.url) updates.url = editUrl;
+    if (editLabel !== (editingSource.label || '')) updates.label = editLabel || null;
+    if (editType !== editingSource.source_type) updates.source_type = editType;
+
+    if (Object.keys(updates).length > 0) {
+      updateSource.mutate(
+        { sourceId: editingSource.id, data: updates },
+        { onSuccess: closeEditModal }
+      );
+    } else {
+      closeEditModal();
+    }
+  }
+
   const isLoading = companiesLoading || sourcesLoading;
 
   return (
@@ -93,6 +214,10 @@ export default function SourcesAdmin() {
 
       {isLoading ? (
         <p className="text-dark-muted">Loading...</p>
+      ) : companiesError ? (
+        <p className="text-signal-low">Error loading companies: {companiesError.message}</p>
+      ) : !companies || companies.length === 0 ? (
+        <p className="text-dark-muted">No companies found. Create one first!</p>
       ) : (
         <div className="space-y-6">
           {companies?.map((company) => {
@@ -119,32 +244,59 @@ export default function SourcesAdmin() {
                   </thead>
                   <tbody>
                     {companySources.map((source) => (
-                      <tr key={source.id} className="border-b border-dark-border/50">
-                        <td className="py-2 max-w-xs truncate" title={source.url}>{source.url}</td>
-                        <td className="py-2">{source.label || '-'}</td>
-                        <td className="py-2">
-                          <span className="text-xs px-1.5 py-0.5 rounded bg-dark-bg">{source.source_type}</span>
-                        </td>
-                        <td className="py-2">
-                          <button
-                            onClick={() => handleToggleSource(source.id, source.is_active)}
-                            className={`text-xs px-2 py-0.5 rounded ${source.is_active ? 'bg-signal-high/20 text-signal-high' : 'bg-dark-bg text-dark-muted'}`}
-                          >
-                            {source.is_active ? 'Active' : 'Inactive'}
-                          </button>
-                        </td>
-                        <td className="py-2 text-dark-muted text-xs">
-                          {source.last_crawled_at ? new Date(source.last_crawled_at).toLocaleDateString('de-DE') : 'Never'}
-                        </td>
-                        <td className="py-2 text-right">
-                          <button onClick={() => handleCrawlSource(source.id)} className="text-dark-accent hover:text-indigo-300 mr-2" title="Crawl this source">
-                            <Play size={14} />
-                          </button>
-                          <button onClick={() => handleDeleteSource(source.id)} className="text-signal-low hover:text-red-400" title="Delete source">
-                            <Trash2 size={14} />
-                          </button>
-                        </td>
-                      </tr>
+                      <>
+                        <tr key={source.id} className="border-b border-dark-border/50">
+                          <td className="py-2 max-w-xs truncate" title={source.url}>
+                            <span className="text-xs text-dark-muted mr-1">Seed</span>
+                            {source.url}
+                          </td>
+                          <td className="py-2">{source.label || '-'}</td>
+                          <td className="py-2">
+                            <span className="text-xs px-1.5 py-0.5 rounded bg-dark-bg">{source.source_type}</span>
+                          </td>
+                          <td className="py-2">
+                            <button
+                              onClick={() => handleToggleSource(source.id, source.is_active)}
+                              className={`text-xs px-2 py-0.5 rounded ${source.is_active ? 'bg-signal-high/20 text-signal-high' : 'bg-dark-bg text-dark-muted'}`}
+                            >
+                              {source.is_active ? 'Active' : 'Inactive'}
+                            </button>
+                          </td>
+                          <td className="py-2 text-dark-muted text-xs">
+                            {source.last_crawled_at ? new Date(source.last_crawled_at).toLocaleDateString('de-DE') : 'Never'}
+                          </td>
+                          <td className="py-2 text-right">
+                            <button
+                              onClick={() => setExpandedSourceId(expandedSourceId === source.id ? null : source.id)}
+                              className="text-dark-muted hover:text-dark-text mr-2"
+                              title="Show discovered pages"
+                            >
+                              {expandedSourceId === source.id ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                            </button>
+                            <button onClick={() => handleCrawlSource(source.id)} className="text-dark-accent hover:text-indigo-300 mr-2" title="Crawl this source">
+                              <Play size={14} />
+                            </button>
+                            <button onClick={() => openEditModal(source)} className="text-dark-muted hover:text-dark-text mr-2" title="Edit source">
+                              <Edit2 size={14} />
+                            </button>
+                            <button onClick={() => handleDeleteSource(source.id)} className="text-signal-low hover:text-red-400" title="Delete source">
+                              <Trash2 size={14} />
+                            </button>
+                          </td>
+                        </tr>
+                        {expandedSourceId === source.id && (
+                          <tr key={`${source.id}-discovery`} className="bg-dark-bg/30">
+                            <td colSpan={6} className="py-1">
+                              <DiscoveredPagesSection
+                                sourceId={source.id}
+                                onToggle={(pageId, isActive) =>
+                                  toggleDiscoveredPage.mutate({ pageId, isActive })
+                                }
+                              />
+                            </td>
+                          </tr>
+                        )}
+                      </>
                     ))}
                     {companySources.length === 0 && (
                       <tr>
@@ -225,6 +377,72 @@ export default function SourcesAdmin() {
           </button>
         </form>
       </div>
+
+      {editingSource && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-8 z-50" onClick={closeEditModal}>
+          <div className="card w-full max-w-lg" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold">Edit Source</h2>
+              <button onClick={closeEditModal} className="text-dark-muted hover:text-dark-text">
+                <X size={20} />
+              </button>
+            </div>
+            <form onSubmit={handleSaveEdit} className="space-y-4">
+              <div>
+                <label className="block text-sm text-dark-muted mb-1">URL</label>
+                <input 
+                  value={editUrl} 
+                  onChange={(e) => setEditUrl(e.target.value)} 
+                  className="input-field w-full" 
+                  required 
+                  placeholder="https://..." 
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm text-dark-muted mb-1">Label</label>
+                  <input 
+                    value={editLabel} 
+                    onChange={(e) => setEditLabel(e.target.value)} 
+                    className="input-field w-full" 
+                    placeholder="News" 
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-dark-muted mb-1">Type</label>
+                  <select 
+                    value={editType} 
+                    onChange={(e) => setEditType(e.target.value as SourceType)} 
+                    className="input-field w-full"
+                  >
+                    {sourceTypes.map((t) => <option key={t} value={t}>{t}</option>)}
+                  </select>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 pt-2">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={editingSource.is_active}
+                    onChange={() => handleToggleSource(editingSource.id, editingSource.is_active)}
+                    id="edit-active"
+                    className="accent-dark-accent"
+                  />
+                  <label htmlFor="edit-active" className="text-sm text-dark-text cursor-pointer">
+                    Active
+                  </label>
+                </div>
+              </div>
+              <div className="flex gap-2 pt-2">
+                <button type="submit" disabled={updateSource.isPending} className="btn-primary flex-1">
+                  {updateSource.isPending ? 'Saving...' : 'Save Changes'}
+                </button>
+                <button type="button" onClick={closeEditModal} className="btn-secondary flex-1">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -37,7 +37,7 @@ function headers(extra?: Record<string, string>): Record<string, string> {
 }
 
 export async function apiGet<T>(path: string, params?: Record<string, string>): Promise<T> {
-  const url = new URL(`${API_BASE}${path}`);
+  const url = new URL(`${API_BASE}${path}`, window.location.origin);
   if (params) {
     Object.entries(params).forEach(([k, v]) => {
       if (v !== undefined && v !== null && v !== '') {
@@ -45,6 +45,7 @@ export async function apiGet<T>(path: string, params?: Record<string, string>): 
       }
     });
   }
+  console.log('apiGet:', url.toString(), 'headers:', headers());
   const res = await fetch(url.toString(), { headers: headers() });
   if (res.status === 401) {
     throw new ApiError(401, 'Authentication required');
@@ -76,6 +77,22 @@ export async function apiPost<T>(path: string, body?: unknown): Promise<T> {
 export async function apiPut<T>(path: string, body?: unknown): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
     method: 'PUT',
+    headers: headers(),
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (res.status === 401) {
+    throw new ApiError(401, 'Authentication required');
+  }
+  if (!res.ok) {
+    const errBody = await res.json().catch(() => ({ detail: res.statusText }));
+    throw new ApiError(res.status, errBody.detail || res.statusText);
+  }
+  return res.json();
+}
+
+export async function apiPatch<T>(path: string, body?: unknown): Promise<T> {
+  const res = await fetch(`${API_BASE}${path}`, {
+    method: 'PATCH',
     headers: headers(),
     body: body ? JSON.stringify(body) : undefined,
   });
