@@ -1,7 +1,7 @@
 import asyncio
 import json
 import threading
-from typing import AsyncGenerator, Dict, Any, List, NamedTuple
+from typing import AsyncGenerator, Dict, Any, List
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
@@ -35,20 +35,24 @@ def crawl_single_source(
 
 
 def _run_sources_in_thread(
-    sources: List[Source],
+    source_ids: List[str],
     loop: asyncio.AbstractEventLoop,
     queue: asyncio.Queue,
 ) -> None:
     thread_db = SessionLocal()
     try:
-        total = len(sources)
+        total = len(source_ids)
         loop.call_soon_threadsafe(
             queue.put_nowait, {"type": "crawl_start", "total": total}
         )
         total_new = 0
         total_errors = 0
 
-        for i, source in enumerate(sources):
+        for i, source_id in enumerate(source_ids):
+            source = thread_db.query(Source).filter(Source.id == source_id).first()
+            if not source:
+                continue
+
             loop.call_soon_threadsafe(
                 queue.put_nowait,
                 {
@@ -63,15 +67,22 @@ def _run_sources_in_thread(
             def make_callback(sid: str):
                 def callback(event: dict) -> None:
                     loop.call_soon_threadsafe(queue.put_nowait, event)
-
                 return callback
 
-            result = run_crawl_source(
-                source,
-                thread_db,
-                analyse=True,
-                progress_callback=make_callback(source.id),
-            )
+            try:
+                result = run_crawl_source(
+                    source,
+                    thread_db,
+                    analyse=True,
+                    progress_callback=make_callback(source.id),
+                )
+            except Exception as e:
+                result = {"new_documents": 0, "skipped": 0, "errors": 1}
+                loop.call_soon_threadsafe(
+                    queue.put_nowait,
+                    {"type": "error", "source_id": source.id, "message": str(e)},
+                )
+
             total_new += result.get("new_documents", 0)
             total_errors += result.get("errors", 0)
 
@@ -105,13 +116,13 @@ def _run_sources_in_thread(
         loop.call_soon_threadsafe(queue.put_nowait, None)
 
 
-async def _sse_generator(sources: List[Source]) -> AsyncGenerator[str, None]:
-    loop = asyncio.get_event_loop()
+async def _sse_generator(source_ids: List[str]) -> AsyncGenerator[str, None]:
+    loop = asyncio.get_running_loop()
     queue: asyncio.Queue = asyncio.Queue()
 
     thread = threading.Thread(
         target=_run_sources_in_thread,
-        args=(sources, loop, queue),
+        args=(source_ids, loop, queue),
         daemon=True,
     )
     thread.start()
@@ -125,9 +136,12 @@ async def _sse_generator(sources: List[Source]) -> AsyncGenerator[str, None]:
 
 @router.get("/stream")
 async def stream_all_sources(db: Session = Depends(get_db)) -> StreamingResponse:
-    sources = db.query(Source).filter(Source.is_active == True).all()  # noqa: E712
+    source_ids = [
+        s.id
+        for s in db.query(Source).filter(Source.is_active == True).all()  # noqa: E712
+    ]
     return StreamingResponse(
-        _sse_generator(sources),
+        _sse_generator(source_ids),
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
@@ -141,7 +155,7 @@ async def stream_single_source(
     if not source:
         raise HTTPException(status_code=404, detail="Source not found")
     return StreamingResponse(
-        _sse_generator([source]),
+        _sse_generator([source.id]),
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
