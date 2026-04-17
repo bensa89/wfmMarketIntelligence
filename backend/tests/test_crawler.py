@@ -196,7 +196,8 @@ def test_run_crawl_source_calls_progress_callback(db_session):
 
     events = []
 
-    with patch("app.crawler.pipeline.fetch_url", mock_fetch):
+    with patch("app.crawler.pipeline.fetch_url", mock_fetch), \
+         patch("app.crawler.pipeline.discover_and_crawl", return_value={"discovered": 0, "new": 0, "changed": 0, "known": 0}):
         run_crawl_source(
             source, db_session, analyse=False, progress_callback=lambda e: events.append(e)
         )
@@ -234,3 +235,4 @@ def test_run_crawl_source_callback_on_fetch_failure(db_session):
     error_events = [e for e in events if e.get("type") == "error"]
     assert len(error_events) == 1
     assert error_events[0]["source_id"] == source.id
+    assert "message" in error_events[0]
