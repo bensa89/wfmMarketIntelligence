@@ -28,3 +28,4 @@ class Source(Base):
 
     company = relationship("Company", back_populates="sources")
     documents = relationship("Document", back_populates="source")
+    discovered_pages = relationship("DiscoveredPage", back_populates="source")

@@ -4,6 +4,7 @@ from app.models.document import Document
 from app.models.signal import Signal, SignalType
 from app.models.digest import WeeklyDigest
 from app.models.context import InternalCompanyContext
+from app.models.discovered_page import DiscoveredPage, DiscoveredPageStatus
 
 __all__ = [
     "Company",
@@ -15,4 +16,6 @@ __all__ = [
     "SignalType",
     "WeeklyDigest",
     "InternalCompanyContext",
+    "DiscoveredPage",
+    "DiscoveredPageStatus",
 ]
