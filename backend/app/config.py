@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     claude_model: str = "claude-haiku-4-5-20251001"
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "llama3"
+    discovery_depth: int = 1
 
 
 settings = Settings()
