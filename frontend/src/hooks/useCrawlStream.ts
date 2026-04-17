@@ -20,14 +20,19 @@ function getAuthHeader(): Record<string, string> {
 export function useCrawlStream() {
   const qc = useQueryClient();
   const [isRunning, setIsRunning] = useState(false);
+  const isRunningRef = useRef(false);
   const [sourceStates, setSourceStates] = useState<SourceCrawlState[]>([]);
   const [summary, setSummary] = useState<CrawlStreamSummary | null>(null);
   const [connectionError, setConnectionError] = useState<string | null>(null);
+  const [crawlTotal, setCrawlTotal] = useState(0);
   const abortRef = useRef<AbortController | null>(null);
 
   const handleEvent = useCallback(
     (event: CrawlEvent) => {
       switch (event.type) {
+        case 'crawl_start':
+          setCrawlTotal(event.total);
+          break;
         case 'source_start':
           setSourceStates((prev) => [
             ...prev,
@@ -74,6 +79,8 @@ export function useCrawlStream() {
                   : s,
               ),
             );
+          } else {
+            setConnectionError(event.message);
           }
           break;
         case 'crawl_done':
@@ -93,13 +100,15 @@ export function useCrawlStream() {
 
   const start = useCallback(
     async (sourceId?: string) => {
-      if (isRunning) return;
+      if (isRunningRef.current) return;
+      isRunningRef.current = true;
+      setIsRunning(true);
 
       abortRef.current = new AbortController();
-      setIsRunning(true);
       setSourceStates([]);
       setSummary(null);
       setConnectionError(null);
+      setCrawlTotal(0);
 
       const path = sourceId
         ? `/api/crawl/stream/${sourceId}`
@@ -113,11 +122,15 @@ export function useCrawlStream() {
 
         if (!res.ok) {
           setConnectionError(`Request failed: ${res.status}`);
-          setIsRunning(false);
           return;
         }
 
-        const reader = res.body!.getReader();
+        if (!res.body) {
+          setConnectionError('Streaming not supported');
+          return;
+        }
+
+        const reader = res.body.getReader();
         const decoder = new TextDecoder();
         let buffer = '';
 
@@ -144,10 +157,11 @@ export function useCrawlStream() {
           setConnectionError(err.message);
         }
       } finally {
+        isRunningRef.current = false;
         setIsRunning(false);
       }
     },
-    [isRunning, handleEvent],
+    [handleEvent],
   );
 
   const cancel = useCallback(() => {
@@ -155,10 +169,12 @@ export function useCrawlStream() {
   }, []);
 
   const reset = useCallback(() => {
+    abortRef.current?.abort();
     setSourceStates([]);
     setSummary(null);
     setConnectionError(null);
+    setCrawlTotal(0);
   }, []);
 
-  return { start, cancel, reset, isRunning, sourceStates, summary, connectionError };
+  return { start, cancel, reset, isRunning, sourceStates, summary, connectionError, crawlTotal };
 }
