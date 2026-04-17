@@ -78,7 +78,7 @@ export function CrawlProgressPanel({
     : isRunning
       ? `Crawling... (${doneCount}/${total})`
       : hasErrors
-        ? `Crawl complete — ${total} sources, ${summary?.total_new ?? 0} new docs, ${summary?.total_errors} errors`
+        ? `Crawl complete — ${total} sources, ${summary?.total_new ?? 0} new docs, ${summary?.total_errors ?? 0} errors`
         : `Crawl complete — ${total} sources, ${summary?.total_new ?? 0} new docs`;
 
   return (
