@@ -150,3 +150,62 @@ export interface DiscoveredPage {
   last_crawled_at: string | null;
   last_changed_at: string | null;
 }
+
+export type CrawlStep = 'fetching' | 'extracting' | 'analysing' | 'discovering';
+
+export interface CrawlStartEvent {
+  type: 'crawl_start';
+  total: number;
+}
+export interface CrawlSourceStartEvent {
+  type: 'source_start';
+  source_id: string;
+  url: string;
+  index: number;
+  total: number;
+}
+export interface CrawlStepEvent {
+  type: 'step';
+  source_id: string;
+  step: CrawlStep;
+}
+export interface CrawlSourceDoneEvent {
+  type: 'source_done';
+  source_id: string;
+  new_documents: number;
+  skipped: number;
+  errors: number;
+}
+export interface CrawlDoneEvent {
+  type: 'crawl_done';
+  sources_processed: number;
+  total_new: number;
+  total_errors: number;
+}
+export interface CrawlErrorEvent {
+  type: 'error';
+  source_id: string | null;
+  message: string;
+}
+export type CrawlEvent =
+  | CrawlStartEvent
+  | CrawlSourceStartEvent
+  | CrawlStepEvent
+  | CrawlSourceDoneEvent
+  | CrawlDoneEvent
+  | CrawlErrorEvent;
+
+export interface SourceCrawlState {
+  source_id: string;
+  url: string;
+  status: 'waiting' | 'running' | 'done' | 'error';
+  currentStep?: CrawlStep;
+  result?: { new_documents: number; skipped: number; errors: number };
+  errorMessage?: string;
+}
+
+export interface CrawlStreamSummary {
+  sources_processed: number;
+  total_new: number;
+  total_errors: number;
+}
