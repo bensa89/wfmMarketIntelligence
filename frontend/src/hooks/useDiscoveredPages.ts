@@ -5,7 +5,7 @@ import type { DiscoveredPage } from '../types';
 export function useDiscoveredPages(sourceId: string | null) {
   return useQuery<DiscoveredPage[]>({
     queryKey: ['discovered-pages', sourceId],
-    queryFn: () => apiGet<DiscoveredPage[]>('/discovered-pages/', { source_id: sourceId! }),
+    queryFn: () => apiGet<DiscoveredPage[]>('/discovered-pages', { source_id: sourceId! }),
     enabled: !!sourceId,
   });
 }
