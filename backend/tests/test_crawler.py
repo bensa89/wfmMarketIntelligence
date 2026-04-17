@@ -134,3 +134,40 @@ def test_run_crawl_source_skips_duplicate(db_session):
 
     assert result["new_documents"] == 0
     assert db_session.query(Document).count() == 1
+
+
+def test_run_crawl_source_calls_discovery(db_session):
+    from app.models.company import Company, CompanyType
+    from app.models.source import Source, SourceType
+
+    company = Company(name="ATOSS", slug="atoss-disc-pipe", type=CompanyType.competitor)
+    db_session.add(company)
+    db_session.commit()
+    source = Source(
+        company_id=company.id, url="https://atoss.com/disc", source_type=SourceType.news
+    )
+    db_session.add(source)
+    db_session.commit()
+
+    mock_html = (
+        "<html><head><title>Test</title></head><body><p>New content</p></body></html>"
+    )
+    mock_fetch = MagicMock(
+        return_value=MagicMock(
+            html=mock_html, final_url="https://atoss.com/disc", status_code=200
+        )
+    )
+    mock_discover = MagicMock(
+        return_value={"discovered": 0, "new": 0, "changed": 0, "known": 0}
+    )
+
+    with (
+        patch("app.crawler.pipeline.fetch_url", mock_fetch),
+        patch("app.crawler.pipeline.discover_and_crawl", mock_discover),
+    ):
+        run_crawl_source(source, db_session, analyse=False)
+
+    mock_discover.assert_called_once()
+    call_kwargs = mock_discover.call_args
+    assert call_kwargs[0][0] == source
+    assert call_kwargs[0][2] == db_session

@@ -5,10 +5,17 @@ from app.models.source import Source
 from app.models.document import Document
 from app.crawler.fetcher import fetch_url
 from app.crawler.extractor import extract_content
+from app.crawler.discovery import discover_and_crawl
 
 
 def run_crawl_source(source: Source, db: Session, analyse: bool = True) -> Dict:
-    result = {"source_id": source.id, "new_documents": 0, "skipped": 0, "errors": 0}
+    result = {
+        "source_id": source.id,
+        "new_documents": 0,
+        "skipped": 0,
+        "errors": 0,
+        "discovery": {},
+    }
 
     fetch_result = fetch_url(source.url)
     if fetch_result is None:
@@ -43,6 +50,10 @@ def run_crawl_source(source: Source, db: Session, analyse: bool = True) -> Dict:
 
             db.refresh(doc)
             analyse_document(doc, source.company_id, db)
+
+    result["discovery"] = discover_and_crawl(
+        source, fetch_result.html, db, analyse=analyse
+    )
 
     source.last_crawled_at = datetime.now(timezone.utc)
     db.commit()
