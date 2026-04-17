@@ -47,6 +47,7 @@ interface Props {
   sourceStates: SourceCrawlState[];
   summary: CrawlStreamSummary | null;
   connectionError: string | null;
+  crawlTotal?: number;
   onCancel: () => void;
   onDismiss: () => void;
 }
@@ -56,6 +57,7 @@ export function CrawlProgressPanel({
   sourceStates,
   summary,
   connectionError,
+  crawlTotal,
   onCancel,
   onDismiss,
 }: Props) {
@@ -64,7 +66,7 @@ export function CrawlProgressPanel({
   const doneCount = sourceStates.filter(
     (s) => s.status === 'done' || s.status === 'error',
   ).length;
-  const total = summary?.sources_processed ?? sourceStates.length;
+  const total = summary?.sources_processed ?? crawlTotal ?? sourceStates.length;
   const hasErrors = (summary?.total_errors ?? 0) > 0 || connectionError != null;
 
   const borderColor = hasErrors
