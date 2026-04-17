@@ -31,3 +31,13 @@ def update_discovered_page(
     db.commit()
     db.refresh(page)
     return page
+
+
+@router.delete("/{page_id}", response_model=DiscoveredPageRead)
+def delete_discovered_page(page_id: str, db: Session = Depends(get_db)):
+    page = db.query(DiscoveredPage).filter(DiscoveredPage.id == page_id).first()
+    if not page:
+        raise HTTPException(status_code=404, detail="DiscoveredPage not found")
+    db.delete(page)
+    db.commit()
+    return page

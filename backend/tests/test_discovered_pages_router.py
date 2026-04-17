@@ -99,3 +99,17 @@ def test_patch_discovered_page_not_found(client):
         json={"is_active": False},
     )
     assert response.status_code == 404
+
+
+def test_delete_discovered_page(client, discovered_page, db_session):
+    from app.models.discovered_page import DiscoveredPage as DP
+
+    response = client.delete(f"/api/discovered-pages/{discovered_page.id}")
+    assert response.status_code == 200
+    assert response.json()["id"] == discovered_page.id
+    assert db_session.query(DP).filter(DP.id == discovered_page.id).first() is None
+
+
+def test_delete_discovered_page_not_found(client):
+    response = client.delete("/api/discovered-pages/nonexistent-id")
+    assert response.status_code == 404

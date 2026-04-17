@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { useCompanies, useCreateCompany } from '../hooks/useCompanies';
+import { useCompanies, useCreateCompany, useUpdateCompanyDynamic, useDeleteCompany } from '../hooks/useCompanies';
 import { useSources, useCreateSource, useUpdateSource, useDeleteSource } from '../hooks/useSources';
 import { useCrawlAll, useCrawlSource } from '../hooks/useCrawl';
-import { useDiscoveredPages, useToggleDiscoveredPage } from '../hooks/useDiscoveredPages';
-import type { CompanyType, SourceType, Source, DiscoveredPage } from '../types';
+import { useDiscoveredPages, useToggleDiscoveredPage, useDeleteDiscoveredPage } from '../hooks/useDiscoveredPages';
+import type { CompanyType, SourceType, Source, DiscoveredPage, Company } from '../types';
 import { Plus, Play, Trash2, Edit2, X, ChevronDown, ChevronRight } from 'lucide-react';
 
 const sourceTypes: SourceType[] = ['news', 'blog', 'product', 'press', 'jobs'];
@@ -11,9 +11,11 @@ const sourceTypes: SourceType[] = ['news', 'blog', 'product', 'press', 'jobs'];
 function DiscoveredPagesSection({
   sourceId,
   onToggle,
+  onDelete,
 }: {
   sourceId: string;
   onToggle: (pageId: string, isActive: boolean) => void;
+  onDelete: (pageId: string, sourceId: string) => void;
 }) {
   const { data: pages, isLoading } = useDiscoveredPages(sourceId);
 
@@ -44,6 +46,7 @@ function DiscoveredPagesSection({
           <th className="text-left py-1 text-dark-muted font-medium">Depth</th>
           <th className="text-left py-1 text-dark-muted font-medium">Last Changed</th>
           <th className="text-left py-1 text-dark-muted font-medium">Active</th>
+          <th className="text-left py-1 text-dark-muted font-medium"></th>
         </tr>
       </thead>
       <tbody>
@@ -74,6 +77,15 @@ function DiscoveredPagesSection({
                 {page.is_active ? 'Active' : 'Ignored'}
               </button>
             </td>
+            <td className="py-1">
+              <button
+                onClick={() => onDelete(page.id, page.source_id)}
+                className="text-signal-low hover:text-red-400"
+                title="Delete"
+              >
+                <Trash2 size={12} />
+              </button>
+            </td>
           </tr>
         ))}
       </tbody>
@@ -85,12 +97,11 @@ export default function SourcesAdmin() {
   const { data: companies, isLoading: companiesLoading, error: companiesError, refetch: refetchCompanies } = useCompanies();
   const { data: sources, isLoading: sourcesLoading, error: sourcesError } = useSources();
   
-  // Debug: Log companies data
-  console.log('Companies:', companies, 'Loading:', companiesLoading, 'Error:', companiesError);
   const createCompany = useCreateCompany();
   const createSource = useCreateSource();
   const updateSource = useUpdateSource();
   const deleteSource = useDeleteSource();
+  const deleteCompany = useDeleteCompany();
   const crawlAll = useCrawlAll();
   const crawlSingle = useCrawlSource();
 
@@ -111,8 +122,16 @@ export default function SourcesAdmin() {
   const [editLabel, setEditLabel] = useState('');
   const [editType, setEditType] = useState<SourceType>('news');
 
+  // Edit company state
+  const [editingCompany, setEditingCompany] = useState<Company | null>(null);
+  const [editCompanyName, setEditCompanyName] = useState('');
+  const [editCompanyType, setEditCompanyType] = useState<CompanyType>('competitor');
+  const [editCompanyWebsite, setEditCompanyWebsite] = useState('');
+  const [editCompanyDescription, setEditCompanyDescription] = useState('');
+
   const [expandedSourceId, setExpandedSourceId] = useState<string | null>(null);
   const toggleDiscoveredPage = useToggleDiscoveredPage();
+  const deleteDiscoveredPage = useDeleteDiscoveredPage();
 
   function handleCreateCompany(e: React.FormEvent) {
     e.preventDefault();
@@ -124,7 +143,6 @@ export default function SourcesAdmin() {
         setNewCompanyName('');
         setNewCompanySlug('');
         setNewCompanyWebsite('');
-        // Force refetch companies
         await refetchCompanies();
       }},
     );
@@ -150,6 +168,12 @@ export default function SourcesAdmin() {
   function handleDeleteSource(sourceId: string) {
     if (window.confirm('Delete this source?')) {
       deleteSource.mutate(sourceId);
+    }
+  }
+
+  function handleDeleteCompany(slug: string, companyName: string) {
+    if (window.confirm(`Delete company "${companyName}" and all its sources? This action cannot be undone.`)) {
+      deleteCompany.mutate(slug);
     }
   }
 
@@ -190,6 +214,40 @@ export default function SourcesAdmin() {
     }
   }
 
+  function openEditCompanyModal(company: Company) {
+    setEditingCompany(company);
+    setEditCompanyName(company.name);
+    setEditCompanyType(company.type);
+    setEditCompanyWebsite(company.website || '');
+    setEditCompanyDescription(company.description || '');
+  }
+
+  function closeEditCompanyModal() {
+    setEditingCompany(null);
+    setEditCompanyName('');
+    setEditCompanyType('competitor');
+    setEditCompanyWebsite('');
+    setEditCompanyDescription('');
+  }
+
+  function handleSaveCompanyEdit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!editingCompany) return;
+    
+    const updates: { name?: string; type?: CompanyType; website?: string | null; description?: string | null } = {};
+    if (editCompanyName !== editingCompany.name) updates.name = editCompanyName;
+    if (editCompanyType !== editingCompany.type) updates.type = editCompanyType;
+    if (editCompanyWebsite !== (editingCompany.website || '')) updates.website = editCompanyWebsite || null;
+    if (editCompanyDescription !== (editingCompany.description || '')) updates.description = editCompanyDescription || null;
+
+    if (Object.keys(updates).length > 0) {
+      const updateMutation = useUpdateCompanyDynamic(editingCompany.slug);
+      updateCompanyMutation.mutate({ slug: editingCompany.slug, data: updates }, { onSuccess: closeEditCompanyModal });
+    } else {
+      closeEditCompanyModal();
+    }
+  }
+
   const isLoading = companiesLoading || sourcesLoading;
 
   return (
@@ -225,12 +283,31 @@ export default function SourcesAdmin() {
             return (
               <div key={company.id} className="card">
                 <div className="flex items-center justify-between mb-3">
-                  <h2 className="text-lg font-semibold">{company.name}</h2>
-                  <span className={`text-xs px-2 py-0.5 rounded ${company.type === 'competitor' ? 'bg-type-product_update/20 text-type-product_update' : 'bg-type-ai_announcement/20 text-type-ai_announcement'}`}>
-                    {company.type === 'competitor' ? 'Competitor' : 'Market Source'}
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <h2 className="text-lg font-semibold">{company.name}</h2>
+                    <span className={`text-xs px-2 py-0.5 rounded ${company.type === 'competitor' ? 'bg-type-product_update/20 text-type-product_update' : 'bg-type-ai_announcement/20 text-type-ai_announcement'}`}>
+                      {company.type === 'competitor' ? 'Competitor' : 'Market Source'}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button 
+                      onClick={() => openEditCompanyModal(company)} 
+                      className="text-dark-muted hover:text-dark-text p-1" 
+                      title="Edit company"
+                    >
+                      <Edit2 size={16} />
+                    </button>
+                    <button 
+                      onClick={() => handleDeleteCompany(company.slug, company.name)} 
+                      className="text-signal-low hover:text-red-400 p-1" 
+                      title="Delete company"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                 </div>
                 {company.website && <p className="text-xs text-dark-muted mb-3">{company.website}</p>}
+                {company.description && <p className="text-sm text-dark-muted mb-3">{company.description}</p>}
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-dark-border">
@@ -246,10 +323,7 @@ export default function SourcesAdmin() {
                     {companySources.map((source) => (
                       <>
                         <tr key={source.id} className="border-b border-dark-border/50">
-                          <td className="py-2 max-w-xs truncate" title={source.url}>
-                            <span className="text-xs text-dark-muted mr-1">Seed</span>
-                            {source.url}
-                          </td>
+                          <td className="py-2 max-w-xs truncate" title={source.url}>{source.url}</td>
                           <td className="py-2">{source.label || '-'}</td>
                           <td className="py-2">
                             <span className="text-xs px-1.5 py-0.5 rounded bg-dark-bg">{source.source_type}</span>
@@ -266,12 +340,12 @@ export default function SourcesAdmin() {
                             {source.last_crawled_at ? new Date(source.last_crawled_at).toLocaleDateString('de-DE') : 'Never'}
                           </td>
                           <td className="py-2 text-right">
-                            <button
-                              onClick={() => setExpandedSourceId(expandedSourceId === source.id ? null : source.id)}
-                              className="text-dark-muted hover:text-dark-text mr-2"
-                              title="Show discovered pages"
+                            <button 
+                              onClick={() => setExpandedSourceId(expandedSourceId === source.id ? null : source.id)} 
+                              className="text-dark-muted hover:text-dark-text mr-2" 
+                              title="Toggle discovered pages"
                             >
-                              {expandedSourceId === source.id ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                              {expandedSourceId === source.id ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                             </button>
                             <button onClick={() => handleCrawlSource(source.id)} className="text-dark-accent hover:text-indigo-300 mr-2" title="Crawl this source">
                               <Play size={14} />
@@ -285,14 +359,9 @@ export default function SourcesAdmin() {
                           </td>
                         </tr>
                         {expandedSourceId === source.id && (
-                          <tr key={`${source.id}-discovery`} className="bg-dark-bg/30">
-                            <td colSpan={6} className="py-1">
-                              <DiscoveredPagesSection
-                                sourceId={source.id}
-                                onToggle={(pageId, isActive) =>
-                                  toggleDiscoveredPage.mutate({ pageId, isActive })
-                                }
-                              />
+                          <tr>
+                            <td colSpan={6} className="bg-dark-bg/50">
+                              <DiscoveredPagesSection sourceId={source.id} onToggle={(pageId, isActive) => toggleDiscoveredPage.mutate({ pageId, isActive })} onDelete={(pageId, srcId) => deleteDiscoveredPage.mutate({ pageId, sourceId: srcId })} />
                             </td>
                           </tr>
                         )}
@@ -333,7 +402,7 @@ export default function SourcesAdmin() {
               </div>
               <div>
                 <label className="block text-sm text-dark-muted mb-1">Website (optional)</label>
-                <input value={newCompanyWebsite} onChange={(e) => setNewCompanyWebsite(e.target.value)} className="input-field w-full" />
+                <input value={newCompanyWebsite} onChange={(e) => setNewCompanyWebsite(e.target.value)} className="input-field w-full" placeholder="https://..." />
               </div>
               <div className="flex gap-2 pt-2">
                 <button type="submit" disabled={createCompany.isPending} className="btn-primary flex-1">
@@ -438,6 +507,68 @@ export default function SourcesAdmin() {
                   {updateSource.isPending ? 'Saving...' : 'Save Changes'}
                 </button>
                 <button type="button" onClick={closeEditModal} className="btn-secondary flex-1">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {editingCompany && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-8 z-50" onClick={closeEditCompanyModal}>
+          <div className="card w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold">Edit Company</h2>
+              <button onClick={closeEditCompanyModal} className="text-dark-muted hover:text-dark-text">
+                <X size={20} />
+              </button>
+            </div>
+            <form onSubmit={handleSaveCompanyEdit} className="space-y-4">
+              <div>
+                <label className="block text-sm text-dark-muted mb-1">Name</label>
+                <input 
+                  value={editCompanyName} 
+                  onChange={(e) => setEditCompanyName(e.target.value)} 
+                  className="input-field w-full" 
+                  required 
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-dark-muted mb-1">Type</label>
+                <select 
+                  value={editCompanyType} 
+                  onChange={(e) => setEditCompanyType(e.target.value as CompanyType)} 
+                  className="input-field w-full"
+                >
+                  <option value="competitor">Competitor</option>
+                  <option value="market_source">Market Source</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm text-dark-muted mb-1">Website</label>
+                <input 
+                  value={editCompanyWebsite} 
+                  onChange={(e) => setEditCompanyWebsite(e.target.value)} 
+                  className="input-field w-full" 
+                  placeholder="https://..." 
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-dark-muted mb-1">Description</label>
+                <textarea 
+                  value={editCompanyDescription} 
+                  onChange={(e) => setEditCompanyDescription(e.target.value)} 
+                  className="input-field w-full h-20" 
+                  placeholder="Company description..." 
+                />
+              </div>
+              <div className="flex gap-2 pt-2">
+                <button 
+                  type="submit" 
+                  className="btn-primary flex-1"
+                >
+                  Save Changes
+                </button>
+                <button type="button" onClick={closeEditCompanyModal} className="btn-secondary flex-1">Cancel</button>
               </div>
             </form>
           </div>
