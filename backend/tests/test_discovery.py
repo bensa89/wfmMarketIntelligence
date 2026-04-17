@@ -3,6 +3,7 @@ from unittest.mock import patch, MagicMock
 from app.crawler.discovery import (
     _is_article_url,
     _is_article_content,
+    _is_child_path,
     _extract_internal_links,
     discover_and_crawl,
 )
@@ -48,6 +49,67 @@ def test_is_article_url_rejects_two_segments():
     assert _is_article_url("https://example.com/company/about") is False
 
 
+def test_is_article_url_locale_prefix_ignored():
+    assert _is_article_url("https://example.com/de/warum-atoss/consulting") is False
+
+
+def test_is_article_url_locale_prefix_with_deep_path():
+    assert (
+        _is_article_url("https://example.com/de/warum-atoss/consulting/team-lead")
+        is True
+    )
+
+
+def test_is_article_url_child_path_of_seed():
+    assert (
+        _is_article_url(
+            "https://example.com/de/unternehmen/news-presse/article-slug",
+            seed_url="https://example.com/de/unternehmen/news-presse",
+        )
+        is True
+    )
+
+
+def test_is_article_url_child_path_requires_depth():
+    assert (
+        _is_article_url(
+            "https://example.com/de/unternehmen",
+            seed_url="https://example.com/de/unternehmen/news-presse",
+        )
+        is False
+    )
+
+
+def test_is_child_path_direct_child():
+    assert (
+        _is_child_path(
+            "https://example.com/news/article-1",
+            "https://example.com/news",
+        )
+        is True
+    )
+
+
+def test_is_child_path_not_child():
+    assert (
+        _is_child_path(
+            "https://example.com/about/team",
+            "https://example.com/news",
+        )
+        is False
+    )
+
+
+def test_is_child_path_deeper_child():
+    assert (
+        _is_child_path(
+            "https://example.com/news/2024/article-1",
+            "https://example.com/news",
+        )
+        is True
+    )
+
+
 def test_is_article_content_with_article_tag():
     html = "<html><body><article><p>Some content here.</p></article></body></html>"
     assert _is_article_content(html) is True
@@ -66,6 +128,13 @@ def test_is_article_content_rejects_low_word_count():
 
 def test_is_article_content_rejects_empty():
     html = "<html><body></body></html>"
+    assert _is_article_content(html) is False
+
+
+def test_is_article_content_rejects_nav_heavy_page():
+    nav_links = " ".join(["Link"] * 150)
+    body_text = " ".join(["Content word"] * 100)
+    html = f"<html><body><nav><a>{nav_links}</a></nav><main><p>{body_text}</p></main></body></html>"
     assert _is_article_content(html) is False
 
 

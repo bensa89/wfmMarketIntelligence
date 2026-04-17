@@ -23,18 +23,54 @@ _CONTENT_PREFIXES = (
     "/resources/",
     "/product/",
 )
+_NAVIGATION_SEGMENTS = {
+    "de",
+    "en",
+    "fr",
+    "es",
+    "it",
+    "nl",
+    "pt",
+    "ru",
+    "ja",
+    "zh",
+    "ko",
+    "about",
+    "contact",
+    "imprint",
+    "privacy",
+    "legal",
+    "terms",
+    "search",
+    "login",
+    "signup",
+    "cart",
+    "checkout",
+}
 _DATE_PATTERN = re.compile(r"/\d{4}(/\d{2})?/")
 _MAX_PAGES_PER_RUN = 50
 
 
-def _is_article_url(url: str) -> bool:
+def _is_child_path(child_url: str, parent_url: str) -> bool:
+    child_path = urlparse(child_url).path.rstrip("/")
+    parent_path = urlparse(parent_url).path.rstrip("/")
+    if not parent_path:
+        return True
+    return child_path.startswith(parent_path + "/")
+
+
+def _is_article_url(url: str, seed_url: str = "") -> bool:
     path = urlparse(url).path
+    segments = [s for s in path.split("/") if s]
     if _DATE_PATTERN.search(path):
         return True
     if any(path.startswith(p) for p in _CONTENT_PREFIXES):
         return True
-    segments = [s for s in path.split("/") if s]
-    if len(segments) >= 3:
+    if seed_url and _is_child_path(url, seed_url):
+        if len(segments) >= 2:
+            return True
+    clean_segments = [s for s in segments if s not in _NAVIGATION_SEGMENTS]
+    if len(clean_segments) >= 3:
         return True
     return False
 
@@ -43,9 +79,19 @@ def _is_article_content(html: str) -> bool:
     soup = BeautifulSoup(html, "html.parser")
     if soup.find("article"):
         return True
-    main = soup.find("main") or soup.find("body") or soup
+    body = soup.find("body") or soup
+    main = soup.find("main") or body
     text = main.get_text(" ", strip=True)
-    return len(text.split()) > 200
+    total_words = len(text.split())
+    if total_words < 200:
+        return False
+    nav = soup.find("nav")
+    if nav and total_words < 600:
+        nav_text = nav.get_text(" ", strip=True)
+        body_text = body.get_text(" ", strip=True)
+        if len(nav_text.split()) / max(len(body_text.split()), 1) > 0.3:
+            return False
+    return True
 
 
 def _extract_internal_links(html: str, base_url: str) -> List[str]:
@@ -94,11 +140,17 @@ def discover_and_crawl(
         .all()
     }
 
-    queue = [
-        (url, 1)
-        for url in _extract_internal_links(seed_html, source.url)
-        if _is_article_url(url) and url not in known_inactive
-    ]
+    child_links: List[tuple] = []
+    other_links: List[tuple] = []
+    for url in _extract_internal_links(seed_html, source.url):
+        if not _is_article_url(url, seed_url=source.url) or url in known_inactive:
+            continue
+        if _is_child_path(url, source.url):
+            child_links.append((url, 1))
+        else:
+            other_links.append((url, 1))
+
+    queue = child_links + other_links
     visited: Set[str] = set()
     pages_crawled = 0
 
@@ -178,7 +230,7 @@ def discover_and_crawl(
                 if (
                     next_url not in visited
                     and next_url not in known_inactive
-                    and _is_article_url(next_url)
+                    and _is_article_url(next_url, seed_url=source.url)
                 ):
                     queue.append((next_url, depth + 1))
 
