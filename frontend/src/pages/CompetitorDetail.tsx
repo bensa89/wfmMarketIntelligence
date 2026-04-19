@@ -7,7 +7,7 @@ import SignalCard from '../components/SignalCard';
 import FilterBar from '../components/FilterBar';
 import MarkdownViewer from '../components/MarkdownViewer';
 import type { SignalType } from '../types';
-import { ArrowLeft, FileText } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
 export default function CompetitorDetail() {
   const { slug } = useParams<{ slug: string }>();
@@ -58,17 +58,11 @@ export default function CompetitorDetail() {
       ) : (
         <div className="space-y-4">
           {signals?.map((signal) => (
-            <div key={signal.id}>
-              <SignalCard signal={signal} />
-              {signal.document_id && (
-                <button
-                  onClick={() => setSelectedDocId(signal.document_id)}
-                  className="text-xs text-dark-accent hover:underline flex items-center gap-1 mt-1"
-                >
-                  <FileText size={12} /> View source document
-                </button>
-              )}
-            </div>
+            <SignalCard
+              key={signal.id}
+              signal={signal}
+              onClick={signal.document_id ? () => setSelectedDocId(signal.document_id) : undefined}
+            />
           ))}
           {signals?.length === 0 && (
             <p className="text-dark-muted">No signals found for this company.</p>

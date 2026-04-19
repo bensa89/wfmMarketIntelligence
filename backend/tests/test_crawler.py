@@ -171,3 +171,66 @@ def test_run_crawl_source_calls_discovery(db_session):
     call_kwargs = mock_discover.call_args
     assert call_kwargs[0][0] == source
     assert call_kwargs[0][2] == db_session
+
+
+def test_run_crawl_source_calls_progress_callback(db_session):
+    from app.models.company import Company, CompanyType
+    from app.models.source import Source, SourceType
+
+    company = Company(name="ATOSS", slug="atoss-cb", type=CompanyType.competitor)
+    db_session.add(company)
+    db_session.commit()
+    source = Source(
+        company_id=company.id, url="https://atoss.com/cb", source_type=SourceType.news
+    )
+    db_session.add(source)
+    db_session.commit()
+
+    mock_fetch = MagicMock(
+        return_value=MagicMock(
+            html="<html><head><title>T</title></head><body><p>New content</p></body></html>",
+            final_url="https://atoss.com/cb",
+            status_code=200,
+        )
+    )
+
+    events = []
+
+    with patch("app.crawler.pipeline.fetch_url", mock_fetch):
+        run_crawl_source(
+            source, db_session, analyse=False, progress_callback=lambda e: events.append(e)
+        )
+
+    steps = [e["step"] for e in events if e.get("type") == "step"]
+    assert "fetching" in steps
+    assert "extracting" in steps
+    assert "discovering" in steps
+    assert all(e.get("source_id") == source.id for e in events)
+
+
+def test_run_crawl_source_callback_on_fetch_failure(db_session):
+    from app.models.company import Company, CompanyType
+    from app.models.source import Source, SourceType
+
+    company = Company(name="ATOSS", slug="atoss-cb-fail", type=CompanyType.competitor)
+    db_session.add(company)
+    db_session.commit()
+    source = Source(
+        company_id=company.id,
+        url="https://atoss.com/cb-fail",
+        source_type=SourceType.news,
+    )
+    db_session.add(source)
+    db_session.commit()
+
+    events = []
+
+    with patch("app.crawler.pipeline.fetch_url", return_value=None):
+        result = run_crawl_source(
+            source, db_session, analyse=False, progress_callback=lambda e: events.append(e)
+        )
+
+    assert result["errors"] == 1
+    error_events = [e for e in events if e.get("type") == "error"]
+    assert len(error_events) == 1
+    assert error_events[0]["source_id"] == source.id

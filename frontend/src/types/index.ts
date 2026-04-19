@@ -84,8 +84,21 @@ export interface Signal {
   why_it_matters: string | null;
   relevance_score: number | null;
   confidence_score: number | null;
+  source_url: string | null;
   published_at: string | null;
   created_at: string;
+}
+
+export interface DigestSignal {
+  id: string;
+  title: string;
+  signal_type: SignalType;
+  topic: string | null;
+  summary: string | null;
+  relevance_score: number | null;
+  confidence_score: number | null;
+  source_url: string | null;
+  company_name: string | null;
 }
 
 export interface Digest {
@@ -93,7 +106,7 @@ export interface Digest {
   week_start: string;
   week_end: string;
   summary: string | null;
-  key_signals: string[];
+  key_signals: DigestSignal[];
   generated_at: string;
   is_published: boolean;
 }

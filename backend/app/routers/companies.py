@@ -43,3 +43,12 @@ def update_company(slug: str, payload: CompanyUpdate, db: Session = Depends(get_
     db.commit()
     db.refresh(company)
     return company
+
+
+@router.delete("/{slug}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_company(slug: str, db: Session = Depends(get_db)):
+    company = db.query(Company).filter(Company.slug == slug).first()
+    if not company:
+        raise HTTPException(status_code=404, detail="Company not found")
+    db.delete(company)
+    db.commit()

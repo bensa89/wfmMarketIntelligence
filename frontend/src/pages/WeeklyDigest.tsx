@@ -1,18 +1,11 @@
 import { useDigests, useGenerateDigest } from '../hooks/useDigests';
-import { useSignals } from '../hooks/useSignals';
 import RelevanceBadge from '../components/RelevanceBadge';
 import SignalTypeIcon from '../components/SignalTypeIcon';
-import { Calendar, RefreshCw } from 'lucide-react';
-import type { Signal } from '../types';
+import { Calendar, RefreshCw, ExternalLink } from 'lucide-react';
 
 export default function WeeklyDigest() {
   const { data: digests, isLoading } = useDigests();
   const generateDigest = useGenerateDigest();
-  const { data: allSignals } = useSignals();
-
-  function getSignalById(id: string): Signal | undefined {
-    return allSignals?.find((s) => s.id === id);
-  }
 
   return (
     <div>
@@ -64,19 +57,33 @@ export default function WeeklyDigest() {
                 <div>
                   <h3 className="text-sm font-medium text-dark-muted mb-2">Key Signals:</h3>
                   <div className="space-y-2">
-                    {digest.key_signals.map((sid) => {
-                      const signal = getSignalById(sid);
-                      if (!signal) return null;
-                      return (
-                        <div key={sid} className="flex items-center justify-between bg-dark-bg rounded p-2">
-                          <div className="flex items-center gap-2">
-                            <SignalTypeIcon type={signal.signal_type} size={14} />
-                            <span className="text-sm">{signal.title}</span>
-                          </div>
-                          <RelevanceBadge score={signal.relevance_score} size="sm" />
+                    {digest.key_signals.map((signal) => (
+                      <div
+                        key={signal.id}
+                        className="flex items-center justify-between bg-dark-bg rounded p-2"
+                      >
+                        <div className="flex items-center gap-2 min-w-0">
+                          <SignalTypeIcon type={signal.signal_type} size={14} />
+                          {signal.source_url ? (
+                            <a
+                              href={signal.source_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm hover:text-dark-accent transition-colors truncate flex items-center gap-1"
+                            >
+                              {signal.title}
+                              <ExternalLink size={12} className="shrink-0 opacity-50" />
+                            </a>
+                          ) : (
+                            <span className="text-sm truncate">{signal.title}</span>
+                          )}
+                          {signal.company_name && (
+                            <span className="text-xs text-dark-muted shrink-0">({signal.company_name})</span>
+                          )}
                         </div>
-                      );
-                    })}
+                        <RelevanceBadge score={signal.relevance_score} size="sm" />
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}

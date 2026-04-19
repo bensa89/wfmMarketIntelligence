@@ -71,3 +71,19 @@ def test_get_signal_by_id(client, seed_signals):
     response = client.get(f"/api/signals/{s1.id}")
     assert response.status_code == 200
     assert response.json()["title"] == "AI Feature"
+
+
+def test_signal_has_source_url(client, seed_signals):
+    _, s1, _ = seed_signals
+    response = client.get(f"/api/signals/{s1.id}")
+    assert response.status_code == 200
+    data = response.json()
+    assert "source_url" in data
+    assert data["source_url"] == "https://atoss.com/sigs/1"
+
+
+def test_list_signals_have_source_url(client, seed_signals):
+    response = client.get("/api/signals")
+    assert response.status_code == 200
+    for sig in response.json():
+        assert "source_url" in sig

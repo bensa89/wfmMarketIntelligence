@@ -17,5 +17,6 @@ class SignalRead(BaseModel):
     why_it_matters: Optional[str]
     relevance_score: Optional[float]
     confidence_score: Optional[float]
+    source_url: Optional[str]
     published_at: Optional[datetime]
     created_at: datetime

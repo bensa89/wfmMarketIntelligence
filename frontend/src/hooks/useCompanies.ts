@@ -1,11 +1,15 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiGet, apiPost, apiPut } from '../api/client';
+import { apiGet, apiPost, apiPut, apiDelete } from '../api/client';
 import type { Company, CompanyCreate, CompanyUpdate } from '../types';
 
 export function useCompanies() {
   return useQuery<Company[]>({
     queryKey: ['companies'],
-    queryFn: () => apiGet<Company[]>('/companies'),
+    queryFn: async () => {
+      const data = await apiGet<Company[]>('/companies');
+      console.log('useCompanies fetched:', data);
+      return data;
+    },
   });
 }
 
@@ -21,7 +25,10 @@ export function useCreateCompany() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (data: CompanyCreate) => apiPost<Company>('/companies', data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['companies'] }),
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: ['companies'] });
+      await qc.refetchQueries({ queryKey: ['companies'] });
+    },
   });
 }
 
@@ -33,5 +40,25 @@ export function useUpdateCompany(slug: string) {
       qc.invalidateQueries({ queryKey: ['companies'] });
       qc.invalidateQueries({ queryKey: ['companies', slug] });
     },
+  });
+}
+
+export function useUpdateCompanyDynamic() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ slug, data }: { slug: string; data: CompanyUpdate }) => 
+      apiPut<Company>(`/companies/${slug}`, data),
+    onSuccess: (_, variables) => {
+      qc.invalidateQueries({ queryKey: ['companies'] });
+      qc.invalidateQueries({ queryKey: ['companies', variables.slug] });
+    },
+  });
+}
+
+export function useDeleteCompany() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (slug: string) => apiDelete(`/companies/${slug}`),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['companies'] }),
   });
 }

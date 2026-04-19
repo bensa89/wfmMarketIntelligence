@@ -1,4 +1,14 @@
 #!/bin/bash
+# ./dev.sh up          # Start everything (build + migrate)
+# ./dev.sh rebuild     # Rebuild backend after code/.env changes
+# ./dev.sh migrate     # Run Alembic migrations
+# ./dev.sh logs        # Tail backend logs
+# ./dev.sh test        # Run pytest
+# ./dev.sh psql        # Open DB shell
+# ./dev.sh reset-db    # Wipe + recreate DB
+# ./dev.sh curl GET /api/companies
+# ./dev.sh down        # Stop all
+
 set -euo pipefail
 
 COMPOSE_FILE="docker-compose.dev.yml"

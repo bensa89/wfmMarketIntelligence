@@ -19,7 +19,7 @@ export default function LoginPage() {
     setCredentials(username, password);
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/health`, {
+      const res = await fetch('/api/health', {
         headers: {
           Authorization: `Basic ${btoa(`${username}:${password}`)}`,
         },
