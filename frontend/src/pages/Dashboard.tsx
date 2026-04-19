@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useCompanies } from '../hooks/useCompanies';
 import { useSignals } from '../hooks/useSignals';
 import { useCrawlAll } from '../hooks/useCrawl';
 import { useLastCompletedCrawl } from '../hooks/useCrawlRuns';
+import { useActiveCrawlRun } from '../hooks/useActiveCrawlRun';
 import { useSignalsOverTime, useSignalDistribution } from '../hooks/useSignalStats';
 import { useSourceCandidates } from '../hooks/useSourceCandidates';
 import { useDiscoveredPagesStats } from '../hooks/useDiscoveredPages';
@@ -24,6 +26,7 @@ export default function Dashboard() {
   const [companyId, setCompanyId] = useState('');
   const [onlyNew, setOnlyNew] = useState(false);
   const crawlAll = useCrawlAll();
+  const { activeRun } = useActiveCrawlRun();
   const { lastCrawl } = useLastCompletedCrawl();
   const { data: allSignals } = useSignals({});
   const { data: signals, isLoading: signalsLoading } = useSignals({
@@ -88,6 +91,13 @@ export default function Dashboard() {
       </div>
 
       <div className="flex-1 overflow-auto px-6 py-5">
+        {activeRun && (
+          <div className="mb-4 px-4 py-2.5 rounded-xl text-[12px] font-medium border bg-blue-50 text-blue-700 border-blue-200">
+            <Link to="/admin/sources" className="underline hover:no-underline">Crawl läuft</Link>
+            {' — '}{activeRun.total_sources} Quellen werden verarbeitet
+            {activeRun.total_new > 0 && ` · ${activeRun.total_new} neue Dokumente`}
+          </div>
+        )}
         {crawlAll.isSuccess && (
           <div className="mb-4 px-4 py-2.5 rounded-xl text-[12px] font-medium border bg-emerald-50 text-emerald-700 border-emerald-200">
             Crawl abgeschlossen: {crawlAll.data.sources_processed} Quellen verarbeitet
