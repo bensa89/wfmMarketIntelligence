@@ -18,6 +18,7 @@ class Document(Base):
     crawled_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     content_hash = Column(String(64), nullable=True, index=True)
     is_analysed = Column(Boolean, default=False)
+    from_search = Column(Boolean, default=False, nullable=False)
 
     source = relationship("Source", back_populates="documents")
     signals = relationship("Signal", back_populates="document")
