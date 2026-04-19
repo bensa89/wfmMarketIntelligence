@@ -86,9 +86,7 @@ export default function SourcesAdmin() {
   const { data: companies, isLoading: companiesLoading, error: companiesError, refetch: refetchCompanies } = useCompanies();
   const { data: sources, isLoading: sourcesLoading, error: sourcesError } = useSources();
   
-  // Debug: Log companies data
-  console.log('Companies:', companies, 'Loading:', companiesLoading, 'Error:', companiesError);
-  const createCompany = useCreateCompany();
+const createCompany = useCreateCompany();
   const createSource = useCreateSource();
   const updateSource = useUpdateSource();
   const deleteSource = useDeleteSource();
