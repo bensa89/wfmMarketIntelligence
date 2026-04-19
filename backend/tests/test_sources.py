@@ -28,6 +28,8 @@ def test_create_source(client, company):
     data = response.json()
     assert data["url"] == "https://atoss.com/news"
     assert data["is_active"] is True
+    assert data["crawl_status"] == "new"
+    assert data["discovered_pages_summary"] == {}
 
 
 def test_create_duplicate_url_fails(client, company):
@@ -54,6 +56,7 @@ def test_update_source(client, company):
     response = client.put(f"/api/sources/{source_id}", json={"is_active": False})
     assert response.status_code == 200
     assert response.json()["is_active"] is False
+    assert response.json()["crawl_status"] == "new"
 
 
 def test_delete_source(client, company):
