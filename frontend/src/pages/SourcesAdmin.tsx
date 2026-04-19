@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useCompanies, useCreateCompany, useUpdateCompanyDynamic, useDeleteCompany } from '../hooks/useCompanies';
 import { useSources, useCreateSource, useUpdateSource, useDeleteSource } from '../hooks/useSources';
-import { useCrawlAll, useCrawlSource } from '../hooks/useCrawl';
+import { useCrawlStream } from '../hooks/useCrawlStream';
+import { CrawlProgressPanel } from '../components/CrawlProgressPanel';
 import { useDiscoveredPages, useToggleDiscoveredPage, useDeleteDiscoveredPage } from '../hooks/useDiscoveredPages';
 import type { CompanyType, SourceType, Source, DiscoveredPage, Company } from '../types';
 import { Plus, Play, Trash2, Edit2, X, ChevronDown, ChevronRight } from 'lucide-react';
@@ -102,8 +103,7 @@ export default function SourcesAdmin() {
   const updateSource = useUpdateSource();
   const deleteSource = useDeleteSource();
   const deleteCompany = useDeleteCompany();
-  const crawlAll = useCrawlAll();
-  const crawlSingle = useCrawlSource();
+  const stream = useCrawlStream();
 
   const [newCompanyOpen, setNewCompanyOpen] = useState(false);
   const [newCompanyName, setNewCompanyName] = useState('');
@@ -178,7 +178,7 @@ export default function SourcesAdmin() {
   }
 
   function handleCrawlSource(sourceId: string) {
-    crawlSingle.mutate(sourceId);
+    stream.start(sourceId);
   }
 
   function openEditModal(source: Source) {
@@ -255,8 +255,8 @@ export default function SourcesAdmin() {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Sources Admin</h1>
         <div className="flex gap-2">
-          <button onClick={() => crawlAll.mutate()} disabled={crawlAll.isPending} className="btn-primary flex items-center gap-2">
-            <Play size={16} /> {crawlAll.isPending ? 'Crawling...' : 'Run Full Crawl'}
+          <button onClick={() => stream.start()} disabled={stream.isRunning} className="btn-primary flex items-center gap-2">
+            <Play size={16} /> {stream.isRunning ? 'Crawling...' : 'Run Full Crawl'}
           </button>
           <button onClick={() => setNewCompanyOpen(true)} className="btn-secondary flex items-center gap-2">
             <Plus size={16} /> Add Company
@@ -264,11 +264,15 @@ export default function SourcesAdmin() {
         </div>
       </div>
 
-      {crawlAll.isSuccess && (
-        <div className="mb-4 p-3 rounded bg-signal-high/10 text-signal-high text-sm">
-          Crawl complete: {crawlAll.data.sources_processed} sources processed
-        </div>
-      )}
+      <CrawlProgressPanel
+        isRunning={stream.isRunning}
+        sourceStates={stream.sourceStates}
+        summary={stream.summary}
+        connectionError={stream.connectionError}
+        crawlTotal={stream.crawlTotal}
+        onCancel={stream.cancel}
+        onDismiss={stream.reset}
+      />
 
       {isLoading ? (
         <p className="text-dark-muted">Loading...</p>
