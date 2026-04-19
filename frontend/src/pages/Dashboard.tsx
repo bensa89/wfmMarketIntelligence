@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useCompanies } from '../hooks/useCompanies';
 import { useSignals } from '../hooks/useSignals';
 import { useCrawlAll } from '../hooks/useCrawl';
+import { useActiveCrawlRun } from '../hooks/useActiveCrawlRun';
+import { Link } from 'react-router-dom';
 import SignalCard from '../components/SignalCard';
 import FilterBar from '../components/FilterBar';
 import RelevanceBadge from '../components/RelevanceBadge';
@@ -36,6 +38,7 @@ export default function Dashboard() {
   const [minRelevance, setMinRelevance] = useState(0);
   const [companyId, setCompanyId] = useState('');
   const crawlAll = useCrawlAll();
+  const { activeRun } = useActiveCrawlRun();
 
   const { data: signals, isLoading: signalsLoading } = useSignals({
     company_id:    companyId || undefined,
@@ -88,6 +91,16 @@ export default function Dashboard() {
           <div className="mb-4 px-4 py-2.5 rounded-xl text-[12px] font-medium border"
             style={{ background: '#fef2f2', color: '#b91c1c', borderColor: '#fecaca' }}>
             Crawl fehlgeschlagen
+          </div>
+        )}
+
+        {activeRun && (
+          <div className="mb-4 px-4 py-2.5 rounded-xl text-[12px] font-medium border"
+            style={{ background: '#eff6ff', color: '#1d4ed8', borderColor: '#bfdbfe' }}>
+            <Link to="/admin/sources" className="underline hover:no-underline">
+              Crawl läuft
+            </Link>
+            {' '}— {activeRun.total_sources} Quellen werden verarbeitet
           </div>
         )}
 
