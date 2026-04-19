@@ -4,6 +4,7 @@ import {
   Users,
   TrendingUp,
   Calendar,
+  Search,
   Settings,
   Globe,
   LogOut,
@@ -16,6 +17,7 @@ const navItems = [
   { to: '/competitors', label: 'Competitors', icon: Users },
   { to: '/trends', label: 'Market Trends', icon: TrendingUp },
   { to: '/digest', label: 'Weekly Digest', icon: Calendar },
+  { to: '/search', label: 'Search', icon: Search },
   { to: '/admin/sources', label: 'Sources Admin', icon: Settings },
   { to: '/context', label: 'Company Context', icon: Globe },
 ];

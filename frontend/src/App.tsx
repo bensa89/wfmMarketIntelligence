@@ -11,6 +11,7 @@ import MarketTrends from './pages/MarketTrends';
 import WeeklyDigest from './pages/WeeklyDigest';
 import SourcesAdmin from './pages/SourcesAdmin';
 import CompanyContext from './pages/CompanyContext';
+import SearchPage from './pages/SearchPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -40,6 +41,7 @@ export default function App() {
             <Route path="competitors/:slug" element={<CompetitorDetail />} />
             <Route path="trends" element={<MarketTrends />} />
             <Route path="digest" element={<WeeklyDigest />} />
+            <Route path="search" element={<SearchPage />} />
             <Route path="admin/sources" element={<SourcesAdmin />} />
             <Route path="context" element={<CompanyContext />} />
           </Route>
