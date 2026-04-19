@@ -14,6 +14,9 @@ class Settings(BaseSettings):
     ollama_model: str = "llama3"
     discovery_depth: int = 1
     js_rendering_enabled: bool = True
+    tavily_api_key: str = ""
+    search_relevance_threshold: float = 0.5
+    search_queries_per_company: int = 8
 
 
 settings = Settings()
