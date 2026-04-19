@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCompanies } from '../hooks/useCompanies';
 import { useSignals } from '../hooks/useSignals';
-import { useCrawlAll } from '../hooks/useCrawl';
+import { useCrawlStream } from '../hooks/useCrawlStream';
 import { useLastCompletedCrawl } from '../hooks/useCrawlRuns';
 import { useActiveCrawlRun } from '../hooks/useActiveCrawlRun';
 import { useSignalsOverTime, useSignalDistribution } from '../hooks/useSignalStats';
@@ -25,7 +25,7 @@ export default function Dashboard() {
   const [minRelevance, setMinRelevance] = useState(0);
   const [companyId, setCompanyId] = useState('');
   const [onlyNew, setOnlyNew] = useState(false);
-  const crawlAll = useCrawlAll();
+  const { start: startCrawl, isRunning: isCrawlRunning, summary: crawlSummary } = useCrawlStream();
   const { activeRun } = useActiveCrawlRun();
   const { lastCrawl } = useLastCompletedCrawl();
   const { data: allSignals } = useSignals({});
@@ -62,6 +62,8 @@ export default function Dashboard() {
     ? new Date(lastCrawl.finished_at).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
     : null;
 
+  const showCrawlRunning = isCrawlRunning || activeRun !== null;
+
   return (
     <div className="flex flex-col h-full bg-slate-50">
       <div className="bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between flex-shrink-0">
@@ -73,15 +75,15 @@ export default function Dashboard() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          {crawlAll.isPending && (
+          {isCrawlRunning && (
             <span className="flex items-center gap-1.5 text-[11px] text-emerald-600 font-medium">
               <Loader2 size={12} className="animate-spin" />
               Crawling...
             </span>
           )}
           <button
-            onClick={() => crawlAll.mutate()}
-            disabled={crawlAll.isPending}
+            onClick={() => startCrawl()}
+            disabled={isCrawlRunning}
             className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-colors flex items-center gap-1.5"
           >
             <Play size={12} />
@@ -91,21 +93,17 @@ export default function Dashboard() {
       </div>
 
       <div className="flex-1 overflow-auto px-6 py-5">
-        {activeRun && (
+        {showCrawlRunning && (
           <div className="mb-4 px-4 py-2.5 rounded-xl text-[12px] font-medium border bg-blue-50 text-blue-700 border-blue-200">
             <Link to="/admin/sources" className="underline hover:no-underline">Crawl läuft</Link>
-            {' — '}{activeRun.total_sources} Quellen werden verarbeitet
-            {activeRun.total_new > 0 && ` · ${activeRun.total_new} neue Dokumente`}
+            {' — '}{activeRun?.total_sources ?? '...'} Quellen werden verarbeitet
+            {activeRun?.total_new != null && activeRun.total_new > 0 && ` · ${activeRun.total_new} neue Dokumente`}
           </div>
         )}
-        {crawlAll.isSuccess && (
+        {crawlSummary && !isCrawlRunning && (
           <div className="mb-4 px-4 py-2.5 rounded-xl text-[12px] font-medium border bg-emerald-50 text-emerald-700 border-emerald-200">
-            Crawl abgeschlossen: {crawlAll.data.sources_processed} Quellen verarbeitet
-          </div>
-        )}
-        {crawlAll.isError && (
-          <div className="mb-4 px-4 py-2.5 rounded-xl text-[12px] font-medium border bg-red-50 text-red-700 border-red-200">
-            Crawl fehlgeschlagen
+            Crawl abgeschlossen: {crawlSummary.sources_processed} Quellen verarbeitet
+            {crawlSummary.total_new > 0 && ` · ${crawlSummary.total_new} neue Dokumente`}
           </div>
         )}
 

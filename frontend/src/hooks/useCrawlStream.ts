@@ -143,6 +143,12 @@ export function useCrawlStream() {
           qc.invalidateQueries({ queryKey: ['documents'] });
           qc.invalidateQueries({ queryKey: ['signals'] });
           qc.invalidateQueries({ queryKey: ['sources'] });
+          qc.invalidateQueries({ queryKey: ['crawlRuns'] });
+          qc.invalidateQueries({ queryKey: ['activeCrawlRun'] });
+          qc.invalidateQueries({ queryKey: ['discoveredPagesStats'] });
+          qc.invalidateQueries({ queryKey: ['signalsOverTime'] });
+          qc.invalidateQueries({ queryKey: ['signalDistribution'] });
+          qc.invalidateQueries({ queryKey: ['sourceCandidates'] });
           setIsRunning(false);
           break;
       }
