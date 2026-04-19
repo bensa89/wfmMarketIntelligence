@@ -1,3 +1,4 @@
+import logging
 import re
 import time
 from typing import List, Set, Dict
@@ -15,6 +16,8 @@ from app.crawler.fetcher import fetch_url
 from app.crawler.extractor import extract_content
 from app.config import settings
 
+logger = logging.getLogger(__name__)
+
 _CONTENT_PREFIXES = (
     "/news/",
     "/blog/",
@@ -23,6 +26,7 @@ _CONTENT_PREFIXES = (
     "/resources/",
     "/product/",
 )
+_CONTENT_SEGMENTS = {"news", "blog", "press", "insights", "resources", "product"}
 _NAVIGATION_SEGMENTS = {
     "de",
     "en",
@@ -66,9 +70,10 @@ def _is_article_url(url: str, seed_url: str = "") -> bool:
         return True
     if any(path.startswith(p) for p in _CONTENT_PREFIXES):
         return True
-    if seed_url and _is_child_path(url, seed_url):
-        if len(segments) >= 2:
-            return True
+    if any(seg in _CONTENT_SEGMENTS for seg in segments):
+        return True
+    if seed_url:
+        return _is_child_path(url, seed_url) and len(segments) >= 2
     clean_segments = [s for s in segments if s not in _NAVIGATION_SEGMENTS]
     if len(clean_segments) >= 3:
         return True
@@ -180,50 +185,54 @@ def discover_and_crawl(
         now = datetime.now(timezone.utc)
         final_url = fetch_result.final_url
 
-        existing = (
-            db.query(DiscoveredPage).filter(DiscoveredPage.url == final_url).first()
-        )
-
-        if existing is None:
-            page = DiscoveredPage(
-                source_id=source.id,
-                url=final_url,
-                title=extraction.title,
-                depth=depth,
-                status=DiscoveredPageStatus.new,
-                content_hash=extraction.content_hash,
-                discovered_at=now,
-                last_crawled_at=now,
+        try:
+            existing = (
+                db.query(DiscoveredPage).filter(DiscoveredPage.url == final_url).first()
             )
-            db.add(page)
-            db.commit()
-            result["new"] += 1
-            result["discovered"] += 1
 
-            if analyse:
-                _save_and_analyse(source, fetch_result, extraction, now, db)
+            if existing is None:
+                page = DiscoveredPage(
+                    source_id=source.id,
+                    url=final_url,
+                    title=extraction.title,
+                    depth=depth,
+                    status=DiscoveredPageStatus.new,
+                    content_hash=extraction.content_hash,
+                    discovered_at=now,
+                    last_crawled_at=now,
+                )
+                db.add(page)
+                db.commit()
+                result["new"] += 1
+                result["discovered"] += 1
 
-        elif not existing.is_active:
-            existing.status = DiscoveredPageStatus.ignored
-            existing.last_crawled_at = now
-            db.commit()
+                if analyse:
+                    _save_and_analyse(source, fetch_result, extraction, now, db)
 
-        elif existing.content_hash != extraction.content_hash:
-            existing.status = DiscoveredPageStatus.changed
-            existing.content_hash = extraction.content_hash
-            existing.last_crawled_at = now
-            existing.last_changed_at = now
-            db.commit()
-            result["changed"] += 1
+            elif not existing.is_active:
+                existing.status = DiscoveredPageStatus.ignored
+                existing.last_crawled_at = now
+                db.commit()
 
-            if analyse:
-                _save_and_analyse(source, fetch_result, extraction, now, db)
+            elif existing.content_hash != extraction.content_hash:
+                existing.status = DiscoveredPageStatus.changed
+                existing.content_hash = extraction.content_hash
+                existing.last_crawled_at = now
+                existing.last_changed_at = now
+                db.commit()
+                result["changed"] += 1
 
-        else:
-            existing.status = DiscoveredPageStatus.known
-            existing.last_crawled_at = now
-            db.commit()
-            result["known"] += 1
+                if analyse:
+                    _save_and_analyse(source, fetch_result, extraction, now, db)
+
+            else:
+                existing.status = DiscoveredPageStatus.known
+                existing.last_crawled_at = now
+                db.commit()
+                result["known"] += 1
+        except Exception:
+            db.rollback()
+            logger.exception("Error processing discovered page %s", final_url)
 
         if depth < settings.discovery_depth:
             for next_url in _extract_internal_links(fetch_result.html, final_url):

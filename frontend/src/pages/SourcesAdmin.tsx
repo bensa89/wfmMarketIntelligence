@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useCompanies, useCreateCompany, useUpdateCompanyDynamic, useDeleteCompany } from '../hooks/useCompanies';
 import { useSources, useCreateSource, useUpdateSource, useDeleteSource } from '../hooks/useSources';
 import { useCrawlStream } from '../hooks/useCrawlStream';
@@ -6,6 +6,7 @@ import { CrawlProgressPanel } from '../components/CrawlProgressPanel';
 import { useDiscoveredPages, useToggleDiscoveredPage, useDeleteDiscoveredPage } from '../hooks/useDiscoveredPages';
 import type { CompanyType, SourceType, Source, DiscoveredPage, Company } from '../types';
 import { Plus, Play, Trash2, Edit2, X, ChevronDown, ChevronRight } from 'lucide-react';
+import { ApiError } from '../api/client';
 
 const sourceTypes: SourceType[] = ['news', 'blog', 'product', 'press', 'jobs'];
 
@@ -103,6 +104,7 @@ export default function SourcesAdmin() {
   const updateSource = useUpdateSource();
   const deleteSource = useDeleteSource();
   const deleteCompany = useDeleteCompany();
+  const updateCompanyDynamic = useUpdateCompanyDynamic();
   const stream = useCrawlStream();
 
   const [newCompanyOpen, setNewCompanyOpen] = useState(false);
@@ -130,6 +132,8 @@ export default function SourcesAdmin() {
   const [editCompanyDescription, setEditCompanyDescription] = useState('');
 
   const [expandedSourceId, setExpandedSourceId] = useState<string | null>(null);
+  const [sourceError, setSourceError] = useState<string | null>(null);
+  const [companyEditError, setCompanyEditError] = useState<string | null>(null);
   const toggleDiscoveredPage = useToggleDiscoveredPage();
   const deleteDiscoveredPage = useDeleteDiscoveredPage();
 
@@ -151,12 +155,16 @@ export default function SourcesAdmin() {
   function handleCreateSource(e: React.FormEvent) {
     e.preventDefault();
     if (!newSourceCompanyId || !newSourceUrl) return;
+    setSourceError(null);
     createSource.mutate(
       { company_id: newSourceCompanyId, url: newSourceUrl, label: newSourceLabel || null, source_type: newSourceType },
       { onSuccess: () => {
         setNewSourceUrl('');
         setNewSourceLabel('');
         setNewSourceType('news');
+      },
+      onError: (err) => {
+        setSourceError(err instanceof ApiError ? err.message : 'Failed to create source');
       }},
     );
   }
@@ -233,6 +241,7 @@ export default function SourcesAdmin() {
   function handleSaveCompanyEdit(e: React.FormEvent) {
     e.preventDefault();
     if (!editingCompany) return;
+    setCompanyEditError(null);
     
     const updates: { name?: string; type?: CompanyType; website?: string | null; description?: string | null } = {};
     if (editCompanyName !== editingCompany.name) updates.name = editCompanyName;
@@ -241,8 +250,9 @@ export default function SourcesAdmin() {
     if (editCompanyDescription !== (editingCompany.description || '')) updates.description = editCompanyDescription || null;
 
     if (Object.keys(updates).length > 0) {
-      const updateMutation = useUpdateCompanyDynamic(editingCompany.slug);
-      updateCompanyMutation.mutate({ slug: editingCompany.slug, data: updates }, { onSuccess: closeEditCompanyModal });
+      updateCompanyDynamic.mutate({ slug: editingCompany.slug, data: updates }, { onSuccess: closeEditCompanyModal, onError: (err) => {
+        setCompanyEditError(err instanceof ApiError ? err.message : 'Failed to update company');
+      }});
     } else {
       closeEditCompanyModal();
     }
@@ -325,8 +335,8 @@ export default function SourcesAdmin() {
                   </thead>
                   <tbody>
                     {companySources.map((source) => (
-                      <>
-                        <tr key={source.id} className="border-b border-dark-border/50">
+                      <React.Fragment key={source.id}>
+                        <tr className="border-b border-dark-border/50">
                           <td className="py-2 max-w-xs truncate" title={source.url}>{source.url}</td>
                           <td className="py-2">{source.label || '-'}</td>
                           <td className="py-2">
@@ -369,7 +379,7 @@ export default function SourcesAdmin() {
                             </td>
                           </tr>
                         )}
-                      </>
+                      </React.Fragment>
                     ))}
                     {companySources.length === 0 && (
                       <tr>
@@ -449,6 +459,7 @@ export default function SourcesAdmin() {
             {createSource.isPending ? 'Adding...' : 'Add Source'}
           </button>
         </form>
+        {sourceError && <p className="text-signal-low text-sm mt-2">{sourceError}</p>}
       </div>
 
       {editingSource && (
@@ -574,6 +585,7 @@ export default function SourcesAdmin() {
                 </button>
                 <button type="button" onClick={closeEditCompanyModal} className="btn-secondary flex-1">Cancel</button>
               </div>
+              {companyEditError && <p className="text-signal-low text-sm mt-2">{companyEditError}</p>}
             </form>
           </div>
         </div>

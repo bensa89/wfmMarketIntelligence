@@ -27,5 +27,9 @@ class Source(Base):
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     company = relationship("Company", back_populates="sources")
-    documents = relationship("Document", back_populates="source")
-    discovered_pages = relationship("DiscoveredPage", back_populates="source")
+    documents = relationship(
+        "Document", back_populates="source", cascade="all, delete-orphan"
+    )
+    discovered_pages = relationship(
+        "DiscoveredPage", back_populates="source", cascade="all, delete-orphan"
+    )

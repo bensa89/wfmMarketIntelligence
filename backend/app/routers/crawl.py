@@ -67,6 +67,7 @@ def _run_sources_in_thread(
             def make_callback(sid: str):
                 def callback(event: dict) -> None:
                     loop.call_soon_threadsafe(queue.put_nowait, event)
+
                 return callback
 
             try:
@@ -77,6 +78,7 @@ def _run_sources_in_thread(
                     progress_callback=make_callback(source.id),
                 )
             except Exception as e:
+                thread_db.rollback()
                 result = {"new_documents": 0, "skipped": 0, "errors": 1}
                 loop.call_soon_threadsafe(
                     queue.put_nowait,
@@ -143,7 +145,11 @@ async def stream_all_sources(db: Session = Depends(get_db)) -> StreamingResponse
     return StreamingResponse(
         _sse_generator(source_ids),
         media_type="text/event-stream",
-        headers={"Cache-Control": "no-cache", "Connection": "keep-alive", "X-Accel-Buffering": "no"},
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
     )
 
 
@@ -157,5 +163,9 @@ async def stream_single_source(
     return StreamingResponse(
         _sse_generator([source.id]),
         media_type="text/event-stream",
-        headers={"Cache-Control": "no-cache", "Connection": "keep-alive", "X-Accel-Buffering": "no"},
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
     )

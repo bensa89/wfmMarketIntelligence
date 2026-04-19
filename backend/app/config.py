@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "llama3"
     discovery_depth: int = 1
+    js_rendering_enabled: bool = True
 
 
 settings = Settings()

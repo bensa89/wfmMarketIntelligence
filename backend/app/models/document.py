@@ -20,4 +20,6 @@ class Document(Base):
     is_analysed = Column(Boolean, default=False)
 
     source = relationship("Source", back_populates="documents")
-    signals = relationship("Signal", back_populates="document")
+    signals = relationship(
+        "Signal", back_populates="document", cascade="all, delete-orphan"
+    )
