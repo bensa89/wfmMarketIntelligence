@@ -18,8 +18,8 @@ class SourceCandidate(Base):
     __tablename__ = "source_candidates"
 
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    url = Column(String(2000), nullable=False)
-    domain = Column(String(255), nullable=False)
+    url = Column(String(2000), nullable=False, index=True)
+    domain = Column(String(255), nullable=False, index=True)
     title = Column(String(500), nullable=True)
     snippet = Column(Text, nullable=True)
     found_via_query = Column(String(500), nullable=True)
