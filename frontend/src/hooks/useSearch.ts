@@ -63,7 +63,7 @@ export function useSourceCandidates(status?: string, companyId?: string) {
 
   return useQuery({
     queryKey: ['source-candidates', status, companyId],
-    queryFn: () => apiGet<SourceCandidate[]>(`/source-candidates${query ? `?${query}` : ''}`),
+    queryFn: () => apiGet<SourceCandidate[]>(`/source-candidates/${query ? `?${query}` : ''}`),
   });
 }
 
@@ -71,7 +71,7 @@ export function useApproveCandidate() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: ({ id, body }: { id: string; body: SourceCandidateApprove }) =>
-      apiPost<{ status: string; source_id: string }>(`/source-candidates/${id}/approve`, body),
+      apiPost<{ status: string; source_id: string }>(`/source-candidates/${id}/approve/`, body),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['source-candidates'] });
       qc.invalidateQueries({ queryKey: ['sources'] });
@@ -83,7 +83,7 @@ export function useRejectCandidate() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: string) =>
-      apiPost<{ status: string }>(`/source-candidates/${id}/reject`),
+      apiPost<{ status: string }>(`/source-candidates/${id}/reject/`),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['source-candidates'] });
     },
