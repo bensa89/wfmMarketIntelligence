@@ -31,8 +31,8 @@ case "${1:-help}" in
     ;;
 
   rebuild)
-    echo ">> Rebuilding backend container..."
-    docker compose -f "$COMPOSE_FILE" up -d --build backend
+    echo ">> Rebuilding backend + frontend containers..."
+    docker compose -f "$COMPOSE_FILE" up -d --build backend frontend
     docker compose -f "$COMPOSE_FILE" exec backend alembic upgrade head 2>/dev/null || true
     ;;
 
@@ -81,7 +81,7 @@ case "${1:-help}" in
     echo ""
     echo "  up          Start all containers (build + migrate)"
     echo "  down        Stop and remove containers"
-    echo "  rebuild     Rebuild backend only (pick up code/.env changes)"
+    echo "  rebuild     Rebuild backend + frontend (pick up code/.env changes)"
     echo "  migrate     Run Alembic migrations"
     echo "  logs [svc]  Tail logs (default: backend)"
     echo "  test [args]  Run pytest inside backend container"

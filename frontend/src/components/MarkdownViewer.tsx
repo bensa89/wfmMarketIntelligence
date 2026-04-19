@@ -6,7 +6,7 @@ interface MarkdownViewerProps {
 
 export default function MarkdownViewer({ content }: MarkdownViewerProps) {
   return (
-    <div className="prose prose-invert prose-sm max-w-none">
+    <div className="prose prose-sm max-w-none text-slate-800">
       <ReactMarkdown>{content}</ReactMarkdown>
     </div>
   );

@@ -1,3 +1,5 @@
+from datetime import datetime, timezone, timedelta
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session, selectinload
 from typing import List, Optional
@@ -27,11 +29,26 @@ def _to_signal_read(signal: Signal) -> SignalRead:
     )
 
 
+@router.delete("/purge")
+def purge_old_signals(
+    older_than_days: int = 365,
+    db: Session = Depends(get_db),
+):
+    cutoff = datetime.now(timezone.utc) - timedelta(days=older_than_days)
+    old_signals = db.query(Signal).filter(Signal.created_at < cutoff).all()
+    deleted_count = len(old_signals)
+    for signal in old_signals:
+        db.delete(signal)
+    db.commit()
+    return {"deleted_signals": deleted_count, "older_than_days": older_than_days}
+
+
 @router.get("", response_model=List[SignalRead])
 def list_signals(
     company_id: Optional[str] = None,
     signal_type: Optional[SignalType] = None,
     min_relevance: Optional[float] = None,
+    max_age_days: Optional[int] = 365,
     db: Session = Depends(get_db),
 ):
     query = db.query(Signal).options(selectinload(Signal.document))
@@ -41,6 +58,9 @@ def list_signals(
         query = query.filter(Signal.signal_type == signal_type)
     if min_relevance is not None:
         query = query.filter(Signal.relevance_score >= min_relevance)
+    if max_age_days and max_age_days > 0:
+        cutoff = datetime.now(timezone.utc) - timedelta(days=max_age_days)
+        query = query.filter(Signal.created_at >= cutoff)
     signals = query.order_by(Signal.created_at.desc()).all()
     return [_to_signal_read(s) for s in signals]
 

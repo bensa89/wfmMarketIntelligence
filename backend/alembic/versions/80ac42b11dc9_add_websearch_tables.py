@@ -136,7 +136,15 @@ def upgrade() -> None:
     op.create_index(
         op.f("ix_search_results_url"), "search_results", ["url"], unique=False
     )
-    op.add_column("documents", sa.Column("from_search", sa.Boolean(), nullable=False))
+    # Add from_search column with server_default for existing rows
+    op.add_column(
+        "documents",
+        sa.Column(
+            "from_search", sa.Boolean(), nullable=False, server_default=sa.false()
+        ),
+    )
+    # Remove server_default after data is migrated
+    op.alter_column("documents", "from_search", server_default=None)
     # ### end Alembic commands ###
 
 

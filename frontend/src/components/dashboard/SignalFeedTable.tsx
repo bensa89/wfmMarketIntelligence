@@ -7,18 +7,18 @@ interface SignalFeedTableProps {
   signals: Signal[];
   companies: Company[];
   lastCrawl: CrawlRunList | null;
+  onSignalClick?: (signal: Signal) => void;
 }
 
-export default function SignalFeedTable({ signals, companies, lastCrawl }: SignalFeedTableProps) {
+export default function SignalFeedTable({ signals, companies, lastCrawl, onSignalClick }: SignalFeedTableProps) {
   const lastCrawlTime = lastCrawl?.started_at ? new Date(lastCrawl.started_at) : null;
 
   return (
     <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
       <div
         className="grid text-[10px] font-semibold uppercase tracking-wider text-slate-500 px-4 py-2.5 border-b border-slate-200 bg-slate-50"
-        style={{ gridTemplateColumns: '28px minmax(0,2.2fr) minmax(0,1fr) 140px 80px 70px' }}
+        style={{ gridTemplateColumns: 'minmax(0,2.2fr) minmax(0,1fr) 140px 80px 70px' }}
       >
-        <span></span>
         <span>Signal</span>
         <span>Unternehmen</span>
         <span>Typ</span>
@@ -42,20 +42,21 @@ export default function SignalFeedTable({ signals, companies, lastCrawl }: Signa
         return (
           <div
             key={signal.id}
+            onClick={() => onSignalClick?.(signal)}
             className={`grid items-center px-4 py-3 border-b border-slate-100 last:border-b-0 hover:bg-slate-50 cursor-pointer transition-colors ${
               isNew ? 'bg-blue-50/40' : ''
             }`}
-            style={{ gridTemplateColumns: '28px minmax(0,2.2fr) minmax(0,1fr) 140px 80px 70px' }}
+            style={{ gridTemplateColumns: 'minmax(0,2.2fr) minmax(0,1fr) 140px 80px 70px' }}
           >
-            <div>
-              {isNew ? (
-                <span className="text-[9px] font-bold bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded">NEW</span>
-              ) : isUpdated ? (
-                <span className="text-[9px] font-bold bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded">UPD</span>
-              ) : null}
-            </div>
             <div className="min-w-0 pr-2">
-              <p className="text-[12px] font-semibold text-slate-900 truncate">{signal.title}</p>
+              <div className="flex items-center gap-1.5">
+                {isNew ? (
+                  <span className="text-[9px] font-bold bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded shrink-0">NEW</span>
+                ) : isUpdated ? (
+                  <span className="text-[9px] font-bold bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded shrink-0">UPD</span>
+                ) : null}
+                <p className="text-[12px] font-semibold text-slate-900 truncate">{signal.title}</p>
+              </div>
               {signal.why_it_matters && (
                 <p className="text-[10px] text-blue-600 truncate mt-0.5">
                   {signal.why_it_matters}

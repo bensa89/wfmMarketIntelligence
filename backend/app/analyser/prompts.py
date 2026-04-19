@@ -23,6 +23,8 @@ Analyze the following competitor/market content and extract a structured signal.
 CONTENT:
 {markdown[:4000]}
 
+Also consider recency: more recent developments should receive a higher relevance_score than older, stale information.
+
 Respond ONLY with a valid JSON object matching this exact schema:
 {{
   "title": "short descriptive title (max 100 chars)",
@@ -31,7 +33,8 @@ Respond ONLY with a valid JSON object matching this exact schema:
   "summary": "2-3 sentence factual summary of the content",
   "why_it_matters": "1-2 sentences explaining strategic relevance to our company specifically",
   "relevance_score": float between 0.0 (irrelevant) and 1.0 (highly relevant to us),
-  "confidence_score": float between 0.0 (uncertain) and 1.0 (very confident in analysis)
+  "confidence_score": float between 0.0 (uncertain) and 1.0 (very confident in analysis),
+  "published_at": "ISO-8601 date string of when the content was originally published, or null if unknown"
 }}
 
 No markdown fences, no extra text. Only the JSON object."""

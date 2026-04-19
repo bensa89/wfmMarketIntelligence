@@ -1,6 +1,7 @@
 import json
 import re
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Optional
 from app.models.signal import SignalType
 
@@ -14,6 +15,7 @@ class SignalData:
     why_it_matters: Optional[str]
     relevance_score: float
     confidence_score: float
+    published_at: Optional[datetime] = None
 
 
 def parse_llm_response(raw: str) -> SignalData:
@@ -34,6 +36,16 @@ def parse_llm_response(raw: str) -> SignalData:
         except ValueError:
             signal_type = SignalType.other
 
+        published_at = None
+        pub_str = data.get("published_at")
+        if pub_str and isinstance(pub_str, str):
+            for fmt in ("%Y-%m-%d", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%dT%H:%M:%SZ"):
+                try:
+                    published_at = datetime.strptime(pub_str[: len(fmt)], fmt)
+                    break
+                except ValueError:
+                    continue
+
         return SignalData(
             title=str(data.get("title", "Untitled"))[:500],
             signal_type=signal_type,
@@ -42,6 +54,7 @@ def parse_llm_response(raw: str) -> SignalData:
             why_it_matters=data.get("why_it_matters"),
             relevance_score=float(data.get("relevance_score", 0.5)),
             confidence_score=float(data.get("confidence_score", 0.5)),
+            published_at=published_at,
         )
     except Exception:
         return SignalData(
@@ -52,4 +65,5 @@ def parse_llm_response(raw: str) -> SignalData:
             why_it_matters=None,
             relevance_score=0.1,
             confidence_score=0.1,
+            published_at=None,
         )

@@ -40,6 +40,7 @@ def analyse_document(doc: Document, company_id: str, db: Session) -> None:
         why_it_matters=signal_data.why_it_matters,
         relevance_score=signal_data.relevance_score,
         confidence_score=signal_data.confidence_score,
+        published_at=signal_data.published_at or doc.published_at or doc.crawled_at,
     )
     db.add(signal)
 

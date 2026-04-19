@@ -243,7 +243,12 @@ async def _sse_generator(
 
 @router.post("/run")
 def crawl_all_sources(db: Session = Depends(get_db)) -> Dict[str, Any]:
-    active_sources = db.query(Source).filter(Source.is_active == True).all()  # noqa: E712
+    active_sources = (
+        db.query(Source)
+        .filter(Source.is_active == True)  # noqa: E712
+        .order_by(Source.last_crawled_at.asc().nullsfirst())
+        .all()
+    )
     results = []
     for source in active_sources:
         result = run_crawl_source(source, db, analyse=True)
@@ -265,7 +270,12 @@ def crawl_single_source(
 async def stream_all_sources(db: Session = Depends(get_db)) -> StreamingResponse:
     source_ids = [
         s.id
-        for s in db.query(Source).filter(Source.is_active == True).all()  # noqa: E712
+        for s in (
+            db.query(Source)
+            .filter(Source.is_active == True)  # noqa: E712
+            .order_by(Source.last_crawled_at.asc().nullsfirst())
+            .all()
+        )
     ]
     return StreamingResponse(
         _sse_generator(source_ids, db),

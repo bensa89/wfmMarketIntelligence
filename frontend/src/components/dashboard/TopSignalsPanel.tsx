@@ -6,9 +6,10 @@ interface TopSignalsPanelProps {
   signals: Signal[];
   lastCrawl: CrawlRunList | null;
   maxItems?: number;
+  onSignalClick?: (signal: Signal) => void;
 }
 
-export default function TopSignalsPanel({ signals, lastCrawl, maxItems = 5 }: TopSignalsPanelProps) {
+export default function TopSignalsPanel({ signals, lastCrawl, maxItems = 5, onSignalClick }: TopSignalsPanelProps) {
   const lastCrawlTime = lastCrawl?.started_at ? new Date(lastCrawl.started_at) : null;
 
   let displaySignals = signals;
@@ -40,7 +41,8 @@ export default function TopSignalsPanel({ signals, lastCrawl, maxItems = 5 }: To
           return (
             <div
               key={signal.id}
-              className="flex items-center gap-2 px-3 py-2 border-b border-slate-100 last:border-b-0 hover:bg-slate-50 transition-colors"
+              onClick={() => onSignalClick?.(signal)}
+              className="flex items-center gap-2 px-3 py-2 border-b border-slate-100 last:border-b-0 hover:bg-slate-50 cursor-pointer transition-colors"
             >
               {isNew ? (
                 <span className="text-[9px] font-bold bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded shrink-0">NEW</span>

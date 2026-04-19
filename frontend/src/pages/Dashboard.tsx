@@ -8,6 +8,7 @@ import { useActiveCrawlRun } from '../hooks/useActiveCrawlRun';
 import { useSignalsOverTime, useSignalDistribution } from '../hooks/useSignalStats';
 import { useSourceCandidates } from '../hooks/useSourceCandidates';
 import { useDiscoveredPagesStats } from '../hooks/useDiscoveredPages';
+import { useDocument } from '../hooks/useDocuments';
 import DeltaKpiCard from '../components/dashboard/DeltaKpiCard';
 import CrawlSummaryCard from '../components/dashboard/CrawlSummaryCard';
 import TopSignalsPanel from '../components/dashboard/TopSignalsPanel';
@@ -16,8 +17,9 @@ import SignalTypeDistribution from '../components/dashboard/SignalTypeDistributi
 import CompanySignalHeatmap from '../components/dashboard/CompanySignalHeatmap';
 import SignalFeedTable from '../components/dashboard/SignalFeedTable';
 import FilterBar from '../components/FilterBar';
+import MarkdownViewer from '../components/MarkdownViewer';
 import { Play, Loader2 } from 'lucide-react';
-import type { SignalType } from '../types';
+import type { SignalType, Signal } from '../types';
 
 export default function Dashboard() {
   const { data: companies, isLoading: companiesLoading } = useCompanies();
@@ -25,6 +27,7 @@ export default function Dashboard() {
   const [minRelevance, setMinRelevance] = useState(0);
   const [companyId, setCompanyId] = useState('');
   const [onlyNew, setOnlyNew] = useState(false);
+  const [selectedSignal, setSelectedSignal] = useState<Signal | null>(null);
   const { start: startCrawl, isRunning: isCrawlRunning, summary: crawlSummary } = useCrawlStream();
   const { activeRun } = useActiveCrawlRun();
   const { lastCrawl } = useLastCompletedCrawl();
@@ -131,6 +134,7 @@ export default function Dashboard() {
               signals={allSignals ?? []}
               lastCrawl={lastCrawl ?? null}
               maxItems={5}
+              onSignalClick={setSelectedSignal}
             />
             {overTimeData && overTimeData.length > 0 && (
               <SignalsOverTimeChart data={overTimeData} />
@@ -165,9 +169,48 @@ export default function Dashboard() {
                 signals={filteredSignals}
                 companies={companies ?? []}
                 lastCrawl={lastCrawl ?? null}
+                onSignalClick={setSelectedSignal}
               />
             )}
           </div>
+        </div>
+
+        {selectedSignal && (
+          <SignalDocumentModal signal={selectedSignal} onClose={() => setSelectedSignal(null)} />
+        )}
+      </div>
+    </div>
+  );
+}
+
+function SignalDocumentModal({ signal, onClose }: { signal: Signal; onClose: () => void }) {
+  const { data: doc, isLoading } = useDocument(signal.document_id);
+
+  return (
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-8 z-50" onClick={onClose}>
+      <div className="bg-white rounded-xl max-w-3xl w-full max-h-[80vh] overflow-y-auto shadow-2xl" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+          <div className="min-w-0 flex-1 mr-4">
+            <h3 className="font-semibold text-slate-900 truncate">{signal.title}</h3>
+            <p className="text-xs text-slate-500 mt-0.5">
+              {signal.published_at
+                ? new Date(signal.published_at).toLocaleDateString('de-DE')
+                : new Date(signal.created_at).toLocaleDateString('de-DE')}
+              {signal.source_url && (
+                <> · <a href={signal.source_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Quelle</a></>
+              )}
+            </p>
+          </div>
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-700 text-sm font-medium shrink-0">Schließen</button>
+        </div>
+        <div className="px-6 py-4">
+          {isLoading ? (
+            <p className="text-slate-400 text-sm">Dokument wird geladen...</p>
+          ) : doc?.content_markdown ? (
+            <MarkdownViewer content={doc.content_markdown} />
+          ) : (
+            <p className="text-slate-400 text-sm">Kein Dokumentinhalt verfügbar.</p>
+          )}
         </div>
       </div>
     </div>
