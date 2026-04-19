@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Search, CheckCircle, XCircle, ExternalLink, ChevronDown, ChevronRight } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { Search, CheckCircle, XCircle, ExternalLink, ChevronDown, ChevronRight, Filter } from 'lucide-react';
 import {
   useRunSearchAll,
   useSearchRuns,
@@ -8,6 +8,7 @@ import {
   useApproveCandidate,
   useRejectCandidate,
 } from '../hooks/useSearch';
+import { useCompanies } from '../hooks/useCompanies';
 import type { SearchRun, SourceCandidate, SourceType } from '../types';
 
 type Tab = 'runs' | 'candidates';
@@ -28,6 +29,21 @@ function StatusBadge({ status }: { status: string }) {
   return (
     <span className={`text-xs px-2 py-0.5 rounded font-medium ${colors[status] ?? 'bg-gray-700 text-gray-400'}`}>
       {status}
+    </span>
+  );
+}
+
+function RelevanceBadge({ score }: { score: number | null }) {
+  if (score == null) return null;
+  const percentage = Math.round(score * 100);
+  let colorClass = 'bg-gray-700 text-gray-400';
+  if (percentage >= 80) colorClass = 'bg-green-900/40 text-green-400';
+  else if (percentage >= 60) colorClass = 'bg-yellow-900/40 text-yellow-400';
+  else if (percentage >= 40) colorClass = 'bg-orange-900/40 text-orange-400';
+  
+  return (
+    <span className={`text-xs px-2 py-0.5 rounded font-medium ${colorClass}`}>
+      {percentage}%
     </span>
   );
 }
@@ -163,74 +179,175 @@ function ApproveCandidateDialog({
 
 function CandidatesTab() {
   const [statusFilter, setStatusFilter] = useState<string>('candidate');
+  const [minRelevance, setMinRelevance] = useState<number>(0);
   const [approving, setApproving] = useState<SourceCandidate | null>(null);
+  const [expandedCompanies, setExpandedCompanies] = useState<Set<string>>(new Set());
+  
   const { data: candidates, isLoading } = useSourceCandidates(statusFilter || undefined);
+  const { data: companies } = useCompanies();
   const reject = useRejectCandidate();
+
+  // Group candidates by company and sort by relevance
+  const groupedCandidates = useMemo(() => {
+    if (!candidates) return [];
+    
+    // Filter by minimum relevance
+    const filtered = candidates.filter(c => 
+      (c.relevance_score ?? 0) >= minRelevance
+    );
+    
+    // Sort by relevance descending
+    const sorted = [...filtered].sort((a, b) => 
+      (b.relevance_score ?? 0) - (a.relevance_score ?? 0)
+    );
+    
+    // Group by company
+    const groups = new Map<string, { companyName: string; candidates: SourceCandidate[] }>();
+    
+    sorted.forEach(candidate => {
+      const companyId = candidate.company_id ?? 'unknown';
+      const company = companies?.find(c => c.id === companyId);
+      const companyName = company?.name ?? 'Unknown Company';
+      
+      if (!groups.has(companyId)) {
+        groups.set(companyId, { companyName, candidates: [] });
+      }
+      groups.get(companyId)!.candidates.push(candidate);
+    });
+    
+    // Sort groups by company name
+    return Array.from(groups.entries())
+      .sort(([, a], [, b]) => a.companyName.localeCompare(b.companyName));
+  }, [candidates, companies, minRelevance]);
+
+  const toggleCompany = (companyId: string) => {
+    setExpandedCompanies(prev => {
+      const next = new Set(prev);
+      if (next.has(companyId)) {
+        next.delete(companyId);
+      } else {
+        next.add(companyId);
+      }
+      return next;
+    });
+  };
+
+  const totalCount = candidates?.length ?? 0;
+  const filteredCount = groupedCandidates.reduce((sum, [, group]) => sum + group.candidates.length, 0);
 
   return (
     <div>
-      <div className="flex gap-2 mb-4">
-        {['candidate', 'approved', 'rejected', ''].map(s => (
-          <button
-            key={s || 'all'}
-            onClick={() => setStatusFilter(s)}
-            className={`px-3 py-1.5 text-sm rounded transition-colors ${
-              statusFilter === s
-                ? 'bg-dark-accent/20 text-dark-accent border border-dark-accent/40'
-                : 'text-dark-muted hover:text-dark-text border border-dark-border'
-            }`}
+      {/* Filters */}
+      <div className="flex flex-wrap items-center gap-3 mb-4 p-3 bg-dark-bg rounded-lg border border-dark-border">
+        <div className="flex items-center gap-2">
+          <Filter size={16} className="text-dark-muted" />
+          <span className="text-sm text-dark-muted">Filters:</span>
+        </div>
+        
+        {/* Status Filter */}
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-dark-muted">Status:</span>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="px-2 py-1 text-sm bg-dark-card border border-dark-border rounded text-dark-text"
           >
-            {s || 'All'}
-          </button>
-        ))}
+            <option value="candidate">Candidate</option>
+            <option value="monitored">Monitored</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+            <option value="">All</option>
+          </select>
+        </div>
+
+        {/* Relevance Filter */}
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-dark-muted">Min Relevance:</span>
+          <select
+            value={minRelevance}
+            onChange={(e) => setMinRelevance(Number(e.target.value))}
+            className="px-2 py-1 text-sm bg-dark-card border border-dark-border rounded text-dark-text"
+          >
+            <option value={0}>All</option>
+            <option value={0.5}>50%</option>
+            <option value={0.7}>70%</option>
+            <option value={0.9}>90%</option>
+          </select>
+        </div>
+
+        <div className="ml-auto text-xs text-dark-muted">
+          Showing {filteredCount} of {totalCount}
+        </div>
       </div>
 
       {isLoading && <p className="text-dark-muted text-sm">Loading…</p>}
-      {!isLoading && (!candidates || candidates.length === 0) && (
+      {!isLoading && groupedCandidates.length === 0 && (
         <p className="text-dark-muted text-sm">No candidates found.</p>
       )}
 
-      <div className="space-y-2">
-        {candidates?.map(c => (
-          <div key={c.id} className="bg-dark-card border border-dark-border rounded p-4">
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-sm font-medium text-dark-text">{c.domain}</span>
-                  <StatusBadge status={c.status} />
-                  {c.relevance_score != null && (
-                    <span className="text-xs text-dark-muted">
-                      {(c.relevance_score * 100).toFixed(0)}% relevance
-                    </span>
-                  )}
-                </div>
-                {c.title && <p className="text-xs text-dark-muted mb-1">{c.title}</p>}
-                {c.snippet && (
-                  <p className="text-xs text-dark-muted line-clamp-2">{c.snippet}</p>
-                )}
-                {c.found_via_query && (
-                  <p className="text-xs text-dark-muted/60 mt-1">via: {c.found_via_query}</p>
-                )}
-              </div>
-              {c.status === 'candidate' && (
-                <div className="flex gap-2 shrink-0">
-                  <button
-                    onClick={() => setApproving(c)}
-                    className="flex items-center gap-1 px-3 py-1.5 text-xs bg-green-900/30 text-green-400 border border-green-800/50 rounded hover:bg-green-900/50 transition-colors"
-                  >
-                    <CheckCircle size={13} />
-                    Approve
-                  </button>
-                  <button
-                    onClick={() => reject.mutate(c.id)}
-                    className="flex items-center gap-1 px-3 py-1.5 text-xs bg-red-900/30 text-red-400 border border-red-800/50 rounded hover:bg-red-900/50 transition-colors"
-                  >
-                    <XCircle size={13} />
-                    Reject
-                  </button>
-                </div>
+      {/* Grouped Candidates */}
+      <div className="space-y-3">
+        {groupedCandidates.map(([companyId, { companyName, candidates: companyCandidates }]) => (
+          <div key={companyId} className="border border-dark-border rounded-lg overflow-hidden">
+            {/* Company Header */}
+            <button
+              onClick={() => toggleCompany(companyId)}
+              className="w-full flex items-center gap-3 px-4 py-3 bg-dark-bg/50 hover:bg-dark-bg transition-colors text-left"
+            >
+              {expandedCompanies.has(companyId) ? (
+                <ChevronDown size={18} className="text-dark-muted" />
+              ) : (
+                <ChevronRight size={18} className="text-dark-muted" />
               )}
-            </div>
+              <span className="font-medium text-dark-text">{companyName}</span>
+              <span className="text-xs text-dark-muted bg-dark-card px-2 py-0.5 rounded-full">
+                {companyCandidates.length}
+              </span>
+            </button>
+
+            {/* Candidates List */}
+            {expandedCompanies.has(companyId) && (
+              <div className="divide-y divide-dark-border">
+                {companyCandidates.map(c => (
+                  <div key={c.id} className="px-4 py-3 hover:bg-dark-bg/30 transition-colors">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-sm font-medium text-dark-text">{c.domain}</span>
+                          <StatusBadge status={c.status} />
+                          <RelevanceBadge score={c.relevance_score} />
+                        </div>
+                        {c.title && <p className="text-xs text-dark-muted mb-1">{c.title}</p>}
+                        {c.snippet && (
+                          <p className="text-xs text-dark-muted line-clamp-2">{c.snippet}</p>
+                        )}
+                        {c.found_via_query && (
+                          <p className="text-xs text-dark-muted/60 mt-1">via: {c.found_via_query}</p>
+                        )}
+                      </div>
+                      {c.status === 'candidate' && (
+                        <div className="flex gap-2 shrink-0">
+                          <button
+                            onClick={() => setApproving(c)}
+                            className="flex items-center gap-1 px-3 py-1.5 text-xs bg-green-900/30 text-green-400 border border-green-800/50 rounded hover:bg-green-900/50 transition-colors"
+                          >
+                            <CheckCircle size={13} />
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => reject.mutate(c.id)}
+                            className="flex items-center gap-1 px-3 py-1.5 text-xs bg-red-900/30 text-red-400 border border-red-800/50 rounded hover:bg-red-900/50 transition-colors"
+                          >
+                            <XCircle size={13} />
+                            Reject
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         ))}
       </div>
