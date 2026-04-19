@@ -13,6 +13,9 @@ class Settings(BaseSettings):
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "llama3"
     discovery_depth: int = 1
+    tavily_api_key: str = ""
+    search_relevance_threshold: float = 0.5
+    search_queries_per_company: int = 8
 
 
 settings = Settings()
