@@ -4,11 +4,33 @@ import { useSources, useCreateSource, useUpdateSource, useDeleteSource } from '.
 import { useCrawlStream } from '../hooks/useCrawlStream';
 import { CrawlProgressPanel } from '../components/CrawlProgressPanel';
 import { useDiscoveredPages, useToggleDiscoveredPage, useDeleteDiscoveredPage } from '../hooks/useDiscoveredPages';
-import type { CompanyType, SourceType, Source, DiscoveredPage, Company } from '../types';
+import type { CompanyType, SourceType, Source, DiscoveredPage, Company, CrawlStatus } from '../types';
 import { Plus, Play, Trash2, Edit2, X, ChevronDown, ChevronRight } from 'lucide-react';
 import { ApiError } from '../api/client';
 
 const sourceTypes: SourceType[] = ['news', 'blog', 'product', 'press', 'jobs'];
+
+function crawlStatusBadge(status: CrawlStatus) {
+  const styles: Record<CrawlStatus, string> = {
+    new: 'bg-signal-high/20 text-signal-high',
+    changed: 'bg-yellow-500/20 text-yellow-400',
+    known: 'bg-dark-bg text-dark-muted',
+  };
+  return (
+    <span className={`text-xs px-1.5 py-0.5 rounded ${styles[status] ?? ''}`}>
+      {status}
+    </span>
+  );
+}
+
+function DiscoveredPagesSummary({ summary }: { summary: Record<string, number> }) {
+  const parts: string[] = [];
+  if ((summary['new'] ?? 0) > 0) parts.push(`${summary['new']} new`);
+  if ((summary['changed'] ?? 0) > 0) parts.push(`${summary['changed']} changed`);
+  if ((summary['known'] ?? 0) > 0) parts.push(`${summary['known']} known`);
+  if (parts.length === 0) return null;
+  return <span className="text-xs text-dark-muted">{parts.join(' · ')}</span>;
+}
 
 function DiscoveredPagesSection({
   sourceId,
@@ -329,6 +351,7 @@ export default function SourcesAdmin() {
                       <th className="text-left py-2 text-dark-muted font-medium">Label</th>
                       <th className="text-left py-2 text-dark-muted font-medium">Type</th>
                       <th className="text-left py-2 text-dark-muted font-medium">Active</th>
+                      <th className="text-left py-2 text-dark-muted font-medium">Status</th>
                       <th className="text-left py-2 text-dark-muted font-medium">Last Crawled</th>
                       <th className="text-right py-2 text-dark-muted font-medium">Actions</th>
                     </tr>
@@ -337,7 +360,12 @@ export default function SourcesAdmin() {
                     {companySources.map((source) => (
                       <React.Fragment key={source.id}>
                         <tr className="border-b border-dark-border/50">
-                          <td className="py-2 max-w-xs truncate" title={source.url}>{source.url}</td>
+                          <td className="py-2 max-w-xs truncate" title={source.url}>
+                            {source.url}
+                            <div className="mt-0.5">
+                              <DiscoveredPagesSummary summary={source.discovered_pages_summary} />
+                            </div>
+                          </td>
                           <td className="py-2">{source.label || '-'}</td>
                           <td className="py-2">
                             <span className="text-xs px-1.5 py-0.5 rounded bg-dark-bg">{source.source_type}</span>
@@ -349,6 +377,9 @@ export default function SourcesAdmin() {
                             >
                               {source.is_active ? 'Active' : 'Inactive'}
                             </button>
+                          </td>
+                          <td className="py-2">
+                            {crawlStatusBadge(source.crawl_status)}
                           </td>
                           <td className="py-2 text-dark-muted text-xs">
                             {source.last_crawled_at ? new Date(source.last_crawled_at).toLocaleDateString('de-DE') : 'Never'}
@@ -374,7 +405,7 @@ export default function SourcesAdmin() {
                         </tr>
                         {expandedSourceId === source.id && (
                           <tr>
-                            <td colSpan={6} className="bg-dark-bg/50">
+                            <td colSpan={7} className="bg-dark-bg/50">
                               <DiscoveredPagesSection sourceId={source.id} onToggle={(pageId, isActive) => toggleDiscoveredPage.mutate({ pageId, isActive })} onDelete={(pageId, srcId) => deleteDiscoveredPage.mutate({ pageId, sourceId: srcId })} />
                             </td>
                           </tr>
@@ -383,7 +414,7 @@ export default function SourcesAdmin() {
                     ))}
                     {companySources.length === 0 && (
                       <tr>
-                        <td colSpan={6} className="py-2 text-dark-muted text-center">No sources configured</td>
+                        <td colSpan={7} className="py-2 text-dark-muted text-center">No sources configured</td>
                       </tr>
                     )}
                   </tbody>
