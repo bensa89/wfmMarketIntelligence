@@ -25,6 +25,7 @@ export interface CompanyUpdate {
 }
 
 export type SourceType = 'news' | 'blog' | 'product' | 'press' | 'jobs';
+export type CrawlStatus = 'new' | 'known' | 'changed';
 
 export interface Source {
   id: string;
@@ -33,8 +34,12 @@ export interface Source {
   label: string | null;
   source_type: SourceType;
   is_active: boolean;
+  crawl_status: CrawlStatus;
+  content_hash: string | null;
   last_crawled_at: string | null;
+  last_changed_at: string | null;
   created_at: string;
+  discovered_pages_summary: Record<string, number>;
 }
 
 export interface SourceCreate {
