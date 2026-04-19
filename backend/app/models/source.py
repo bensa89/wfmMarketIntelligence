@@ -14,6 +14,12 @@ class SourceType(str, enum.Enum):
     jobs = "jobs"
 
 
+class CrawlStatus(str, enum.Enum):
+    new = "new"
+    known = "known"
+    changed = "changed"
+
+
 class Source(Base):
     __tablename__ = "sources"
 
@@ -23,6 +29,9 @@ class Source(Base):
     label = Column(String(255), nullable=True)
     source_type = Column(SAEnum(SourceType), nullable=False, default=SourceType.news)
     is_active = Column(Boolean, default=True)
+    crawl_status = Column(SAEnum(CrawlStatus), nullable=False, default=CrawlStatus.new)
+    content_hash = Column(String(64), nullable=True)
+    last_changed_at = Column(DateTime, nullable=True)
     last_crawled_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
