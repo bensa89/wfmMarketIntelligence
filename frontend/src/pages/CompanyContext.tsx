@@ -37,7 +37,7 @@ export default function CompanyContext() {
     }
   }, [context, editing]);
 
-  if (isLoading) return <p className="text-dark-muted">Loading context...</p>;
+  if (isLoading) return <p className="text-ink-muted">Loading context...</p>;
   if (!context) return <p className="text-signal-low">Failed to load context.</p>;
 
   const ctx = context;
@@ -69,7 +69,7 @@ export default function CompanyContext() {
   }
 
   return (
-    <div>
+    <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold flex items-center gap-2">
           <Globe size={24} /> Company Context
@@ -91,7 +91,7 @@ export default function CompanyContext() {
       <div className="card mb-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
-            <label className="block text-sm text-dark-muted mb-1">Company Name</label>
+            <label className="block text-sm text-ink-muted mb-1">Company Name</label>
             {editing ? (
               <input
                 value={form.company_name ?? ''}
@@ -99,11 +99,11 @@ export default function CompanyContext() {
                 className="input-field w-full"
               />
             ) : (
-              <p className="text-dark-text">{context.company_name || '—'}</p>
+              <p className="text-ink">{context.company_name || '—'}</p>
             )}
           </div>
           <div>
-            <label className="block text-sm text-dark-muted mb-1">Short Description</label>
+            <label className="block text-sm text-ink-muted mb-1">Short Description</label>
             {editing ? (
               <textarea
                 value={form.short_description ?? ''}
@@ -111,7 +111,7 @@ export default function CompanyContext() {
                 className="input-field w-full h-20"
               />
             ) : (
-              <p className="text-dark-text">{context.short_description || '—'}</p>
+              <p className="text-ink">{context.short_description || '—'}</p>
             )}
           </div>
         </div>
@@ -127,9 +127,9 @@ export default function CompanyContext() {
                 <div>
                   <div className="flex flex-wrap gap-1.5 mb-2">
                     {items.map((item, i) => (
-                      <span key={i} className="text-xs px-2 py-0.5 rounded bg-dark-bg border border-dark-border text-dark-text flex items-center gap-1">
+                      <span key={i} className="text-xs px-2 py-0.5 rounded bg-app-bg border border-app-border text-ink flex items-center gap-1">
                         {item}
-                        <button onClick={() => handleRemoveItem(key, i)} className="text-signal-low hover:text-red-400">×</button>
+                        <button onClick={() => handleRemoveItem(key, i)} className="text-ink-muted hover:text-ink">×</button>
                       </span>
                     ))}
                   </div>
@@ -152,7 +152,7 @@ export default function CompanyContext() {
         })}
       </div>
 
-      <p className="text-xs text-dark-muted mt-4">
+      <p className="text-xs text-ink-muted mt-4">
         Last updated: {new Date(context.updated_at).toLocaleString('de-DE')}
       </p>
     </div>

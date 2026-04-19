@@ -17,19 +17,19 @@ function SourceRow({ state }: { state: SourceCrawlState }) {
   }
 
   return (
-    <div className="flex items-center gap-3 py-1.5 px-4 text-sm border-b border-dark-border/20 last:border-0">
+    <div className="flex items-center gap-3 py-1.5 px-4 text-sm border-b border-app-border/20 last:border-0">
       <span className="w-4 flex-shrink-0 flex items-center justify-center">
         {state.status === 'done' && <Check size={13} className="text-signal-high" />}
         {state.status === 'error' && <AlertCircle size={13} className="text-signal-low" />}
         {state.status === 'running' && (
-          <Loader2 size={13} className="text-dark-accent animate-spin" />
+          <Loader2 size={13} className="text-accent-blue animate-spin" />
         )}
-        {state.status === 'waiting' && <Minus size={13} className="text-dark-muted" />}
+        {state.status === 'waiting' && <Minus size={13} className="text-ink-muted" />}
       </span>
-      <span className="flex-1 text-dark-text truncate" title={state.url}>
+      <span className="flex-1 text-ink truncate" title={state.url}>
         {domain}
       </span>
-      <span className="text-dark-muted text-xs min-w-0 shrink-0">
+      <span className="text-ink-muted text-xs min-w-0 shrink-0">
         {state.status === 'done' && state.result
           ? `${state.result.new_documents} new · ${state.result.skipped} skipped`
           : state.status === 'error'
@@ -73,7 +73,7 @@ export function CrawlProgressPanel({
     ? 'border-signal-low/40'
     : summary
       ? 'border-signal-high/40'
-      : 'border-dark-accent/40';
+      : 'border-accent-blue/40';
 
   const headerText = connectionError
     ? `Connection failed: ${connectionError}`
@@ -85,21 +85,21 @@ export function CrawlProgressPanel({
 
   return (
     <div
-      className={`mb-6 rounded-lg border ${borderColor} bg-dark-card overflow-hidden`}
+      className={`mb-6 rounded-lg border ${borderColor} bg-app-card overflow-hidden`}
     >
-      <div className="flex items-center justify-between px-4 py-2.5 border-b border-dark-border/30">
-        <span className="text-sm font-medium text-dark-text">{headerText}</span>
+      <div className="flex items-center justify-between px-4 py-2.5 border-b border-app-border/30">
+        <span className="text-sm font-medium text-ink">{headerText}</span>
         {isRunning ? (
           <button
             onClick={onCancel}
-            className="text-xs text-dark-muted hover:text-dark-text px-2 py-0.5 rounded"
+            className="text-xs text-ink-muted hover:text-ink px-2 py-0.5 rounded"
           >
             Cancel
           </button>
         ) : (
           <button
             onClick={onDismiss}
-            className="text-dark-muted hover:text-dark-text"
+            className="text-ink-muted hover:text-ink"
             aria-label="Dismiss"
           >
             <X size={16} />
