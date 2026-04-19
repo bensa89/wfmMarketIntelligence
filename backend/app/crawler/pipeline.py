@@ -2,7 +2,7 @@ import logging
 from typing import Callable, Dict, Optional
 from datetime import datetime, timezone
 from sqlalchemy.orm import Session
-from app.models.source import Source
+from app.models.source import Source, CrawlStatus
 from app.models.document import Document
 from app.crawler.fetcher import fetch_url
 from app.crawler.js_fetcher import fetch_url_js
@@ -83,6 +83,7 @@ def run_crawl_source(
     )
     if existing_by_url:
         if existing_by_url.content_hash == extraction.content_hash:
+            source.crawl_status = CrawlStatus.known
             result["skipped"] += 1
         else:
             existing_by_url.title = extraction.title
@@ -91,6 +92,9 @@ def run_crawl_source(
             existing_by_url.content_hash = extraction.content_hash
             existing_by_url.crawled_at = datetime.now(timezone.utc)
             existing_by_url.is_analysed = False
+            source.crawl_status = CrawlStatus.changed
+            source.content_hash = extraction.content_hash
+            source.last_changed_at = datetime.now(timezone.utc)
             db.commit()
             result["skipped"] += 1
 
@@ -122,6 +126,8 @@ def run_crawl_source(
             crawled_at=datetime.now(timezone.utc),
         )
         db.add(doc)
+        source.crawl_status = CrawlStatus.new
+        source.content_hash = extraction.content_hash
         db.commit()
         result["new_documents"] += 1
 
