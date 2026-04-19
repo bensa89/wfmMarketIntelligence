@@ -61,7 +61,7 @@ export function CrawlProgressPanel({
   onCancel,
   onDismiss,
 }: Props) {
-  if (!isRunning && !summary && !connectionError) return null;
+  if (!isRunning && !summary && !connectionError && sourceStates.length === 0) return null;
 
   const doneCount = sourceStates.filter(
     (s) => s.status === 'done' || s.status === 'error',

@@ -175,10 +175,12 @@ export type CrawlStep = 'fetching' | 'extracting' | 'analysing' | 'discovering';
 
 export interface CrawlStartEvent {
   type: 'crawl_start';
+  crawl_run_id: string;
   total: number;
 }
 export interface CrawlSourceStartEvent {
   type: 'source_start';
+  crawl_run_id: string;
   source_id: string;
   url: string;
   index: number;
@@ -186,11 +188,13 @@ export interface CrawlSourceStartEvent {
 }
 export interface CrawlStepEvent {
   type: 'step';
+  crawl_run_id: string;
   source_id: string;
   step: CrawlStep;
 }
 export interface CrawlSourceDoneEvent {
   type: 'source_done';
+  crawl_run_id: string;
   source_id: string;
   new_documents: number;
   skipped: number;
@@ -198,14 +202,28 @@ export interface CrawlSourceDoneEvent {
 }
 export interface CrawlDoneEvent {
   type: 'crawl_done';
+  crawl_run_id: string;
   sources_processed: number;
   total_new: number;
   total_errors: number;
 }
 export interface CrawlErrorEvent {
   type: 'error';
+  crawl_run_id?: string;
   source_id: string | null;
   message: string;
+}
+export interface CrawlInitialStateEvent {
+  type: 'initial_state';
+  crawl_run_id: string;
+  total: number;
+  sources: CrawlRunSourceState[];
+}
+export interface CrawlReconnectCompleteEvent {
+  type: 'reconnect_complete';
+}
+export interface CrawlNoActiveRunEvent {
+  type: 'no_active_run';
 }
 export type CrawlEvent =
   | CrawlStartEvent
@@ -213,7 +231,36 @@ export type CrawlEvent =
   | CrawlStepEvent
   | CrawlSourceDoneEvent
   | CrawlDoneEvent
-  | CrawlErrorEvent;
+  | CrawlErrorEvent
+  | CrawlInitialStateEvent
+  | CrawlReconnectCompleteEvent
+  | CrawlNoActiveRunEvent;
+
+export interface CrawlRunSourceState {
+  source_id: string;
+  url: string;
+  status: 'pending' | 'running' | 'completed' | 'failed' | 'skipped';
+  current_step?: string;
+  new_documents: number;
+  skipped: number;
+  errors: number;
+  error_message?: string;
+}
+
+export interface CrawlRunList {
+  id: string;
+  status: string;
+  started_at: string;
+  finished_at: string | null;
+  total_sources: number;
+  total_new: number;
+  total_skipped: number;
+  total_errors: number;
+}
+
+export interface CrawlRun extends CrawlRunList {
+  sources: CrawlRunSourceState[];
+}
 
 export interface SourceCrawlState {
   source_id: string;
