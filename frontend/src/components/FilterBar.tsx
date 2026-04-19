@@ -11,14 +11,19 @@ interface FilterBarProps {
 }
 
 const signalTypes: { value: SignalType; label: string }[] = [
-  { value: 'product_update', label: 'Product Update' },
-  { value: 'ai_announcement', label: 'AI Announcement' },
-  { value: 'partnership', label: 'Partnership' },
-  { value: 'positioning_change', label: 'Positioning Change' },
-  { value: 'target_market_change', label: 'Market Shift' },
-  { value: 'event_or_thought_leadership', label: 'Thought Leadership' },
-  { value: 'hiring_signal', label: 'Hiring Signal' },
-  { value: 'other', label: 'Other' },
+  { value: 'product_update',              label: 'Product' },
+  { value: 'ai_announcement',             label: 'AI' },
+  { value: 'partnership',                 label: 'Partnership' },
+  { value: 'positioning_change',          label: 'Positioning' },
+  { value: 'target_market_change',        label: 'Market Shift' },
+  { value: 'event_or_thought_leadership', label: 'Events' },
+  { value: 'hiring_signal',               label: 'Hiring' },
+];
+
+const relevanceLevels: { value: number; label: string }[] = [
+  { value: 0,   label: 'Alle' },
+  { value: 0.4, label: '≥ 40%' },
+  { value: 0.7, label: '≥ 70%' },
 ];
 
 export default function FilterBar({
@@ -31,48 +36,66 @@ export default function FilterBar({
   companies,
 }: FilterBarProps) {
   return (
-    <div className="flex flex-wrap items-center gap-3 mb-4">
+    <div className="flex flex-wrap items-center gap-2 mb-4">
+      {/* Company picker */}
       {companies && onCompanyChange && (
         <select
           value={companyId || ''}
           onChange={(e) => onCompanyChange(e.target.value)}
-          className="input-field"
+          className="input-field text-[12px] py-1.5 h-8"
         >
-          <option value="">All Companies</option>
+          <option value="">Alle Unternehmen</option>
           {companies.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
+            <option key={c.id} value={c.id}>{c.name}</option>
           ))}
         </select>
       )}
-      <select
-        value={signalType}
-        onChange={(e) => onSignalTypeChange(e.target.value as SignalType | '')}
-        className="input-field"
+
+      {/* Divider */}
+      {companies && <div className="w-px h-5 bg-app-border" />}
+
+      {/* Signal type pills */}
+      <button
+        onClick={() => onSignalTypeChange('')}
+        className={`px-3 py-1 rounded-lg text-[11px] font-medium border transition-colors ${
+          signalType === ''
+            ? 'bg-accent-blue/10 border-accent-blue/30 text-accent-blue'
+            : 'bg-app-card border-app-border text-ink-secondary hover:bg-app-bg'
+        }`}
       >
-        <option value="">All Types</option>
-        {signalTypes.map((t) => (
-          <option key={t.value} value={t.value}>
-            {t.label}
-          </option>
-        ))}
-      </select>
-      <div className="flex items-center gap-2">
-        <label className="text-sm text-dark-muted">Min Relevance:</label>
-        <input
-          type="range"
-          min={0}
-          max={1}
-          step={0.1}
-          value={minRelevance}
-          onChange={(e) => onMinRelevanceChange(parseFloat(e.target.value))}
-          className="w-24 accent-dark-accent"
-        />
-        <span className="text-sm text-dark-text w-8">
-          {Math.round(minRelevance * 100)}%
-        </span>
-      </div>
+        Alle
+      </button>
+      {signalTypes.map((t) => (
+        <button
+          key={t.value}
+          onClick={() => onSignalTypeChange(signalType === t.value ? '' : t.value)}
+          className={`px-3 py-1 rounded-lg text-[11px] font-medium border transition-colors ${
+            signalType === t.value
+              ? 'bg-accent-blue/10 border-accent-blue/30 text-accent-blue'
+              : 'bg-app-card border-app-border text-ink-secondary hover:bg-app-bg'
+          }`}
+        >
+          {t.label}
+        </button>
+      ))}
+
+      {/* Divider */}
+      <div className="w-px h-5 bg-app-border" />
+
+      {/* Relevance level pills */}
+      {relevanceLevels.map((r) => (
+        <button
+          key={r.value}
+          onClick={() => onMinRelevanceChange(r.value)}
+          className={`px-3 py-1 rounded-lg text-[11px] font-medium border transition-colors ${
+            minRelevance === r.value
+              ? 'bg-signal-high/10 border-signal-high/30 text-signal-high'
+              : 'bg-app-card border-app-border text-ink-secondary hover:bg-app-bg'
+          }`}
+        >
+          {r.label}
+        </button>
+      ))}
     </div>
   );
 }

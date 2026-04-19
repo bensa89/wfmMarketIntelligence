@@ -18,18 +18,21 @@ export default function SignalCard({ signal, showCompany = false, companyName, c
 
   const cardContent = (
     <>
-      <div className="flex items-start justify-between gap-3 mb-2">
+      <div className="flex items-start justify-between gap-3 mb-3">
         <div className="flex-1 min-w-0">
-          <h3 className="text-sm font-semibold text-dark-text truncate">{signal.title}</h3>
-          <div className="flex items-center gap-2 mt-1">
-            <SignalTypeIcon type={signal.signal_type} size={14} />
+          <h3 className="text-[13px] font-semibold text-ink leading-snug mb-1.5">
+            {signal.title}
+          </h3>
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <SignalTypeIcon type={signal.signal_type} variant="chip" />
             {signal.topic && (
-              <span className="text-xs text-dark-muted px-1.5 py-0.5 bg-dark-bg rounded">
+              <span className="text-[10px] text-ink-muted bg-app-bg px-1.5 py-0.5 rounded-md border border-app-border">
                 {signal.topic}
               </span>
             )}
             {signal.from_search && (
-              <span className="text-xs px-1.5 py-0.5 bg-purple-900/40 text-purple-400 rounded">
+              <span className="text-[10px] px-1.5 py-0.5 rounded-md font-semibold"
+                style={{ background: '#f5f3ff', color: '#6d28d9' }}>
                 Search
               </span>
             )}
@@ -37,48 +40,35 @@ export default function SignalCard({ signal, showCompany = false, companyName, c
         </div>
         <RelevanceBadge score={signal.relevance_score} size="sm" />
       </div>
+
       {signal.summary && (
-        <p className="text-sm text-dark-muted line-clamp-2 mb-2">{signal.summary}</p>
-      )}
-      {signal.why_it_matters && (
-        <p className="text-xs text-indigo-300 line-clamp-2 mb-2">
-          <span className="font-medium">Why it matters:</span> {signal.why_it_matters}
+        <p className="text-[12px] text-ink-secondary line-clamp-2 mb-2 leading-relaxed">
+          {signal.summary}
         </p>
       )}
-      <div className="flex items-center justify-between mt-2 text-xs text-dark-muted">
+      {signal.why_it_matters && (
+        <p className="text-[11px] line-clamp-2 mb-2 leading-relaxed"
+          style={{ color: '#2563eb' }}>
+          <span className="font-semibold">Why it matters:</span> {signal.why_it_matters}
+        </p>
+      )}
+
+      <div className="flex items-center justify-between mt-3 text-[11px] text-ink-muted border-t border-app-border pt-2">
         <span>{dateStr}</span>
         {showCompany && companyName && (
-          <span className="text-dark-accent">{companyName}</span>
+          <span className="font-medium text-accent-blue">{companyName}</span>
         )}
       </div>
     </>
   );
 
+  const baseClass = "block w-full text-left bg-app-card border border-app-border rounded-xl p-4 transition-colors hover:border-accent-blue/40 hover:shadow-sm";
+
   if (onClick) {
-    return (
-      <button
-        onClick={onClick}
-        className="card block w-full text-left hover:border-dark-accent/50 transition-colors cursor-pointer"
-      >
-        {cardContent}
-      </button>
-    );
+    return <button onClick={onClick} className={baseClass}>{cardContent}</button>;
   }
-
   if (companySlug) {
-    return (
-      <Link
-        to={`/competitors/${companySlug}`}
-        className="card block hover:border-dark-accent/50 transition-colors"
-      >
-        {cardContent}
-      </Link>
-    );
+    return <Link to={`/competitors/${companySlug}`} className={baseClass}>{cardContent}</Link>;
   }
-
-  return (
-    <div className="card">
-      {cardContent}
-    </div>
-  );
+  return <div className={baseClass}>{cardContent}</div>;
 }
