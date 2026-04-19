@@ -60,6 +60,7 @@ export function useCrawlStream() {
                     ...s,
                     status: event.errors > 0 ? 'error' : 'done',
                     currentStep: undefined,
+                    errorMessage: event.errors > 0 ? s.errorMessage : undefined,
                     result: {
                       new_documents: event.new_documents,
                       skipped: event.skipped,

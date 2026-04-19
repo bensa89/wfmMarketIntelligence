@@ -143,7 +143,7 @@ async def stream_all_sources(db: Session = Depends(get_db)) -> StreamingResponse
     return StreamingResponse(
         _sse_generator(source_ids),
         media_type="text/event-stream",
-        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+        headers={"Cache-Control": "no-cache", "Connection": "keep-alive", "X-Accel-Buffering": "no"},
     )
 
 
@@ -157,5 +157,5 @@ async def stream_single_source(
     return StreamingResponse(
         _sse_generator([source.id]),
         media_type="text/event-stream",
-        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+        headers={"Cache-Control": "no-cache", "Connection": "keep-alive", "X-Accel-Buffering": "no"},
     )
