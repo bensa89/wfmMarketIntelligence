@@ -10,6 +10,7 @@ dist/
 build/
 test.db
 node_modules/
+node-compile-cache/
 .superpowers/
 .worktrees/
 .worktrees/
