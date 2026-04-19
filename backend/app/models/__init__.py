@@ -9,6 +9,13 @@ from app.models.search_query import SearchQuery
 from app.models.search_run import SearchRun, SearchRunStatus
 from app.models.search_result import SearchResult, SearchResultStatus
 from app.models.source_candidate import SourceCandidate, SourceCandidateStatus
+from app.models.crawl_run import (
+    CrawlRun,
+    CrawlRunStatus,
+    CrawlRunSource,
+    CrawlRunSourceStatus,
+    CrawlRunStep,
+)
 
 __all__ = [
     "Company",
@@ -29,4 +36,9 @@ __all__ = [
     "SearchResultStatus",
     "SourceCandidate",
     "SourceCandidateStatus",
+    "CrawlRun",
+    "CrawlRunStatus",
+    "CrawlRunSource",
+    "CrawlRunSourceStatus",
+    "CrawlRunStep",
 ]
