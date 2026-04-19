@@ -71,7 +71,7 @@ def list_source_candidates(
     return q.order_by(SourceCandidate.created_at.desc()).all()
 
 
-@candidates_router.post("/{candidate_id}/approve")
+@candidates_router.post("/{candidate_id}/approve/")
 def approve_source_candidate(
     candidate_id: str,
     body: SourceCandidateApprove,
@@ -98,7 +98,7 @@ def approve_source_candidate(
     return {"status": "approved", "source_id": source.id}
 
 
-@candidates_router.post("/{candidate_id}/reject")
+@candidates_router.post("/{candidate_id}/reject/")
 def reject_source_candidate(
     candidate_id: str,
     db: Session = Depends(get_db),
