@@ -45,6 +45,7 @@ from app.routers import (
     digests,
     context,
     crawl,
+    crawl_runs,
     discovered_pages,
     search,
 )  # noqa: E402
@@ -56,6 +57,7 @@ app.include_router(signals.router, prefix="/api/signals", tags=["signals"])
 app.include_router(digests.router, prefix="/api/digests", tags=["digests"])
 app.include_router(context.router, prefix="/api/context", tags=["context"])
 app.include_router(crawl.router, prefix="/api/crawl", tags=["crawl"])
+app.include_router(crawl_runs.router, prefix="/api/crawl-runs", tags=["crawl-runs"])
 app.include_router(
     discovered_pages.router, prefix="/api/discovered-pages", tags=["discovered-pages"]
 )
