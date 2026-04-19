@@ -23,6 +23,7 @@ def _to_signal_read(signal: Signal) -> SignalRead:
         source_url=signal.document.url if signal.document else None,
         published_at=signal.published_at,
         created_at=signal.created_at,
+        from_search=signal.document.from_search if signal.document else False,
     )
 
 

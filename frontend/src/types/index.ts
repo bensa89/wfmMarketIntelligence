@@ -88,6 +88,7 @@ export interface Signal {
   source_url: string | null;
   published_at: string | null;
   created_at: string;
+  from_search: boolean;
 }
 
 export interface DigestSignal {

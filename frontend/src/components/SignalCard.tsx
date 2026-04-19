@@ -28,6 +28,11 @@ export default function SignalCard({ signal, showCompany = false, companyName, c
                 {signal.topic}
               </span>
             )}
+            {signal.from_search && (
+              <span className="text-xs px-1.5 py-0.5 bg-purple-900/40 text-purple-400 rounded">
+                Search
+              </span>
+            )}
           </div>
         </div>
         <RelevanceBadge score={signal.relevance_score} size="sm" />

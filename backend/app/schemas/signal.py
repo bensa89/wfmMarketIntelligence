@@ -20,3 +20,4 @@ class SignalRead(BaseModel):
     source_url: Optional[str]
     published_at: Optional[datetime]
     created_at: datetime
+    from_search: bool = False
