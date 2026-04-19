@@ -61,6 +61,7 @@ export interface Document {
   crawled_at: string;
   content_hash: string | null;
   is_analysed: boolean;
+  from_search: boolean;
 }
 
 export type SignalType =
@@ -221,4 +222,66 @@ export interface CrawlStreamSummary {
   sources_processed: number;
   total_new: number;
   total_errors: number;
+}
+
+// --- Search / Source Candidates ---
+
+export type SearchRunStatus = 'pending' | 'running' | 'done' | 'error';
+export type SearchResultStatus = 'pending' | 'fetched' | 'skipped' | 'error';
+export type SourceCandidateStatus = 'candidate' | 'approved' | 'rejected' | 'monitored';
+
+export interface SearchQuery {
+  id: string;
+  query_text: string;
+  company_id: string | null;
+  topic: string | null;
+  search_intent: string;
+  generated_at: string;
+}
+
+export interface SearchRun {
+  id: string;
+  search_query_id: string;
+  executed_at: string;
+  status: SearchRunStatus;
+  result_count: number | null;
+  error_message: string | null;
+  query: SearchQuery | null;
+}
+
+export interface SearchResult {
+  id: string;
+  search_run_id: string;
+  title: string | null;
+  url: string;
+  domain: string | null;
+  snippet: string | null;
+  discovered_at: string;
+  relevance_score: number | null;
+  processing_status: SearchResultStatus;
+  linked_document_id: string | null;
+}
+
+export interface SourceCandidate {
+  id: string;
+  url: string;
+  domain: string;
+  title: string | null;
+  snippet: string | null;
+  found_via_query: string | null;
+  company_id: string | null;
+  source_type_guess: SourceType | null;
+  relevance_score: number | null;
+  status: SourceCandidateStatus;
+  created_at: string;
+}
+
+export interface SourceCandidateApprove {
+  label?: string;
+  source_type: SourceType;
+}
+
+export interface SearchRunResult {
+  companies_searched: number;
+  results: unknown[];
 }
