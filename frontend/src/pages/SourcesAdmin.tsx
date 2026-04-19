@@ -119,7 +119,7 @@ function DiscoveredPagesSection({
 
 export default function SourcesAdmin() {
   const { data: companies, isLoading: companiesLoading, error: companiesError, refetch: refetchCompanies } = useCompanies();
-  const { data: sources, isLoading: sourcesLoading, error: sourcesError } = useSources();
+  const { data: sources, isLoading: sourcesLoading } = useSources();
 
   const createCompany = useCreateCompany();
   const createSource = useCreateSource();

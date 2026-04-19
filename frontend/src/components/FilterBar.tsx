@@ -8,6 +8,8 @@ interface FilterBarProps {
   companyId?: string;
   onCompanyChange?: (v: string) => void;
   companies?: { id: string; name: string; type: CompanyType }[];
+  onlyNew?: boolean;
+  onOnlyNewChange?: (v: boolean) => void;
 }
 
 const signalTypes: { value: SignalType; label: string }[] = [
@@ -34,15 +36,16 @@ export default function FilterBar({
   companyId,
   onCompanyChange,
   companies,
+  onlyNew,
+  onOnlyNewChange,
 }: FilterBarProps) {
   return (
     <div className="flex flex-wrap items-center gap-2 mb-4">
-      {/* Company picker */}
       {companies && onCompanyChange && (
         <select
           value={companyId || ''}
           onChange={(e) => onCompanyChange(e.target.value)}
-          className="input-field text-[12px] py-1.5 h-8"
+          className="text-[12px] py-1.5 h-8 bg-white border border-slate-200 rounded-lg px-2 text-slate-600"
         >
           <option value="">Alle Unternehmen</option>
           {companies.map((c) => (
@@ -51,16 +54,14 @@ export default function FilterBar({
         </select>
       )}
 
-      {/* Divider */}
-      {companies && <div className="w-px h-5 bg-app-border" />}
+      {companies && <div className="w-px h-5 bg-slate-200" />}
 
-      {/* Signal type pills */}
       <button
         onClick={() => onSignalTypeChange('')}
         className={`px-3 py-1 rounded-lg text-[11px] font-medium border transition-colors ${
           signalType === ''
-            ? 'bg-accent-blue/10 border-accent-blue/30 text-accent-blue'
-            : 'bg-app-card border-app-border text-ink-secondary hover:bg-app-bg'
+            ? 'bg-blue-100 border-blue-300 text-blue-700'
+            : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
         }`}
       >
         Alle
@@ -71,31 +72,45 @@ export default function FilterBar({
           onClick={() => onSignalTypeChange(signalType === t.value ? '' : t.value)}
           className={`px-3 py-1 rounded-lg text-[11px] font-medium border transition-colors ${
             signalType === t.value
-              ? 'bg-accent-blue/10 border-accent-blue/30 text-accent-blue'
-              : 'bg-app-card border-app-border text-ink-secondary hover:bg-app-bg'
+              ? 'bg-blue-100 border-blue-300 text-blue-700'
+              : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
           }`}
         >
           {t.label}
         </button>
       ))}
 
-      {/* Divider */}
-      <div className="w-px h-5 bg-app-border" />
+      <div className="w-px h-5 bg-slate-200" />
 
-      {/* Relevance level pills */}
       {relevanceLevels.map((r) => (
         <button
           key={r.value}
           onClick={() => onMinRelevanceChange(r.value)}
           className={`px-3 py-1 rounded-lg text-[11px] font-medium border transition-colors ${
             minRelevance === r.value
-              ? 'bg-signal-high/10 border-signal-high/30 text-signal-high'
-              : 'bg-app-card border-app-border text-ink-secondary hover:bg-app-bg'
+              ? 'bg-emerald-100 border-emerald-300 text-emerald-700'
+              : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
           }`}
         >
           {r.label}
         </button>
       ))}
+
+      {onOnlyNewChange && (
+        <>
+          <div className="w-px h-5 bg-slate-200" />
+          <button
+            onClick={() => onOnlyNewChange(!onlyNew)}
+            className={`px-3 py-1 rounded-lg text-[11px] font-medium border transition-colors ${
+              onlyNew
+                ? 'bg-emerald-100 border-emerald-300 text-emerald-700'
+                : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
+            }`}
+          >
+            Nur Neue
+          </button>
+        </>
+      )}
     </div>
   );
 }

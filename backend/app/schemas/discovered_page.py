@@ -22,3 +22,10 @@ class DiscoveredPageRead(BaseModel):
 
 class DiscoveredPageUpdate(BaseModel):
     is_active: bool
+
+
+class DiscoveredPagesStats(BaseModel):
+    total: int
+    new: int
+    changed: int
+    known: int

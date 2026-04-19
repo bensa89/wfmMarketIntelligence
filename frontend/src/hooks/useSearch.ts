@@ -6,7 +6,6 @@ import type {
   SourceCandidate,
   SearchRunResult,
   SourceCandidateApprove,
-  SourceType,
 } from '../types';
 
 export function useRunSearchAll() {

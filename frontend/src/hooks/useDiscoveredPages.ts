@@ -1,12 +1,19 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiGet, apiPatch, apiDelete } from '../api/client';
-import type { DiscoveredPage } from '../types';
+import type { DiscoveredPage, DiscoveredPagesStats } from '../types';
 
 export function useDiscoveredPages(sourceId: string | null) {
   return useQuery<DiscoveredPage[]>({
     queryKey: ['discovered-pages', sourceId],
     queryFn: () => apiGet<DiscoveredPage[]>('/discovered-pages', { source_id: sourceId! }),
     enabled: !!sourceId,
+  });
+}
+
+export function useDiscoveredPagesStats() {
+  return useQuery<DiscoveredPagesStats>({
+    queryKey: ['discoveredPagesStats'],
+    queryFn: () => apiGet<DiscoveredPagesStats>('/discovered-pages/stats'),
   });
 }
 

@@ -56,7 +56,7 @@ export default function SignalTypeIcon({ type, variant = 'chip', size = 14 }: Si
   const { bg, color } = chipStyles[type];
 
   if (variant === 'icon') {
-    return <Icon size={size} style={{ color }} />;
+    return <span style={{ color }}><Icon size={size} /></span>;
   }
 
   return (

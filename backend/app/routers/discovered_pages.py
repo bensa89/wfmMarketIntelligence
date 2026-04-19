@@ -3,9 +3,34 @@ from sqlalchemy.orm import Session
 from typing import List
 from app.database import get_db
 from app.models.discovered_page import DiscoveredPage, DiscoveredPageStatus
-from app.schemas.discovered_page import DiscoveredPageRead, DiscoveredPageUpdate
+from app.schemas.discovered_page import (
+    DiscoveredPageRead,
+    DiscoveredPageUpdate,
+    DiscoveredPagesStats,
+)
 
 router = APIRouter()
+
+
+@router.get("/stats", response_model=DiscoveredPagesStats)
+def discovered_pages_stats(db: Session = Depends(get_db)):
+    total = db.query(DiscoveredPage).count()
+    new = (
+        db.query(DiscoveredPage)
+        .filter(DiscoveredPage.status == DiscoveredPageStatus.new)
+        .count()
+    )
+    changed = (
+        db.query(DiscoveredPage)
+        .filter(DiscoveredPage.status == DiscoveredPageStatus.changed)
+        .count()
+    )
+    known = (
+        db.query(DiscoveredPage)
+        .filter(DiscoveredPage.status == DiscoveredPageStatus.known)
+        .count()
+    )
+    return DiscoveredPagesStats(total=total, new=new, changed=changed, known=known)
 
 
 @router.get("", response_model=List[DiscoveredPageRead])

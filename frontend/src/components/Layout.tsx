@@ -4,7 +4,6 @@ import {
   Users,
   TrendingUp,
   FileText,
-  History,
   Settings,
   Search,
   Globe,

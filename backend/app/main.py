@@ -48,6 +48,7 @@ from app.routers import (
     crawl_runs,
     discovered_pages,
     search,
+    stats,
 )  # noqa: E402
 
 app.include_router(companies.router, prefix="/api/companies", tags=["companies"])
@@ -67,6 +68,7 @@ app.include_router(
     prefix="/api/source-candidates",
     tags=["source-candidates"],
 )
+app.include_router(stats.router, prefix="/api/stats", tags=["stats"])
 
 
 @app.get("/api/health")

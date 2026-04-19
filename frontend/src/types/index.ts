@@ -338,3 +338,36 @@ export interface SearchRunResult {
   companies_searched: number;
   results: unknown[];
 }
+
+// --- Stats ---
+
+export interface SignalOverTimePoint {
+  date: string;
+  company_id: string;
+  company_name: string;
+  count: number;
+}
+
+export interface SignalTypeCount {
+  signal_type: string;
+  count: number;
+}
+
+export interface CompanySignalTypeCount {
+  company_id: string;
+  company_name: string;
+  signal_type: string;
+  count: number;
+}
+
+export interface SignalDistribution {
+  by_type: SignalTypeCount[];
+  by_company_and_type: CompanySignalTypeCount[];
+}
+
+export interface DiscoveredPagesStats {
+  total: number;
+  new: number;
+  changed: number;
+  known: number;
+}
