@@ -4,32 +4,40 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
-  darkMode: 'class',
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Geist', 'system-ui', '-apple-system', 'sans-serif'],
+        mono: ['Geist Mono', 'monospace'],
+      },
       colors: {
-        dark: {
-          bg: '#0f1117',
-          card: '#1a1d2e',
-          border: '#2a2d3e',
-          text: '#e2e8f0',
-          muted: '#94a3b8',
-          accent: '#6366f1',
+        sidebar: {
+          bg:           '#0f172a',
+          text:         'rgba(248,250,252,0.45)',
+          'text-active':'#93c5fd',
+          'active-bg':  'rgba(37,99,235,0.18)',
+          border:       'rgba(255,255,255,0.06)',
+          label:        'rgba(248,250,252,0.20)',
+        },
+        app: {
+          bg:           '#f8f8fa',
+          card:         '#ffffff',
+          border:       '#ececf0',
+          'border-sub': '#f4f4f6',
+        },
+        ink: {
+          DEFAULT: '#09090b',
+          secondary: '#71717a',
+          muted:    '#a1a1aa',
+        },
+        accent: {
+          blue:   '#2563eb',
+          purple: '#7c3aed',
         },
         signal: {
-          high: '#22c55e',
-          medium: '#eab308',
-          low: '#ef4444',
-        },
-        type: {
-          product_update: '#3b82f6',
-          ai_announcement: '#8b5cf6',
-          partnership: '#06b6d4',
-          positioning_change: '#f97316',
-          target_market_change: '#ec4899',
-          event_or_thought_leadership: '#14b8a6',
-          hiring_signal: '#f59e0b',
-          other: '#6b7280',
+          high:   '#10b981',
+          medium: '#f59e0b',
+          low:    '#ef4444',
         },
       },
     },
