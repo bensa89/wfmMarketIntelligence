@@ -8,7 +8,7 @@ export default function WeeklyDigest() {
   const generateDigest = useGenerateDigest();
 
   return (
-    <div>
+    <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold flex items-center gap-2">
           <Calendar size={24} /> Weekly Digest
@@ -30,11 +30,11 @@ export default function WeeklyDigest() {
       )}
 
       {isLoading ? (
-        <p className="text-dark-muted">Loading digests...</p>
+        <p className="text-ink-muted">Loading digests...</p>
       ) : digests?.length === 0 ? (
         <div className="card text-center py-8">
-          <Calendar size={48} className="mx-auto text-dark-muted mb-3" />
-          <p className="text-dark-muted">No digests yet. Generate one to get started.</p>
+          <Calendar size={48} className="mx-auto text-ink-muted mb-3" />
+          <p className="text-ink-muted">No digests yet. Generate one to get started.</p>
         </div>
       ) : (
         <div className="space-y-6">
@@ -44,23 +44,23 @@ export default function WeeklyDigest() {
                 <h2 className="text-lg font-semibold">
                   {digest.week_start} — {digest.week_end}
                 </h2>
-                <span className={`text-xs px-2 py-0.5 rounded ${digest.is_published ? 'bg-signal-high/20 text-signal-high' : 'bg-dark-bg text-dark-muted'}`}>
+                <span className={`text-xs px-2 py-0.5 rounded ${digest.is_published ? 'bg-signal-high/20 text-signal-high' : 'bg-app-bg text-ink-muted'}`}>
                   {digest.is_published ? 'Published' : 'Draft'}
                 </span>
               </div>
               {digest.summary && (
-                <div className="text-sm text-dark-text whitespace-pre-line mb-4">
+                <div className="text-sm text-ink whitespace-pre-line mb-4">
                   {digest.summary}
                 </div>
               )}
               {digest.key_signals.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-medium text-dark-muted mb-2">Key Signals:</h3>
+                  <h3 className="text-sm font-medium text-ink-muted mb-2">Key Signals:</h3>
                   <div className="space-y-2">
                     {digest.key_signals.map((signal) => (
                       <div
                         key={signal.id}
-                        className="flex items-center justify-between bg-dark-bg rounded p-2"
+                        className="flex items-center justify-between bg-app-bg rounded p-2"
                       >
                         <div className="flex items-center gap-2 min-w-0">
                           <SignalTypeIcon type={signal.signal_type} size={14} />
@@ -69,7 +69,7 @@ export default function WeeklyDigest() {
                               href={signal.source_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-sm hover:text-dark-accent transition-colors truncate flex items-center gap-1"
+                              className="text-sm hover:text-accent-blue transition-colors truncate flex items-center gap-1"
                             >
                               {signal.title}
                               <ExternalLink size={12} className="shrink-0 opacity-50" />
@@ -78,7 +78,7 @@ export default function WeeklyDigest() {
                             <span className="text-sm truncate">{signal.title}</span>
                           )}
                           {signal.company_name && (
-                            <span className="text-xs text-dark-muted shrink-0">({signal.company_name})</span>
+                            <span className="text-xs text-ink-muted shrink-0">({signal.company_name})</span>
                           )}
                         </div>
                         <RelevanceBadge score={signal.relevance_score} size="sm" />

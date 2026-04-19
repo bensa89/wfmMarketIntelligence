@@ -26,11 +26,11 @@ export default function MarketTrends() {
   });
 
   return (
-    <div>
+    <div className="p-6">
       <h1 className="text-2xl font-bold mb-2 flex items-center gap-2">
         <TrendingUp size={24} /> Market Trends
       </h1>
-      <p className="text-sm text-dark-muted mb-4">
+      <p className="text-sm text-ink-muted mb-4">
         Signals from market and industry sources
       </p>
 
@@ -45,7 +45,7 @@ export default function MarketTrends() {
       />
 
       {isLoading ? (
-        <p className="text-dark-muted">Loading signals...</p>
+        <p className="text-ink-muted">Loading signals...</p>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {(marketSignals ?? []).map((signal) => {
@@ -61,7 +61,7 @@ export default function MarketTrends() {
             );
           })}
           {marketSignals?.length === 0 && (
-            <p className="text-dark-muted col-span-2">
+            <p className="text-ink-muted col-span-2">
               No market trend signals found. Add market sources and run a crawl.
             </p>
           )}

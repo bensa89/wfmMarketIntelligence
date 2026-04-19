@@ -15,11 +15,11 @@ export default function CompetitorList() {
   }
 
   return (
-    <div>
+    <div className="p-6">
       <h1 className="text-2xl font-bold mb-6">Competitors & Market Sources</h1>
 
       {isLoading ? (
-        <p className="text-dark-muted">Loading...</p>
+        <p className="text-ink-muted">Loading...</p>
       ) : (
         <>
           <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
@@ -30,23 +30,23 @@ export default function CompetitorList() {
               <Link
                 key={c.id}
                 to={`/competitors/${c.slug}`}
-                className="card hover:border-dark-accent/50 transition-colors"
+                className="card hover:border-accent-blue/40 transition-colors"
               >
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="font-semibold">{c.name}</h3>
-                  <span className="text-sm text-dark-accent">{c.slug}</span>
+                  <span className="text-sm text-accent-blue">{c.slug}</span>
                 </div>
                 {c.description && (
-                  <p className="text-sm text-dark-muted line-clamp-2 mb-2">{c.description}</p>
+                  <p className="text-sm text-ink-muted line-clamp-2 mb-2">{c.description}</p>
                 )}
-                <div className="flex items-center gap-1 text-sm text-dark-muted">
+                <div className="flex items-center gap-1 text-sm text-ink-muted">
                   <BarChart3 size={14} />
                   {countSignals(c.id)} signals
                 </div>
               </Link>
             ))}
             {competitors.length === 0 && (
-              <p className="text-dark-muted text-sm">No competitors configured yet.</p>
+              <p className="text-ink-muted text-sm">No competitors configured yet.</p>
             )}
           </div>
 
@@ -58,23 +58,23 @@ export default function CompetitorList() {
               <Link
                 key={c.id}
                 to={`/competitors/${c.slug}`}
-                className="card hover:border-dark-accent/50 transition-colors"
+                className="card hover:border-accent-blue/40 transition-colors"
               >
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="font-semibold">{c.name}</h3>
-                  <span className="text-sm text-dark-accent">{c.slug}</span>
+                  <span className="text-sm text-accent-blue">{c.slug}</span>
                 </div>
                 {c.description && (
-                  <p className="text-sm text-dark-muted line-clamp-2 mb-2">{c.description}</p>
+                  <p className="text-sm text-ink-muted line-clamp-2 mb-2">{c.description}</p>
                 )}
-                <div className="flex items-center gap-1 text-sm text-dark-muted">
+                <div className="flex items-center gap-1 text-sm text-ink-muted">
                   <BarChart3 size={14} />
                   {countSignals(c.id)} signals
                 </div>
               </Link>
             ))}
             {marketSources.length === 0 && (
-              <p className="text-dark-muted text-sm">No market sources configured yet.</p>
+              <p className="text-ink-muted text-sm">No market sources configured yet.</p>
             )}
           </div>
         </>

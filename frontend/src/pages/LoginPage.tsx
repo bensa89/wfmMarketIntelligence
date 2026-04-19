@@ -39,13 +39,13 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-dark-bg flex items-center justify-center">
-      <div className="card w-96">
-        <h1 className="text-xl font-bold mb-1">WFM Intel</h1>
-        <p className="text-sm text-dark-muted mb-6">Market Intelligence Hub</p>
+    <div className="min-h-screen bg-app-bg flex items-center justify-center">
+      <div className="bg-app-card border border-app-border rounded-2xl p-8 w-full max-w-sm shadow-sm">
+        <h1 className="text-[20px] font-bold text-ink mb-1">WFM Intel</h1>
+        <p className="text-sm text-ink-muted mb-6">Market Intelligence Hub</p>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm text-dark-muted mb-1">Username</label>
+            <label className="block text-sm text-ink-muted mb-1">Username</label>
             <input
               type="text"
               value={username}
@@ -55,7 +55,7 @@ export default function LoginPage() {
             />
           </div>
           <div>
-            <label className="block text-sm text-dark-muted mb-1">Password</label>
+            <label className="block text-sm text-ink-muted mb-1">Password</label>
             <input
               type="password"
               value={password}

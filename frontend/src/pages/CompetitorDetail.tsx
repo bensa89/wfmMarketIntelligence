@@ -27,24 +27,24 @@ export default function CompetitorDetail() {
 
   const [selectedDocId, setSelectedDocId] = useState<string | null>(null);
 
-  if (companyLoading) return <p className="text-dark-muted">Loading...</p>;
-  if (!company) return <p className="text-signal-low">Company not found.</p>;
+  if (companyLoading) return <p className="text-ink-muted p-6">Loading...</p>;
+  if (!company) return <p className="text-signal-low p-6">Company not found.</p>;
 
   return (
-    <div>
-      <Link to="/competitors" className="text-sm text-dark-accent hover:underline flex items-center gap-1 mb-4">
+    <div className="p-6">
+      <Link to="/competitors" className="text-sm text-accent-blue hover:underline flex items-center gap-1 mb-4">
         <ArrowLeft size={14} /> Back to list
       </Link>
       <div className="flex items-center justify-between mb-4">
         <div>
           <h1 className="text-2xl font-bold">{company.name}</h1>
-          <p className="text-sm text-dark-muted">
+          <p className="text-sm text-ink-muted">
             {company.type === 'competitor' ? 'Competitor' : 'Market Source'}
             {company.website && ` · ${company.website}`}
           </p>
         </div>
         {company.description && (
-          <p className="text-sm text-dark-muted max-w-md">{company.description}</p>
+          <p className="text-sm text-ink-muted max-w-md">{company.description}</p>
         )}
       </div>
       <FilterBar
@@ -54,7 +54,7 @@ export default function CompetitorDetail() {
         onMinRelevanceChange={setMinRelevance}
       />
       {signalsLoading ? (
-        <p className="text-dark-muted">Loading signals...</p>
+        <p className="text-ink-muted">Loading signals...</p>
       ) : (
         <div className="space-y-4">
           {signals?.map((signal) => (
@@ -65,7 +65,7 @@ export default function CompetitorDetail() {
             />
           ))}
           {signals?.length === 0 && (
-            <p className="text-dark-muted">No signals found for this company.</p>
+            <p className="text-ink-muted">No signals found for this company.</p>
           )}
         </div>
       )}
@@ -74,7 +74,7 @@ export default function CompetitorDetail() {
           <div className="card max-w-3xl w-full max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold">Source Document</h3>
-              <button onClick={() => setSelectedDocId(null)} className="text-dark-muted hover:text-dark-text">Close</button>
+              <button onClick={() => setSelectedDocId(null)} className="text-ink-muted hover:text-ink">Close</button>
             </div>
             <DocumentViewer documentId={selectedDocId} />
           </div>
@@ -86,20 +86,20 @@ export default function CompetitorDetail() {
 
 function DocumentViewer({ documentId }: { documentId: string }) {
   const { data: doc, isLoading } = useDocument(documentId);
-  if (isLoading) return <p className="text-dark-muted">Loading document...</p>;
+  if (isLoading) return <p className="text-ink-muted">Loading document...</p>;
   if (!doc) return <p className="text-signal-low">Document not found.</p>;
 
   return (
     <div>
       <h4 className="font-medium mb-2">{doc.title || 'Untitled'}</h4>
-      <p className="text-xs text-dark-muted mb-4">
+      <p className="text-xs text-ink-muted mb-4">
         Crawled: {new Date(doc.crawled_at).toLocaleDateString('de-DE')} ·{' '}
-        <a href={doc.url} target="_blank" rel="noopener noreferrer" className="text-dark-accent hover:underline">Original URL</a>
+        <a href={doc.url} target="_blank" rel="noopener noreferrer" className="text-accent-blue hover:underline">Original URL</a>
       </p>
       {doc.content_markdown ? (
         <MarkdownViewer content={doc.content_markdown} />
       ) : (
-        <p className="text-dark-muted">No markdown content available.</p>
+        <p className="text-ink-muted">No markdown content available.</p>
       )}
     </div>
   );
