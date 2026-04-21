@@ -1,7 +1,9 @@
 import pytest
+from datetime import datetime
 from unittest.mock import patch, MagicMock
 from app.crawler.fetcher import fetch_url, FetchResult
-from app.crawler.extractor import extract_content, ExtractionResult
+from app.crawler.extractor import extract_content, ExtractionResult, _extract_published_at
+from bs4 import BeautifulSoup
 
 
 def test_fetch_url_returns_html_on_success():
@@ -461,3 +463,54 @@ def test_run_crawl_source_analyses_article_page(db_session):
 
     assert result["new_documents"] == 1
     mock_analyse.assert_called_once()
+
+
+def test_extract_published_at_from_json_ld():
+    html = """<html><head>
+    <script type="application/ld+json">
+    {"@type": "Article", "datePublished": "2024-03-15T10:00:00+01:00"}
+    </script>
+    </head><body><p>content</p></body></html>"""
+    soup = BeautifulSoup(html, "html.parser")
+    result = _extract_published_at(soup)
+    assert result == datetime(2024, 3, 15, 9, 0, 0)  # UTC, naive
+
+
+def test_extract_published_at_from_og_meta():
+    html = """<html><head>
+    <meta property="article:published_time" content="2024-06-01T08:30:00Z"/>
+    </head><body><p>content</p></body></html>"""
+    soup = BeautifulSoup(html, "html.parser")
+    result = _extract_published_at(soup)
+    assert result == datetime(2024, 6, 1, 8, 30, 0)
+
+
+def test_extract_published_at_from_time_element():
+    html = """<html><body>
+    <article><time datetime="2024-09-20">September 20</time><p>body text</p></article>
+    </body></html>"""
+    soup = BeautifulSoup(html, "html.parser")
+    result = _extract_published_at(soup)
+    assert result == datetime(2024, 9, 20)
+
+
+def test_extract_published_at_returns_none_when_no_date():
+    html = "<html><body><p>No date here</p></body></html>"
+    soup = BeautifulSoup(html, "html.parser")
+    result = _extract_published_at(soup)
+    assert result is None
+
+
+def test_extract_content_sets_published_at():
+    html = """<html><head>
+    <meta property="article:published_time" content="2025-01-10"/>
+    <title>Test Article</title>
+    </head><body><main><p>Article body text here</p></main></body></html>"""
+    result = extract_content(html, url="https://example.com/article")
+    assert result.published_at == datetime(2025, 1, 10)
+
+
+def test_extract_content_published_at_none_when_missing():
+    html = "<html><head><title>T</title></head><body><p>text</p></body></html>"
+    result = extract_content(html)
+    assert result.published_at is None
