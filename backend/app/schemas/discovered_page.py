@@ -18,6 +18,7 @@ class DiscoveredPageRead(BaseModel):
     discovered_at: datetime
     last_crawled_at: Optional[datetime]
     last_changed_at: Optional[datetime]
+    last_signal_relevance: Optional[float] = None
 
 
 class DiscoveredPageUpdate(BaseModel):

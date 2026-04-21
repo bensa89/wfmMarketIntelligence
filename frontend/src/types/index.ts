@@ -169,6 +169,7 @@ export interface DiscoveredPage {
   discovered_at: string;
   last_crawled_at: string | null;
   last_changed_at: string | null;
+  last_signal_relevance: number | null;
 }
 
 export type CrawlStep = 'fetching' | 'extracting' | 'analysing' | 'discovering';

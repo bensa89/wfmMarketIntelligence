@@ -7,6 +7,7 @@ from sqlalchemy import (
     Integer,
     Boolean,
     DateTime,
+    Float,
     ForeignKey,
     Enum as SAEnum,
 )
@@ -37,5 +38,6 @@ class DiscoveredPage(Base):
     discovered_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     last_crawled_at = Column(DateTime, nullable=True)
     last_changed_at = Column(DateTime, nullable=True)
+    last_signal_relevance = Column(Float, nullable=True)
 
     source = relationship("Source", back_populates="discovered_pages")
