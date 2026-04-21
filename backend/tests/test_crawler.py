@@ -376,3 +376,88 @@ def test_run_crawl_source_sets_crawl_status_changed_on_content_change(db_session
     # Verify the pipeline runs and sets status to 'new' on first crawl
     assert source.crawl_status == CrawlStatus.new
     assert source.content_hash is not None
+
+
+def test_run_crawl_source_skips_analysis_on_non_article_page(db_session):
+    from app.models.company import Company, CompanyType
+    from app.models.source import Source, SourceType
+    from app.models.document import Document
+    from app.crawler.pipeline import run_crawl_source
+
+    company = Company(name="ATOSS", slug="atoss-noart", type=CompanyType.competitor)
+    db_session.add(company)
+    db_session.commit()
+    source = Source(
+        company_id=company.id,
+        url="https://atoss.com/noart",
+        source_type=SourceType.news,
+    )
+    db_session.add(source)
+    db_session.commit()
+
+    nav_html = """<html><head><title>Overview</title></head><body>
+        <nav><a href="/link1">Link1</a><a href="/link2">Link2</a></nav>
+        <main><p>Short teaser</p></main>
+    </body></html>"""
+
+    mock_fetch = MagicMock(
+        return_value=MagicMock(
+            html=nav_html, final_url="https://atoss.com/noart", status_code=200
+        )
+    )
+
+    with (
+        patch("app.crawler.pipeline.fetch_url", mock_fetch),
+        patch(
+            "app.crawler.pipeline.discover_and_crawl",
+            return_value={"discovered": 0, "new": 0, "changed": 0, "known": 0},
+        ),
+        patch("app.crawler.pipeline._is_article_content", return_value=False),
+        patch("app.analyser.pipeline.analyse_document") as mock_analyse,
+    ):
+        result = run_crawl_source(source, db_session, analyse=True)
+
+    assert result["new_documents"] == 1
+    assert db_session.query(Document).count() == 1
+    mock_analyse.assert_not_called()
+
+
+def test_run_crawl_source_analyses_article_page(db_session):
+    from app.models.company import Company, CompanyType
+    from app.models.source import Source, SourceType
+    from app.crawler.pipeline import run_crawl_source
+
+    company = Company(name="ATOSS", slug="atoss-art", type=CompanyType.competitor)
+    db_session.add(company)
+    db_session.commit()
+    source = Source(
+        company_id=company.id,
+        url="https://atoss.com/art",
+        source_type=SourceType.news,
+    )
+    db_session.add(source)
+    db_session.commit()
+
+    article_html = """<html><head><title>Article</title></head><body>
+        <main><p>This is a real article with enough content to be considered substantive for analysis purposes and contains detailed information.</p></main>
+    </body></html>"""
+
+    mock_fetch = MagicMock(
+        return_value=MagicMock(
+            html=article_html, final_url="https://atoss.com/art", status_code=200
+        )
+    )
+
+    with (
+        patch("app.crawler.pipeline.fetch_url", mock_fetch),
+        patch(
+            "app.crawler.pipeline.discover_and_crawl",
+            return_value={"discovered": 0, "new": 0, "changed": 0, "known": 0},
+        ),
+        patch("app.crawler.pipeline._is_article_content", return_value=True),
+        patch("app.analyser.pipeline.analyse_document") as mock_analyse,
+    ):
+        result = run_crawl_source(source, db_session, analyse=True)
+
+    assert result["new_documents"] == 1
+    mock_analyse.assert_called_once()

@@ -7,7 +7,11 @@ from app.models.document import Document
 from app.crawler.fetcher import fetch_url
 from app.crawler.js_fetcher import fetch_url_js
 from app.crawler.extractor import extract_content
-from app.crawler.discovery import discover_and_crawl, _extract_internal_links
+from app.crawler.discovery import (
+    discover_and_crawl,
+    _extract_internal_links,
+    _is_article_content,
+)
 from app.config import settings
 
 logger = logging.getLogger(__name__)
@@ -98,7 +102,7 @@ def run_crawl_source(
             db.commit()
             result["skipped"] += 1
 
-            if analyse:
+            if analyse and _is_article_content(fetch_result.html):
                 from app.analyser.pipeline import analyse_document
 
                 db.refresh(existing_by_url)
@@ -131,7 +135,7 @@ def run_crawl_source(
         db.commit()
         result["new_documents"] += 1
 
-        if analyse:
+        if analyse and _is_article_content(fetch_result.html):
             from app.analyser.pipeline import analyse_document
 
             db.refresh(doc)
