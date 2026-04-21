@@ -32,7 +32,11 @@ The trigger builds the search vector from these fields with PostgreSQL weights:
 
 The trigger function uses `setweight(to_tsvector('german', unaccent(COALESCE(field, ''))), weight)` and concatenates all with `||`.
 
-Since `document.url` and `document.title` live on the `documents` table, the trigger must join to `documents` to access those fields. The trigger fires on signal INSERT or UPDATE, looking up the related document.
+Since `document.url` and `document.title` live on the `documents` table, the trigger performs a `SELECT url, title FROM documents WHERE id = NEW.document_id` to access those fields. The trigger fires on signal INSERT or UPDATE, looking up the related document.
+
+### Text Search Configuration Language
+
+Using `'german'` as the FTS configuration since the UI is in German and most competitor content is German-language. If the content mix shifts to primarily English, this should be changed to `'english'`. The `unaccent` extension handles Umlaut normalization regardless of language config.
 
 ### Initial Backfill
 
