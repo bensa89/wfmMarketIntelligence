@@ -3,8 +3,10 @@ export function formatPublishedAt(publishedAt: string | null): {
   isUnknown: boolean;
 } {
   if (!publishedAt) return { label: 'Datum unbekannt', isUnknown: true };
+  const date = new Date(publishedAt);
+  if (isNaN(date.getTime())) return { label: 'Datum unbekannt', isUnknown: true };
   return {
-    label: new Date(publishedAt).toLocaleDateString('de-DE'),
+    label: date.toLocaleDateString('de-DE'),
     isUnknown: false,
   };
 }
