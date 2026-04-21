@@ -96,6 +96,8 @@ def run_crawl_source(
             existing_by_url.content_hash = extraction.content_hash
             existing_by_url.crawled_at = datetime.now(timezone.utc)
             existing_by_url.is_analysed = False
+            if extraction.published_at and not existing_by_url.published_at:
+                existing_by_url.published_at = extraction.published_at
             source.crawl_status = CrawlStatus.changed
             source.content_hash = extraction.content_hash
             source.last_changed_at = datetime.now(timezone.utc)
@@ -128,6 +130,7 @@ def run_crawl_source(
             content_raw_html=fetch_result.html.replace("\x00", ""),
             content_hash=extraction.content_hash,
             crawled_at=datetime.now(timezone.utc),
+            published_at=extraction.published_at,
         )
         db.add(doc)
         source.crawl_status = CrawlStatus.new
