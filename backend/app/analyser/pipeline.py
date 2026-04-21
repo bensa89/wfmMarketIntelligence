@@ -11,6 +11,12 @@ def analyse_document(doc: Document, company_id: str, db: Session) -> None:
     if not doc.content_markdown:
         return
 
+    existing_signal = db.query(Signal).filter(Signal.document_id == doc.id).first()
+    if existing_signal:
+        doc.is_analysed = True
+        db.commit()
+        return
+
     ctx_record = db.query(InternalCompanyContext).first()
     context = {}
     if ctx_record:

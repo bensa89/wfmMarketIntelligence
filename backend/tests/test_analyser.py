@@ -112,3 +112,50 @@ def test_analyse_document_creates_signal(db_session):
     assert signal is not None
     assert signal.document_id == doc.id
     assert doc.is_analysed is True
+
+
+def test_analyse_document_skips_if_signal_already_exists(db_session):
+    from app.models.company import Company, CompanyType
+    from app.models.source import Source, SourceType
+    from app.models.document import Document
+    from app.models.signal import Signal, SignalType
+    from app.analyser.pipeline import analyse_document
+
+    company = Company(name="ATOSS", slug="atoss-dedup", type=CompanyType.competitor)
+    db_session.add(company)
+    db_session.commit()
+    source = Source(
+        company_id=company.id,
+        url="https://atoss.com/dedup",
+        source_type=SourceType.news,
+    )
+    db_session.add(source)
+    db_session.commit()
+    doc = Document(
+        source_id=source.id,
+        url="https://atoss.com/dedup/1",
+        content_markdown="## AI Feature",
+        content_hash="h_dedup",
+    )
+    db_session.add(doc)
+    db_session.commit()
+
+    existing_signal = Signal(
+        document_id=doc.id,
+        company_id=company.id,
+        title="Existing Signal",
+        signal_type=SignalType.ai_announcement,
+        relevance_score=0.8,
+    )
+    db_session.add(existing_signal)
+    db_session.commit()
+
+    with patch(
+        "app.analyser.pipeline.call_llm",
+        return_value='{"title":"Duplicate","signal_type":"ai_announcement","topic":"AI","summary":"Dup.","why_it_matters":"Dup.","relevance_score":0.7,"confidence_score":0.7}',
+    ):
+        analyse_document(doc, company.id, db_session)
+
+    assert db_session.query(Signal).count() == 1
+    assert db_session.query(Signal).first().title == "Existing Signal"
+    assert doc.is_analysed is True
