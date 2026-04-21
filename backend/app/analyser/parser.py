@@ -18,7 +18,27 @@ class SignalData:
     published_at: Optional[datetime] = None
 
 
-def parse_llm_response(raw: str) -> SignalData:
+_UNABLE_TO_ANALYZE_PATTERNS = [
+    "unable to analyze",
+    "no content provided",
+    "cannot analyze",
+    "not enough content",
+    "insufficient content",
+    "no meaningful content",
+    "content is empty",
+    "no content to analyze",
+]
+
+
+def _is_unable_to_analyze(raw: str) -> bool:
+    lower = raw.lower()
+    return any(pattern in lower for pattern in _UNABLE_TO_ANALYZE_PATTERNS)
+
+
+def parse_llm_response(raw: str) -> Optional[SignalData]:
+    if _is_unable_to_analyze(raw):
+        return None
+
     try:
         json_match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", raw, re.DOTALL)
         if json_match:
@@ -30,6 +50,10 @@ def parse_llm_response(raw: str) -> SignalData:
 
         data = json.loads(raw)
 
+        title = str(data.get("title", "Untitled"))[:500]
+        if any(p in title.lower() for p in _UNABLE_TO_ANALYZE_PATTERNS):
+            return None
+
         signal_type_str = data.get("signal_type", "other")
         try:
             signal_type = SignalType(signal_type_str)
@@ -39,15 +63,20 @@ def parse_llm_response(raw: str) -> SignalData:
         published_at = None
         pub_str = data.get("published_at")
         if pub_str and isinstance(pub_str, str):
-            for fmt in ("%Y-%m-%d", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%dT%H:%M:%SZ"):
+            _DATE_FORMATS = [
+                ("%Y-%m-%dT%H:%M:%SZ", 20),
+                ("%Y-%m-%dT%H:%M:%S", 19),
+                ("%Y-%m-%d", 10),
+            ]
+            for fmt, length in _DATE_FORMATS:
                 try:
-                    published_at = datetime.strptime(pub_str[: len(fmt)], fmt)
+                    published_at = datetime.strptime(pub_str[:length], fmt)
                     break
                 except ValueError:
                     continue
 
         return SignalData(
-            title=str(data.get("title", "Untitled"))[:500],
+            title=title,
             signal_type=signal_type,
             topic=data.get("topic"),
             summary=data.get("summary"),
@@ -57,13 +86,4 @@ def parse_llm_response(raw: str) -> SignalData:
             published_at=published_at,
         )
     except Exception:
-        return SignalData(
-            title="Parse error",
-            signal_type=SignalType.other,
-            topic=None,
-            summary=None,
-            why_it_matters=None,
-            relevance_score=0.1,
-            confidence_score=0.1,
-            published_at=None,
-        )
+        return None
