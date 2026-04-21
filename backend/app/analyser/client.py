@@ -1,19 +1,19 @@
 from app.config import settings
 
 
-def call_llm(prompt: str) -> str:
+def call_llm(prompt: str, max_tokens: int = 1024) -> str:
     if settings.llm_provider == "ollama":
         return _call_ollama(prompt)
-    return _call_claude(prompt)
+    return _call_claude(prompt, max_tokens=max_tokens)
 
 
-def _call_claude(prompt: str) -> str:
+def _call_claude(prompt: str, max_tokens: int = 1024) -> str:
     import anthropic
 
     client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
     message = client.messages.create(
         model=settings.claude_model,
-        max_tokens=1024,
+        max_tokens=max_tokens,
         messages=[{"role": "user", "content": prompt}],
     )
     return message.content[0].text
