@@ -276,6 +276,8 @@ def _save_and_analyse(source, fetch_result, extraction, now, db):
         existing_doc.content_raw_html = fetch_result.html.replace("\x00", "")
         existing_doc.crawled_at = now
         existing_doc.is_analysed = False
+        if extraction.published_at and not existing_doc.published_at:
+            existing_doc.published_at = extraction.published_at
         db.commit()
         db.refresh(existing_doc)
         analyse_document(existing_doc, source.company_id, db)
@@ -288,6 +290,7 @@ def _save_and_analyse(source, fetch_result, extraction, now, db):
             content_raw_html=fetch_result.html.replace("\x00", ""),
             content_hash=extraction.content_hash,
             crawled_at=now,
+            published_at=extraction.published_at,
         )
         db.add(doc)
         db.commit()
