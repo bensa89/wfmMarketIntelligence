@@ -57,6 +57,24 @@ function DiscoveredPagesSection({
     );
   };
 
+  const relevanceBadge = (score: number | null) => {
+    if (score === null || score === undefined) {
+      return <span className="text-xs text-ink-muted">—</span>;
+    }
+    const isRelevant = score >= 0.3;
+    return (
+      <span
+        className={`text-xs px-1.5 py-0.5 rounded font-medium ${
+          isRelevant
+            ? 'bg-emerald-100 text-emerald-700'
+            : 'bg-red-100 text-red-600'
+        }`}
+      >
+        {score.toFixed(2)}
+      </span>
+    );
+  };
+
   if (isLoading) return <p className="text-xs text-ink-muted py-2 px-4">Loading…</p>;
   if (!pages || pages.length === 0)
     return <p className="text-xs text-ink-muted py-2 px-4">No pages discovered yet.</p>;
@@ -67,6 +85,7 @@ function DiscoveredPagesSection({
         <tr className="border-b border-app-border/30">
           <th className="text-left py-1 px-4 text-ink-muted font-medium">Discovered URL</th>
           <th className="text-left py-1 text-ink-muted font-medium">Status</th>
+          <th className="text-left py-1 text-ink-muted font-medium">Relevanz</th>
           <th className="text-left py-1 text-ink-muted font-medium">Depth</th>
           <th className="text-left py-1 text-ink-muted font-medium">Last Changed</th>
           <th className="text-left py-1 text-ink-muted font-medium">Active</th>
@@ -83,6 +102,7 @@ function DiscoveredPagesSection({
               {page.url}
             </td>
             <td className="py-1">{statusBadge(page.status)}</td>
+            <td className="py-1">{relevanceBadge(page.last_signal_relevance)}</td>
             <td className="py-1 text-ink-muted">{page.depth}</td>
             <td className="py-1 text-ink-muted">
               {page.last_changed_at
@@ -98,7 +118,12 @@ function DiscoveredPagesSection({
                     : 'bg-app-bg text-ink-muted'
                 }`}
               >
-                {page.is_active ? 'Active' : 'Ignored'}
+                {page.is_active
+                  ? 'Active'
+                  : page.last_signal_relevance !== null &&
+                    page.last_signal_relevance < 0.3
+                  ? 'Auto-ignoriert'
+                  : 'Ignoriert'}
               </button>
             </td>
             <td className="py-1">
