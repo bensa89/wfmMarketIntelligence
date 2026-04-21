@@ -21,6 +21,7 @@ import MarkdownViewer from '../components/MarkdownViewer';
 import BriefingPanel from '../components/dashboard/BriefingPanel';
 import { Play, Loader2 } from 'lucide-react';
 import type { SignalType, Signal } from '../types';
+import { formatPublishedAt } from '../utils/dates';
 
 export default function Dashboard() {
   const { data: companies, isLoading: companiesLoading } = useCompanies();
@@ -197,12 +198,18 @@ function SignalDocumentModal({ signal, onClose }: { signal: Signal; onClose: () 
           <div className="min-w-0 flex-1 mr-4">
             <h3 className="font-semibold text-slate-900 truncate">{signal.title}</h3>
             <p className="text-xs text-slate-500 mt-0.5">
-              {signal.published_at
-                ? new Date(signal.published_at).toLocaleDateString('de-DE')
-                : new Date(signal.created_at).toLocaleDateString('de-DE')}
+              {(() => {
+                const { label, isUnknown } = formatPublishedAt(signal.published_at);
+                return (
+                  <span className={isUnknown ? 'italic text-slate-300' : ''}>{label}</span>
+                );
+              })()}
               {signal.source_url && (
                 <> · <a href={signal.source_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Quelle</a></>
               )}
+            </p>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Erfasst: {new Date(signal.created_at).toLocaleDateString('de-DE')}
             </p>
           </div>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-700 text-sm font-medium shrink-0">Schließen</button>

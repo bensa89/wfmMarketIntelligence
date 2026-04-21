@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import type { Signal } from '../types';
 import RelevanceBadge from './RelevanceBadge';
 import SignalTypeIcon from './SignalTypeIcon';
+import { formatPublishedAt } from '../utils/dates';
 
 interface SignalCardProps {
   signal: Signal;
@@ -12,9 +13,7 @@ interface SignalCardProps {
 }
 
 export default function SignalCard({ signal, showCompany = false, companyName, companySlug, onClick }: SignalCardProps) {
-  const dateStr = signal.published_at
-    ? new Date(signal.published_at).toLocaleDateString('de-DE')
-    : new Date(signal.created_at).toLocaleDateString('de-DE');
+  const { label: dateLabel, isUnknown: dateUnknown } = formatPublishedAt(signal.published_at);
 
   const cardContent = (
     <>
@@ -54,7 +53,9 @@ export default function SignalCard({ signal, showCompany = false, companyName, c
       )}
 
       <div className="flex items-center justify-between mt-3 text-[11px] text-ink-muted border-t border-app-border pt-2">
-        <span>{dateStr}</span>
+        <span className={dateUnknown ? 'italic text-ink-muted/60' : ''}>
+          {dateLabel}
+        </span>
         {showCompany && companyName && (
           <span className="font-medium text-accent-blue">{companyName}</span>
         )}

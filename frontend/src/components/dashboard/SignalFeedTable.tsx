@@ -2,6 +2,7 @@ import type { Signal, CrawlRunList, Company } from '../../types';
 import SignalTypeIcon from '../SignalTypeIcon';
 import RelevanceBadge from '../RelevanceBadge';
 import { getCompanyColor } from './CompanyColorMap';
+import { formatPublishedAt } from '../../utils/dates';
 
 interface SignalFeedTableProps {
   signals: Signal[];
@@ -32,9 +33,7 @@ export default function SignalFeedTable({ signals, companies, lastCrawl, onSigna
 
       {signals.map((signal) => {
         const company = companies.find((c) => c.id === signal.company_id);
-        const dateStr = signal.published_at
-          ? new Date(signal.published_at).toLocaleDateString('de-DE')
-          : new Date(signal.created_at).toLocaleDateString('de-DE');
+        const { label: dateLabel, isUnknown: dateUnknown } = formatPublishedAt(signal.published_at);
 
         const isNew = lastCrawlTime && new Date(signal.created_at) >= lastCrawlTime;
         const isUpdated = lastCrawlTime && !isNew && signal.from_search;
@@ -73,7 +72,9 @@ export default function SignalFeedTable({ signals, companies, lastCrawl, onSigna
             <div>
               <SignalTypeIcon type={signal.signal_type} variant="chip" />
             </div>
-            <span className="text-[11px] text-slate-500">{dateStr}</span>
+            <span className={`text-[11px] ${dateUnknown ? 'text-slate-300 italic' : 'text-slate-500'}`}>
+              {dateLabel}
+            </span>
             <RelevanceBadge score={signal.relevance_score} variant="bar" />
           </div>
         );
