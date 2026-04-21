@@ -36,12 +36,14 @@ def _extract_published_at(soup: BeautifulSoup) -> Optional[datetime]:
     for script in soup.find_all("script", type="application/ld+json"):
         try:
             data = json.loads(script.string or "")
-            if isinstance(data, dict):
-                date_str = data.get("datePublished")
-                if date_str:
-                    dt = _parse_date_str(str(date_str))
-                    if dt:
-                        return dt
+            items = data if isinstance(data, list) else [data]
+            for item in items:
+                if isinstance(item, dict):
+                    date_str = item.get("datePublished")
+                    if date_str:
+                        dt = _parse_date_str(str(date_str))
+                        if dt:
+                            return dt
         except (json.JSONDecodeError, AttributeError):
             pass
 

@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
 from app.models.document import Document
@@ -59,7 +59,7 @@ def analyse_document(doc: Document, company_id: str, db: Session) -> None:
             return
 
     # Checkpoint 1: skip if published_at from HTML is older than _MAX_AGE_DAYS
-    age_threshold = datetime.utcnow() - timedelta(days=_MAX_AGE_DAYS)
+    age_threshold = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(days=_MAX_AGE_DAYS)
     if doc.published_at and doc.published_at < age_threshold:
         logger.info(
             "Skipping analysis for doc %s: published_at %s is older than %d days",
