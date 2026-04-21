@@ -1,8 +1,11 @@
 import asyncio
 import json
+import logging
 import threading
 from datetime import datetime, timezone
 from typing import AsyncGenerator, Dict, Any, List
+
+logger = logging.getLogger(__name__)
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
@@ -186,6 +189,20 @@ def _run_sources_in_thread(
             crawl_run.total_skipped = total_skipped
             crawl_run.total_errors = total_errors
             thread_db.commit()
+
+            try:
+                from app.analyser.briefing import generate_briefing_content
+                from app.models.crawl_briefing import CrawlBriefing
+                briefing_content = generate_briefing_content(thread_db, crawl_run_id=crawl_run_id)
+                briefing = CrawlBriefing(
+                    crawl_run_id=crawl_run_id,
+                    content=briefing_content,
+                    generated_at=datetime.now(timezone.utc),
+                )
+                thread_db.add(briefing)
+                thread_db.commit()
+            except Exception as e:
+                logger.warning("Auto-briefing generation failed: %s", e)
 
         loop.call_soon_threadsafe(
             queue.put_nowait,
