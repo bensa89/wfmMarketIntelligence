@@ -95,6 +95,8 @@ def analyse_document(doc: Document, company_id: str, db: Session) -> None:
             "Skipping signal creation for doc %s: LLM unable to analyze content",
             doc.id,
         )
+        doc.is_analysed = True
+        db.commit()
         return
 
     # Checkpoint 2: skip if LLM-detected published_at is older than _MAX_AGE_DAYS

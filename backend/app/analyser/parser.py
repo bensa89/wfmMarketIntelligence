@@ -18,6 +18,12 @@ class SignalData:
     published_at: Optional[datetime] = None
 
 
+_DATE_FORMATS = [
+    ("%Y-%m-%dT%H:%M:%SZ", 20),
+    ("%Y-%m-%dT%H:%M:%S", 19),
+    ("%Y-%m-%d", 10),
+]
+
 _UNABLE_TO_ANALYZE_PATTERNS = [
     "unable to analyze",
     "no content provided",
@@ -63,11 +69,6 @@ def parse_llm_response(raw: str) -> Optional[SignalData]:
         published_at = None
         pub_str = data.get("published_at")
         if pub_str and isinstance(pub_str, str):
-            _DATE_FORMATS = [
-                ("%Y-%m-%dT%H:%M:%SZ", 20),
-                ("%Y-%m-%dT%H:%M:%S", 19),
-                ("%Y-%m-%d", 10),
-            ]
             for fmt, length in _DATE_FORMATS:
                 try:
                     published_at = datetime.strptime(pub_str[:length], fmt)
