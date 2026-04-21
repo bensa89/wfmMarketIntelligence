@@ -1,3 +1,4 @@
+import { useState, useEffect, useRef } from 'react';
 import type { SignalType, CompanyType } from '../types';
 
 interface FilterBarProps {
@@ -10,6 +11,10 @@ interface FilterBarProps {
   companies?: { id: string; name: string; type: CompanyType }[];
   onlyNew?: boolean;
   onOnlyNewChange?: (v: boolean) => void;
+  lastMonth?: boolean;
+  onLastMonthChange?: (v: boolean) => void;
+  searchQuery?: string;
+  onSearchQueryChange?: (v: string) => void;
 }
 
 const signalTypes: { value: SignalType; label: string }[] = [
@@ -38,9 +43,69 @@ export default function FilterBar({
   companies,
   onlyNew,
   onOnlyNewChange,
+  lastMonth,
+  onLastMonthChange,
+  searchQuery = '',
+  onSearchQueryChange,
 }: FilterBarProps) {
+  const [localSearch, setLocalSearch] = useState(searchQuery);
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+
+  useEffect(() => {
+    setLocalSearch(searchQuery);
+  }, [searchQuery]);
+
+  const handleSearchInput = (value: string) => {
+    setLocalSearch(value);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      onSearchQueryChange?.(value);
+    }, 300);
+  };
+
+  const clearSearch = () => {
+    setLocalSearch('');
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    onSearchQueryChange?.('');
+  };
+
   return (
     <div className="flex flex-wrap items-center gap-2 mb-4">
+      {onSearchQueryChange && (
+        <div className="relative">
+          <svg
+            className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+          <input
+            type="text"
+            value={localSearch}
+            onChange={(e) => handleSearchInput(e.target.value)}
+            placeholder="Signale durchsuchen..."
+            className="text-[12px] py-1.5 h-8 pl-8 pr-7 bg-white border border-slate-200 rounded-lg text-slate-600 w-56 focus:outline-none focus:border-blue-300"
+          />
+          {localSearch && (
+            <button
+              onClick={clearSearch}
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
+      )}
+
       {companies && onCompanyChange && (
         <select
           value={companyId || ''}
@@ -110,6 +175,19 @@ export default function FilterBar({
             Nur Neue
           </button>
         </>
+      )}
+
+      {onLastMonthChange && (
+        <button
+          onClick={() => onLastMonthChange(!lastMonth)}
+          className={`px-3 py-1 rounded-lg text-[11px] font-medium border transition-colors ${
+            lastMonth
+              ? 'bg-amber-100 border-amber-300 text-amber-700'
+              : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
+          }`}
+        >
+          Letzter Monat
+        </button>
       )}
     </div>
   );
