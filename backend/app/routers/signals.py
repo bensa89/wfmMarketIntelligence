@@ -5,7 +5,8 @@ from sqlalchemy.orm import Session, selectinload
 from typing import List, Optional
 from app.database import get_db
 from app.models.signal import Signal, SignalType
-from app.schemas.signal import SignalRead
+from app.schemas.signal import SignalRead, DedupResult
+from app.analyser.dedup import deduplicate_signals
 
 router = APIRouter()
 
@@ -41,6 +42,16 @@ def purge_old_signals(
         db.delete(signal)
     db.commit()
     return {"deleted_signals": deleted_count, "older_than_days": older_than_days}
+
+
+@router.post("/deduplicate", response_model=DedupResult)
+def deduplicate(
+    company_id: str,
+    max_age_days: int = 90,
+    db: Session = Depends(get_db),
+):
+    result = deduplicate_signals(db, company_id=company_id, max_age_days=max_age_days)
+    return result
 
 
 @router.get("", response_model=List[SignalRead])

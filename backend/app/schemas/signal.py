@@ -21,3 +21,9 @@ class SignalRead(BaseModel):
     published_at: Optional[datetime]
     created_at: datetime
     from_search: bool = False
+
+
+class DedupResult(BaseModel):
+    merged_count: int
+    removed_ids: list[str]
+    kept_signals: list[dict]

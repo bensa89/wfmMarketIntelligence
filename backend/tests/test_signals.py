@@ -87,3 +87,54 @@ def test_list_signals_have_source_url(client, seed_signals):
     assert response.status_code == 200
     for sig in response.json():
         assert "source_url" in sig
+
+
+def test_deduplicate_endpoint(client, db_session):
+    from unittest.mock import patch
+
+    company = Company(name="ATOSS", slug="atoss-dedup-ep", type=CompanyType.competitor)
+    db_session.add(company)
+    db_session.commit()
+    source = Source(
+        company_id=company.id,
+        url="https://atoss.com/dedup-ep",
+        source_type=SourceType.news,
+    )
+    db_session.add(source)
+    db_session.commit()
+    doc1 = Document(
+        source_id=source.id, url="https://atoss.com/dedup-ep/1", content_hash="hep1"
+    )
+    doc2 = Document(
+        source_id=source.id, url="https://atoss.com/dedup-ep/2", content_hash="hep2"
+    )
+    db_session.add_all([doc1, doc2])
+    db_session.commit()
+
+    s1 = Signal(
+        document_id=doc1.id,
+        company_id=company.id,
+        title="AI Feature",
+        signal_type=SignalType.ai_announcement,
+        relevance_score=0.9,
+    )
+    s2 = Signal(
+        document_id=doc2.id,
+        company_id=company.id,
+        title="AI Feature Launch",
+        signal_type=SignalType.ai_announcement,
+        relevance_score=0.6,
+    )
+    db_session.add_all([s1, s2])
+    db_session.commit()
+
+    with patch("app.analyser.dedup.call_llm") as mock_llm:
+        mock_llm.return_value = f'{{"merge_groups": [["{s1.id}", "{s2.id}"]]}}'
+        response = client.post(
+            f"/api/signals/deduplicate?company_id={company.id}&max_age_days=90"
+        )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["merged_count"] == 1
+    assert len(data["removed_ids"]) == 1
