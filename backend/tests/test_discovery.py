@@ -367,3 +367,109 @@ def test_discover_ignores_inactive_page(db_session, monkeypatch):
 
     assert result["discovered"] == 0
     assert mock_fetch.call_count == 0
+
+
+from app.models.signal import Signal, SignalType
+from app.models.document import Document
+
+
+def _make_signal(db_session, doc_id: str, company_id: str, relevance: float):
+    signal = Signal(
+        document_id=doc_id,
+        company_id=company_id,
+        title="Test Signal",
+        signal_type=SignalType.other,
+        relevance_score=relevance,
+        confidence_score=0.8,
+    )
+    db_session.add(signal)
+    db_session.commit()
+    return signal
+
+
+def test_discover_auto_ignores_page_when_all_signals_low(db_session, monkeypatch):
+    import app.config as cfg
+    monkeypatch.setattr(cfg.settings, "discovery_depth", 1)
+    source = _make_source(db_session, slug="disc-auteignore")
+
+    def mock_save_and_analyse(src, fetch_result, extraction, now, db):
+        doc = Document(
+            source_id=src.id,
+            url=fetch_result.final_url,
+            title="Test Article",
+            content_markdown="content",
+            content_hash=extraction.content_hash,
+            crawled_at=now,
+        )
+        db.add(doc)
+        db.commit()
+        db.refresh(doc)
+        _make_signal(db, doc.id, src.company_id, relevance=0.1)
+        _make_signal(db, doc.id, src.company_id, relevance=0.2)
+
+    mock_fetch = MagicMock(
+        return_value=MagicMock(
+            html=ARTICLE_HTML,
+            final_url="https://example.com/blog/2024/04/article-one",
+            status_code=200,
+        )
+    )
+    mock_rp = MagicMock()
+    mock_rp.can_fetch.return_value = True
+
+    with (
+        patch("app.crawler.discovery.fetch_url", mock_fetch),
+        patch("app.crawler.discovery._get_robot_parser", return_value=mock_rp),
+        patch("app.crawler.discovery.time.sleep"),
+        patch("app.crawler.discovery._save_and_analyse", side_effect=mock_save_and_analyse),
+    ):
+        discover_and_crawl(source, SEED_HTML, db_session, analyse=True)
+
+    page = db_session.query(DiscoveredPage).first()
+    assert page is not None
+    assert page.is_active is False
+    assert page.status == DiscoveredPageStatus.ignored
+    assert page.last_signal_relevance == pytest.approx(0.2)
+
+
+def test_discover_keeps_page_active_when_one_signal_relevant(db_session, monkeypatch):
+    import app.config as cfg
+    monkeypatch.setattr(cfg.settings, "discovery_depth", 1)
+    source = _make_source(db_session, slug="disc-keep-active")
+
+    def mock_save_and_analyse(src, fetch_result, extraction, now, db):
+        doc = Document(
+            source_id=src.id,
+            url=fetch_result.final_url,
+            title="Test Article",
+            content_markdown="content",
+            content_hash=extraction.content_hash,
+            crawled_at=now,
+        )
+        db.add(doc)
+        db.commit()
+        db.refresh(doc)
+        _make_signal(db, doc.id, src.company_id, relevance=0.1)
+        _make_signal(db, doc.id, src.company_id, relevance=0.5)
+
+    mock_fetch = MagicMock(
+        return_value=MagicMock(
+            html=ARTICLE_HTML,
+            final_url="https://example.com/blog/2024/04/article-one",
+            status_code=200,
+        )
+    )
+    mock_rp = MagicMock()
+    mock_rp.can_fetch.return_value = True
+
+    with (
+        patch("app.crawler.discovery.fetch_url", mock_fetch),
+        patch("app.crawler.discovery._get_robot_parser", return_value=mock_rp),
+        patch("app.crawler.discovery.time.sleep"),
+        patch("app.crawler.discovery._save_and_analyse", side_effect=mock_save_and_analyse),
+    ):
+        discover_and_crawl(source, SEED_HTML, db_session, analyse=True)
+
+    page = db_session.query(DiscoveredPage).first()
+    assert page.is_active is True
+    assert page.last_signal_relevance == pytest.approx(0.5)

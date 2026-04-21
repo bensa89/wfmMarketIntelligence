@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session
 from app.models.source import Source
 from app.models.document import Document
 from app.models.discovered_page import DiscoveredPage, DiscoveredPageStatus
+from app.models.signal import Signal
 from app.crawler.fetcher import fetch_url
 from app.crawler.extractor import extract_content
 from app.config import settings
@@ -127,6 +128,21 @@ def _get_robot_parser(base_url: str) -> RobotFileParser:
     return rp
 
 
+def _update_page_relevance(page: DiscoveredPage, url: str, db: Session) -> None:
+    doc = db.query(Document).filter(Document.url == url).first()
+    if not doc:
+        return
+    signals = db.query(Signal).filter(Signal.document_id == doc.id).all()
+    if not signals:
+        return
+    scores = [s.relevance_score or 0 for s in signals]
+    page.last_signal_relevance = max(scores)
+    if all(score < 0.3 for score in scores):
+        page.is_active = False
+        page.status = DiscoveredPageStatus.ignored
+    db.commit()
+
+
 def discover_and_crawl(
     source: Source, seed_html: str, db: Session, analyse: bool = True
 ) -> Dict:
@@ -208,6 +224,7 @@ def discover_and_crawl(
 
                 if analyse:
                     _save_and_analyse(source, fetch_result, extraction, now, db)
+                    _update_page_relevance(page, final_url, db)
 
             elif not existing.is_active:
                 existing.status = DiscoveredPageStatus.ignored
@@ -224,6 +241,7 @@ def discover_and_crawl(
 
                 if analyse:
                     _save_and_analyse(source, fetch_result, extraction, now, db)
+                    _update_page_relevance(existing, final_url, db)
 
             else:
                 existing.status = DiscoveredPageStatus.known
