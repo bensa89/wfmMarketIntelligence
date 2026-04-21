@@ -365,6 +365,12 @@ export interface SignalDistribution {
   by_company_and_type: CompanySignalTypeCount[];
 }
 
+export interface DedupResult {
+  merged_count: number;
+  removed_ids: string[];
+  kept_signals: { id: string; title: string; relevance_score: number | null }[];
+}
+
 export interface DiscoveredPagesStats {
   total: number;
   new: number;

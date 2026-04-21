@@ -3,11 +3,12 @@ import { useParams, Link } from 'react-router-dom';
 import { useCompany } from '../hooks/useCompanies';
 import { useSignals } from '../hooks/useSignals';
 import { useDocument } from '../hooks/useDocuments';
+import { useDeduplicate } from '../hooks/useDeduplicate';
 import SignalCard from '../components/SignalCard';
 import FilterBar from '../components/FilterBar';
 import MarkdownViewer from '../components/MarkdownViewer';
-import type { SignalType } from '../types';
-import { ArrowLeft } from 'lucide-react';
+import type { DedupResult, SignalType } from '../types';
+import { ArrowLeft, Merge, X, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export default function CompetitorDetail() {
   const { slug } = useParams<{ slug: string }>();
@@ -26,6 +27,26 @@ export default function CompetitorDetail() {
   );
 
   const [selectedDocId, setSelectedDocId] = useState<string | null>(null);
+  const deduplicate = useDeduplicate();
+  const [dedupResult, setDedupResult] = useState<DedupResult | null>(null);
+  const [showDedupPanel, setShowDedupPanel] = useState(false);
+
+  function handleDeduplicate() {
+    if (!company) return;
+    setDedupResult(null);
+    setShowDedupPanel(true);
+    deduplicate.mutate(
+      { companyId: company.id },
+      {
+        onSuccess: (result) => {
+          setDedupResult(result);
+        },
+        onError: () => {
+          setShowDedupPanel(true);
+        },
+      },
+    );
+  }
 
   if (companyLoading) return <p className="text-ink-muted p-6">Loading...</p>;
   if (!company) return <p className="text-signal-low p-6">Company not found.</p>;
@@ -43,10 +64,93 @@ export default function CompetitorDetail() {
             {company.website && ` · ${company.website}`}
           </p>
         </div>
-        {company.description && (
-          <p className="text-sm text-ink-muted max-w-md">{company.description}</p>
-        )}
+        <button
+          onClick={handleDeduplicate}
+          disabled={deduplicate.isPending}
+          className="btn-secondary flex items-center gap-2"
+          title="Find and merge duplicate signals using AI"
+        >
+          <Merge size={16} />
+          {deduplicate.isPending ? 'Analyzing...' : 'Deduplicate'}
+        </button>
       </div>
+      {company.description && (
+        <p className="text-sm text-ink-muted max-w-md mb-4">{company.description}</p>
+      )}
+
+      {showDedupPanel && (
+        <div className="card mb-4">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-semibold text-sm flex items-center gap-2">
+              <Merge size={16} />
+              Deduplicate Results
+            </h3>
+            <button onClick={() => setShowDedupPanel(false)} className="text-ink-muted hover:text-ink">
+              <X size={16} />
+            </button>
+          </div>
+
+          {deduplicate.isPending && (
+            <div className="flex items-center gap-3 py-4">
+              <div className="w-5 h-5 border-2 border-accent-blue border-t-transparent rounded-full animate-spin" />
+              <div>
+                <p className="text-sm font-medium">Analyzing signals for duplicates...</p>
+                <p className="text-xs text-ink-muted mt-0.5">
+                  The LLM is comparing all signals for {company.name}. This may take a moment.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {deduplicate.isError && (
+            <div className="flex items-start gap-2 py-2">
+              <AlertCircle size={18} className="text-signal-low shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm text-signal-low font-medium">Deduplication failed</p>
+                <p className="text-xs text-ink-muted mt-0.5">{deduplicate.error.message}</p>
+              </div>
+            </div>
+          )}
+
+          {dedupResult && (
+            <div>
+              {dedupResult.merged_count === 0 ? (
+                <div className="flex items-center gap-2 py-2">
+                  <CheckCircle2 size={18} className="text-signal-high" />
+                  <p className="text-sm">No duplicate signals found. All signals are unique.</p>
+                </div>
+              ) : (
+                <div>
+                  <div className="flex items-center gap-2 py-2">
+                    <CheckCircle2 size={18} className="text-signal-high" />
+                    <p className="text-sm font-medium">
+                      Merged {dedupResult.merged_count} group{dedupResult.merged_count > 1 ? 's' : ''},
+                      removed {dedupResult.removed_ids.length} duplicate{dedupResult.removed_ids.length > 1 ? 's' : ''}
+                    </p>
+                  </div>
+                  {dedupResult.kept_signals.length > 0 && (
+                    <div className="mt-2">
+                      <p className="text-xs text-ink-muted mb-2">Kept signals:</p>
+                      <div className="space-y-1.5">
+                        {dedupResult.kept_signals.map((s) => (
+                          <div key={s.id} className="flex items-center justify-between bg-app-bg/50 rounded px-3 py-1.5 text-sm">
+                            <span className="truncate mr-3">{s.title}</span>
+                            {s.relevance_score != null && (
+                              <span className="text-xs text-ink-muted shrink-0">
+                                relevance: {(s.relevance_score * 100).toFixed(0)}%
+                              </span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
       <FilterBar
         signalType={signalType}
         onSignalTypeChange={setSignalType}
