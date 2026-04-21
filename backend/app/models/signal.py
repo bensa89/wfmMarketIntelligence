@@ -2,6 +2,7 @@ import uuid
 import enum
 from datetime import datetime, timezone
 from sqlalchemy import Column, String, Text, Float, DateTime, ForeignKey, Enum as SAEnum
+from sqlalchemy.dialects.postgresql import TSVECTOR
 from sqlalchemy.orm import relationship
 from app.database import Base
 
@@ -32,6 +33,7 @@ class Signal(Base):
     confidence_score = Column(Float, nullable=True)
     published_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    search_vector = Column(TSVECTOR, nullable=True)
 
     document = relationship("Document", back_populates="signals")
     company = relationship("Company", back_populates="signals")
