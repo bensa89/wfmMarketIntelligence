@@ -1,6 +1,7 @@
 from datetime import datetime, timezone, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import func
 from sqlalchemy.orm import Session, selectinload
 from typing import List, Optional
 from app.database import get_db
@@ -56,23 +57,38 @@ def deduplicate(
 
 @router.get("", response_model=List[SignalRead])
 def list_signals(
+    q: Optional[str] = None,
     company_id: Optional[str] = None,
     signal_type: Optional[SignalType] = None,
     min_relevance: Optional[float] = None,
+    min_confidence: Optional[float] = None,
     max_age_days: Optional[int] = 365,
     db: Session = Depends(get_db),
 ):
     query = db.query(Signal).options(selectinload(Signal.document))
+    if q:
+        query_expr = func.plainto_tsquery("german", func.unaccent(q))
+        query = query.filter(Signal.search_vector.op("@@")(query_expr))
     if company_id:
         query = query.filter(Signal.company_id == company_id)
     if signal_type:
         query = query.filter(Signal.signal_type == signal_type)
     if min_relevance is not None:
         query = query.filter(Signal.relevance_score >= min_relevance)
+    if min_confidence is not None:
+        query = query.filter(Signal.confidence_score >= min_confidence)
     if max_age_days and max_age_days > 0:
         cutoff = datetime.now(timezone.utc) - timedelta(days=max_age_days)
         query = query.filter(Signal.created_at >= cutoff)
-    signals = query.order_by(Signal.created_at.desc()).all()
+    if q:
+        query_expr = func.plainto_tsquery("german", func.unaccent(q))
+        query = query.order_by(
+            func.ts_rank(Signal.search_vector, query_expr).desc(),
+            Signal.created_at.desc(),
+        )
+    else:
+        query = query.order_by(Signal.created_at.desc())
+    signals = query.all()
     return [_to_signal_read(s) for s in signals]
 
 
