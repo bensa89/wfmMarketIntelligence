@@ -10,7 +10,7 @@ import { useSourceCandidates } from '../hooks/useSourceCandidates';
 import { useDiscoveredPagesStats } from '../hooks/useDiscoveredPages';
 import { useDocument } from '../hooks/useDocuments';
 import DeltaKpiCard from '../components/dashboard/DeltaKpiCard';
-import CrawlSummaryCard from '../components/dashboard/CrawlSummaryCard';
+
 import TopSignalsPanel from '../components/dashboard/TopSignalsPanel';
 import SignalsOverTimeChart from '../components/dashboard/SignalsOverTimeChart';
 import SignalTypeDistribution from '../components/dashboard/SignalTypeDistribution';
@@ -27,7 +27,9 @@ export default function Dashboard() {
   const [signalType, setSignalType] = useState<SignalType | ''>('');
   const [minRelevance, setMinRelevance] = useState(0);
   const [companyId, setCompanyId] = useState('');
-  const [onlyNew, setOnlyNew] = useState(false);
+  const [onlyNew, setOnlyNew] = useState(true);
+  const [lastMonth, setLastMonth] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedSignal, setSelectedSignal] = useState<Signal | null>(null);
   const { start: startCrawl, isRunning: isCrawlRunning, summary: crawlSummary } = useCrawlStream();
   const { activeRun } = useActiveCrawlRun();
@@ -37,6 +39,8 @@ export default function Dashboard() {
     company_id: companyId || undefined,
     signal_type: signalType || undefined,
     min_relevance: minRelevance || undefined,
+    max_age_days: lastMonth ? 30 : undefined,
+    q: searchQuery || undefined,
   });
   const { data: overTimeData } = useSignalsOverTime(14);
   const { data: distribution } = useSignalDistribution(companyId || undefined);
@@ -123,15 +127,11 @@ export default function Dashboard() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-          <div className="lg:col-span-2 space-y-4">
-            <CrawlSummaryCard
-              lastCrawl={lastCrawl ?? null}
-              newSignalsCount={newSignalsCount}
-              updatedSignalsCount={0}
-              newDocumentsCount={lastCrawl?.total_new ?? 0}
-              candidatesCount={candidateCount}
-            />
+          <div className="lg:col-span-3 space-y-4">
             <BriefingPanel />
+          </div>
+
+          <div className="lg:col-span-2 space-y-4">
             <TopSignalsPanel
               signals={allSignals ?? []}
               lastCrawl={lastCrawl ?? null}
@@ -141,40 +141,42 @@ export default function Dashboard() {
             {overTimeData && overTimeData.length > 0 && (
               <SignalsOverTimeChart data={overTimeData} />
             )}
-            <div className="grid grid-cols-2 gap-3">
-              {distribution && <SignalTypeDistribution byType={distribution.by_type} />}
-              {distribution && companies && (
-                <CompanySignalHeatmap data={distribution.by_company_and_type} companies={companies} />
-              )}
-            </div>
-          </div>
-
-          <div className="lg:col-span-3">
-            <FilterBar
-              signalType={signalType}
-              onSignalTypeChange={setSignalType}
-              minRelevance={minRelevance}
-              onMinRelevanceChange={setMinRelevance}
-              companyId={companyId}
-              onCompanyChange={setCompanyId}
-              companies={companies?.map((c) => ({ id: c.id, name: c.name, type: c.type }))}
-              onlyNew={onlyNew}
-              onOnlyNewChange={setOnlyNew}
-            />
-            {signalsLoading || companiesLoading ? (
-              <div className="flex items-center gap-2 text-slate-400 text-[13px]">
-                <Loader2 size={14} className="animate-spin" />
-                Lade Signale...
-              </div>
-            ) : (
-              <SignalFeedTable
-                signals={filteredSignals}
-                companies={companies ?? []}
-                lastCrawl={lastCrawl ?? null}
-                onSignalClick={setSelectedSignal}
-              />
+            {distribution && <SignalTypeDistribution byType={distribution.by_type} />}
+            {distribution && companies && (
+              <CompanySignalHeatmap data={distribution.by_company_and_type} companies={companies} />
             )}
           </div>
+        </div>
+
+<div className="mt-6">
+          <FilterBar
+            signalType={signalType}
+            onSignalTypeChange={setSignalType}
+            minRelevance={minRelevance}
+            onMinRelevanceChange={setMinRelevance}
+            companyId={companyId}
+            onCompanyChange={setCompanyId}
+            companies={companies?.map((c) => ({ id: c.id, name: c.name, type: c.type }))}
+            onlyNew={onlyNew}
+            onOnlyNewChange={setOnlyNew}
+            lastMonth={lastMonth}
+            onLastMonthChange={setLastMonth}
+            searchQuery={searchQuery}
+            onSearchQueryChange={setSearchQuery}
+          />
+          {signalsLoading || companiesLoading ? (
+            <div className="flex items-center gap-2 text-slate-400 text-[13px]">
+              <Loader2 size={14} className="animate-spin" />
+              Lade Signale...
+            </div>
+          ) : (
+            <SignalFeedTable
+              signals={filteredSignals}
+              companies={companies ?? []}
+              lastCrawl={lastCrawl ?? null}
+              onSignalClick={setSelectedSignal}
+            />
+          )}
         </div>
 
         {selectedSignal && (

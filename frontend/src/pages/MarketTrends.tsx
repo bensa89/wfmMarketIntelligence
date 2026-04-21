@@ -13,11 +13,13 @@ export default function MarketTrends() {
 
   const [signalType, setSignalType] = useState<SignalType | ''>('');
   const [minRelevance, setMinRelevance] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedCompanyId, setSelectedCompanyId] = useState('');
 
   const { data: allSignals, isLoading } = useSignals({
     signal_type: signalType || undefined,
     min_relevance: minRelevance || undefined,
+    q: searchQuery || undefined,
   });
 
   const marketSignals = allSignals?.filter((s) => {
@@ -42,6 +44,8 @@ export default function MarketTrends() {
         companyId={selectedCompanyId}
         onCompanyChange={setSelectedCompanyId}
         companies={marketSources}
+        searchQuery={searchQuery}
+        onSearchQueryChange={setSearchQuery}
       />
 
       {isLoading ? (

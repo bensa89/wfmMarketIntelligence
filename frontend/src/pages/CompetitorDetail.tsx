@@ -15,6 +15,7 @@ export default function CompetitorDetail() {
   const { data: company, isLoading: companyLoading } = useCompany(slug!);
   const [signalType, setSignalType] = useState<SignalType | ''>('');
   const [minRelevance, setMinRelevance] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const { data: signals, isLoading: signalsLoading } = useSignals(
     company
@@ -22,6 +23,7 @@ export default function CompetitorDetail() {
           company_id: company.id,
           signal_type: signalType || undefined,
           min_relevance: minRelevance || undefined,
+          q: searchQuery || undefined,
         }
       : undefined,
   );
@@ -156,6 +158,8 @@ export default function CompetitorDetail() {
         onSignalTypeChange={setSignalType}
         minRelevance={minRelevance}
         onMinRelevanceChange={setMinRelevance}
+        searchQuery={searchQuery}
+        onSearchQueryChange={setSearchQuery}
       />
       {signalsLoading ? (
         <p className="text-ink-muted">Loading signals...</p>
