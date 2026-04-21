@@ -16,6 +16,7 @@ from app.models.crawl_run import (
     CrawlRunSourceStatus,
     CrawlRunStep,
 )
+from app.models.crawl_briefing import CrawlBriefing
 
 __all__ = [
     "Company",
@@ -41,4 +42,5 @@ __all__ = [
     "CrawlRunSource",
     "CrawlRunSourceStatus",
     "CrawlRunStep",
+    "CrawlBriefing",
 ]
