@@ -18,6 +18,7 @@ import CompanySignalHeatmap from '../components/dashboard/CompanySignalHeatmap';
 import SignalFeedTable from '../components/dashboard/SignalFeedTable';
 import FilterBar from '../components/FilterBar';
 import MarkdownViewer from '../components/MarkdownViewer';
+import BriefingPanel from '../components/dashboard/BriefingPanel';
 import { Play, Loader2 } from 'lucide-react';
 import type { SignalType, Signal } from '../types';
 
@@ -130,6 +131,7 @@ export default function Dashboard() {
               newDocumentsCount={lastCrawl?.total_new ?? 0}
               candidatesCount={candidateCount}
             />
+            <BriefingPanel />
             <TopSignalsPanel
               signals={allSignals ?? []}
               lastCrawl={lastCrawl ?? null}

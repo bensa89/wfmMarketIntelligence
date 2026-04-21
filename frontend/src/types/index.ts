@@ -377,3 +377,10 @@ export interface DiscoveredPagesStats {
   changed: number;
   known: number;
 }
+
+export interface CrawlBriefing {
+  id: string;
+  crawl_run_id: string | null;
+  content: string;
+  generated_at: string;
+}
