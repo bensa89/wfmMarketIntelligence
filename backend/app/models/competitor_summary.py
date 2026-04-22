@@ -17,8 +17,8 @@ class CompetitorSummary(Base):
     __tablename__ = "competitor_summaries"
 
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    company_id = Column(String(36), ForeignKey("companies.id"), nullable=False)
-    period_type = Column(SAEnum(PeriodType), nullable=False)
+    company_id = Column(String(36), ForeignKey("companies.id"), nullable=False, index=True)
+    period_type = Column(SAEnum(PeriodType), nullable=False, index=True)
     period_start = Column(Date, nullable=False)
     period_end = Column(Date, nullable=False)
     strategic_posture = Column(String(200), nullable=True)

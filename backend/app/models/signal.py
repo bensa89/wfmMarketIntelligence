@@ -56,3 +56,4 @@ class Signal(Base):
 
     document = relationship("Document", back_populates="signals")
     company = relationship("Company", back_populates="signals")
+    assessment = relationship("SignalAssessment", back_populates="signal", uselist=False)

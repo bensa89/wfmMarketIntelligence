@@ -34,7 +34,7 @@ class SignalAssessment(Base):
 
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     signal_id = Column(String(36), ForeignKey("signals.id", ondelete="CASCADE"), nullable=False, unique=True)
-    company_id = Column(String(36), ForeignKey("companies.id"), nullable=False)
+    company_id = Column(String(36), ForeignKey("companies.id"), nullable=False, index=True)
     capability_primary = Column(String(100), nullable=True)
     capability_secondary = Column(JSON, nullable=True)
     signal_class = Column(SAEnum(SignalClass), nullable=True)
@@ -52,5 +52,5 @@ class SignalAssessment(Base):
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
-    signal = relationship("Signal", backref="assessment", uselist=False)
+    signal = relationship("Signal", back_populates="assessment", uselist=False)
     company = relationship("Company")
