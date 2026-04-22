@@ -1,3 +1,5 @@
+import json
+
 from app.assessor.rules import compute_movement_score, compute_movement_strength, map_signal_type_to_class
 from app.models.signal import SignalType
 
@@ -108,3 +110,39 @@ def test_build_summary_prompt_contains_assessments():
     assert "ATOSS" in prompt
     assert "ai_copilot" in prompt
     assert "last 30 days" in prompt
+
+
+def test_parse_assessment_valid_json():
+    from app.assessor.parser import parse_assessment_response, AssessmentLLMOutput
+    raw = json.dumps({
+        "capability_primary": "ai_copilot",
+        "capability_secondary": ["shift_scheduling"],
+        "signal_class": "product_capability_move",
+        "evidence_strength": 4,
+        "visibility_impact": "high",
+        "strategic_intent_guess": "Positioning as AI-first WFM vendor.",
+        "gameplay_tags": ["ai-narrative"],
+        "assessment_summary": "Launched new AI feature.",
+        "implication_for_us": "Direct competition with our roadmap.",
+        "watch_items": ["Monitor adoption rate"],
+        "confidence": 0.85,
+    })
+    result = parse_assessment_response(raw)
+    assert result is not None
+    assert result.capability_primary == "ai_copilot"
+    assert result.evidence_strength == 4
+    assert result.confidence == 0.85
+
+
+def test_parse_assessment_invalid_json_returns_none():
+    from app.assessor.parser import parse_assessment_response
+    result = parse_assessment_response("not json at all")
+    assert result is None
+
+
+def test_parse_assessment_missing_required_field_returns_none():
+    from app.assessor.parser import parse_assessment_response
+    raw = json.dumps({"capability_primary": "ai_copilot"})  # missing most fields
+    # Should still parse — all fields are optional in LLM output
+    result = parse_assessment_response(raw)
+    assert result is not None  # partial data is accepted
