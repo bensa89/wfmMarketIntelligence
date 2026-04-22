@@ -1,3 +1,15 @@
+export function formatDistanceToNow(dateStr: string | null | undefined): string {
+  if (!dateStr) return 'unknown date';
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  if (days === 0) return 'today';
+  if (days === 1) return '1 day ago';
+  if (days < 30) return `${days} days ago`;
+  const months = Math.floor(days / 30);
+  if (months === 1) return '1 month ago';
+  return `${months} months ago`;
+}
+
 export function formatPublishedAt(publishedAt: string | null): {
   label: string;
   isUnknown: boolean;
