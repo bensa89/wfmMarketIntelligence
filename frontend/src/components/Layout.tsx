@@ -8,16 +8,25 @@ import {
   Search,
   Globe,
   LogOut,
+  BarChart2,
+  Zap,
 } from 'lucide-react';
 import { hasCredentials, clearCredentials } from '../api/client';
 import { useNavigate } from 'react-router-dom';
 
 const navSections = [
   {
+    label: 'Intelligence',
+    items: [
+      { to: '/overview', label: 'Overview', icon: BarChart2 },
+      { to: '/competitors', label: 'Competitors', icon: Users },
+      { to: '/signals', label: 'Signals Feed', icon: Zap },
+    ],
+  },
+  {
     label: 'Übersicht',
     items: [
       { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-      { to: '/competitors', label: 'Wettbewerber', icon: Users },
       { to: '/trends', label: 'Markt-Trends', icon: TrendingUp },
     ],
   },

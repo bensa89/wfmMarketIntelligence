@@ -7,6 +7,9 @@ import LoginPage from './pages/LoginPage';
 import Dashboard from './pages/Dashboard';
 import CompetitorList from './pages/CompetitorList';
 import CompetitorDetail from './pages/CompetitorDetail';
+import OverviewPage from './pages/OverviewPage';
+import CompetitorWorkspacePage from './pages/CompetitorWorkspacePage';
+import SignalsFeedPage from './pages/SignalsFeedPage';
 import MarketTrends from './pages/MarketTrends';
 import WeeklyDigest from './pages/WeeklyDigest';
 import SourcesAdmin from './pages/SourcesAdmin';
@@ -37,8 +40,10 @@ export default function App() {
             }
           >
             <Route index element={<Dashboard />} />
+            <Route path="overview" element={<OverviewPage />} />
             <Route path="competitors" element={<CompetitorList />} />
-            <Route path="competitors/:slug" element={<CompetitorDetail />} />
+            <Route path="competitors/:slug" element={<CompetitorWorkspacePage />} />
+            <Route path="signals" element={<SignalsFeedPage />} />
             <Route path="trends" element={<MarketTrends />} />
             <Route path="digest" element={<WeeklyDigest />} />
             <Route path="search" element={<SearchPage />} />
