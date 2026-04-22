@@ -122,3 +122,45 @@ def test_assess_signal_handles_llm_failure_gracefully(db_session):
         assess_signal(signal, db_session)
 
     assert db_session.query(SignalAssessment).count() == 0
+
+
+def test_assess_signal_uses_fallback_signal_class(db_session):
+    from app.models.company import Company, CompanyType
+    from app.models.source import Source, SourceType
+    from app.models.document import Document
+    from app.models.signal import Signal, SignalType
+    from app.models.signal_assessment import SignalAssessment
+    from app.assessor.pipeline import assess_signal
+    import json
+
+    company = Company(name="FallbackCo", slug="fallback-co", type=CompanyType.competitor)
+    db_session.add(company)
+    db_session.commit()
+    source = Source(company_id=company.id, url="https://fallback.com", source_type=SourceType.news)
+    db_session.add(source)
+    db_session.commit()
+    doc = Document(source_id=source.id, url="https://fallback.com/1")
+    db_session.add(doc)
+    db_session.commit()
+    signal = Signal(
+        document_id=doc.id, company_id=company.id,
+        title="Partnership news", signal_type=SignalType.partnership,
+        relevance_score=0.8, confidence_score=0.7,
+    )
+    db_session.add(signal)
+    db_session.commit()
+
+    # LLM returns no signal_class (null)
+    llm_json = json.dumps({
+        "capability_primary": "integration_hub",
+        "signal_class": None,  # LLM omits this
+        "evidence_strength": 3,
+        "visibility_impact": "medium",
+        "confidence": 0.7,
+    })
+    with patch("app.assessor.pipeline.call_llm", return_value=llm_json):
+        result = assess_signal(signal, db_session)
+
+    assert result is not None
+    # partnership → ecosystem_move via map_signal_type_to_class
+    assert result.signal_class == "ecosystem_move"

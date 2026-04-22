@@ -40,7 +40,11 @@ def assess_signal(signal: Signal, db: Session) -> SignalAssessment | None:
 
     parsed = None
     for attempt in range(MAX_RETRIES + 1):
-        raw = call_llm(prompt)
+        try:
+            raw = call_llm(prompt)
+        except Exception as exc:
+            logger.warning("call_llm raised on attempt %d/%d for signal %s: %s", attempt + 1, MAX_RETRIES + 1, signal.id, exc)
+            continue
         parsed = parse_assessment_response(raw)
         if parsed is not None:
             break
