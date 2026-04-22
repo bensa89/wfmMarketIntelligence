@@ -70,3 +70,41 @@ def test_map_signal_type_to_class():
     assert map_signal_type_to_class(SignalType.event_or_thought_leadership) == "thought_leadership_signal"
     assert map_signal_type_to_class(SignalType.hiring_signal) == "hiring_signal"
     assert map_signal_type_to_class(SignalType.other) == "weak_signal"
+
+
+def test_build_assessment_prompt_contains_signal_data():
+    from app.assessor.prompts import build_assessment_prompt
+    prompt = build_assessment_prompt(
+        company_name="ATOSS",
+        signal_type="ai_announcement",
+        title="New AI Scheduling",
+        topic="AI",
+        summary="ATOSS launches AI scheduling module.",
+        why_it_matters="Competes with our core product.",
+        relevance_score=0.9,
+        confidence_score=0.85,
+        context={"core_capabilities": ["WFM"], "strategic_priorities": ["AI-first"], "differentiators": ["Speed"]},
+        capability_keys=["shift_scheduling", "ai_copilot"],
+    )
+    assert "ATOSS" in prompt
+    assert "ai_announcement" in prompt
+    assert "New AI Scheduling" in prompt
+    assert "shift_scheduling" in prompt
+    assert "JSON" in prompt
+
+
+def test_build_summary_prompt_contains_assessments():
+    from app.assessor.prompts import build_summary_prompt
+    assessments = [
+        {"capability_primary": "ai_copilot", "signal_class": "product_capability_move",
+         "assessment_summary": "Launched AI feature.", "movement_strength": "strong"}
+    ]
+    prompt = build_summary_prompt(
+        company_name="ATOSS",
+        period_label="last 30 days",
+        assessments=assessments,
+        context={"core_capabilities": ["WFM"], "strategic_priorities": ["Scale"]},
+    )
+    assert "ATOSS" in prompt
+    assert "ai_copilot" in prompt
+    assert "last 30 days" in prompt
