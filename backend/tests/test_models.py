@@ -144,3 +144,12 @@ def test_discovered_page_model(db):
     assert page.status == DiscoveredPageStatus.new
     assert page.is_active is True
     assert page.source_id == source.id
+
+
+def test_signal_assessment_model_exists():
+    from app.models.signal_assessment import SignalAssessment
+    assert SignalAssessment.__tablename__ == "signal_assessments"
+
+def test_competitor_summary_model_exists():
+    from app.models.competitor_summary import CompetitorSummary
+    assert CompetitorSummary.__tablename__ == "competitor_summaries"
