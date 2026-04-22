@@ -210,20 +210,23 @@ def _run_sources_in_thread(
                 from app.models.company import Company
                 from app.assessor.summarizer import generate_competitor_summary
 
-                company_ids_with_new_signals = (
-                    thread_db.query(Signal.company_id)
-                    .filter(Signal.created_at >= crawl_run.started_at)
-                    .distinct()
-                    .all()
-                )
-                for (cid,) in company_ids_with_new_signals:
-                    company = thread_db.query(Company).filter(Company.id == cid).first()
-                    if company:
-                        for period in ("7d", "30d"):
-                            try:
-                                generate_competitor_summary(company, period, thread_db)
-                            except Exception as e:
-                                logger.warning("Summary gen failed for %s/%s: %s", company.name, period, e)
+                if crawl_run.started_at is not None:
+                    company_ids_with_new_signals = (
+                        thread_db.query(Signal.company_id)
+                        .filter(Signal.created_at >= crawl_run.started_at)
+                        .distinct()
+                        .all()
+                    )
+                    for (cid,) in company_ids_with_new_signals:
+                        company = thread_db.query(Company).filter(Company.id == cid).first()
+                        if company:
+                            for period in ("7d", "30d"):
+                                try:
+                                    generate_competitor_summary(company, period, thread_db)
+                                except Exception as period_exc:
+                                    logger.warning("Summary gen failed for %s/%s: %s", company.name, period, period_exc)
+                else:
+                    logger.warning("crawl_run.started_at is None — skipping post-crawl summary trigger")
             except Exception as e:
                 logger.warning("Post-crawl summary trigger failed: %s", e)
 
