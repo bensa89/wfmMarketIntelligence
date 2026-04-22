@@ -146,3 +146,18 @@ def test_parse_assessment_missing_required_field_returns_none():
     # Should still parse — all fields are optional in LLM output
     result = parse_assessment_response(raw)
     assert result is not None  # partial data is accepted
+
+
+def test_parse_assessment_out_of_range_fields_coerced_to_none():
+    from app.assessor.parser import parse_assessment_response
+    raw = json.dumps({
+        "capability_primary": "ai_copilot",
+        "evidence_strength": 99,  # out of range
+        "confidence": 2.5,  # out of range
+        "signal_class": "product_capability_move",
+    })
+    result = parse_assessment_response(raw)
+    assert result is not None  # object still parsed
+    assert result.evidence_strength is None  # coerced to None
+    assert result.confidence is None  # coerced to None
+    assert result.capability_primary == "ai_copilot"  # valid fields preserved

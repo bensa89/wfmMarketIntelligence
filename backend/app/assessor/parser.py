@@ -13,14 +13,28 @@ class AssessmentLLMOutput(BaseModel):
     capability_primary: Optional[str] = None
     capability_secondary: list[str] = Field(default_factory=list)
     signal_class: Optional[str] = None
-    evidence_strength: Optional[int] = Field(default=None, ge=1, le=5)
+    evidence_strength: Optional[int] = None  # valid range: 1–5
     visibility_impact: Optional[str] = None
     strategic_intent_guess: Optional[str] = None
     gameplay_tags: list[str] = Field(default_factory=list)
     assessment_summary: Optional[str] = None
     implication_for_us: Optional[str] = None
     watch_items: list[str] = Field(default_factory=list)
-    confidence: Optional[float] = Field(default=None, ge=0.0, le=1.0)
+    confidence: Optional[float] = None  # valid range: 0.0–1.0
+
+    @field_validator("evidence_strength")
+    @classmethod
+    def validate_evidence_strength(cls, v):
+        if v is not None and not (1 <= v <= 5):
+            return None
+        return v
+
+    @field_validator("confidence")
+    @classmethod
+    def validate_confidence(cls, v):
+        if v is not None and not (0.0 <= v <= 1.0):
+            return None
+        return v
 
     @field_validator("visibility_impact")
     @classmethod
@@ -56,6 +70,7 @@ def _extract_json(raw: str) -> Optional[dict]:
         return json.loads(raw)
     except json.JSONDecodeError:
         pass
+    # Greedy match: works for typical LLM JSON-in-prose output; may over-match if LLM appends text after closing brace
     match = re.search(r"\{.*\}", raw, re.DOTALL)
     if match:
         try:
