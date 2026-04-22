@@ -6,7 +6,6 @@ import AuthGate from './components/AuthGate';
 import LoginPage from './pages/LoginPage';
 import Dashboard from './pages/Dashboard';
 import CompetitorList from './pages/CompetitorList';
-import CompetitorDetail from './pages/CompetitorDetail';
 import OverviewPage from './pages/OverviewPage';
 import CompetitorWorkspacePage from './pages/CompetitorWorkspacePage';
 import SignalsFeedPage from './pages/SignalsFeedPage';

@@ -49,7 +49,7 @@ export default function FilterBar({
   onSearchQueryChange,
 }: FilterBarProps) {
   const [localSearch, setLocalSearch] = useState(searchQuery);
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   useEffect(() => {
     setLocalSearch(searchQuery);
