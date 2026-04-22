@@ -10,6 +10,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from fastapi.testclient import TestClient
 from app.database import Base, get_db
+import app.models  # noqa: F401 — ensures all models are registered with Base.metadata
 
 TEST_DB_PATH = "./test_app.db"
 TEST_DATABASE_URL = f"sqlite:///{TEST_DB_PATH}"

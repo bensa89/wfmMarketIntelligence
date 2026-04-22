@@ -204,6 +204,29 @@ def _run_sources_in_thread(
             except Exception as e:
                 logger.warning("Auto-briefing generation failed: %s", e)
 
+            # Trigger competitor summaries for companies with new signals in this run
+            try:
+                from app.models.signal import Signal
+                from app.models.company import Company
+                from app.assessor.summarizer import generate_competitor_summary
+
+                company_ids_with_new_signals = (
+                    thread_db.query(Signal.company_id)
+                    .filter(Signal.created_at >= crawl_run.started_at)
+                    .distinct()
+                    .all()
+                )
+                for (cid,) in company_ids_with_new_signals:
+                    company = thread_db.query(Company).filter(Company.id == cid).first()
+                    if company:
+                        for period in ("7d", "30d"):
+                            try:
+                                generate_competitor_summary(company, period, thread_db)
+                            except Exception as e:
+                                logger.warning("Summary gen failed for %s/%s: %s", company.name, period, e)
+            except Exception as e:
+                logger.warning("Post-crawl summary trigger failed: %s", e)
+
         loop.call_soon_threadsafe(
             queue.put_nowait,
             {

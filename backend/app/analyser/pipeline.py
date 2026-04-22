@@ -127,3 +127,13 @@ def analyse_document(doc: Document, company_id: str, db: Session) -> None:
 
     doc.is_analysed = True
     db.commit()
+    db.refresh(signal)
+
+    # Trigger assessment if signal meets threshold
+    try:
+        from app.config import settings
+        if (signal.relevance_score or 0.0) >= settings.assessment_threshold:
+            from app.assessor.pipeline import assess_signal
+            assess_signal(signal, db)
+    except Exception as e:
+        logger.warning("Assessment hook failed for signal %s: %s", signal.id, e)
