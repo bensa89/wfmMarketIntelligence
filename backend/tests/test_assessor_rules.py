@@ -26,7 +26,7 @@ def test_compute_movement_score_thought_leadership_penalty():
     assert score == 90
 
 
-def test_compute_movement_score_clamp_min():
+def test_compute_movement_score_base_case():
     score = compute_movement_score(
         relevance_score=0.0,
         confidence_score=0.0,
@@ -36,6 +36,18 @@ def test_compute_movement_score_clamp_min():
     )
     # 0 + 0 + 6 + 0 = 6
     assert score == 6
+
+
+def test_compute_movement_score_clamp_to_zero():
+    score = compute_movement_score(
+        relevance_score=0.0,
+        confidence_score=0.0,
+        evidence_strength=0,
+        visibility_impact="low",
+        signal_class="thought_leadership_signal",
+    )
+    # raw = -10, clamped to 0
+    assert score == 0
 
 
 def test_compute_movement_strength_thresholds():
