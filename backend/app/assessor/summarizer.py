@@ -1,9 +1,9 @@
 import logging
-from datetime import datetime, timezone, timedelta, date
+from datetime import datetime, timezone, timedelta
 from sqlalchemy.orm import Session
 
 from app.analyser.client import call_llm
-from app.assessor.prompts import SUMMARY_SYSTEM_PROMPT, build_summary_prompt
+from app.assessor.prompts import build_summary_prompt
 from app.assessor.parser import parse_summary_response
 from app.models.company import Company
 from app.models.signal import Signal
@@ -93,8 +93,8 @@ def generate_competitor_summary(
     summary = CompetitorSummary(
         company_id=company.id,
         period_type=period_type_enum,
-        period_start=date.fromtimestamp((now - timedelta(days=days)).timestamp()),
-        period_end=date.fromtimestamp(now.timestamp()),
+        period_start=(now - timedelta(days=days)).date(),
+        period_end=now.date(),
         strategic_posture=parsed.strategic_posture,
         positioning_summary=parsed.positioning_summary,
         top_capabilities=parsed.top_capabilities,
@@ -109,4 +109,5 @@ def generate_competitor_summary(
     )
     db.add(summary)
     db.commit()
+    db.refresh(summary)
     return summary
