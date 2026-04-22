@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     tavily_api_key: str = ""
     search_relevance_threshold: float = 0.5
     search_queries_per_company: int = 8
+    assessment_threshold: float = 0.4
 
 
 settings = Settings()
