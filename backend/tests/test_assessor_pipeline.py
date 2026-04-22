@@ -164,3 +164,61 @@ def test_assess_signal_uses_fallback_signal_class(db_session):
     assert result is not None
     # partnership → ecosystem_move via map_signal_type_to_class
     assert result.signal_class == "ecosystem_move"
+
+
+def test_generate_competitor_summary_creates_record(db_session):
+    import json
+    from datetime import date
+    from unittest.mock import patch
+    from app.models.company import Company, CompanyType
+    from app.models.source import Source, SourceType
+    from app.models.document import Document
+    from app.models.signal import Signal, SignalType
+    from app.models.signal_assessment import SignalAssessment, MovementStrength, SignalClass, VisibilityImpact
+    from app.models.competitor_summary import CompetitorSummary
+    from app.assessor.summarizer import generate_competitor_summary
+
+    company = Company(name="SumCo", slug="sumco", type=CompanyType.competitor)
+    db_session.add(company)
+    db_session.commit()
+    source = Source(company_id=company.id, url="https://sumco.com", source_type=SourceType.news)
+    db_session.add(source)
+    db_session.commit()
+    doc = Document(source_id=source.id, url="https://sumco.com/1")
+    db_session.add(doc)
+    db_session.commit()
+    signal = Signal(
+        document_id=doc.id, company_id=company.id,
+        title="Big Move", signal_type=SignalType.ai_announcement,
+        relevance_score=0.9, confidence_score=0.8,
+    )
+    db_session.add(signal)
+    db_session.commit()
+    assessment = SignalAssessment(
+        signal_id=signal.id, company_id=company.id,
+        capability_primary="ai_copilot",
+        signal_class=SignalClass.product_capability_move,
+        evidence_strength=4,
+        visibility_impact=VisibilityImpact.high,
+        movement_score=82, movement_strength=MovementStrength.market_shaping,
+        assessment_summary="Major AI move.",
+    )
+    db_session.add(assessment)
+    db_session.commit()
+
+    summary_json = json.dumps({
+        "strategic_posture": "aggressive_expansion",
+        "positioning_summary": "Moving aggressively into AI.",
+        "top_capabilities": ["ai_copilot"],
+        "capability_assessment": [{"key": "ai_copilot", "label": "AI Copilot", "activity_level": "high", "notes": "Flagship feature."}],
+        "top_risks": ["AI feature parity risk"],
+        "top_opportunities": ["Partner with adjacent vendors"],
+        "watchpoints": ["Track AI copilot adoption"],
+    })
+
+    with patch("app.assessor.summarizer.call_llm", return_value=summary_json):
+        result = generate_competitor_summary(company, "30d", db_session)
+
+    assert result is not None
+    assert result.strategic_posture == "aggressive_expansion"
+    assert db_session.query(CompetitorSummary).count() == 1
