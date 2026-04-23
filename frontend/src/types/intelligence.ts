@@ -151,3 +151,11 @@ export interface SignalsFeedFilters {
   page?: number;
   page_size?: number;
 }
+
+export interface IntelligenceBriefing {
+  id: string;
+  content: string;
+  signal_count: number;
+  assessment_count: number;
+  generated_at: string;
+}
