@@ -5,7 +5,7 @@ import MovementBadge from './MovementBadge';
 import ConfidenceBar from './ConfidenceBar';
 import { getCapabilityLabel } from '../../constants/capabilities';
 import { useAssessSignal } from '../../hooks/useAssessSignal';
-import { formatDistanceToNow } from '../../utils/dates';
+import DateWithTooltip from '../DateWithTooltip';
 
 interface Props {
   item: SignalFeedItem;
@@ -39,10 +39,20 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
         <div className="flex items-start justify-between p-5 sticky top-0 bg-white border-b border-slate-200">
           <div className="flex-1 pr-4">
             <div className="text-[13px] font-semibold text-slate-900 leading-snug">{item.title}</div>
-            <div className="flex items-center gap-2 mt-1.5">
+            <div className="flex items-center gap-2 mt-1.5 flex-wrap">
               <span className="text-[11px] text-slate-500">{item.company_name}</span>
+              {item.published_at && (
+                <>
+                  <span className="text-slate-300">·</span>
+                  <span className="text-[11px] text-slate-500">
+                    Artikel: <DateWithTooltip date={item.published_at} />
+                  </span>
+                </>
+              )}
               <span className="text-slate-300">·</span>
-              <span className="text-[11px] text-slate-500">{formatDistanceToNow(item.published_at || item.created_at)}</span>
+              <span className="text-[11px] text-slate-500">
+                Analysiert: <DateWithTooltip date={item.created_at} />
+              </span>
             </div>
           </div>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-700 transition-colors flex-shrink-0">
