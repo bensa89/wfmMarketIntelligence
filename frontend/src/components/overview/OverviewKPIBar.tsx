@@ -13,10 +13,10 @@ export default function OverviewKPIBar({ data }: Props) {
   const marketShapingCount = data.recent_market_shaping.length;
 
   const kpis = [
-    { label: 'Signals (30d)', value: totalSignals },
-    { label: 'Active Competitors', value: activeCompetitors },
-    { label: 'Avg Movement Score', value: avgScore },
-    { label: 'Market Shaping', value: marketShapingCount },
+    { label: 'Signals (30d)', value: totalSignals, accent: 'bg-blue-500' },
+    { label: 'Active Competitors', value: activeCompetitors, accent: 'bg-green-500' },
+    { label: 'Avg Movement Score', value: avgScore, accent: 'bg-purple-500' },
+    { label: 'Market Shaping', value: marketShapingCount, accent: 'bg-orange-500' },
   ];
 
   return (
@@ -24,11 +24,13 @@ export default function OverviewKPIBar({ data }: Props) {
       {kpis.map((k) => (
         <div
           key={k.label}
-          className="rounded-xl px-4 py-3"
-          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
+          className="bg-white border border-slate-200 rounded-xl overflow-hidden"
         >
-          <div className="text-[11px] text-slate-500 uppercase tracking-wider mb-1">{k.label}</div>
-          <div className="text-2xl font-semibold text-slate-100 tabular-nums">{k.value}</div>
+          <div className={`h-[3px] ${k.accent}`} />
+          <div className="px-4 py-3">
+            <div className="text-[11px] font-medium text-slate-500 uppercase tracking-wide mb-1">{k.label}</div>
+            <div className="text-[28px] font-extrabold text-slate-900 leading-none tabular-nums">{k.value}</div>
+          </div>
         </div>
       ))}
     </div>

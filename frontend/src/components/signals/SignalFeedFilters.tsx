@@ -31,14 +31,13 @@ export default function SignalFeedFilters({ filters, companies, onChange, onRese
   return (
     <div
       className="sticky top-0 z-10 flex flex-wrap items-center gap-2 px-6 py-3 -mx-6 mb-4"
-      style={{ background: '#0a0f1e', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+      style={{ background: '#ffffff', borderBottom: '1px solid #e2e8f0' }}
     >
       {/* Company */}
       <select
         value={filters.company_id ?? ''}
         onChange={(e) => onChange({ company_id: e.target.value || undefined, page: 1 })}
-        className="rounded-lg text-[12px] px-2.5 py-1.5 text-slate-300 focus:outline-none"
-        style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)' }}
+        className="bg-slate-50 border border-slate-200 text-slate-700 rounded-lg text-[12px] px-2.5 py-1.5 focus:outline-none"
       >
         <option value="">All Competitors</option>
         {companies.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -48,8 +47,7 @@ export default function SignalFeedFilters({ filters, companies, onChange, onRese
       <select
         value={filters.capability ?? ''}
         onChange={(e) => onChange({ capability: e.target.value || undefined, page: 1 })}
-        className="rounded-lg text-[12px] px-2.5 py-1.5 text-slate-300 focus:outline-none"
-        style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)' }}
+        className="bg-slate-50 border border-slate-200 text-slate-700 rounded-lg text-[12px] px-2.5 py-1.5 focus:outline-none"
       >
         <option value="">All Capabilities</option>
         {Object.values(CAPABILITIES).filter((c) => c.visibilityToUser).map((c) => (
@@ -61,8 +59,7 @@ export default function SignalFeedFilters({ filters, companies, onChange, onRese
       <select
         value={filters.signal_type ?? ''}
         onChange={(e) => onChange({ signal_type: e.target.value || undefined, page: 1 })}
-        className="rounded-lg text-[12px] px-2.5 py-1.5 text-slate-300 focus:outline-none"
-        style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)' }}
+        className="bg-slate-50 border border-slate-200 text-slate-700 rounded-lg text-[12px] px-2.5 py-1.5 focus:outline-none"
       >
         <option value="">All Types</option>
         {SIGNAL_TYPES.map((t) => <option key={t} value={t}>{t.replace(/_/g, ' ')}</option>)}
@@ -72,8 +69,7 @@ export default function SignalFeedFilters({ filters, companies, onChange, onRese
       <select
         value={filters.movement_strength ?? ''}
         onChange={(e) => onChange({ movement_strength: (e.target.value as MovementStrength) || undefined, page: 1 })}
-        className="rounded-lg text-[12px] px-2.5 py-1.5 text-slate-300 focus:outline-none"
-        style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)' }}
+        className="bg-slate-50 border border-slate-200 text-slate-700 rounded-lg text-[12px] px-2.5 py-1.5 focus:outline-none"
       >
         <option value="">All Strengths</option>
         {MOVEMENT_STRENGTHS.map((s) => <option key={s} value={s}>{s.replace(/_/g, ' ')}</option>)}
@@ -83,8 +79,7 @@ export default function SignalFeedFilters({ filters, companies, onChange, onRese
       <select
         value={filters.sort_by ?? 'published_at'}
         onChange={(e) => onChange({ sort_by: e.target.value as 'published_at' | 'movement_score' | 'confidence' })}
-        className="rounded-lg text-[12px] px-2.5 py-1.5 text-slate-300 focus:outline-none"
-        style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)' }}
+        className="bg-slate-50 border border-slate-200 text-slate-700 rounded-lg text-[12px] px-2.5 py-1.5 focus:outline-none"
       >
         {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>Sort: {o.label}</option>)}
       </select>
@@ -92,7 +87,7 @@ export default function SignalFeedFilters({ filters, companies, onChange, onRese
       {hasActiveFilters && (
         <button
           onClick={onReset}
-          className="text-[12px] text-slate-500 hover:text-slate-300 transition-colors px-2 py-1"
+          className="text-[12px] text-slate-500 hover:text-slate-700 transition-colors px-2 py-1"
         >
           Reset
         </button>

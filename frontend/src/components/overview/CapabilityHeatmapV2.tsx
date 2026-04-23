@@ -12,31 +12,25 @@ const VISIBLE_CAPABILITIES = Object.values(CAPABILITIES)
   .slice(0, 8);
 
 function scoreToColor(score: number): string {
-  if (score === 0) return 'rgba(71,85,105,0.15)';
-  if (score < 30) return 'rgba(59,130,246,0.20)';
-  if (score < 60) return 'rgba(59,130,246,0.45)';
-  if (score < 80) return 'rgba(139,92,246,0.55)';
-  return 'rgba(251,146,60,0.65)';
+  if (score === 0) return 'rgba(203,213,225,0.4)';
+  if (score < 30) return 'rgba(59,130,246,0.12)';
+  if (score < 60) return 'rgba(59,130,246,0.35)';
+  if (score < 80) return 'rgba(139,92,246,0.45)';
+  return 'rgba(249,115,22,0.55)';
 }
 
 export default function CapabilityHeatmapV2({ rows }: Props) {
   if (rows.length === 0) {
     return (
-      <div
-        className="rounded-xl p-4 flex items-center justify-center h-48"
-        style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
-      >
-        <p className="text-slate-600 text-[12px]">No assessment data yet</p>
+      <div className="bg-white border border-slate-200 rounded-xl p-4 flex items-center justify-center h-48">
+        <p className="text-slate-400 text-[12px]">No assessment data yet</p>
       </div>
     );
   }
 
   return (
-    <div
-      className="rounded-xl p-4 overflow-x-auto"
-      style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
-    >
-      <h3 className="text-[13px] font-semibold text-slate-200 mb-4">Capability Activity (30d)</h3>
+    <div className="bg-white border border-slate-200 rounded-xl p-4 overflow-x-auto">
+      <h3 className="text-[13px] font-semibold text-slate-700 mb-4">Capability Activity (30d)</h3>
       <table className="w-full text-[11px]">
         <thead>
           <tr>
@@ -56,7 +50,7 @@ export default function CapabilityHeatmapV2({ rows }: Props) {
         <tbody>
           {rows.map((row) => (
             <tr key={row.company_id}>
-              <td className="pr-3 py-1 text-slate-300 truncate max-w-[8rem]" title={row.company_name}>
+              <td className="pr-3 py-1 text-slate-700 truncate max-w-[8rem]" title={row.company_name}>
                 {row.company_name}
               </td>
               {VISIBLE_CAPABILITIES.map((c) => {

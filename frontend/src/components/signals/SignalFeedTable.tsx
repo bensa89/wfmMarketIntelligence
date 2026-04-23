@@ -21,9 +21,9 @@ export default function SignalFeedTable({ items, total, page, pageSize, onPageCh
       <div className="overflow-x-auto">
         <table className="w-full text-[12px]">
           <thead>
-            <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+            <tr className="border-b border-slate-200 bg-slate-50">
               {['Signal', 'Competitor', 'Capability', 'Strength', 'Confidence', 'Date'].map((h) => (
-                <th key={h} className="text-left text-[11px] font-medium text-slate-500 uppercase tracking-wide pb-2 pr-4">
+                <th key={h} className="text-left text-[10px] font-semibold uppercase tracking-wider text-slate-500 pb-2 pr-4 pt-2">
                   {h}
                 </th>
               ))}
@@ -32,22 +32,21 @@ export default function SignalFeedTable({ items, total, page, pageSize, onPageCh
           <tbody>
             {items.length === 0 ? (
               <tr>
-                <td colSpan={6} className="py-12 text-center text-slate-600">No signals match the current filters</td>
+                <td colSpan={6} className="py-12 text-center text-slate-500">No signals match the current filters</td>
               </tr>
             ) : (
               items.map((item) => (
                 <tr
                   key={item.id}
-                  className="cursor-pointer hover:bg-white/[0.03] transition-colors"
-                  style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}
+                  className="border-b border-slate-100 hover:bg-slate-50 cursor-pointer transition-colors"
                   onClick={() => onSelectItem(item)}
                 >
                   <td className="py-3 pr-4 max-w-[300px]">
-                    <div className="text-slate-200 font-medium line-clamp-2 leading-snug">{item.title}</div>
-                    {item.topic && <div className="text-slate-600 text-[11px] mt-0.5 truncate">{item.topic}</div>}
+                    <div className="text-slate-900 font-medium line-clamp-2 leading-snug">{item.title}</div>
+                    {item.topic && <div className="text-slate-500 text-[11px] mt-0.5 truncate">{item.topic}</div>}
                   </td>
-                  <td className="py-3 pr-4 text-slate-400 whitespace-nowrap">{item.company_name ?? '—'}</td>
-                  <td className="py-3 pr-4 text-slate-500 whitespace-nowrap">
+                  <td className="py-3 pr-4 text-slate-600 whitespace-nowrap">{item.company_name ?? '—'}</td>
+                  <td className="py-3 pr-4 text-slate-600 whitespace-nowrap">
                     {item.assessment?.capability_primary
                       ? getCapabilityLabel(item.assessment.capability_primary)
                       : '—'}
@@ -58,7 +57,7 @@ export default function SignalFeedTable({ items, total, page, pageSize, onPageCh
                   <td className="py-3 pr-4">
                     <ConfidenceBar value={item.assessment?.confidence} />
                   </td>
-                  <td className="py-3 text-slate-500 whitespace-nowrap">
+                  <td className="py-3 text-slate-600 whitespace-nowrap">
                     {formatDistanceToNow(item.published_at || item.created_at)}
                   </td>
                 </tr>
@@ -69,23 +68,21 @@ export default function SignalFeedTable({ items, total, page, pageSize, onPageCh
       </div>
 
       {totalPages > 1 && (
-        <div className="flex items-center justify-between mt-4 pt-4" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+        <div className="flex items-center justify-between mt-4 pt-4 border-t border-slate-200">
           <span className="text-[12px] text-slate-500">{total} total signals</span>
           <div className="flex gap-1">
             <button
               onClick={() => onPageChange(page - 1)}
               disabled={page <= 1}
-              className="px-2.5 py-1 rounded-md text-[12px] text-slate-400 hover:text-slate-200 disabled:opacity-30 transition-colors"
-              style={{ background: 'rgba(255,255,255,0.06)' }}
+              className="px-2.5 py-1 rounded-md text-[12px] bg-white border border-slate-200 text-slate-600 hover:text-slate-900 disabled:opacity-30 transition-colors"
             >
               ←
             </button>
-            <span className="px-3 py-1 text-[12px] text-slate-400 tabular-nums">{page} / {totalPages}</span>
+            <span className="px-3 py-1 text-[12px] text-slate-600 tabular-nums">{page} / {totalPages}</span>
             <button
               onClick={() => onPageChange(page + 1)}
               disabled={page >= totalPages}
-              className="px-2.5 py-1 rounded-md text-[12px] text-slate-400 hover:text-slate-200 disabled:opacity-30 transition-colors"
-              style={{ background: 'rgba(255,255,255,0.06)' }}
+              className="px-2.5 py-1 rounded-md text-[12px] bg-white border border-slate-200 text-slate-600 hover:text-slate-900 disabled:opacity-30 transition-colors"
             >
               →
             </button>

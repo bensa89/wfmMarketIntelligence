@@ -8,11 +8,8 @@ interface Props {
 export default function CapabilityRadar({ distribution }: Props) {
   if (distribution.length === 0) {
     return (
-      <div
-        className="rounded-xl p-4"
-        style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
-      >
-        <p className="text-slate-600 text-[12px]">No capability data yet</p>
+      <div className="bg-white border border-slate-200 rounded-xl p-4">
+        <p className="text-slate-400 text-[12px]">No capability data yet</p>
       </div>
     );
   }
@@ -20,11 +17,8 @@ export default function CapabilityRadar({ distribution }: Props) {
   const maxCount = Math.max(...distribution.map((d) => d.count));
 
   return (
-    <div
-      className="rounded-xl p-4"
-      style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
-    >
-      <h3 className="text-[13px] font-semibold text-slate-200 mb-3">Capability Activity</h3>
+    <div className="bg-white border border-slate-200 rounded-xl p-4">
+      <h3 className="text-[13px] font-semibold text-slate-700 mb-3">Capability Activity</h3>
       <div className="space-y-2">
         {distribution.slice(0, 8).map((d) => {
           const barPct = maxCount > 0 ? (d.count / maxCount) * 100 : 0;
@@ -35,11 +29,11 @@ export default function CapabilityRadar({ distribution }: Props) {
           return (
             <div key={d.capability_key} className="flex items-center gap-3">
               <div className="w-28 flex-shrink-0">
-                <span className="text-[11px] text-slate-400 truncate block" title={getCapabilityLabel(d.capability_key)}>
+                <span className="text-[11px] text-slate-600 truncate block" title={getCapabilityLabel(d.capability_key)}>
                   {getCapabilityLabel(d.capability_key)}
                 </span>
               </div>
-              <div className="flex-1 h-2 rounded-full bg-slate-800 overflow-hidden">
+              <div className="flex-1 h-2 rounded-full bg-slate-200 overflow-hidden">
                 <div
                   className="h-full rounded-full transition-all"
                   style={{ width: `${barPct}%`, background: scoreColor }}

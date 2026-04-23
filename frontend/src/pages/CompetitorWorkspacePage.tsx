@@ -35,8 +35,14 @@ export default function CompetitorWorkspacePage() {
   const activeSummary = activePeriod === '30d' ? data.summary_30d : data.summary_90d;
 
   return (
-    <div style={{ background: '#0a0f1e', minHeight: '100%' }}>
-    <div className="p-6 max-w-[1400px] mx-auto">
+    <div className="flex flex-col h-full">
+      <div className="bg-white border-b border-slate-200 px-6 py-4 flex-shrink-0">
+        <h1 className="text-[15px] font-bold text-slate-900 tracking-tight">{data.competitor_profile.name}</h1>
+        {data.competitor_profile.description && (
+          <p className="text-[12px] text-slate-500 mt-0.5">{data.competitor_profile.description}</p>
+        )}
+      </div>
+      <div className="flex-1 overflow-auto px-6 py-5">
       <CompetitorHeader profile={data.competitor_profile} />
 
       <SummaryPeriodTabs
@@ -64,7 +70,7 @@ export default function CompetitorWorkspacePage() {
           onClose={() => setSelectedSignal(null)}
         />
       )}
-    </div>
+      </div>
     </div>
   );
 }

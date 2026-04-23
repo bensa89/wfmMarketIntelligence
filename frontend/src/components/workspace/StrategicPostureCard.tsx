@@ -22,20 +22,14 @@ function postureColor(raw: string | null): string {
 export default function StrategicPostureCard({ summary }: Props) {
   if (!summary) {
     return (
-      <div
-        className="rounded-xl p-4 h-full"
-        style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
-      >
-        <p className="text-slate-600 text-[12px]">No summary available yet. Run a crawl to generate.</p>
+      <div className="bg-white border border-slate-200 rounded-xl p-4 h-full">
+        <p className="text-slate-400 text-[12px]">No summary available yet. Run a crawl to generate.</p>
       </div>
     );
   }
 
   return (
-    <div
-      className="rounded-xl p-4"
-      style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
-    >
+    <div className="bg-white border border-slate-200 rounded-xl p-4">
       <div className="flex items-center gap-2 mb-3">
         <span
           className="text-[11px] font-semibold px-2 py-0.5 rounded-full"
@@ -46,11 +40,11 @@ export default function StrategicPostureCard({ summary }: Props) {
         >
           {postureLabel(summary.strategic_posture)}
         </span>
-        <span className="text-[11px] text-slate-600">{summary.signal_count} signals</span>
+        <span className="text-[11px] text-slate-500">{summary.signal_count} signals</span>
       </div>
 
       {summary.positioning_summary && (
-        <p className="text-[13px] text-slate-300 leading-relaxed mb-3">{summary.positioning_summary}</p>
+        <p className="text-[13px] text-slate-700 leading-relaxed mb-3">{summary.positioning_summary}</p>
       )}
 
       {summary.top_capabilities.length > 0 && (
@@ -58,8 +52,7 @@ export default function StrategicPostureCard({ summary }: Props) {
           {summary.top_capabilities.slice(0, 4).map((key) => (
             <span
               key={key}
-              className="text-[11px] px-2 py-0.5 rounded-full text-slate-400"
-              style={{ background: 'rgba(255,255,255,0.06)' }}
+              className="text-[11px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600"
             >
               {getCapabilityLabel(key)}
             </span>

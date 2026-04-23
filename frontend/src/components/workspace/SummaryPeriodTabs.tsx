@@ -19,15 +19,14 @@ export default function SummaryPeriodTabs({ activePeriod, onChangePeriod, summar
         <button
           key={key}
           onClick={() => onChangePeriod(key)}
-          className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors flex items-center gap-1.5 ${
+          className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors flex items-center gap-1.5 border ${
             activePeriod === key
-              ? 'text-blue-400'
-              : 'text-slate-500 hover:text-slate-300'
+              ? 'bg-blue-50 text-blue-700 border-blue-200'
+              : 'text-slate-500 hover:text-slate-700 border-transparent'
           }`}
-          style={activePeriod === key ? { background: 'rgba(59,130,246,0.15)', border: '1px solid rgba(59,130,246,0.25)' } : { border: '1px solid transparent' }}
         >
           {label}
-          {!summary && <span className="text-[10px] text-slate-600">(no data)</span>}
+          {!summary && <span className="text-[10px] text-slate-400">(no data)</span>}
         </button>
       ))}
     </div>

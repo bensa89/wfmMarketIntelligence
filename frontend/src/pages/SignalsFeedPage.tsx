@@ -28,13 +28,12 @@ export default function SignalsFeedPage() {
   }
 
   return (
-    <div style={{ background: '#0a0f1e', minHeight: '100%' }}>
-    <div className="p-6 max-w-[1400px] mx-auto">
-      <div className="mb-4">
-        <h1 className="text-xl font-semibold text-slate-100">Signals Feed</h1>
-        <p className="text-[13px] text-slate-500 mt-0.5">Operative intelligence with assessment context</p>
+    <div className="flex flex-col h-full">
+      <div className="bg-white border-b border-slate-200 px-6 py-4 flex-shrink-0">
+        <h1 className="text-[15px] font-bold text-slate-900 tracking-tight">Signals Feed</h1>
+        <p className="text-[12px] text-slate-500 mt-0.5">Operative intelligence with assessment context</p>
       </div>
-
+      <div className="flex-1 overflow-auto px-6 py-5">
       <SignalFeedFilters
         filters={filters}
         companies={companies.filter((c) => c.type === 'competitor')}
@@ -63,7 +62,7 @@ export default function SignalsFeedPage() {
           onClose={() => setSelectedItem(null)}
         />
       )}
-    </div>
+      </div>
     </div>
   );
 }
