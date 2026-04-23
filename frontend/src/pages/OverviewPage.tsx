@@ -1,12 +1,17 @@
+import { useState } from 'react';
 import { useOverview } from '../hooks/useOverview';
 import OverviewKPIBar from '../components/overview/OverviewKPIBar';
 import TopMoversList from '../components/overview/TopMoversList';
 import CapabilityHeatmapV2 from '../components/overview/CapabilityHeatmapV2';
 import MarketShapingFeed from '../components/overview/MarketShapingFeed';
 import RisksOpportunitiesPanel from '../components/overview/RisksOpportunitiesPanel';
+import SignalDetailDrawer from '../components/signals/SignalDetailDrawer';
+import IntelligenceBriefingPanel from '../components/overview/IntelligenceBriefingPanel';
+import type { SignalFeedItem } from '../types/intelligence';
 
 export default function OverviewPage() {
   const { data, isLoading, error } = useOverview();
+  const [selectedSignal, setSelectedSignal] = useState<SignalFeedItem | null>(null);
 
   if (isLoading) {
     return (
@@ -35,6 +40,7 @@ export default function OverviewPage() {
         <p className="text-[12px] text-slate-500 mt-0.5">Market intelligence summary · last 30 days</p>
       </div>
       <div className="flex-1 overflow-auto px-6 py-5">
+      <IntelligenceBriefingPanel />
       <OverviewKPIBar data={data} />
 
       <div className="grid grid-cols-3 gap-4 mb-4">
@@ -47,13 +53,16 @@ export default function OverviewPage() {
       </div>
 
       <div className="grid grid-cols-2 gap-4 mb-4">
-        <MarketShapingFeed signals={data.recent_market_shaping} />
+        <MarketShapingFeed signals={data.recent_market_shaping} onSelect={setSelectedSignal} />
         <RisksOpportunitiesPanel
           risks={data.emerging_risks}
           opportunities={data.emerging_opportunities}
         />
       </div>
       </div>
+      {selectedSignal && (
+        <SignalDetailDrawer item={selectedSignal} onClose={() => setSelectedSignal(null)} />
+      )}
     </div>
   );
 }
