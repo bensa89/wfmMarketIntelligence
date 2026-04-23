@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { ExternalLink, RefreshCw } from 'lucide-react';
 import { useCompetitorWorkspace } from '../hooks/useCompetitorWorkspace';
-import CompetitorHeader from '../components/workspace/CompetitorHeader';
+import { useSummarizeCompetitor } from '../hooks/useSummarizeCompetitor';
 import SummaryPeriodTabs from '../components/workspace/SummaryPeriodTabs';
 import StrategicPostureCard from '../components/workspace/StrategicPostureCard';
 import CapabilityRadar from '../components/workspace/CapabilityRadar';
@@ -33,17 +34,38 @@ export default function CompetitorWorkspacePage() {
   }
 
   const activeSummary = activePeriod === '30d' ? data.summary_30d : data.summary_90d;
+  const summarize = useSummarizeCompetitor(data.competitor_profile.id);
 
   return (
     <div className="flex flex-col h-full">
-      <div className="bg-white border-b border-slate-200 px-6 py-4 flex-shrink-0">
-        <h1 className="text-[15px] font-bold text-slate-900 tracking-tight">{data.competitor_profile.name}</h1>
-        {data.competitor_profile.description && (
-          <p className="text-[12px] text-slate-500 mt-0.5">{data.competitor_profile.description}</p>
-        )}
+      <div className="bg-white border-b border-slate-200 px-6 py-4 flex-shrink-0 flex items-start justify-between">
+        <div>
+          <h1 className="text-[15px] font-bold text-slate-900 tracking-tight">{data.competitor_profile.name}</h1>
+          {data.competitor_profile.description && (
+            <p className="text-[12px] text-slate-500 mt-0.5">{data.competitor_profile.description}</p>
+          )}
+          {data.competitor_profile.website && (
+            <a
+              href={data.competitor_profile.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-[11px] text-blue-600 hover:text-blue-700 mt-1 transition-colors"
+            >
+              <ExternalLink size={10} />
+              {data.competitor_profile.website}
+            </a>
+          )}
+        </div>
+        <button
+          onClick={() => summarize.mutate('30d')}
+          disabled={summarize.isPending}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-medium bg-white border border-slate-200 text-slate-600 hover:text-slate-900 transition-colors disabled:opacity-50 flex-shrink-0"
+        >
+          <RefreshCw size={13} className={summarize.isPending ? 'animate-spin' : ''} />
+          Refresh Summary
+        </button>
       </div>
       <div className="flex-1 overflow-auto px-6 py-5">
-      <CompetitorHeader profile={data.competitor_profile} />
 
       <SummaryPeriodTabs
         activePeriod={activePeriod}
