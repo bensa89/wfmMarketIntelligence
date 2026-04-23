@@ -28,6 +28,7 @@ export default function SignalsFeedPage() {
   }
 
   return (
+    <div style={{ background: '#0a0f1e', minHeight: '100%' }}>
     <div className="p-6 max-w-[1400px] mx-auto">
       <div className="mb-4">
         <h1 className="text-xl font-semibold text-slate-100">Signals Feed</h1>
@@ -62,6 +63,7 @@ export default function SignalsFeedPage() {
           onClose={() => setSelectedItem(null)}
         />
       )}
+    </div>
     </div>
   );
 }

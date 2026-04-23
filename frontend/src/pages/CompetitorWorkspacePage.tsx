@@ -35,6 +35,7 @@ export default function CompetitorWorkspacePage() {
   const activeSummary = activePeriod === '30d' ? data.summary_30d : data.summary_90d;
 
   return (
+    <div style={{ background: '#0a0f1e', minHeight: '100%' }}>
     <div className="p-6 max-w-[1400px] mx-auto">
       <CompetitorHeader profile={data.competitor_profile} />
 
@@ -63,6 +64,7 @@ export default function CompetitorWorkspacePage() {
           onClose={() => setSelectedSignal(null)}
         />
       )}
+    </div>
     </div>
   );
 }

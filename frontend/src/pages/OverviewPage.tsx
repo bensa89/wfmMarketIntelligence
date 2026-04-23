@@ -10,7 +10,7 @@ export default function OverviewPage() {
 
   if (isLoading) {
     return (
-      <div className="p-6 flex items-center justify-center h-64">
+      <div className="p-6 flex items-center justify-center h-64" style={{ background: '#0a0f1e', minHeight: '100%' }}>
         <span className="text-slate-500 text-sm">Loading intelligence overview…</span>
       </div>
     );
@@ -18,13 +18,14 @@ export default function OverviewPage() {
 
   if (error || !data) {
     return (
-      <div className="p-6 flex items-center justify-center h-64">
+      <div className="p-6 flex items-center justify-center h-64" style={{ background: '#0a0f1e', minHeight: '100%' }}>
         <span className="text-red-400 text-sm">Failed to load overview. Is the backend running?</span>
       </div>
     );
   }
 
   return (
+    <div style={{ background: '#0a0f1e', minHeight: '100%' }}>
     <div className="p-6 max-w-[1400px] mx-auto">
       <div className="mb-6">
         <h1 className="text-xl font-semibold text-slate-100">Executive Overview</h1>
@@ -49,6 +50,7 @@ export default function OverviewPage() {
           opportunities={data.emerging_opportunities}
         />
       </div>
+    </div>
     </div>
   );
 }
