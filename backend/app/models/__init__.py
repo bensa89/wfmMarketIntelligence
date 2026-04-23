@@ -19,6 +19,7 @@ from app.models.crawl_run import (
 from app.models.crawl_briefing import CrawlBriefing
 from app.models.signal_assessment import SignalAssessment, SignalClass, VisibilityImpact, MovementStrength
 from app.models.competitor_summary import CompetitorSummary, PeriodType
+from app.models.intelligence_briefing import IntelligenceBriefing
 
 __all__ = [
     "Company", "CompanyType",
@@ -36,4 +37,5 @@ __all__ = [
     "CrawlBriefing",
     "SignalAssessment", "SignalClass", "VisibilityImpact", "MovementStrength",
     "CompetitorSummary", "PeriodType",
+    "IntelligenceBriefing",
 ]
