@@ -23,7 +23,7 @@ def _build_prompt(signals: list, assessments: list, context: dict) -> str:
         "Du bist ein strategischer Market Intelligence Analyst für ein WFM-Softwareunternehmen.",
         "Analysiere die folgenden Wettbewerbsbewegungen seit dem letzten Crawl und erstelle ein strukturiertes Briefing.",
         "",
-        f"Zeitraum: letzte 24 Stunden",
+        f"Zeitraum: letzte 7 Tage",
         f"Neue Signale: {len(signals)}",
         f"Bewertete Signale: {len(assessments)}",
         f"Beteiligte Unternehmen: {', '.join(company_names)}",
@@ -74,7 +74,7 @@ def _build_prompt(signals: list, assessments: list, context: dict) -> str:
 
 def generate_intelligence_briefing(db: Session) -> tuple[str, int, int]:
     """Returns (content, signal_count, assessment_count)."""
-    since = datetime.now(timezone.utc) - timedelta(hours=24)
+    since = datetime.now(timezone.utc) - timedelta(days=7)
 
     signals_rows = (
         db.query(Signal, Company.name)

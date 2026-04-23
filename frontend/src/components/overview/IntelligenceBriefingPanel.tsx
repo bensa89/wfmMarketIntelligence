@@ -62,7 +62,10 @@ export default function IntelligenceBriefingPanel() {
         <p className="text-[12px] text-slate-400">Lade Briefing...</p>
       ) : briefing ? (
         <div className="text-[12px] text-slate-700 leading-relaxed">
-          <MarkdownViewer content={briefing.content} />
+          <MarkdownViewer
+            content={briefing.content}
+            className="prose-headings:mt-2 prose-headings:mb-1 prose-p:my-1 prose-hr:my-2"
+          />
         </div>
       ) : (
         <p className="text-[12px] text-slate-400">
