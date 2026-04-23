@@ -2,7 +2,7 @@ import type { SignalFeedItem } from '../../types/intelligence';
 import MovementBadge from './MovementBadge';
 import ConfidenceBar from './ConfidenceBar';
 import { getCapabilityLabel } from '../../constants/capabilities';
-import { formatDistanceToNow } from '../../utils/dates';
+import DateWithTooltip from '../DateWithTooltip';
 
 interface Props {
   items: SignalFeedItem[];
@@ -22,7 +22,7 @@ export default function SignalFeedTable({ items, total, page, pageSize, onPageCh
         <table className="w-full text-[12px]">
           <thead>
             <tr className="border-b border-slate-200 bg-slate-50">
-              {['Signal', 'Competitor', 'Capability', 'Strength', 'Confidence', 'Date'].map((h) => (
+              {['Signal', 'Competitor', 'Capability', 'Strength', 'Confidence', 'Datum'].map((h) => (
                 <th key={h} className="text-left text-[10px] font-semibold uppercase tracking-wider text-slate-500 pb-2 pr-4 pt-2">
                   {h}
                 </th>
@@ -57,8 +57,15 @@ export default function SignalFeedTable({ items, total, page, pageSize, onPageCh
                   <td className="py-3 pr-4">
                     <ConfidenceBar value={item.assessment?.confidence} />
                   </td>
-                  <td className="py-3 text-slate-600 whitespace-nowrap">
-                    {formatDistanceToNow(item.published_at || item.created_at)}
+                  <td className="py-3 text-slate-600">
+                    {item.published_at && (
+                      <div>
+                        <DateWithTooltip date={item.published_at} />
+                      </div>
+                    )}
+                    <div className="text-[11px] text-slate-400 mt-0.5">
+                      analysiert: <DateWithTooltip date={item.created_at} />
+                    </div>
                   </td>
                 </tr>
               ))
