@@ -55,7 +55,7 @@ def _build_prompt(signals: list, assessments: list, context: dict) -> str:
         lines.append("")
 
     lines += [
-        "Erstelle exakt dieses Markdown-Dokument (kein Prosa außerhalb der Abschnitte):",
+        "Erstelle exakt dieses Markdown-Dokument. Kein Titel, keine Metadaten, kein Prosa außerhalb der Abschnitte:",
         "",
         "## Strategischer Überblick",
         "[2–3 Sätze: Welche Wettbewerber bewegen sich wie? Was ist die übergeordnete Stoßrichtung?]",

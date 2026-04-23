@@ -36,8 +36,10 @@ export default function IntelligenceBriefingPanel() {
                 hour: '2-digit',
                 minute: '2-digit',
               })}
-              {' · '}
-              {briefing.signal_count} Signale · {briefing.assessment_count} Assessments
+              {' · Letzte 7 Tage · '}
+              {briefing.signal_count === 0
+                ? 'Keine neuen Signale'
+                : `${briefing.signal_count} Signale, ${briefing.assessment_count} Assessments`}
             </span>
           )}
         </div>
