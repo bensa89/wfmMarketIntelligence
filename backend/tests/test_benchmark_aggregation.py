@@ -124,3 +124,44 @@ def test_peer_rankings_computed(db, competitor, signal_with_assessment):
     ranks = [b.peer_rank for b in benchmarks]
     assert all(r is not None for r in ranks)
     assert sorted(ranks) == list(range(1, len(ranks) + 1))
+
+
+# ---------------------------------------------------------------------------
+# BenchmarkQueryService tests
+# ---------------------------------------------------------------------------
+
+from app.benchmark.queries import BenchmarkQueryService  # noqa: E402
+
+
+def test_get_overview_structure(db, competitor, signal_with_assessment):
+    agg = BenchmarkAggregationService(db)
+    agg.recompute_all("30d")
+    qsvc = BenchmarkQueryService(db)
+    overview = qsvc.get_overview("30d")
+    assert overview.period_type == "30d"
+    assert len(overview.competitors) == 1
+    assert len(overview.capabilities) == len(CAPABILITY_KEYS)
+    assert "shift_scheduling" in overview.matrix
+    assert "comp-1" in overview.matrix["shift_scheduling"]
+
+
+def test_get_competitor_strengths_structure(db, competitor, signal_with_assessment):
+    agg = BenchmarkAggregationService(db)
+    agg.recompute_all("30d")
+    qsvc = BenchmarkQueryService(db)
+    resp = qsvc.get_competitor_strengths("acme-wfm", "30d")
+    assert resp.competitor.slug == "acme-wfm"
+    assert len(resp.capabilities) == len(CAPABILITY_KEYS)
+    seeded = next(c for c in resp.capabilities if c.capability_key == "shift_scheduling")
+    assert seeded.source_signal_count == 1
+
+
+def test_get_capability_leaderboard_structure(db, competitor, signal_with_assessment):
+    agg = BenchmarkAggregationService(db)
+    agg.recompute_all("30d")
+    qsvc = BenchmarkQueryService(db)
+    lb = qsvc.get_capability_leaderboard("shift_scheduling", "30d")
+    assert lb.capability_key == "shift_scheduling"
+    assert len(lb.leaderboard) == 1
+    assert lb.leaderboard[0].company_id == "comp-1"
+    assert lb.strongest_competitor is not None
