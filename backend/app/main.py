@@ -52,6 +52,7 @@ from app.routers import (
     briefings,
     intelligence,
     intelligence_briefing,
+    benchmark,
 )  # noqa: E402
 
 app.include_router(companies.router, prefix="/api/companies", tags=["companies"])
@@ -75,6 +76,7 @@ app.include_router(stats.router, prefix="/api/stats", tags=["stats"])
 app.include_router(briefings.router, prefix="/api/briefings", tags=["briefings"])
 app.include_router(intelligence.router, prefix="/api/intelligence", tags=["intelligence"])
 app.include_router(intelligence_briefing.router, prefix="/api/intelligence/briefing", tags=["intelligence-briefing"])
+app.include_router(benchmark.router)
 
 
 @app.get("/api/health")

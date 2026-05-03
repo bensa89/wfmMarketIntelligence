@@ -94,6 +94,12 @@ def assess_signal(signal: Signal, db: Session) -> SignalAssessment | None:
         existing.watch_items = parsed.watch_items
         existing.updated_at = now
         db.commit()
+        # Trigger benchmark recompute for this company (best-effort, non-blocking)
+        try:
+            from app.benchmark.aggregation import BenchmarkAggregationService
+            BenchmarkAggregationService(db).recompute_company(existing.company_id, "30d")
+        except Exception as exc:
+            logger.warning("Benchmark recompute failed: %s", exc)
         return existing
 
     assessment = SignalAssessment(
@@ -118,4 +124,10 @@ def assess_signal(signal: Signal, db: Session) -> SignalAssessment | None:
     )
     db.add(assessment)
     db.commit()
+    # Trigger benchmark recompute for this company (best-effort, non-blocking)
+    try:
+        from app.benchmark.aggregation import BenchmarkAggregationService
+        BenchmarkAggregationService(db).recompute_company(assessment.company_id, "30d")
+    except Exception as exc:
+        logger.warning("Benchmark recompute failed: %s", exc)
     return assessment
