@@ -1,8 +1,8 @@
 """add_capability_benchmarks
 
-Revision ID: 87cda21c0468
+Revision ID: f7e236d29e3f
 Revises: dc69a22e64c3
-Create Date: 2026-05-03 20:50:43.463054
+Create Date: 2026-05-03 20:53:28.362066
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '87cda21c0468'
+revision: str = 'f7e236d29e3f'
 down_revision: Union[str, Sequence[str], None] = 'dc69a22e64c3'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -25,7 +25,7 @@ def upgrade() -> None:
     sa.Column('id', sa.String(length=36), nullable=False),
     sa.Column('company_id', sa.String(length=36), nullable=False),
     sa.Column('capability_key', sa.String(length=100), nullable=False),
-    sa.Column('period_type', sa.Enum('d30', 'd90', 'd180', name='periodtypeenum', create_constraint=True), nullable=False),
+    sa.Column('period_type', sa.Enum('30d', '90d', '180d', name='periodtypeenum', create_constraint=True), nullable=False),
     sa.Column('period_start', sa.Date(), nullable=False),
     sa.Column('period_end', sa.Date(), nullable=False),
     sa.Column('capability_depth_score', sa.SmallInteger(), nullable=False),
@@ -38,7 +38,7 @@ def upgrade() -> None:
     sa.Column('strength_delta', sa.Integer(), nullable=True),
     sa.Column('peer_rank', sa.Integer(), nullable=True),
     sa.Column('peer_percentile', sa.Float(), nullable=True),
-    sa.Column('tier', sa.Enum('leader', 'strong', 'emerging', 'weakly_evidenced', name='benchmarktieреnum', create_constraint=True), nullable=False),
+    sa.Column('tier', sa.Enum('leader', 'strong', 'emerging', 'weakly_evidenced', name='benchmarktiereneum', create_constraint=True), nullable=False),
     sa.Column('confidence', sa.Float(), nullable=False),
     sa.Column('source_signal_count', sa.Integer(), nullable=False),
     sa.Column('summary_reason', sa.Text(), nullable=True),

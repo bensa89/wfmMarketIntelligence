@@ -43,7 +43,7 @@ class CompetitorCapabilityBenchmark(Base):
     strength_delta = Column(Integer, nullable=True)
     peer_rank = Column(Integer, nullable=True)
     peer_percentile = Column(Float, nullable=True)
-    tier = Column(SAEnum(BenchmarkTierEnum, name="benchmarktieреnum", create_constraint=True), nullable=False, default=BenchmarkTierEnum.weakly_evidenced)
+    tier = Column(SAEnum(BenchmarkTierEnum, name="benchmarktiereneum", create_constraint=True), nullable=False, default=BenchmarkTierEnum.weakly_evidenced)
     confidence = Column(Float, nullable=False, default=0.0)
 
     source_signal_count = Column(Integer, nullable=False, default=0)
