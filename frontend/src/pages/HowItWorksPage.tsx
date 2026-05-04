@@ -777,6 +777,84 @@ Erstelle:
 2. Top 3 Handlungsempfehlungen für Produkt / GTM (je 1-2 Sätze, konkret)`}</pre>
   </ExpandablePanel>
 </PipelineSection>
+
+{/* ── SEKTION 8: Bewertungskriterien ── */}
+<section className="scroll-mt-24 py-10 border-t border-white/5">
+  <h2 className="text-lg font-semibold text-slate-100 mb-6">Bewertungskriterien</h2>
+  <div className="grid grid-cols-1 gap-4">
+    {[
+      {
+        name: 'Relevanz-Score',
+        scale: '0.0 – 1.0',
+        who: '🤖 KI',
+        whoColor: 'bg-purple-900/40 text-purple-300',
+        desc: 'Wie relevant ist dieses Signal für unsere Strategie und Märkte?',
+        bands: [
+          { range: '0.0 – 0.3', label: 'Kaum relevant', color: 'text-slate-500' },
+          { range: '0.4 – 0.6', label: 'Peripher (beobachten)', color: 'text-blue-400' },
+          { range: '0.7 – 0.85', label: 'Relevant (aktiv verfolgen)', color: 'text-emerald-400' },
+          { range: '0.86 – 1.0', label: 'Hochrelevant (sofort handeln)', color: 'text-orange-400' },
+        ],
+      },
+      {
+        name: 'Confidence-Score',
+        scale: '0.0 – 1.0',
+        who: '🤖 KI',
+        whoColor: 'bg-purple-900/40 text-purple-300',
+        desc: 'Wie sicher ist der Analyst sich bei seiner Einschätzung?',
+        bands: [
+          { range: '0.0 – 0.5', label: 'Unsicher — kritisch prüfen', color: 'text-slate-500' },
+          { range: '0.5 – 0.75', label: 'Mittel', color: 'text-blue-400' },
+          { range: '0.75 – 1.0', label: 'Sicher', color: 'text-emerald-400' },
+        ],
+      },
+      {
+        name: 'Evidence Strength',
+        scale: '1 – 5',
+        who: '🤖 KI',
+        whoColor: 'bg-purple-900/40 text-purple-300',
+        desc: 'Wie belastbar ist der Beweis im Assessment?',
+        bands: [
+          { range: '1', label: 'Sehr schwach / spekulativ', color: 'text-slate-500' },
+          { range: '2–3', label: 'Mittel', color: 'text-blue-400' },
+          { range: '4–5', label: 'Stark / sehr belastbar', color: 'text-emerald-400' },
+        ],
+      },
+      {
+        name: 'Movement Score',
+        scale: '0 – 100',
+        who: '🔢 Formel',
+        whoColor: 'bg-blue-900/40 text-blue-300',
+        desc: 'Wie stark bewegt sich ein Wettbewerber in einer Capability?',
+        bands: [
+          { range: '0–29', label: 'weak', color: 'text-slate-500' },
+          { range: '30–59', label: 'relevant', color: 'text-blue-400' },
+          { range: '60–79', label: 'strong', color: 'text-emerald-400' },
+          { range: '80–100', label: 'market_shaping', color: 'text-orange-400' },
+        ],
+      },
+    ].map((score) => (
+      <div key={score.name} className="rounded-lg border border-white/5 bg-slate-800/20 p-4">
+        <div className="flex items-center gap-2 mb-1">
+          <span className="text-[14px] font-semibold text-slate-200">{score.name}</span>
+          <span className="text-[10px] text-slate-500">{score.scale}</span>
+          <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${score.whoColor}`}>
+            {score.who}
+          </span>
+        </div>
+        <p className="text-[13px] text-slate-400 mb-3">{score.desc}</p>
+        <div className="flex gap-2 flex-wrap">
+          {score.bands.map((b) => (
+            <div key={b.range} className="text-[11px]">
+              <span className="text-slate-600">{b.range}: </span>
+              <span className={b.color}>{b.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+</section>
       </div>
     </div>
   );
