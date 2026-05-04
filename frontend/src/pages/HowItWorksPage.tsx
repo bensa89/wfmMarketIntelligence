@@ -86,23 +86,108 @@ export default function HowItWorksPage() {
       <p>
         Quellen — Blogs, Newsseiten, Produktseiten, Karriereseiten — werden einmalig in
         der Admin-Oberfläche gepflegt und jeweils einem Unternehmen (Wettbewerber oder
-        Marktbeobachtungsquelle) zugeordnet. Das System besucht regelmäßig jede aktive
-        Quelle, lädt den Inhalt herunter und wandelt ihn automatisch in lesbaren Text um.
+        Marktbeobachtungsquelle) zugeordnet. Jede Quelle hat eine Seed-URL (z.B.
+        blog.workday.com). Das System besucht diese URL und folgt dann automatisch Links
+        innerhalb derselben Domain — so werden neue Artikel entdeckt ohne dass jede URL
+        manuell eingetragen werden muss.
       </p>
+
+      <p className="font-medium text-slate-300 mt-3 mb-1">Phase 1: Seed-URL laden</p>
       <p>
-        Jedes Dokument erhält einen digitalen Fingerabdruck (SHA-256 Hash). Existiert
-        dieser Fingerabdruck bereits in der Datenbank, wird der Inhalt übersprungen —
-        so werden Duplikate zuverlässig vermieden, ohne den Inhalt erneut zu analysieren.
+        Das System lädt die Seed-URL mit{' '}
+        <code className="text-blue-300">httpx</code> (Python HTTP-Client) und einem
+        Standard Chrome User-Agent. Falls die Seite eine JavaScript-App ist (erkennbar
+        an Signalwörtern wie <code className="text-blue-300">{"<div id=\"root\">"}</code>,{' '}
+        <code className="text-blue-300">__next</code>, Gatsby-Markierungen o.ä.) oder
+        weniger als 5 interne Links enthält, schaltet das System auf einen{' '}
+        <strong className="text-slate-200">headless Browser</strong> um, der JavaScript
+        vollständig ausführt — so funktioniert das Crawling auch bei modernen SPAs.
+      </p>
+
+      <p className="font-medium text-slate-300 mt-3 mb-1">Phase 2: Discovery — neue Artikel finden</p>
+      <p>
+        Aus dem HTML der Seed-Seite extrahiert das System alle internen Links
+        (gleiche Domain, kein Cross-Domain). Diese werden dann nach Relevanz gefiltert —
+        nur URLs die wie Artikel aussehen kommen in die Queue. Das System prüft dabei
+        (in dieser Reihenfolge):
+      </p>
+      <div className="mt-2 space-y-1 text-[13px]">
+        {[
+          ['Datumsmuster im Pfad', 'z.B. /2024/03/artikel — klassisches Blog-URL-Schema'],
+          ['Bekannte Content-Pfade', '/news/, /blog/, /press/, /insights/, /resources/, /product/'],
+          ['Content-Segmente', 'URL-Teile wie "news", "blog", "press" im Pfad'],
+          ['Tiefe als Fallback', 'Mindestens 2 Pfadsegmente nach der Seed-URL'],
+        ].map(([label, desc]) => (
+          <div key={label} className="flex gap-2">
+            <span className="text-emerald-400 flex-shrink-0">✓</span>
+            <span><span className="text-slate-300 font-medium">{label}:</span>{' '}{desc}</span>
+          </div>
+        ))}
+        {[
+          ['Navigation-Seiten', 'about, contact, legal, privacy, login, signup, search, checkout'],
+          ['Sprachpräfixe', '/de/, /en/, /fr/, /es/ etc.'],
+          ['Externe Links', 'andere Domains werden komplett ignoriert'],
+        ].map(([label, desc]) => (
+          <div key={label} className="flex gap-2">
+            <span className="text-red-400 flex-shrink-0">✗</span>
+            <span><span className="text-slate-300 font-medium">{label}:</span>{' '}{desc}</span>
+          </div>
+        ))}
+      </div>
+
+      <p className="mt-3">
+        Das System respektiert dabei immer die{' '}
+        <code className="text-blue-300">robots.txt</code> der Website. URLs die dort
+        gesperrt sind werden übersprungen. Pro Crawl-Lauf werden maximal{' '}
+        <strong className="text-slate-200">50 Seiten</strong> besucht.
+      </p>
+
+      <p className="font-medium text-slate-300 mt-3 mb-1">Inhaltsextraktion</p>
+      <p>
+        Für jede gefundene URL prüft das System zunächst ob es sich wirklich um einen
+        Artikel handelt (mehr als 200 Wörter Textinhalt, kein reines Navigationsmenü).
+        Dann werden Navigation, Footer, Header, Sidebar und Scripts entfernt —
+        übrig bleibt der Hauptinhalt aus <code className="text-blue-300">{"<main>"}</code>{' '}
+        oder <code className="text-blue-300">{"<article>"}</code>. Dieser wird via{' '}
+        <code className="text-blue-300">markdownify</code> in sauberes Markdown
+        umgewandelt. Das Veröffentlichungsdatum wird aus dem HTML extrahiert — das System
+        prüft dafür JSON-LD, Open Graph Meta-Tags, <code className="text-blue-300">{"<time>"}</code>-Elemente
+        und weitere Meta-Felder.
+      </p>
+
+      <p className="font-medium text-slate-300 mt-3 mb-1">Relevanz-Feedback & Deaktivierung</p>
+      <p>
+        Nach der Analyse bewertet das System rückwirkend jede entdeckte Seite: Wenn alle
+        Signale einer Seite einen Relevanz-Score unter 0.3 haben, wird die Seite als{' '}
+        <strong className="text-slate-200">inaktiv</strong> markiert und in zukünftigen
+        Crawl-Läufen übersprungen. So lernt das System welche Bereiche einer Website
+        für uns wertlos sind.
+      </p>
+
+      <p>
+        Jedes Dokument erhält abschließend einen SHA-256 Fingerabdruck. Existiert dieser
+        Fingerabdruck bereits, wird der Inhalt übersprungen — so werden Duplikate
+        zuverlässig vermieden.
       </p>
     </>
   }
   example={
-    <p>
-      Das System findet den Workday-Blogpost unter blog.workday.com/…, wandelt ihn von
-      HTML in lesbaren Text um und berechnet seinen Fingerabdruck. Da dieser Hash noch
-      nicht bekannt ist, wird ein neues Dokument gespeichert und zur Analyse
-      weitergegeben.
-    </p>
+    <div className="space-y-1.5">
+      <p>
+        Das System lädt <code className="text-amber-300 bg-amber-900/30 px-1 rounded">blog.workday.com</code> →
+        erkennt React-App → schaltet auf headless Browser um. Aus der gerenderten
+        Seite extrahiert es 47 interne Links. Davon passieren 12 den Artikel-Filter
+        (u.a. <code className="text-amber-300 bg-amber-900/30 px-1 rounded">/blog/2026/04/ai-scheduling-copilot</code>
+        — enthält Datumsmuster und Content-Pfad).
+      </p>
+      <p>
+        Die URL wird gecrawlt, robots.txt erlaubt den Zugriff. Der Artikel hat 840 Wörter
+        → Inhaltscheck bestanden. Nach Extraktion: 620 Wörter Markdown, SHA-256
+        <code className="text-amber-300 bg-amber-900/30 px-1 rounded">a3f7…</code> noch nicht
+        bekannt → neues Dokument gespeichert. Veröffentlichungsdatum aus JSON-LD
+        extrahiert: 2026-04-18.
+      </p>
+    </div>
   }
 >
   <ExpandablePanel title="Datenstruktur — Company">
