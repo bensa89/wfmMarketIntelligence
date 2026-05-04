@@ -312,6 +312,7 @@ Antworte NUR mit einem validen JSON-Objekt nach diesem Schema:
       <tbody className="text-slate-400">
         {[
           ['company_name', 'Unser Unternehmensname'],
+          ['short_description', 'Kurzbeschreibung unseres Produkts'],
           ['target_industries', 'Zielbranchen (Liste)'],
           ['target_segments', 'Zielsegmente (Liste)'],
           ['core_capabilities', 'Kernkompetenzen (Liste)'],
