@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { PipelineFlow, PipelineStep } from '../components/docs/PipelineFlow';
+import { PipelineFlow } from '../components/docs/PipelineFlow';
+import type { PipelineStep } from '../components/docs/PipelineFlow';
 import { PipelineSection } from '../components/docs/PipelineSection';
 import { ExpandablePanel } from '../components/docs/ExpandablePanel';
 
