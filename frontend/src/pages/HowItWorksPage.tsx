@@ -329,6 +329,227 @@ Antworte NUR mit einem validen JSON-Objekt nach diesem Schema:
     </table>
   </ExpandablePanel>
 </PipelineSection>
+
+{/* ── SEKTION 3: Tiefenbewertung ── */}
+<PipelineSection
+  id="assessment"
+  title="Tiefenbewertung (Assessment)"
+  type="ai"
+  explanation={
+    <>
+      <p>
+        Signale, deren Relevanz-Score einen konfigurierbaren Schwellenwert überschreitet,
+        werden einem zweiten, spezialisierten KI-Analysten übergeben. Dieser geht tiefer:
+        Er ordnet das Signal einer konkreten WFM-Capability zu (z.B. „AI Copilot" oder
+        „Shift Scheduling"), klassifiziert die Art des strategischen Moves, schätzt wie
+        belastbar der Beweis ist (Evidence Strength 1–5) und leitet ab, was die
+        strategische Absicht des Wettbewerbers ist — und was das für uns konkret bedeutet.
+      </p>
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        {[
+          ['product_capability_move', 'Produktentwicklung in einer Capability'],
+          ['positioning_move', 'Veränderung in Marktpositionierung'],
+          ['ecosystem_move', 'Partnerschaften, Integrationen'],
+          ['thought_leadership_signal', 'Events, Content, Whitepapers'],
+          ['hiring_signal', 'Personalstrategie als Indikator'],
+          ['market_expansion_move', 'Expansion in neue Märkte / Segmente'],
+          ['weak_signal', 'Schwaches oder unklares Signal'],
+        ].map(([cls, desc]) => (
+          <div key={cls} className="flex gap-2">
+            <code className="text-purple-300 text-[11px] flex-shrink-0">{cls}</code>
+            <span className="text-slate-500 text-[11px]">{desc}</span>
+          </div>
+        ))}
+      </div>
+    </>
+  }
+  example={
+    <p>
+      Das Signal überschreitet den Schwellenwert (0.88 ≥ 0.7). Der Assessment-Analyst
+      bewertet: Capability{' '}
+      <code className="text-purple-300 bg-purple-900/30 px-1 rounded">ai_copilot</code>{' '}
+      (primär), Signal Class{' '}
+      <code className="text-purple-300 bg-purple-900/30 px-1 rounded">
+        product_capability_move
+      </code>
+      , Evidence Strength <strong className="text-amber-300">4/5</strong>, Visibility
+      Impact: <strong className="text-amber-300">high</strong>. Strategic Intent:
+      „Differenzierung über KI im Kernprodukt Scheduling". Implication for us: „Direkter
+      Angriff auf unsere KI-Roadmap — Priorisierung des AI Copilot Moduls überdenken."
+    </p>
+  }
+>
+  <ExpandablePanel title="Prompt anzeigen" variant="prompt">
+    <p className="mb-3 text-slate-300">
+      Der Assessment-Analyst erhält das vollständige Signal sowie unser Kontext-Profil
+      und die Liste der 16 WFM-Capabilities. Er soll die betroffene Capability benennen,
+      die strategische Absicht des Wettbewerbers einschätzen und konkrete Watchpoints
+      ableiten.
+    </p>
+    <pre className="bg-slate-900/60 rounded p-3 text-[11px] text-slate-300 overflow-x-auto whitespace-pre-wrap">{`Bewerte dieses Wettbewerber-Signal für einen WFM-Software-Anbieter.
+
+Signal:
+- Unternehmen: [Wettbewerber-Name]
+- Typ: [signal_type]
+- Titel: [title]
+- Zusammenfassung: [summary]
+- Warum es wichtig ist: [why_it_matters]
+- Relevanz-Score: [relevance_score]
+- Confidence-Score: [confidence_score]
+
+Unser interner Kontext:
+- Kernkompetenzen: [core_capabilities]
+- Strategische Prioritäten: [strategic_priorities]
+
+Verfügbare Capability-Keys: [Liste der 16 Capabilities]
+
+Antworte mit genau diesem JSON-Objekt:
+{
+  "capability_primary": "<ein Capability-Key oder null>",
+  "capability_secondary": ["<key>"],
+  "signal_class": "<product_capability_move | positioning_move | ...>",
+  "evidence_strength": 1-5,
+  "visibility_impact": "<low | medium | high>",
+  "strategic_intent_guess": "<ein Satz>",
+  "gameplay_tags": ["<tag>"],
+  "assessment_summary": "<2-3 Sätze>",
+  "implication_for_us": "<1-2 Sätze>",
+  "watch_items": ["<konkretes Beobachtungsziel>"],
+  "confidence": 0.0-1.0
+}`}</pre>
+  </ExpandablePanel>
+
+  <ExpandablePanel title="Datenstruktur — SignalAssessment">
+    <table className="w-full text-xs mt-2 border-collapse">
+      <thead>
+        <tr className="border-b border-white/10">
+          <th className="text-left py-1.5 pr-4 text-slate-300 font-semibold">Feld</th>
+          <th className="text-left py-1.5 text-slate-300 font-semibold">Beschreibung</th>
+        </tr>
+      </thead>
+      <tbody className="text-slate-400">
+        {[
+          ['capability_primary', 'Primär betroffene WFM-Capability'],
+          ['capability_secondary', 'Weitere betroffene Capabilities (Liste)'],
+          ['signal_class', 'Art des strategischen Moves'],
+          ['evidence_strength', 'Beweisstärke 1 (schwach) – 5 (sehr stark)'],
+          ['visibility_impact', 'Marktsichtbarkeit: low / medium / high'],
+          ['strategic_intent_guess', 'Vermutete strategische Absicht (1 Satz)'],
+          ['gameplay_tags', 'Kategorisierungs-Tags (Liste)'],
+          ['assessment_summary', '2–3 Sätze was dieses Signal bedeutet'],
+          ['implication_for_us', '1–2 Sätze was das für unser Produkt bedeutet'],
+          ['watch_items', 'Konkrete Beobachtungspunkte (Liste)'],
+          ['movement_score', 'Deterministisch berechneter Score 0–100'],
+          ['movement_strength', 'weak / relevant / strong / market_shaping'],
+        ].map(([field, desc]) => (
+          <tr key={field} className="border-b border-white/5">
+            <td className="py-1.5 pr-4 font-mono text-blue-300">{field}</td>
+            <td className="py-1.5">{desc}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </ExpandablePanel>
+</PipelineSection>
+
+{/* ── SEKTION 4: Capability-Mapping & Movement Score ── */}
+<PipelineSection
+  id="capabilities"
+  title="Capability-Mapping & Movement Score"
+  type="rule"
+  explanation={
+    <>
+      <p>
+        Aus den Assessment-Daten berechnet das System deterministisch einen{' '}
+        <strong className="text-slate-200">Movement Score (0–100)</strong> pro Signal. Die
+        Formel gewichtet vier Faktoren: Relevanz des Signals, Confidence des Analysten,
+        Beweisstärke und Marktsichtbarkeit.
+      </p>
+      <div className="mt-3 bg-slate-800/40 rounded-lg p-3 font-mono text-[12px] text-slate-300">
+        Score = (Relevanz × 35) + (Confidence × 20) + (Evidence × 6) + Visibility-Bonus
+        <br />
+        <span className="text-slate-500">
+          Visibility-Bonus: low=0, medium=8, high=15 | Thought-Leadership-Abzug: −10
+        </span>
+      </div>
+      <div className="mt-3 flex gap-3">
+        {[
+          { range: '0–29', label: 'weak', color: 'text-slate-400' },
+          { range: '30–59', label: 'relevant', color: 'text-blue-400' },
+          { range: '60–79', label: 'strong', color: 'text-emerald-400' },
+          { range: '80–100', label: 'market_shaping', color: 'text-orange-400' },
+        ].map(({ range, label, color }) => (
+          <div key={label} className="flex flex-col items-center px-3 py-2 rounded-lg bg-slate-800/40 text-center">
+            <span className="text-[10px] text-slate-500">{range}</span>
+            <span className={`text-[12px] font-semibold ${color}`}>{label}</span>
+          </div>
+        ))}
+      </div>
+      <p className="mt-3">
+        Das{' '}
+        <strong className="text-slate-200">Wardley Evolution-Band</strong> einer Capability
+        zeigt wo sie im Evolutionszyklus steht: <code className="text-blue-300">genesis</code>{' '}
+        (neu, experimentell) → <code className="text-blue-300">product</code> → commodity.
+        Mehrere starke Signale zu einer Capability können anzeigen, dass ein Wettbewerber
+        diese aktiv Richtung nächster Evolutionsstufe treibt.
+      </p>
+    </>
+  }
+  example={
+    <p>
+      Movement Score: (0.88×35) + (0.92×20) + (4×6) + 15 ={' '}
+      <strong className="text-amber-300">88</strong> →{' '}
+      <strong className="text-orange-400">market_shaping</strong>. Das Signal bewegt die
+      Nadel bei{' '}
+      <code className="text-purple-300 bg-purple-900/30 px-1 rounded">ai_copilot</code>{' '}
+      (strategisches Gewicht 9/10, Wardley-Band:{' '}
+      <code className="text-blue-300">genesis</code> — Workday schiebt diese Capability
+      aktiv Richtung <code className="text-blue-300">product</code>).
+    </p>
+  }
+>
+  <ExpandablePanel title="Die 16 WFM-Capabilities anzeigen">
+    <table className="w-full text-xs mt-2 border-collapse">
+      <thead>
+        <tr className="border-b border-white/10">
+          <th className="text-left py-1.5 pr-4 text-slate-300 font-semibold">Capability</th>
+          <th className="text-left py-1.5 pr-4 text-slate-300 font-semibold">Gewicht</th>
+          <th className="text-left py-1.5 text-slate-300 font-semibold">Wardley-Band</th>
+        </tr>
+      </thead>
+      <tbody className="text-slate-400">
+        {[
+          ['Shift Scheduling', '10/10', 'product'],
+          ['Demand Forecasting', '9/10', 'product'],
+          ['AI Copilot', '9/10', 'genesis'],
+          ['Optimization Engine', '9/10', 'product'],
+          ['Compliance & Labor Rules', '8/10', 'product'],
+          ['Intraday Management', '8/10', 'product'],
+          ['Analytics & Insights', '8/10', 'product'],
+          ['Platform & Ecosystem', '8/10', 'product'],
+          ['Time & Attendance', '7/10', 'product'],
+          ['Manager Experience', '7/10', 'product'],
+          ['Workflow Automation', '7/10', 'product'],
+          ['Integration Hub', '7/10', 'product'],
+          ['Vertical Solutions', '7/10', 'product'],
+          ['Employee Self-Service', '6/10', 'product'],
+          ['Mobile Experience', '6/10', 'product'],
+          ['Data Foundation', '6/10', 'product'],
+        ].map(([cap, weight, band]) => (
+          <tr key={cap} className="border-b border-white/5">
+            <td className="py-1.5 pr-4 text-slate-300">{cap}</td>
+            <td className="py-1.5 pr-4">{weight}</td>
+            <td className="py-1.5">
+              <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${band === 'genesis' ? 'bg-orange-900/40 text-orange-300' : 'bg-slate-700/40 text-slate-400'}`}>
+                {band}
+              </span>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </ExpandablePanel>
+</PipelineSection>
       </div>
     </div>
   );
