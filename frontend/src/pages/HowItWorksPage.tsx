@@ -550,6 +550,233 @@ Antworte mit genau diesem JSON-Objekt:
     </table>
   </ExpandablePanel>
 </PipelineSection>
+
+{/* ── SEKTION 5: Benchmark ── */}
+<PipelineSection
+  id="benchmark"
+  title="Benchmark-Berechnung"
+  type="rule"
+  explanation={
+    <p>
+      Über einen gewählten Zeitraum (30 / 90 / 180 Tage) aggregiert das System alle
+      Assessments aller Wettbewerber pro Capability. Das Ergebnis ist die{' '}
+      <strong className="text-slate-200">Capability Strength Matrix</strong>: eine
+      Übersicht, wer in welchem Bereich wie aktiv ist und welche Bewegungsstärke er dabei
+      zeigt. Diese Matrix ist der schnellste Weg um zu verstehen, wo der Markt sich gerade
+      bewegt — und wo wir besonders aufmerksam sein sollten.
+    </p>
+  }
+  example={
+    <p>
+      Nach 30 Tagen hat Workday 5 Signals zu{' '}
+      <code className="text-purple-300 bg-purple-900/30 px-1 rounded">ai_copilot</code>{' '}
+      produziert, davon 3 mit{' '}
+      <strong className="text-orange-400">market_shaping</strong>. In der Capability
+      Strength Matrix erscheint Workday als stärkster Akteur in dieser Capability im
+      aktuellen Zeitraum.
+    </p>
+  }
+/>
+
+{/* ── SEKTION 6: Competitor Summary ── */}
+<PipelineSection
+  id="summary"
+  title="Competitor Summary"
+  type="ai"
+  explanation={
+    <p>
+      Auf Knopfdruck (oder automatisch) fasst ein KI-Analyst alle Assessments eines
+      Wettbewerbers für einen Zeitraum zusammen. Das Ergebnis ist ein vollständiges
+      strategisches Profil: Wie ist die Gesamtausrichtung gerade? In welchen Capabilities
+      ist der Wettbewerber am aktivsten? Was sind die konkreten Risiken und Chancen für
+      uns — und was sollten wir in den nächsten Wochen besonders beobachten?
+    </p>
+  }
+  example={
+    <p>
+      Nach 30 Tagen mit mehreren Workday-Signalen generiert das System eine Competitor
+      Summary: Strategic Posture:{' '}
+      <code className="text-purple-300 bg-purple-900/30 px-1 rounded">
+        aggressive_ai_expansion
+      </code>
+      . Top Risk: „Workday positioniert KI als Standard-Feature — Gefahr der
+      Commoditisierung unseres AI-Differenzierers." Watchpoint: „Nächste Workday Rising
+      Keynote auf weitere AI-Announcements überwachen."
+    </p>
+  }
+>
+  <ExpandablePanel title="Prompt anzeigen" variant="prompt">
+    <p className="mb-3 text-slate-300">
+      Der Analyst bekommt alle Assessments des Wettbewerbers im Zeitraum als strukturierte
+      Liste sowie unser Kontext-Profil. Er soll ein zusammenfassendes strategisches Bild
+      zeichnen: Gesamtausrichtung, stärkste Capabilities, Risiken und Chancen für uns.
+    </p>
+    <pre className="bg-slate-900/60 rounded p-3 text-[11px] text-slate-300 overflow-x-auto whitespace-pre-wrap">{`Synthetisiere diese Signal-Assessments für Wettbewerber "[Name]" über [Zeitraum].
+
+Assessments ([N] Signale):
+[Strukturierte Liste aller Assessments mit capability_primary, signal_class,
+evidence_strength, assessment_summary, implication_for_us]
+
+Unser interner Kontext:
+- Kernkompetenzen: [core_capabilities]
+- Strategische Prioritäten: [strategic_priorities]
+
+Antworte mit genau diesem JSON-Objekt:
+{
+  "strategic_posture": "<2-4 Wort Label, z.B. aggressive_expansion>",
+  "positioning_summary": "<2-3 Sätze zur strategischen Ausrichtung>",
+  "top_capabilities": ["<capability_key>"],
+  "capability_assessment": [
+    {"key": "...", "label": "...", "activity_level": "low|medium|high", "notes": "..."}
+  ],
+  "top_risks": ["<Risiko für uns, je ein Satz>"],
+  "top_opportunities": ["<Chance für uns, je ein Satz>"],
+  "watchpoints": ["<konkretes Beobachtungsziel>"]
+}`}</pre>
+  </ExpandablePanel>
+
+  <ExpandablePanel title="Datenstruktur — CompetitorSummary">
+    <table className="w-full text-xs mt-2 border-collapse">
+      <thead>
+        <tr className="border-b border-white/10">
+          <th className="text-left py-1.5 pr-4 text-slate-300 font-semibold">Feld</th>
+          <th className="text-left py-1.5 text-slate-300 font-semibold">Beschreibung</th>
+        </tr>
+      </thead>
+      <tbody className="text-slate-400">
+        {[
+          ['company', 'Bewerteter Wettbewerber'],
+          ['period_type', 'Zeitraum: 7d / 30d / 90d'],
+          ['strategic_posture', 'KI-generiertes Label (z.B. aggressive_expansion)'],
+          ['positioning_summary', '2–3 Sätze zur strategischen Ausrichtung'],
+          ['top_capabilities', 'Aktivste Capabilities im Zeitraum'],
+          ['capability_assessment', 'Aktivitätslevel pro Capability'],
+          ['top_risks', 'Risiken für uns (Liste)'],
+          ['top_opportunities', 'Chancen für uns (Liste)'],
+          ['watchpoints', 'Konkrete Beobachtungspunkte (Liste)'],
+          ['avg_movement_score', 'Durchschnittlicher Movement Score im Zeitraum'],
+          ['signal_count', 'Anzahl Signals im Zeitraum'],
+        ].map(([field, desc]) => (
+          <tr key={field} className="border-b border-white/5">
+            <td className="py-1.5 pr-4 font-mono text-blue-300">{field}</td>
+            <td className="py-1.5">{desc}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </ExpandablePanel>
+</PipelineSection>
+
+{/* ── SEKTION 7: Briefings ── */}
+<PipelineSection
+  id="briefing"
+  title="Briefings"
+  type="ai"
+  explanation={
+    <>
+      <p>
+        Das System generiert zwei verschiedene KI-Briefings — für unterschiedliche
+        Zielgruppen und Datenbasis:
+      </p>
+      <div className="mt-3 grid grid-cols-1 gap-3">
+        <div className="rounded-lg border border-slate-700/40 bg-slate-800/30 p-3">
+          <p className="text-[12px] font-semibold text-slate-200 mb-1">
+            Weekly Digest (Dashboard)
+          </p>
+          <p className="text-[12px] text-slate-400">
+            Aus allen neuen Signals der letzten 7 Tage — unabhängig vom Movement Score.
+            Kompakter Überblick welche Unternehmen aktiv waren, plus drei priorisierte
+            Handlungsempfehlungen als Tabelle mit direkten Links zu den Originalquellen.
+          </p>
+        </div>
+        <div className="rounded-lg border border-slate-700/40 bg-slate-800/30 p-3">
+          <p className="text-[12px] font-semibold text-slate-200 mb-1">
+            Intelligence Briefing (Overview)
+          </p>
+          <p className="text-[12px] text-slate-400">
+            Nur aus Signals mit Movement Strength{' '}
+            <code className="text-emerald-300">strong</code> oder{' '}
+            <code className="text-orange-300">market_shaping</code>. Selektiver und
+            strategischer — ein Executive Summary der wichtigsten Marktbewegungen plus
+            priorisierte Handlungsempfehlungen für Produkt und GTM.
+          </p>
+        </div>
+      </div>
+    </>
+  }
+  example={
+    <p>
+      Das Workday-Signal mit Movement Score 88 (
+      <strong className="text-orange-400">market_shaping</strong>) erscheint im
+      Intelligence Briefing: „Workday beschleunigt AI-Investitionen im
+      Scheduling-Kernprodukt — direkter Wettbewerbsdruck auf unsere AI-Roadmap."
+      Empfehlung #1: „AI Copilot Modul priorisieren — Workday schiebt diesen Bereich
+      aktiv Richtung Marktstandard."
+    </p>
+  }
+>
+  <ExpandablePanel title="Prompt anzeigen — Weekly Digest" variant="prompt">
+    <p className="mb-3 text-slate-300">
+      Der Analyst erhält eine Zusammenfassung der Signalaktivität der letzten 7 Tage:
+      aktivste Unternehmen, Top-Signals nach Relevanz, Signaltyp-Verteilung. Er soll eine
+      kurze Zusammenfassung, eine Empfehlungstabelle mit Quell-Links und einen Ausblick
+      erstellen.
+    </p>
+    <pre className="bg-slate-900/60 rounded p-3 text-[11px] text-slate-300 overflow-x-auto whitespace-pre-wrap">{`Du bist ein Market Intelligence Analyst.
+Erstelle eine prägnante, handlungsorientierte Zusammenfassung der wichtigsten
+Marktentwicklungen.
+
+Analysezeitraum: letzte 7 Tage
+Neue Signale gesamt: [N]
+Davon hohe Relevanz (≥0.7): [N]
+
+Aktivste Unternehmen:
+- [Unternehmen]: [N] Signale
+...
+
+Top-Signale nach Relevanz:
+- [[Unternehmen]] [Titel] (Relevanz: X.XX, Typ: ...)
+  Quelle: [URL]
+  → [why_it_matters]
+
+Erstelle auf Deutsch:
+1. Kurze Zusammenfassung (2-3 Sätze) der wichtigsten Entwicklungen
+2. Top 3 Handlungsempfehlungen als Markdown-Tabelle:
+   | Priorität | Signal | Grund |
+3. Ausblick: Was könnte sich als nächstes entwickeln?`}</pre>
+  </ExpandablePanel>
+
+  <ExpandablePanel title="Prompt anzeigen — Intelligence Briefing" variant="prompt">
+    <p className="mb-3 text-slate-300">
+      Der Analyst erhält ausschließlich Signals mit hohem Movement Score. Er erstellt ein
+      strategisches Executive-Summary und bis zu 3 priorisierte Handlungsempfehlungen für
+      Produkt und GTM-Teams.
+    </p>
+    <pre className="bg-slate-900/60 rounded p-3 text-[11px] text-slate-300 overflow-x-auto whitespace-pre-wrap">{`Du bist ein strategischer Market Intelligence Analyst für ein WFM-Unternehmen.
+Erstelle ein Executive Intelligence Briefing aus den wichtigsten Marktbewegungen.
+
+Zeitraum: letzte 7 Tage
+Analysierte Signale: [N] Assessments
+Starke / market-shaping Signale: [N]
+
+Top Moves (nach Movement Score):
+- [Unternehmen] | [Titel] | Score: [X] | [market_shaping/strong]
+  Capability: [capability_primary]
+  [assessment_summary]
+  Für uns: [implication_for_us]
+...
+
+Aktivste Capability-Bereiche: [Top 5]
+
+Unser Kontext:
+- Kernkompetenzen: [core_capabilities]
+- Strategische Prioritäten: [strategic_priorities]
+
+Erstelle:
+1. Strategischer Überblick (2-3 Sätze): Was bewegt sich gerade im Markt?
+2. Top 3 Handlungsempfehlungen für Produkt / GTM (je 1-2 Sätze, konkret)`}</pre>
+  </ExpandablePanel>
+</PipelineSection>
       </div>
     </div>
   );
