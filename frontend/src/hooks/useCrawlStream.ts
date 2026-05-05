@@ -71,6 +71,12 @@ export function useCrawlStream() {
                   ? { new_documents: s.new_documents, skipped: s.skipped, errors: s.errors }
                   : undefined,
               errorMessage: s.error_message,
+              stepTimings: s.fetch_ms != null ? {
+                fetching: s.fetch_ms!,
+                extracting: s.extract_ms!,
+                analysing: s.analyse_ms!,
+                discovering: s.discover_ms!,
+              } : undefined,
             })),
           );
           setIsRunning(true);
@@ -102,6 +108,37 @@ export function useCrawlStream() {
             ),
           );
           break;
+        case 'discovery_progress':
+          setSourceStates((prev) =>
+            prev.map((s) =>
+              s.source_id === event.source_id
+                ? {
+                    ...s,
+                    discoveryProgress: {
+                      pages_found: event.pages_found,
+                      pages_crawled: event.pages_crawled,
+                      max_pages: event.max_pages,
+                    },
+                  }
+                : s,
+            ),
+          );
+          break;
+        case 'step_timing':
+          setSourceStates((prev) =>
+            prev.map((s) =>
+              s.source_id === event.source_id
+                ? {
+                    ...s,
+                    stepTimings: {
+                      ...s.stepTimings,
+                      [event.step]: event.duration_ms,
+                    },
+                  }
+                : s,
+            ),
+          );
+          break;
         case 'source_done':
           setSourceStates((prev) =>
             prev.map((s) =>
@@ -116,6 +153,14 @@ export function useCrawlStream() {
                       skipped: event.skipped,
                       errors: event.errors,
                     },
+                    stepTimings: event.timings
+                      ? {
+                          fetching: event.timings.fetch_ms,
+                          extracting: event.timings.extract_ms,
+                          analysing: event.timings.analyse_ms,
+                          discovering: event.timings.discover_ms,
+                        }
+                      : s.stepTimings,
                   }
                 : s,
             ),

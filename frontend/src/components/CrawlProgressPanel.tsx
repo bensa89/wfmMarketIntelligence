@@ -8,6 +8,12 @@ const STEP_LABELS: Record<CrawlStep, string> = {
   discovering: 'Discovering...',
 };
 
+function formatMs(ms: number | undefined): string {
+  if (ms == null) return '';
+  if (ms < 1000) return `${ms}ms`;
+  return `${(ms / 1000).toFixed(1)}s`;
+}
+
 function SourceRow({ state }: { state: SourceCrawlState }) {
   let domain: string;
   try {
@@ -16,26 +22,48 @@ function SourceRow({ state }: { state: SourceCrawlState }) {
     domain = state.url;
   }
 
+  const stepLabel =
+    state.status === 'running' && state.currentStep
+      ? state.currentStep === 'discovering' && state.discoveryProgress
+        ? `Discovering ${state.discoveryProgress.pages_crawled}/${state.discoveryProgress.max_pages} Seiten`
+        : STEP_LABELS[state.currentStep]
+      : null;
+
+  const timingsParts: string[] = [];
+  if (state.stepTimings) {
+    const order: CrawlStep[] = ['fetching', 'extracting', 'analysing', 'discovering'];
+    for (const step of order) {
+      const ms = state.stepTimings[step];
+      if (ms != null) {
+        const shortLabel = step === 'analysing' ? 'analyse' : step === 'discovering' ? 'discover' : step === 'extracting' ? 'extract' : 'fetch';
+        timingsParts.push(`${shortLabel} ${formatMs(ms)}`);
+      }
+    }
+  }
+
   return (
     <div className="flex items-center gap-3 py-1.5 px-4 text-sm border-b border-app-border/20 last:border-0">
-      <span className="w-4 flex-shrink-0 flex items-center justify-center">
-        {state.status === 'done' && <Check size={13} className="text-signal-high" />}
-        {state.status === 'error' && <AlertCircle size={13} className="text-signal-low" />}
-        {state.status === 'running' && (
-          <Loader2 size={13} className="text-accent-blue animate-spin" />
+      <span className="w-4 flex-shrink-0 flex justify-center">
+        {state.status === 'done' ? (
+          <Check className="w-3.5 h-3.5 text-signal-high" />
+        ) : state.status === 'error' ? (
+          <AlertCircle className="w-3.5 h-3.5 text-signal-low" />
+        ) : state.status === 'running' ? (
+          <Loader2 className="w-3.5 h-3.5 animate-spin text-accent-blue" />
+        ) : (
+          <Minus className="w-3.5 h-3.5 text-ink-muted" />
         )}
-        {state.status === 'waiting' && <Minus size={13} className="text-ink-muted" />}
       </span>
-      <span className="flex-1 text-ink truncate" title={state.url}>
-        {domain}
-      </span>
-      <span className="text-ink-muted text-xs min-w-0 shrink-0">
+      <span className="flex-1 truncate text-ink" title={state.url}>{domain}</span>
+      <span className="text-xs text-ink-muted flex-shrink-0">
         {state.status === 'done' && state.result
-          ? `${state.result.new_documents} new · ${state.result.skipped} skipped`
+          ? timingsParts.length > 0
+            ? timingsParts.join(' · ')
+            : `${state.result.new_documents} new · ${state.result.skipped} skipped`
           : state.status === 'error'
             ? (state.errorMessage ?? 'Error')
-            : state.status === 'running' && state.currentStep
-              ? STEP_LABELS[state.currentStep]
+            : state.status === 'running' && stepLabel
+              ? stepLabel
               : 'Waiting...'}
       </span>
     </div>
