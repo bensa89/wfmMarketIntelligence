@@ -2,6 +2,7 @@ import asyncio
 import json
 import logging
 import threading
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from typing import AsyncGenerator, Dict, Any, List
 
@@ -21,6 +22,7 @@ from app.models.crawl_run import (
     CrawlRunStep,
 )
 from app.crawler.pipeline import run_crawl_source
+from app.config import settings
 
 router = APIRouter()
 
@@ -56,6 +58,124 @@ def _create_crawl_run(source_ids: List[str], db: Session) -> CrawlRun:
     return crawl_run
 
 
+def _crawl_single_source(
+    source_id: str,
+    source_url: str,
+    crs_id: str,
+    crawl_run_id: str,
+    loop: asyncio.AbstractEventLoop,
+    queue: asyncio.Queue,
+) -> Dict:
+    worker_db = SessionLocal()
+    try:
+        source = worker_db.query(Source).filter(Source.id == source_id).first()
+        if not source:
+            return {"new_documents": 0, "skipped": 0, "errors": 0}
+
+        crs = (
+            worker_db.query(CrawlRunSource).filter(CrawlRunSource.id == crs_id).first()
+        )
+        if not crs:
+            return {"new_documents": 0, "skipped": 0, "errors": 0}
+
+        crs.status = CrawlRunSourceStatus.running
+        crs.started_at = datetime.now(timezone.utc)
+        worker_db.commit()
+
+        loop.call_soon_threadsafe(
+            queue.put_nowait,
+            {
+                "type": "source_start",
+                "crawl_run_id": crawl_run_id,
+                "source_id": source_id,
+                "url": source_url,
+            },
+        )
+
+        def make_callback(sid: str, crs_id_val: str):
+            def callback(event: dict) -> None:
+                event_copy = dict(event)
+                event_copy["crawl_run_id"] = crawl_run_id
+                event_copy["source_id"] = sid
+                if event.get("type") == "step":
+                    crs_obj = (
+                        worker_db.query(CrawlRunSource)
+                        .filter(CrawlRunSource.id == crs_id_val)
+                        .first()
+                    )
+                    if crs_obj:
+                        step_name = event.get("step")
+                        if step_name and step_name in [e.value for e in CrawlRunStep]:
+                            crs_obj.current_step = CrawlRunStep(step_name)
+                            worker_db.commit()
+                loop.call_soon_threadsafe(queue.put_nowait, event_copy)
+
+            return callback
+
+        try:
+            result = run_crawl_source(
+                source,
+                worker_db,
+                analyse=True,
+                progress_callback=make_callback(source_id, crs_id),
+            )
+        except Exception as e:
+            worker_db.rollback()
+            result = {"new_documents": 0, "skipped": 0, "errors": 1}
+            loop.call_soon_threadsafe(
+                queue.put_nowait,
+                {
+                    "type": "error",
+                    "crawl_run_id": crawl_run_id,
+                    "source_id": source_id,
+                    "message": str(e),
+                },
+            )
+
+        timings = result.get("timings", {})
+
+        crs = (
+            worker_db.query(CrawlRunSource).filter(CrawlRunSource.id == crs_id).first()
+        )
+        if crs:
+            crs.status = CrawlRunSourceStatus.completed
+            crs.current_step = None
+            crs.new_documents = result.get("new_documents", 0)
+            crs.skipped = result.get("skipped", 0)
+            crs.errors = result.get("errors", 0)
+            crs.finished_at = datetime.now(timezone.utc)
+            crs.fetch_ms = timings.get("fetch_ms")
+            crs.extract_ms = timings.get("extract_ms")
+            crs.analyse_ms = timings.get("analyse_ms")
+            crs.discover_ms = timings.get("discover_ms")
+            if (
+                result.get("errors", 0) > 0
+                and not result.get("new_documents")
+                and not result.get("skipped")
+            ):
+                crs.status = CrawlRunSourceStatus.failed
+                if result.get("errors", 0) > 0:
+                    crs.error_message = "Errors during crawl"
+            worker_db.commit()
+
+        loop.call_soon_threadsafe(
+            queue.put_nowait,
+            {
+                "type": "source_done",
+                "crawl_run_id": crawl_run_id,
+                "source_id": source_id,
+                "new_documents": result.get("new_documents", 0),
+                "skipped": result.get("skipped", 0),
+                "errors": result.get("errors", 0),
+                "timings": timings,
+            },
+        )
+
+        return result
+    finally:
+        worker_db.close()
+
+
 def _run_sources_in_thread(
     crawl_run_id: str,
     source_ids: List[str],
@@ -73,111 +193,57 @@ def _run_sources_in_thread(
         total_skipped = 0
         total_errors = 0
 
-        for i, source_id in enumerate(source_ids):
-            source = thread_db.query(Source).filter(Source.id == source_id).first()
-            if not source:
-                continue
-
-            crs = (
+        crs_map: Dict[str, str] = {}
+        for sid in source_ids:
+            crs_obj = (
                 thread_db.query(CrawlRunSource)
                 .filter(
                     CrawlRunSource.crawl_run_id == crawl_run_id,
-                    CrawlRunSource.source_id == source_id,
+                    CrawlRunSource.source_id == sid,
                 )
                 .first()
             )
-            if not crs:
-                continue
+            if crs_obj:
+                crs_map[sid] = crs_obj.id
 
-            crs.status = CrawlRunSourceStatus.running
-            crs.started_at = datetime.now(timezone.utc)
-            thread_db.commit()
-
-            loop.call_soon_threadsafe(
-                queue.put_nowait,
-                {
-                    "type": "source_start",
-                    "crawl_run_id": crawl_run_id,
-                    "source_id": source.id,
-                    "url": source.url,
-                    "index": i + 1,
-                    "total": total,
-                },
-            )
-
-            def make_callback(sid: str, crs_id: str):
-                def callback(event: dict) -> None:
-                    event_copy = dict(event)
-                    event_copy["crawl_run_id"] = crawl_run_id
-                    event_copy["source_id"] = sid
-                    if event["type"] == "step":
-                        crs_obj = (
-                            thread_db.query(CrawlRunSource)
-                            .filter(CrawlRunSource.id == crs_id)
-                            .first()
-                        )
-                        if crs_obj:
-                            step_name = event.get("step")
-                            if step_name and step_name in [
-                                e.value for e in CrawlRunStep
-                            ]:
-                                crs_obj.current_step = CrawlRunStep(step_name)
-                                thread_db.commit()
-                    loop.call_soon_threadsafe(queue.put_nowait, event_copy)
-
-                return callback
-
-            try:
-                result = run_crawl_source(
-                    source,
-                    thread_db,
-                    analyse=True,
-                    progress_callback=make_callback(source.id, crs.id),
+        with ThreadPoolExecutor(max_workers=settings.crawl_concurrency) as executor:
+            future_to_source = {}
+            for source_id in source_ids:
+                crs_id = crs_map.get(source_id)
+                if not crs_id:
+                    continue
+                source = thread_db.query(Source).filter(Source.id == source_id).first()
+                if not source:
+                    continue
+                future = executor.submit(
+                    _crawl_single_source,
+                    source_id,
+                    source.url,
+                    crs_id,
+                    crawl_run_id,
+                    loop,
+                    queue,
                 )
-            except Exception as e:
-                thread_db.rollback()
-                result = {"new_documents": 0, "skipped": 0, "errors": 1}
-                loop.call_soon_threadsafe(
-                    queue.put_nowait,
-                    {
-                        "type": "error",
-                        "crawl_run_id": crawl_run_id,
-                        "source_id": source.id,
-                        "message": str(e),
-                    },
-                )
+                future_to_source[future] = source_id
 
-            total_new += result.get("new_documents", 0)
-            total_skipped += result.get("skipped", 0)
-            total_errors += result.get("errors", 0)
-
-            crs.status = CrawlRunSourceStatus.completed
-            crs.current_step = None
-            crs.new_documents = result.get("new_documents", 0)
-            crs.skipped = result.get("skipped", 0)
-            crs.errors = result.get("errors", 0)
-            crs.finished_at = datetime.now(timezone.utc)
-            if (
-                result.get("errors", 0) > 0
-                and not result.get("new_documents")
-                and not result.get("skipped")
-            ):
-                crs.status = CrawlRunSourceStatus.failed
-                if result.get("errors", 0) > 0:
-                    crs.error_message = "Errors during crawl"
-            thread_db.commit()
-
-            loop.call_soon_threadsafe(
-                queue.put_nowait,
-                {
-                    "type": "source_done",
-                    "crawl_run_id": crawl_run_id,
-                    "source_id": source.id,
-                    "new_documents": result["new_documents"],
-                    "skipped": result["skipped"],
-                    "errors": result["errors"],
-                },
-            )
+            for future in as_completed(future_to_source):
+                source_id = future_to_source[future]
+                try:
+                    result = future.result()
+                    total_new += result.get("new_documents", 0)
+                    total_skipped += result.get("skipped", 0)
+                    total_errors += result.get("errors", 0)
+                except Exception as e:
+                    total_errors += 1
+                    loop.call_soon_threadsafe(
+                        queue.put_nowait,
+                        {
+                            "type": "error",
+                            "crawl_run_id": crawl_run_id,
+                            "source_id": source_id,
+                            "message": str(e),
+                        },
+                    )
 
         crawl_run = (
             thread_db.query(CrawlRun).filter(CrawlRun.id == crawl_run_id).first()
@@ -193,7 +259,10 @@ def _run_sources_in_thread(
             try:
                 from app.analyser.briefing import generate_briefing_content
                 from app.models.crawl_briefing import CrawlBriefing
-                briefing_content = generate_briefing_content(thread_db, crawl_run_id=crawl_run_id)
+
+                briefing_content = generate_briefing_content(
+                    thread_db, crawl_run_id=crawl_run_id
+                )
                 briefing = CrawlBriefing(
                     crawl_run_id=crawl_run_id,
                     content=briefing_content,
@@ -218,15 +287,26 @@ def _run_sources_in_thread(
                         .all()
                     )
                     for (cid,) in company_ids_with_new_signals:
-                        company = thread_db.query(Company).filter(Company.id == cid).first()
+                        company = (
+                            thread_db.query(Company).filter(Company.id == cid).first()
+                        )
                         if company:
                             for period in ("7d", "30d"):
                                 try:
-                                    generate_competitor_summary(company, period, thread_db)
+                                    generate_competitor_summary(
+                                        company, period, thread_db
+                                    )
                                 except Exception as period_exc:
-                                    logger.warning("Summary gen failed for %s/%s: %s", company.name, period, period_exc)
+                                    logger.warning(
+                                        "Summary gen failed for %s/%s: %s",
+                                        company.name,
+                                        period,
+                                        period_exc,
+                                    )
                 else:
-                    logger.warning("crawl_run.started_at is None — skipping post-crawl summary trigger")
+                    logger.warning(
+                        "crawl_run.started_at is None — skipping post-crawl summary trigger"
+                    )
             except Exception as e:
                 logger.warning("Post-crawl summary trigger failed: %s", e)
 
@@ -377,6 +457,10 @@ async def reconnect_crawl(db: Session = Depends(get_db)) -> StreamingResponse:
                 "skipped": crs.skipped,
                 "errors": crs.errors,
                 "error_message": crs.error_message,
+                "fetch_ms": crs.fetch_ms,
+                "extract_ms": crs.extract_ms,
+                "analyse_ms": crs.analyse_ms,
+                "discover_ms": crs.discover_ms,
             }
         )
 
