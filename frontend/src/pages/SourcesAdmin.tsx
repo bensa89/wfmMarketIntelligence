@@ -5,7 +5,7 @@ import { useCrawlStream } from '../hooks/useCrawlStream';
 import { CrawlProgressPanel } from '../components/CrawlProgressPanel';
 import { useDiscoveredPages, useToggleDiscoveredPage, useDeleteDiscoveredPage } from '../hooks/useDiscoveredPages';
 import type { CompanyType, SourceType, Source, DiscoveredPage, Company, CrawlStatus } from '../types';
-import { Plus, Play, Trash2, Edit2, X, ChevronDown, ChevronRight } from 'lucide-react';
+import { Plus, Play, Trash2, Edit2, X, ChevronDown, ChevronRight, Shield, ShieldOff } from 'lucide-react';
 import { ApiError } from '../api/client';
 
 const sourceTypes: SourceType[] = ['news', 'blog', 'product', 'press', 'jobs'];
@@ -170,6 +170,7 @@ export default function SourcesAdmin() {
   const [editUrl, setEditUrl] = useState('');
   const [editLabel, setEditLabel] = useState('');
   const [editType, setEditType] = useState<SourceType>('news');
+  const [editRespectRobots, setEditRespectRobots] = useState<boolean>(true);
 
   // Edit company state
   const [editingCompany, setEditingCompany] = useState<Company | null>(null);
@@ -241,6 +242,7 @@ export default function SourcesAdmin() {
     setEditUrl(source.url);
     setEditLabel(source.label || '');
     setEditType(source.source_type);
+    setEditRespectRobots(source.respect_robots_txt);
   }
 
   function closeEditModal() {
@@ -248,16 +250,18 @@ export default function SourcesAdmin() {
     setEditUrl('');
     setEditLabel('');
     setEditType('news');
+    setEditRespectRobots(true);
   }
 
   function handleSaveEdit(e: React.FormEvent) {
     e.preventDefault();
     if (!editingSource) return;
 
-    const updates: { url?: string; label?: string | null; source_type?: SourceType } = {};
+    const updates: { url?: string; label?: string | null; source_type?: SourceType; respect_robots_txt?: boolean } = {};
     if (editUrl !== editingSource.url) updates.url = editUrl;
     if (editLabel !== (editingSource.label || '')) updates.label = editLabel || null;
     if (editType !== editingSource.source_type) updates.source_type = editType;
+    if (editRespectRobots !== editingSource.respect_robots_txt) updates.respect_robots_txt = editRespectRobots;
 
     if (Object.keys(updates).length > 0) {
       updateSource.mutate(
@@ -375,6 +379,7 @@ export default function SourcesAdmin() {
                       <th className="text-left py-2 text-ink-muted font-medium">URL</th>
                       <th className="text-left py-2 text-ink-muted font-medium">Label</th>
                       <th className="text-left py-2 text-ink-muted font-medium">Type</th>
+                      <th className="text-left py-2 text-ink-muted font-medium">Robots</th>
                       <th className="text-left py-2 text-ink-muted font-medium">Active</th>
                       <th className="text-left py-2 text-ink-muted font-medium">Status</th>
                       <th className="text-left py-2 text-ink-muted font-medium">Last Crawled</th>
@@ -394,6 +399,17 @@ export default function SourcesAdmin() {
                           <td className="py-2">{source.label || '-'}</td>
                           <td className="py-2">
                             <span className="text-xs px-1.5 py-0.5 rounded bg-app-bg">{source.source_type}</span>
+                          </td>
+                          <td className="py-2">
+                            {source.respect_robots_txt ? (
+                              <span title="robots.txt wird respektiert">
+                                <Shield size={14} className="text-signal-high" />
+                              </span>
+                            ) : (
+                              <span title="robots.txt wird ignoriert">
+                                <ShieldOff size={14} className="text-ink-muted" />
+                              </span>
+                            )}
                           </td>
                           <td className="py-2">
                             <button
@@ -430,7 +446,7 @@ export default function SourcesAdmin() {
                         </tr>
                         {expandedSourceId === source.id && (
                           <tr>
-                            <td colSpan={7} className="bg-app-bg/50">
+                            <td colSpan={8} className="bg-app-bg/50">
                               <DiscoveredPagesSection sourceId={source.id} onToggle={(pageId, isActive) => toggleDiscoveredPage.mutate({ pageId, isActive })} onDelete={(pageId, srcId) => deleteDiscoveredPage.mutate({ pageId, sourceId: srcId })} />
                             </td>
                           </tr>
@@ -439,7 +455,7 @@ export default function SourcesAdmin() {
                     ))}
                     {companySources.length === 0 && (
                       <tr>
-                        <td colSpan={7} className="py-2 text-ink-muted text-center">No sources configured</td>
+                        <td colSpan={8} className="py-2 text-ink-muted text-center">No sources configured</td>
                       </tr>
                     )}
                   </tbody>
@@ -572,6 +588,21 @@ export default function SourcesAdmin() {
                     Active
                   </label>
                 </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={editRespectRobots}
+                  onChange={(e) => setEditRespectRobots(e.target.checked)}
+                  id="edit-respect-robots"
+                  className="accent-accent-blue"
+                />
+                <label htmlFor="edit-respect-robots" className="text-sm text-ink cursor-pointer">
+                  robots.txt respektieren
+                </label>
+                <span className="text-xs text-ink-muted">
+                  — wenn aktiv, werden gesperrte URLs beim Discovery übersprungen
+                </span>
               </div>
               <div className="flex gap-2 pt-2">
                 <button type="submit" disabled={updateSource.isPending} className="btn-primary flex-1">
