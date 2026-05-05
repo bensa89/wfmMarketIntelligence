@@ -14,6 +14,7 @@ from app.models.document import Document
 from app.models.discovered_page import DiscoveredPage, DiscoveredPageStatus
 from app.models.signal import Signal
 from app.crawler.fetcher import fetch_url
+from app.crawler.js_fetcher import fetch_url_js
 from app.crawler.extractor import extract_content
 from app.config import settings
 
@@ -131,15 +132,28 @@ def _get_robot_parser(base_url: str) -> RobotFileParser:
 def _update_page_relevance(page: DiscoveredPage, url: str, db: Session) -> None:
     doc = db.query(Document).filter(Document.url == url).first()
     if not doc:
+        logger.debug("No document found for relevance update: %s", url)
         return
     signals = db.query(Signal).filter(Signal.document_id == doc.id).all()
     if not signals:
+        logger.info("No signals found for document %s, skipping relevance update", url)
         return
     scores = [s.relevance_score or 0 for s in signals]
     page.last_signal_relevance = max(scores)
+    logger.info(
+        "Page relevance for %s: scores=%s, max=%.2f",
+        url,
+        [round(s, 2) for s in scores],
+        max(scores),
+    )
     if all(score < 0.3 for score in scores):
         page.is_active = False
         page.status = DiscoveredPageStatus.ignored
+        logger.warning(
+            "Deactivating page %s — all relevance scores below 0.3: %s",
+            url,
+            [round(s, 2) for s in scores],
+        )
     db.commit()
 
 
@@ -151,6 +165,9 @@ def discover_and_crawl(
     progress_callback: Optional[Callable[[dict], None]] = None,
 ) -> Dict:
     if settings.discovery_depth == 0:
+        logger.info(
+            "Discovery disabled (discovery_depth=0), skipping for source %s", source.url
+        )
         return {"discovered": 0, "new": 0, "changed": 0, "known": 0}
 
     result = {"discovered": 0, "new": 0, "changed": 0, "known": 0}
@@ -164,16 +181,49 @@ def discover_and_crawl(
         )
         .all()
     }
+    logger.info(
+        "Discovery for source %s: %d known inactive pages, discovery_depth=%d",
+        source.url,
+        len(known_inactive),
+        settings.discovery_depth,
+    )
+    if known_inactive:
+        logger.debug("Known inactive URLs: %s", known_inactive)
+
+    all_links = _extract_internal_links(seed_html, source.url)
+    logger.info(
+        "Discovery for source %s: %d internal links found in seed HTML",
+        source.url,
+        len(all_links),
+    )
 
     child_links: List[tuple] = []
     other_links: List[tuple] = []
-    for url in _extract_internal_links(seed_html, source.url):
-        if not _is_article_url(url, seed_url=source.url) or url in known_inactive:
+    skipped_not_article = 0
+    skipped_inactive = 0
+    for url in all_links:
+        is_article = _is_article_url(url, seed_url=source.url)
+        if url in known_inactive:
+            skipped_inactive += 1
+            logger.debug("Skipping inactive URL: %s", url)
+            continue
+        if not is_article:
+            skipped_not_article += 1
             continue
         if _is_child_path(url, source.url):
             child_links.append((url, 1))
         else:
             other_links.append((url, 1))
+
+    logger.info(
+        "Discovery for source %s: %d child links, %d other links queued "
+        "(%d skipped as non-article, %d skipped as inactive)",
+        source.url,
+        len(child_links),
+        len(other_links),
+        skipped_not_article,
+        skipped_inactive,
+    )
 
     queue = child_links + other_links
     visited: Set[str] = set()
@@ -181,19 +231,46 @@ def discover_and_crawl(
 
     while queue and pages_crawled < _MAX_PAGES_PER_RUN:
         url, depth = queue.pop(0)
-        if url in visited or depth > settings.discovery_depth:
+        if url in visited:
+            logger.debug("Skipping already visited URL: %s", url)
+            continue
+        if depth > settings.discovery_depth:
+            logger.debug(
+                "Skipping URL (depth %d > discovery_depth %d): %s",
+                depth,
+                settings.discovery_depth,
+                url,
+            )
             continue
         visited.add(url)
 
-        if not robot_parser.can_fetch("*", url):
+        if source.respect_robots_txt and not robot_parser.can_fetch("*", url):
+            logger.info("Blocked by robots.txt: %s", url)
             continue
 
         if url in known_inactive:
+            logger.debug("Skipping inactive URL (second check): %s", url)
             continue
 
+        logger.info(
+            "Fetching discovered page [depth=%d, crawled=%d/%d]: %s",
+            depth,
+            pages_crawled + 1,
+            _MAX_PAGES_PER_RUN,
+            url,
+        )
         fetch_result = fetch_url(url)
         if fetch_result is None:
+            logger.warning("Fetch failed for discovered page: %s", url)
             continue
+
+        if settings.js_rendering_enabled and len(_extract_internal_links(fetch_result.html, url)) < 5:
+            logger.info("JS rendering fallback for discovered page: %s", url)
+            js_result = fetch_url_js(url)
+            if js_result is not None:
+                fetch_result = js_result
+            else:
+                logger.warning("JS rendering fallback failed for %s, using static HTML", url)
 
         pages_crawled += 1
         if progress_callback:
@@ -209,11 +286,21 @@ def discover_and_crawl(
             )
 
         if not _is_article_content(fetch_result.html):
+            logger.info(
+                "Skipping non-article content (too short or nav-heavy): %s", url
+            )
             continue
 
         extraction = extract_content(fetch_result.html, url=fetch_result.final_url)
         now = datetime.now(timezone.utc)
         final_url = fetch_result.final_url
+        logger.info(
+            "Extracted content from %s: title='%s', words=%d, hash=%s",
+            final_url,
+            extraction.title[:80] if extraction.title else "(none)",
+            len(extraction.markdown.split()) if extraction.markdown else 0,
+            extraction.content_hash[:12] if extraction.content_hash else "(none)",
+        )
 
         try:
             existing = (
@@ -235,6 +322,7 @@ def discover_and_crawl(
                 db.commit()
                 result["new"] += 1
                 result["discovered"] += 1
+                logger.info("New discovered page: %s (depth=%d)", final_url, depth)
 
                 if analyse:
                     _save_and_analyse(source, fetch_result, extraction, now, db)
@@ -244,6 +332,7 @@ def discover_and_crawl(
                 existing.status = DiscoveredPageStatus.ignored
                 existing.last_crawled_at = now
                 db.commit()
+                logger.info("Skipping inactive page in DB: %s", final_url)
 
             elif existing.content_hash != extraction.content_hash:
                 existing.status = DiscoveredPageStatus.changed
@@ -252,6 +341,7 @@ def discover_and_crawl(
                 existing.last_changed_at = now
                 db.commit()
                 result["changed"] += 1
+                logger.info("Changed discovered page: %s", final_url)
 
                 if analyse:
                     _save_and_analyse(source, fetch_result, extraction, now, db)
@@ -262,19 +352,40 @@ def discover_and_crawl(
                 existing.last_crawled_at = now
                 db.commit()
                 result["known"] += 1
+                logger.info("Known (unchanged) discovered page: %s", final_url)
         except Exception:
             db.rollback()
             logger.exception("Error processing discovered page %s", final_url)
 
         if depth < settings.discovery_depth:
-            for next_url in _extract_internal_links(fetch_result.html, final_url):
-                if (
-                    next_url not in visited
-                    and next_url not in known_inactive
-                    and _is_article_url(next_url, seed_url=source.url)
-                ):
-                    queue.append((next_url, depth + 1))
+            sub_links = _extract_internal_links(fetch_result.html, final_url)
+            new_enqueued = 0
+            for next_url in sub_links:
+                if next_url in visited:
+                    continue
+                if next_url in known_inactive:
+                    continue
+                if not _is_article_url(next_url, seed_url=source.url):
+                    continue
+                queue.append((next_url, depth + 1))
+                new_enqueued += 1
+            if new_enqueued:
+                logger.info(
+                    "Enqueued %d new sub-links from %s (depth %d→%d)",
+                    new_enqueued,
+                    final_url,
+                    depth,
+                    depth + 1,
+                )
 
+    logger.info(
+        "Discovery complete for source %s: discovered=%d, new=%d, changed=%d, known=%d",
+        source.url,
+        result["discovered"],
+        result["new"],
+        result["changed"],
+        result["known"],
+    )
     return result
 
 
