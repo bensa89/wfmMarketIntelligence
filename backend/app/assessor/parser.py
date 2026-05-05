@@ -66,12 +66,15 @@ class SummaryLLMOutput(BaseModel):
 
 
 def _extract_json(raw: str) -> Optional[dict]:
+    # Strip markdown code fences if present
+    stripped = re.sub(r"^```(?:json)?\s*", "", raw.strip(), flags=re.IGNORECASE)
+    stripped = re.sub(r"\s*```$", "", stripped)
     try:
-        return json.loads(raw)
+        return json.loads(stripped)
     except json.JSONDecodeError:
         pass
-    # Greedy match: works for typical LLM JSON-in-prose output; may over-match if LLM appends text after closing brace
-    match = re.search(r"\{.*\}", raw, re.DOTALL)
+    # Greedy match: works for typical LLM JSON-in-prose output
+    match = re.search(r"\{.*\}", stripped, re.DOTALL)
     if match:
         try:
             return json.loads(match.group(0))

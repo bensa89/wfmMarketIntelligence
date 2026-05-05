@@ -26,7 +26,12 @@ class DiscoveredPage(Base):
     __tablename__ = "discovered_pages"
 
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    source_id = Column(String(36), ForeignKey("sources.id"), nullable=False, index=True)
+    source_id = Column(
+        String(36),
+        ForeignKey("sources.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
     url = Column(String(2000), unique=True, nullable=False)
     title = Column(String(500), nullable=True)
     depth = Column(Integer, nullable=False, default=1)

@@ -8,7 +8,7 @@ Internal competitive intelligence tool. Crawls competitor/market websites → ex
 - httpx + BeautifulSoup4 + markdownify for crawling
 - Anthropic SDK / Ollama for LLM analysis
 - pytest + SQLite (tests), Docker Compose (dev + prod)
-- Frontend: React 18 + TypeScript + Vite (not yet built)
+- Frontend: React 18 + TypeScript + Vite 
 
 ## Key Commands
 ```bash

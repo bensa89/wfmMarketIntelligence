@@ -71,7 +71,7 @@ def generate_competitor_summary(
     )
 
     try:
-        raw = call_llm(prompt)
+        raw = call_llm(prompt, max_tokens=4096)
     except Exception as exc:
         logger.warning("call_llm raised for summary %s period %s: %s", company.name, period_type, exc)
         return None

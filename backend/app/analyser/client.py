@@ -4,6 +4,8 @@ from app.config import settings
 def call_llm(prompt: str, max_tokens: int = 1024) -> str:
     if settings.llm_provider == "ollama":
         return _call_ollama(prompt, max_tokens=max_tokens)
+    if settings.llm_provider == "opencode":
+        return _call_opencode(prompt, max_tokens=max_tokens)
     return _call_claude(prompt, max_tokens=max_tokens)
 
 
@@ -17,6 +19,18 @@ def _call_claude(prompt: str, max_tokens: int = 1024) -> str:
         messages=[{"role": "user", "content": prompt}],
     )
     return message.content[0].text
+
+
+def _call_opencode(prompt: str, max_tokens: int = 1024) -> str:
+    from openai import OpenAI
+
+    client = OpenAI(api_key=settings.opencode_api_key, base_url=settings.opencode_base_url)
+    response = client.chat.completions.create(
+        model=settings.opencode_model,
+        max_tokens=max_tokens,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    return response.choices[0].message.content
 
 
 def _call_ollama(prompt: str, max_tokens: int = 1024) -> str:

@@ -5,9 +5,10 @@ import { formatDistanceToNow } from '../../utils/dates';
 
 interface Props {
   signals: SignalFeedItem[];
+  onSelect?: (item: SignalFeedItem) => void;
 }
 
-export default function MarketShapingFeed({ signals }: Props) {
+export default function MarketShapingFeed({ signals, onSelect }: Props) {
   return (
     <div className="bg-white border border-slate-200 rounded-xl p-4">
       <div className="flex items-center gap-2 mb-4">
@@ -22,9 +23,12 @@ export default function MarketShapingFeed({ signals }: Props) {
           {signals.slice(0, 6).map((item) => (
             <li key={item.id} className="flex gap-3">
               <div className="flex-1 min-w-0">
-                <div className="text-[12px] font-medium text-slate-800 leading-snug line-clamp-2">
+                <button
+                  onClick={() => onSelect?.(item)}
+                  className="text-[12px] font-medium text-slate-800 leading-snug line-clamp-2 text-left hover:text-blue-700 transition-colors cursor-pointer"
+                >
                   {item.title}
-                </div>
+                </button>
                 <div className="flex items-center gap-2 mt-1">
                   {item.company_slug && (
                     <Link

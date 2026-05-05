@@ -29,7 +29,9 @@ class SearchResult(Base):
         nullable=False,
         default=SearchResultStatus.pending,
     )
-    linked_document_id = Column(String(36), ForeignKey("documents.id"), nullable=True)
+    linked_document_id = Column(
+        String(36), ForeignKey("documents.id", ondelete="SET NULL"), nullable=True
+    )
 
     run = relationship("SearchRun", back_populates="results")
     linked_document = relationship("Document", foreign_keys=[linked_document_id])

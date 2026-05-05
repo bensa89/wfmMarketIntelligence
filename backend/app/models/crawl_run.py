@@ -54,7 +54,9 @@ class CrawlRunSource(Base):
     crawl_run_id = Column(
         String(36), ForeignKey("crawl_runs.id"), nullable=False, index=True
     )
-    source_id = Column(String(36), ForeignKey("sources.id"), nullable=False)
+    source_id = Column(
+        String(36), ForeignKey("sources.id", ondelete="CASCADE"), nullable=False
+    )
     url = Column(String(2000), nullable=False)
     status = Column(
         SAEnum(CrawlRunSourceStatus),
@@ -74,4 +76,4 @@ class CrawlRunSource(Base):
     discover_ms = Column(Integer, nullable=True)
 
     crawl_run = relationship("CrawlRun", back_populates="sources")
-    source = relationship("Source")
+    source = relationship("Source", back_populates="crawl_run_sources")

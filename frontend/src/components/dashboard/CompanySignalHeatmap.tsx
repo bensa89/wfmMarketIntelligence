@@ -24,11 +24,11 @@ export default function CompanySignalHeatmap({ data, companies }: CompanySignalH
   return (
     <div>
       <p className="text-[10px] font-bold uppercase text-slate-500 tracking-wider mb-2">Unternehmen × Typ</p>
-      <div className="bg-white border border-slate-200 rounded-xl p-2 text-[9px]">
-        <div className="grid grid-cols-[56px_repeat(5,1fr)] gap-px text-center">
+      <div className="bg-white border border-slate-200 rounded-xl p-3">
+        <div className="grid grid-cols-[80px_repeat(5,1fr)] gap-1.5 text-center">
           <div />
           {TYPE_KEYS.map((key) => (
-            <div key={key} className="text-slate-400 text-[7px]">
+            <div key={key} className="text-slate-500 text-[10px] font-medium">
               {labelMap[key as keyof typeof labelMap]?.split(' ')[0] ?? key.slice(0, 4)}
             </div>
           ))}
@@ -36,16 +36,16 @@ export default function CompanySignalHeatmap({ data, companies }: CompanySignalH
         {companyIds.map((cid) => {
           const company = companies.find((c) => c.id === cid);
           return (
-            <div key={cid} className="grid grid-cols-[56px_repeat(5,1fr)] gap-px text-center mt-px">
-              <div className="text-left text-slate-500 text-[8px] truncate flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: getCompanyColor(cid) }} />
+            <div key={cid} className="grid grid-cols-[80px_repeat(5,1fr)] gap-1.5 text-center mt-1">
+              <div className="text-left text-slate-600 text-[11px] truncate flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full shrink-0" style={{ background: getCompanyColor(cid) }} />
                 {company?.name ?? '—'}
               </div>
               {TYPE_KEYS.map((typeKey) => {
                 const entry = data.find((d) => d.company_id === cid && d.signal_type === typeKey);
                 const count = entry?.count ?? 0;
                 return (
-                  <div key={typeKey} className="rounded px-1 py-0.5 font-semibold text-[8px]" style={getCellBg(count, maxCount)}>
+                  <div key={typeKey} className="rounded py-1 font-semibold text-[11px]" style={getCellBg(count, maxCount)}>
                     {count > 0 ? count : ''}
                   </div>
                 );

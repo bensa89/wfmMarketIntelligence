@@ -23,13 +23,20 @@ export function useSignals(filters?: SignalsFilters) {
   return useQuery<Signal[]>({
     queryKey: ['signals', params],
     queryFn: () => apiGet<Signal[]>('/signals', params),
-    select: (data) =>
-      [...data].sort((a, b) => {
-        if (filters?.q) return 0;
+    select: (data) => {
+      const seen = new Set<string>();
+      const unique = data.filter((s) => {
+        if (seen.has(s.id)) return false;
+        seen.add(s.id);
+        return true;
+      });
+      if (filters?.q) return unique;
+      return unique.sort((a, b) => {
         const dateA = a.published_at ? new Date(a.published_at).getTime() : new Date(a.created_at).getTime();
         const dateB = b.published_at ? new Date(b.published_at).getTime() : new Date(b.created_at).getTime();
         return dateB - dateA;
-      }),
+      });
+    },
   });
 }
 

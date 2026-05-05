@@ -41,7 +41,9 @@ class Signal(Base):
     __tablename__ = "signals"
 
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    document_id = Column(String(36), ForeignKey("documents.id"), nullable=False)
+    document_id = Column(
+        String(36), ForeignKey("documents.id", ondelete="CASCADE"), nullable=False
+    )
     company_id = Column(String(36), ForeignKey("companies.id"), nullable=False)
     title = Column(String(500), nullable=False)
     signal_type = Column(SAEnum(SignalType), nullable=False)
@@ -56,4 +58,9 @@ class Signal(Base):
 
     document = relationship("Document", back_populates="signals")
     company = relationship("Company", back_populates="signals")
-    assessment = relationship("SignalAssessment", back_populates="signal", uselist=False)
+    assessment = relationship(
+        "SignalAssessment",
+        back_populates="signal",
+        uselist=False,
+        cascade="all, delete-orphan",
+    )

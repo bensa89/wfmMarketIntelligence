@@ -65,7 +65,7 @@ def list_signals(
     max_age_days: Optional[int] = 365,
     db: Session = Depends(get_db),
 ):
-    query = db.query(Signal).options(selectinload(Signal.document))
+    query = db.query(Signal).options(selectinload(Signal.document)).distinct()
     if q:
         query_expr = func.plainto_tsquery("german", func.unaccent(q))
         query = query.filter(Signal.search_vector.op("@@")(query_expr))

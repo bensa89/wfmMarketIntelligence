@@ -9,7 +9,9 @@ class Document(Base):
     __tablename__ = "documents"
 
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    source_id = Column(String(36), ForeignKey("sources.id"), nullable=False)
+    source_id = Column(
+        String(36), ForeignKey("sources.id", ondelete="CASCADE"), nullable=False
+    )
     url = Column(String(2000), unique=True, nullable=False)
     title = Column(String(500), nullable=True)
     content_markdown = Column(Text, nullable=True)
@@ -21,6 +23,9 @@ class Document(Base):
     from_search = Column(Boolean, default=False, nullable=False)
 
     source = relationship("Source", back_populates="documents")
+    search_results = relationship(
+        "SearchResult", back_populates="linked_document", cascade="all, delete-orphan"
+    )
     signals = relationship(
         "Signal", back_populates="document", cascade="all, delete-orphan"
     )
