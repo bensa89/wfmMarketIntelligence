@@ -34,6 +34,7 @@ export interface Source {
   label: string | null;
   source_type: SourceType;
   is_active: boolean;
+  respect_robots_txt: boolean;
   crawl_status: CrawlStatus;
   content_hash: string | null;
   last_crawled_at: string | null;
@@ -48,12 +49,14 @@ export interface SourceCreate {
   label?: string | null;
   source_type: SourceType;
   is_active?: boolean;
+  respect_robots_txt?: boolean;
 }
 
 export interface SourceUpdate {
   label?: string | null;
   source_type?: SourceType;
   is_active?: boolean;
+  respect_robots_txt?: boolean;
 }
 
 export interface Document {
