@@ -18,6 +18,10 @@ class CrawlRunSourceRead(BaseModel):
     error_message: Optional[str] = None
     started_at: Optional[datetime] = None
     finished_at: Optional[datetime] = None
+    fetch_ms: Optional[int] = None
+    extract_ms: Optional[int] = None
+    analyse_ms: Optional[int] = None
+    discover_ms: Optional[int] = None
 
 
 class CrawlRunRead(BaseModel):

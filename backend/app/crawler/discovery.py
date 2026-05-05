@@ -1,7 +1,7 @@
 import logging
 import re
-import time
-from typing import List, Set, Dict
+
+from typing import Callable, Dict, List, Optional, Set
 from urllib.parse import urljoin, urlparse
 from urllib.robotparser import RobotFileParser
 from datetime import datetime, timezone
@@ -144,7 +144,11 @@ def _update_page_relevance(page: DiscoveredPage, url: str, db: Session) -> None:
 
 
 def discover_and_crawl(
-    source: Source, seed_html: str, db: Session, analyse: bool = True
+    source: Source,
+    seed_html: str,
+    db: Session,
+    analyse: bool = True,
+    progress_callback: Optional[Callable[[dict], None]] = None,
 ) -> Dict:
     if settings.discovery_depth == 0:
         return {"discovered": 0, "new": 0, "changed": 0, "known": 0}
@@ -187,12 +191,22 @@ def discover_and_crawl(
         if url in known_inactive:
             continue
 
-        time.sleep(1)
         fetch_result = fetch_url(url)
         if fetch_result is None:
             continue
 
         pages_crawled += 1
+        if progress_callback:
+            progress_callback(
+                {
+                    "type": "discovery_progress",
+                    "source_id": source.id,
+                    "pages_found": len(visited) + len(queue),
+                    "pages_crawled": pages_crawled,
+                    "max_pages": _MAX_PAGES_PER_RUN,
+                    "current_url": url,
+                }
+            )
 
         if not _is_article_content(fetch_result.html):
             continue

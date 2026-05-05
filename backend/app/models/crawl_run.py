@@ -68,6 +68,10 @@ class CrawlRunSource(Base):
     error_message = Column(String(1000), nullable=True)
     started_at = Column(DateTime, nullable=True)
     finished_at = Column(DateTime, nullable=True)
+    fetch_ms = Column(Integer, nullable=True)
+    extract_ms = Column(Integer, nullable=True)
+    analyse_ms = Column(Integer, nullable=True)
+    discover_ms = Column(Integer, nullable=True)
 
     crawl_run = relationship("CrawlRun", back_populates="sources")
     source = relationship("Source")

@@ -14,6 +14,8 @@ import WeeklyDigest from './pages/WeeklyDigest';
 import SourcesAdmin from './pages/SourcesAdmin';
 import CompanyContext from './pages/CompanyContext';
 import SearchPage from './pages/SearchPage';
+import HowItWorksPage from './pages/HowItWorksPage';
+import CrawlRunDetailPage from './pages/CrawlRunDetailPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -47,7 +49,9 @@ export default function App() {
             <Route path="digest" element={<WeeklyDigest />} />
             <Route path="search" element={<SearchPage />} />
             <Route path="admin/sources" element={<SourcesAdmin />} />
+            <Route path="crawl-runs/:id" element={<CrawlRunDetailPage />} />
             <Route path="context" element={<CompanyContext />} />
+            <Route path="how-it-works" element={<HowItWorksPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

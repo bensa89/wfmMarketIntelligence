@@ -1,4 +1,5 @@
 import logging
+import time
 from typing import Callable, Dict, Optional
 from datetime import datetime, timezone
 from sqlalchemy.orm import Session
@@ -62,8 +63,23 @@ def run_crawl_source(
         "discovery": {},
     }
 
+    fetch_ms = 0
+    extract_ms = 0
+    analyse_ms = 0
+    discover_ms = 0
+
     emit({"type": "step", "source_id": source.id, "step": "fetching"})
+    t0 = time.monotonic()
     fetch_result = fetch_url(source.url)
+    fetch_ms = int((time.monotonic() - t0) * 1000)
+    emit(
+        {
+            "type": "step_timing",
+            "source_id": source.id,
+            "step": "fetching",
+            "duration_ms": fetch_ms,
+        }
+    )
     if fetch_result is None:
         result["errors"] += 1
         emit({"type": "error", "source_id": source.id, "message": "Fetch failed"})
@@ -80,7 +96,17 @@ def run_crawl_source(
             logger.warning("JS rendering failed for %s, using static HTML", source.url)
 
     emit({"type": "step", "source_id": source.id, "step": "extracting"})
+    t0 = time.monotonic()
     extraction = extract_content(fetch_result.html, url=fetch_result.final_url)
+    extract_ms = int((time.monotonic() - t0) * 1000)
+    emit(
+        {
+            "type": "step_timing",
+            "source_id": source.id,
+            "step": "extracting",
+            "duration_ms": extract_ms,
+        }
+    )
 
     existing_by_url = (
         db.query(Document).filter(Document.url == fetch_result.final_url).first()
@@ -109,6 +135,7 @@ def run_crawl_source(
 
                 db.refresh(existing_by_url)
                 emit({"type": "step", "source_id": source.id, "step": "analysing"})
+                t0 = time.monotonic()
                 try:
                     analyse_document(existing_by_url, source.company_id, db)
                 except Exception as e:
@@ -121,6 +148,15 @@ def run_crawl_source(
                         }
                     )
                     db.rollback()
+                analyse_ms = int((time.monotonic() - t0) * 1000)
+                emit(
+                    {
+                        "type": "step_timing",
+                        "source_id": source.id,
+                        "step": "analysing",
+                        "duration_ms": analyse_ms,
+                    }
+                )
     else:
         doc = Document(
             source_id=source.id,
@@ -143,6 +179,7 @@ def run_crawl_source(
 
             db.refresh(doc)
             emit({"type": "step", "source_id": source.id, "step": "analysing"})
+            t0 = time.monotonic()
             try:
                 analyse_document(doc, source.company_id, db)
             except Exception as e:
@@ -155,13 +192,39 @@ def run_crawl_source(
                     }
                 )
                 db.rollback()
+            analyse_ms = int((time.monotonic() - t0) * 1000)
+            emit(
+                {
+                    "type": "step_timing",
+                    "source_id": source.id,
+                    "step": "analysing",
+                    "duration_ms": analyse_ms,
+                }
+            )
 
     emit({"type": "step", "source_id": source.id, "step": "discovering"})
+    t0 = time.monotonic()
     result["discovery"] = discover_and_crawl(
-        source, fetch_result.html, db, analyse=analyse
+        source, fetch_result.html, db, analyse=analyse, progress_callback=emit
+    )
+    discover_ms = int((time.monotonic() - t0) * 1000)
+    emit(
+        {
+            "type": "step_timing",
+            "source_id": source.id,
+            "step": "discovering",
+            "duration_ms": discover_ms,
+        }
     )
 
     source.last_crawled_at = datetime.now(timezone.utc)
     db.commit()
+
+    result["timings"] = {
+        "fetch_ms": fetch_ms,
+        "extract_ms": extract_ms,
+        "analyse_ms": analyse_ms,
+        "discover_ms": discover_ms,
+    }
 
     return result

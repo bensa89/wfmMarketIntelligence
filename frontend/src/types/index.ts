@@ -193,6 +193,22 @@ export interface CrawlStepEvent {
   source_id: string;
   step: CrawlStep;
 }
+export interface CrawlDiscoveryProgressEvent {
+  type: 'discovery_progress';
+  crawl_run_id: string;
+  source_id: string;
+  pages_found: number;
+  pages_crawled: number;
+  max_pages: number;
+  current_url: string;
+}
+export interface CrawlStepTimingEvent {
+  type: 'step_timing';
+  crawl_run_id: string;
+  source_id: string;
+  step: CrawlStep;
+  duration_ms: number;
+}
 export interface CrawlSourceDoneEvent {
   type: 'source_done';
   crawl_run_id: string;
@@ -200,6 +216,12 @@ export interface CrawlSourceDoneEvent {
   new_documents: number;
   skipped: number;
   errors: number;
+  timings?: {
+    fetch_ms?: number;
+    extract_ms?: number;
+    analyse_ms?: number;
+    discover_ms?: number;
+  };
 }
 export interface CrawlDoneEvent {
   type: 'crawl_done';
@@ -230,6 +252,8 @@ export type CrawlEvent =
   | CrawlStartEvent
   | CrawlSourceStartEvent
   | CrawlStepEvent
+  | CrawlDiscoveryProgressEvent
+  | CrawlStepTimingEvent
   | CrawlSourceDoneEvent
   | CrawlDoneEvent
   | CrawlErrorEvent
@@ -246,6 +270,10 @@ export interface CrawlRunSourceState {
   skipped: number;
   errors: number;
   error_message?: string;
+  fetch_ms?: number;
+  extract_ms?: number;
+  analyse_ms?: number;
+  discover_ms?: number;
 }
 
 export interface CrawlRunList {
@@ -270,6 +298,8 @@ export interface SourceCrawlState {
   currentStep?: CrawlStep;
   result?: { new_documents: number; skipped: number; errors: number };
   errorMessage?: string;
+  discoveryProgress?: { pages_found: number; pages_crawled: number; max_pages: number };
+  stepTimings?: Partial<Record<CrawlStep, number>>;
 }
 
 export interface CrawlStreamSummary {
