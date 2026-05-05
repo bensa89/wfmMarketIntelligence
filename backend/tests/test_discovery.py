@@ -222,7 +222,6 @@ def test_discover_saves_new_page(db_session, monkeypatch):
     with (
         patch("app.crawler.discovery.fetch_url", mock_fetch),
         patch("app.crawler.discovery._get_robot_parser", return_value=mock_rp),
-        patch("app.crawler.discovery.time.sleep"),
     ):
         result = discover_and_crawl(source, SEED_HTML, db_session, analyse=False)
 
@@ -254,7 +253,6 @@ def test_discover_marks_unchanged_page_as_known(db_session, monkeypatch):
     with (
         patch("app.crawler.discovery.fetch_url", mock_fetch),
         patch("app.crawler.discovery._get_robot_parser", return_value=mock_rp),
-        patch("app.crawler.discovery.time.sleep"),
     ):
         discover_and_crawl(source, SEED_HTML, db_session, analyse=False)
         result = discover_and_crawl(source, SEED_HTML, db_session, analyse=False)
@@ -296,14 +294,12 @@ def test_discover_marks_changed_page(db_session, monkeypatch):
     with (
         patch("app.crawler.discovery.fetch_url", fetch_v1),
         patch("app.crawler.discovery._get_robot_parser", return_value=mock_rp),
-        patch("app.crawler.discovery.time.sleep"),
     ):
         discover_and_crawl(source, SEED_HTML, db_session, analyse=False)
 
     with (
         patch("app.crawler.discovery.fetch_url", fetch_v2),
         patch("app.crawler.discovery._get_robot_parser", return_value=mock_rp),
-        patch("app.crawler.discovery.time.sleep"),
     ):
         result = discover_and_crawl(source, SEED_HTML, db_session, analyse=False)
 
@@ -324,7 +320,6 @@ def test_discover_skips_robots_disallowed(db_session, monkeypatch):
 
     with (
         patch("app.crawler.discovery._get_robot_parser", return_value=mock_rp),
-        patch("app.crawler.discovery.time.sleep"),
     ):
         result = discover_and_crawl(source, SEED_HTML, db_session, analyse=False)
 
@@ -361,7 +356,6 @@ def test_discover_ignores_inactive_page(db_session, monkeypatch):
     with (
         patch("app.crawler.discovery.fetch_url", mock_fetch),
         patch("app.crawler.discovery._get_robot_parser", return_value=mock_rp),
-        patch("app.crawler.discovery.time.sleep"),
     ):
         result = discover_and_crawl(source, SEED_HTML, db_session, analyse=False)
 
@@ -389,6 +383,7 @@ def _make_signal(db_session, doc_id: str, company_id: str, relevance: float):
 
 def test_discover_auto_ignores_page_when_all_signals_low(db_session, monkeypatch):
     import app.config as cfg
+
     monkeypatch.setattr(cfg.settings, "discovery_depth", 1)
     source = _make_source(db_session, slug="disc-auteignore")
 
@@ -420,8 +415,9 @@ def test_discover_auto_ignores_page_when_all_signals_low(db_session, monkeypatch
     with (
         patch("app.crawler.discovery.fetch_url", mock_fetch),
         patch("app.crawler.discovery._get_robot_parser", return_value=mock_rp),
-        patch("app.crawler.discovery.time.sleep"),
-        patch("app.crawler.discovery._save_and_analyse", side_effect=mock_save_and_analyse),
+        patch(
+            "app.crawler.discovery._save_and_analyse", side_effect=mock_save_and_analyse
+        ),
     ):
         discover_and_crawl(source, SEED_HTML, db_session, analyse=True)
 
@@ -434,6 +430,7 @@ def test_discover_auto_ignores_page_when_all_signals_low(db_session, monkeypatch
 
 def test_discover_keeps_page_active_when_one_signal_relevant(db_session, monkeypatch):
     import app.config as cfg
+
     monkeypatch.setattr(cfg.settings, "discovery_depth", 1)
     source = _make_source(db_session, slug="disc-keep-active")
 
@@ -465,8 +462,9 @@ def test_discover_keeps_page_active_when_one_signal_relevant(db_session, monkeyp
     with (
         patch("app.crawler.discovery.fetch_url", mock_fetch),
         patch("app.crawler.discovery._get_robot_parser", return_value=mock_rp),
-        patch("app.crawler.discovery.time.sleep"),
-        patch("app.crawler.discovery._save_and_analyse", side_effect=mock_save_and_analyse),
+        patch(
+            "app.crawler.discovery._save_and_analyse", side_effect=mock_save_and_analyse
+        ),
     ):
         discover_and_crawl(source, SEED_HTML, db_session, analyse=True)
 
