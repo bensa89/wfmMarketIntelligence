@@ -87,3 +87,29 @@ def test_filter_sources_by_company(client, company):
     response = client.get(f"/api/sources?company_id={company['id']}")
     assert response.status_code == 200
     assert all(s["company_id"] == company["id"] for s in response.json())
+
+
+def test_source_respect_robots_defaults_true(client, company):
+    response = client.post("/api/sources", json={
+        "company_id": company["id"],
+        "url": "https://robots-default.example.com",
+        "source_type": "news",
+    })
+    assert response.status_code == 201
+    assert response.json()["respect_robots_txt"] is True
+
+
+def test_source_respect_robots_can_be_set_false_and_updated(client, company):
+    response = client.post("/api/sources", json={
+        "company_id": company["id"],
+        "url": "https://robots-false.example.com",
+        "source_type": "news",
+        "respect_robots_txt": False,
+    })
+    assert response.status_code == 201
+    assert response.json()["respect_robots_txt"] is False
+    source_id = response.json()["id"]
+
+    patch_resp = client.put(f"/api/sources/{source_id}", json={"respect_robots_txt": True})
+    assert patch_resp.status_code == 200
+    assert patch_resp.json()["respect_robots_txt"] is True

@@ -10,12 +10,14 @@ class SourceCreate(BaseModel):
     label: Optional[str] = None
     source_type: SourceType = SourceType.news
     is_active: bool = True
+    respect_robots_txt: bool = True
 
 
 class SourceUpdate(BaseModel):
     label: Optional[str] = None
     source_type: Optional[SourceType] = None
     is_active: Optional[bool] = None
+    respect_robots_txt: Optional[bool] = None
 
 
 class SourceRead(BaseModel):
@@ -27,6 +29,7 @@ class SourceRead(BaseModel):
     label: Optional[str]
     source_type: SourceType
     is_active: bool
+    respect_robots_txt: bool
     crawl_status: CrawlStatus
     content_hash: Optional[str]
     last_crawled_at: Optional[datetime]
