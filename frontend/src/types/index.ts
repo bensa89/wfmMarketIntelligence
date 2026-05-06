@@ -232,12 +232,16 @@ export interface CrawlSourceDoneEvent {
     discover_ms?: number;
   };
 }
+export type CrawlPhase = 'idle' | 'crawling' | 'analysing' | 'done';
+
 export interface CrawlDoneEvent {
   type: 'crawl_done';
   crawl_run_id: string;
   sources_processed: number;
   total_new: number;
   total_errors: number;
+  analysis_pending: boolean;
+  docs_to_analyse: number;
 }
 export interface CrawlErrorEvent {
   type: 'error';
@@ -250,6 +254,7 @@ export interface CrawlInitialStateEvent {
   crawl_run_id: string;
   total: number;
   sources: CrawlRunSourceState[];
+  analysis_phase_active: boolean;
 }
 export interface CrawlReconnectCompleteEvent {
   type: 'reconnect_complete';
