@@ -317,6 +317,70 @@ def test_reconnect_with_active_run(client, seed_source, db_engine):
     assert events[1]["type"] == "reconnect_complete"
 
 
+def test_reconnect_initial_state_analysis_phase_active(client, seed_source, db_engine):
+    """initial_state.analysis_phase_active=True when a source is being analysed."""
+    from app.models.crawl_run import CrawlRunSourceStatus
+
+    TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
+    verify_db = TestSessionLocal()
+    try:
+        crawl_run = CrawlRun(status=CrawlRunStatus.running, total_sources=1)
+        verify_db.add(crawl_run)
+        verify_db.flush()
+        crs = CrawlRunSource(
+            crawl_run_id=crawl_run.id,
+            source_id=seed_source.id,
+            url=seed_source.url,
+            status=CrawlRunSourceStatus.analysing,
+        )
+        verify_db.add(crs)
+        verify_db.commit()
+    finally:
+        verify_db.close()
+
+    with patch("app.routers.crawl.SessionLocal", TestSessionLocal):
+        response = client.get("/api/crawl/reconnect")
+
+    events = [
+        json.loads(line[6:])
+        for line in response.text.splitlines()
+        if line.startswith("data: ")
+    ]
+    state = next(e for e in events if e["type"] == "initial_state")
+    assert state["analysis_phase_active"] is True
+
+
+def test_reconnect_initial_state_analysis_phase_inactive(client, seed_source, db_engine):
+    """initial_state.analysis_phase_active=False when no source is being analysed."""
+    TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
+    verify_db = TestSessionLocal()
+    try:
+        crawl_run = CrawlRun(status=CrawlRunStatus.running, total_sources=1)
+        verify_db.add(crawl_run)
+        verify_db.flush()
+        crs = CrawlRunSource(
+            crawl_run_id=crawl_run.id,
+            source_id=seed_source.id,
+            url=seed_source.url,
+            status=CrawlRunSourceStatus.running,
+        )
+        verify_db.add(crs)
+        verify_db.commit()
+    finally:
+        verify_db.close()
+
+    with patch("app.routers.crawl.SessionLocal", TestSessionLocal):
+        response = client.get("/api/crawl/reconnect")
+
+    events = [
+        json.loads(line[6:])
+        for line in response.text.splitlines()
+        if line.startswith("data: ")
+    ]
+    state = next(e for e in events if e["type"] == "initial_state")
+    assert state["analysis_phase_active"] is False
+
+
 def test_enqueue_creates_queued_run(client, seed_source, db_engine):
     """Enqueue a source when no queued run exists — creates one."""
     TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
@@ -577,6 +641,65 @@ def test_reconnect_returns_queued_state(client, seed_source, db_engine):
     assert qs["crawl_run_id"] == queued_id
     assert len(qs["sources"]) == 1
     assert qs["sources"][0]["source_id"] == seed_source.id
+
+
+def test_crawl_done_includes_analysis_pending_true(client, seed_source, db_engine):
+    """crawl_done carries analysis_pending=True when new documents were found."""
+    TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
+
+    def mock_run(source, db, analyse=True, progress_callback=None):
+        return {
+            "source_id": source.id,
+            "new_documents": 2,
+            "skipped": 0,
+            "errors": 0,
+            "discovery": {},
+        }
+
+    with (
+        patch("app.routers.crawl.SessionLocal", TestSessionLocal),
+        patch("app.routers.crawl.run_crawl_source", side_effect=mock_run),
+        patch("app.routers.crawl.analyse_unanalysed_for_source", return_value=None),
+    ):
+        response = client.get("/api/crawl/stream")
+
+    events = [
+        json.loads(line[6:])
+        for line in response.text.splitlines()
+        if line.startswith("data: ")
+    ]
+    done = next(e for e in events if e["type"] == "crawl_done")
+    assert done["analysis_pending"] is True
+    assert done["docs_to_analyse"] == 2
+
+
+def test_crawl_done_includes_analysis_pending_false(client, seed_source, db_engine):
+    """crawl_done carries analysis_pending=False when no new documents found."""
+    TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
+
+    def mock_run(source, db, analyse=True, progress_callback=None):
+        return {
+            "source_id": source.id,
+            "new_documents": 0,
+            "skipped": 1,
+            "errors": 0,
+            "discovery": {},
+        }
+
+    with (
+        patch("app.routers.crawl.SessionLocal", TestSessionLocal),
+        patch("app.routers.crawl.run_crawl_source", side_effect=mock_run),
+    ):
+        response = client.get("/api/crawl/stream")
+
+    events = [
+        json.loads(line[6:])
+        for line in response.text.splitlines()
+        if line.startswith("data: ")
+    ]
+    done = next(e for e in events if e["type"] == "crawl_done")
+    assert done["analysis_pending"] is False
+    assert done["docs_to_analyse"] == 0
 
 
 def test_crawl_run_source_status_has_analysing():

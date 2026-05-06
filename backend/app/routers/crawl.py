@@ -330,6 +330,8 @@ def _run_sources_in_thread(
                     "sources_processed": total,
                     "total_new": total_new,
                     "total_errors": total_errors,
+                    "analysis_pending": total_new > 0,
+                    "docs_to_analyse": total_new,
                 },
             )
 
@@ -687,12 +689,17 @@ async def reconnect_crawl(db: Session = Depends(get_db)) -> StreamingResponse:
                     "discover_pages_found": crs.discover_pages_found,
                 }
             )
+        analysis_phase_active = any(
+            crs.status == CrawlRunSourceStatus.analysing
+            for crs in running_run.sources
+        )
         events.append(
             {
                 "type": "initial_state",
                 "crawl_run_id": running_run.id,
                 "total": running_run.total_sources,
                 "sources": sources_data,
+                "analysis_phase_active": analysis_phase_active,
             }
         )
 
