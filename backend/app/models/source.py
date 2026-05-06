@@ -1,7 +1,7 @@
 import uuid
 import enum
 from datetime import datetime, timezone
-from sqlalchemy import Column, String, Boolean, DateTime, ForeignKey, Enum as SAEnum
+from sqlalchemy import Column, String, Boolean, DateTime, ForeignKey, Enum as SAEnum, Integer
 from sqlalchemy.orm import relationship
 from app.database import Base
 
@@ -39,6 +39,7 @@ class Source(Base):
     source_type = Column(SAEnum(SourceType), nullable=False, default=SourceType.news)
     is_active = Column(Boolean, default=True)
     respect_robots_txt = Column(Boolean, default=True, nullable=False)
+    discovery_depth = Column(Integer, nullable=True, default=None)
     crawl_status = Column(SAEnum(CrawlStatus), nullable=False, default=CrawlStatus.new)
     content_hash = Column(String(64), nullable=True)
     last_changed_at = Column(DateTime, nullable=True)
