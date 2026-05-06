@@ -475,9 +475,12 @@ def enqueue_source(source_id: str, db: Session = Depends(get_db)) -> Dict[str, A
             status=CrawlRunSourceStatus.pending,
         )
         db.add(crs)
-        queued_run.total_sources = len(queued_run.sources) + 1
+        db.commit()
+        db.refresh(queued_run)
+        queued_run.total_sources = len(queued_run.sources)
         db.commit()
 
+    db.refresh(queued_run)
     position = len(queued_run.sources)
     return {"queued": True, "position": position, "crawl_run_id": queued_run.id}
 
