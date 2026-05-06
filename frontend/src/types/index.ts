@@ -41,6 +41,7 @@ export interface Source {
   last_changed_at: string | null;
   created_at: string;
   discovered_pages_summary: Record<string, number>;
+  analysis_status: 'pending' | 'analysing' | 'analysed' | 'analysis_failed' | null;
 }
 
 export interface SourceCreate {
@@ -175,6 +176,11 @@ export interface DiscoveredPage {
   last_signal_relevance: number | null;
 }
 
+export interface SourceSearchResult {
+  source: Source;
+  matching_subsites: string[];
+}
+
 export type CrawlStep = 'fetching' | 'extracting' | 'analysing' | 'discovering';
 
 export interface CrawlStartEvent {
@@ -256,6 +262,41 @@ export interface CrawlQueuedStateEvent {
   crawl_run_id: string;
   sources: { source_id: string; url: string }[];
 }
+
+export interface CrawlAnalysisPhaseStartEvent {
+  type: 'analysis_phase_start';
+  crawl_run_id: string;
+}
+
+export interface CrawlAnalysisStartEvent {
+  type: 'analysis_start';
+  crawl_run_id: string;
+  source_id: string;
+  url: string;
+}
+
+export interface CrawlAnalysisProgressEvent {
+  type: 'analysis_progress';
+  source_id: string;
+  current: number;
+  total: number;
+  url: string;
+}
+
+export interface CrawlAnalysisDoneEvent {
+  type: 'analysis_done';
+  crawl_run_id: string;
+  source_id: string;
+  url: string;
+  analysed: number;
+  analyse_ms: number;
+}
+
+export interface CrawlAnalysisPhaseDoneEvent {
+  type: 'analysis_phase_done';
+  crawl_run_id: string;
+}
+
 export type CrawlEvent =
   | CrawlStartEvent
   | CrawlSourceStartEvent
@@ -268,7 +309,12 @@ export type CrawlEvent =
   | CrawlInitialStateEvent
   | CrawlReconnectCompleteEvent
   | CrawlNoActiveRunEvent
-  | CrawlQueuedStateEvent;
+  | CrawlQueuedStateEvent
+  | CrawlAnalysisPhaseStartEvent
+  | CrawlAnalysisStartEvent
+  | CrawlAnalysisProgressEvent
+  | CrawlAnalysisDoneEvent
+  | CrawlAnalysisPhaseDoneEvent;
 
 export interface CrawlRunSourceState {
   source_id: string;
@@ -311,6 +357,11 @@ export interface SourceCrawlState {
   errorMessage?: string;
   discoveryProgress?: { pages_found: number; pages_crawled: number; max_pages: number };
   stepTimings?: Partial<Record<CrawlStep, number>>;
+  analysisProgress?: {
+    current: number;
+    total: number;
+    currentUrl: string;
+  };
   discoveredUrls?: string[];
 }
 

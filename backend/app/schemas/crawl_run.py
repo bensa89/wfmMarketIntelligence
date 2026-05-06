@@ -22,6 +22,8 @@ class CrawlRunSourceRead(BaseModel):
     extract_ms: Optional[int] = None
     analyse_ms: Optional[int] = None
     discover_ms: Optional[int] = None
+    analyse_started_at: Optional[datetime] = None
+    analyse_finished_at: Optional[datetime] = None
 
 
 class CrawlRunRead(BaseModel):

@@ -43,6 +43,8 @@ export function useCrawlStream() {
   const qc = useQueryClient();
   const [isRunning, setIsRunning] = useState(false);
   const isRunningRef = useRef(false);
+  const [isAnalysing, setIsAnalysing] = useState(false);
+  const isAnalysingRef = useRef(false);
   const [crawlRunId, setCrawlRunId] = useState<string | null>(null);
   const [sourceStates, setSourceStates] = useState<SourceCrawlState[]>([]);
   const [summary, setSummary] = useState<CrawlStreamSummary | null>(null);
@@ -218,10 +220,63 @@ export function useCrawlStream() {
           qc.invalidateQueries({ queryKey: ['signalsOverTime'] });
           qc.invalidateQueries({ queryKey: ['signalDistribution'] });
           qc.invalidateQueries({ queryKey: ['sourceCandidates'] });
-          setIsRunning(false);
+          if (!isAnalysingRef.current) {
+            setIsRunning(false);
+          }
           if (queuedRunIdRef.current) {
             setTimeout(() => startQueuedStreamRef.current(), 300);
           }
+          break;
+        case 'analysis_phase_start':
+          setIsAnalysing(true);
+          isAnalysingRef.current = true;
+          break;
+        case 'analysis_start':
+          setSourceStates((prev) =>
+            prev.map((s) =>
+              s.source_id === event.source_id
+                ? { ...s, currentStep: 'analysing', status: 'running' }
+                : s
+            ),
+          );
+          break;
+        case 'analysis_progress':
+          setSourceStates((prev) =>
+            prev.map((s) =>
+              s.source_id === event.source_id
+                ? {
+                    ...s,
+                    analysisProgress: {
+                      current: event.current,
+                      total: event.total,
+                      currentUrl: event.url,
+                    },
+                  }
+                : s
+            ),
+          );
+          break;
+        case 'analysis_done':
+          setSourceStates((prev) =>
+            prev.map((s) =>
+              s.source_id === event.source_id
+                ? {
+                    ...s,
+                    status: 'done',
+                    currentStep: undefined,
+                    stepTimings: {
+                      ...s.stepTimings,
+                      analysing: event.analyse_ms,
+                    },
+                  }
+                : s
+            ),
+          );
+          break;
+        case 'analysis_phase_done':
+          setIsAnalysing(false);
+          isAnalysingRef.current = false;
+          setIsRunning(false);
           break;
       }
     },
@@ -493,6 +548,8 @@ export function useCrawlStream() {
     setConnectionError(null);
     setCrawlTotal(0);
     setCrawlRunId(null);
+    setIsAnalysing(false);
+    isAnalysingRef.current = false;
   }, []);
 
   return {
@@ -500,6 +557,7 @@ export function useCrawlStream() {
     cancel,
     reset,
     isRunning,
+    isAnalysing,
     crawlRunId,
     sourceStates,
     summary,

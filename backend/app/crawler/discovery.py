@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from bs4 import BeautifulSoup
 from sqlalchemy.orm import Session
 
-from app.models.source import Source
+from app.models.source import Source, AnalysisStatus
 from app.models.document import Document
 from app.models.discovered_page import DiscoveredPage, DiscoveredPageStatus
 from app.models.signal import Signal
@@ -264,13 +264,18 @@ def discover_and_crawl(
             logger.warning("Fetch failed for discovered page: %s", url)
             continue
 
-        if settings.js_rendering_enabled and len(_extract_internal_links(fetch_result.html, url)) < 5:
+        if (
+            settings.js_rendering_enabled
+            and len(_extract_internal_links(fetch_result.html, url)) < 5
+        ):
             logger.info("JS rendering fallback for discovered page: %s", url)
             js_result = fetch_url_js(url)
             if js_result is not None:
                 fetch_result = js_result
             else:
-                logger.warning("JS rendering fallback failed for %s, using static HTML", url)
+                logger.warning(
+                    "JS rendering fallback failed for %s, using static HTML", url
+                )
 
         pages_crawled += 1
         if progress_callback:
@@ -325,8 +330,9 @@ def discover_and_crawl(
                 logger.info("New discovered page: %s (depth=%d)", final_url, depth)
 
                 if analyse:
-                    _save_and_analyse(source, fetch_result, extraction, now, db)
-                    _update_page_relevance(page, final_url, db)
+                    _save_document_only(source, fetch_result, extraction, now, db)
+                    source.analysis_status = AnalysisStatus.pending
+                    db.commit()
 
             elif not existing.is_active:
                 existing.status = DiscoveredPageStatus.ignored
@@ -344,8 +350,9 @@ def discover_and_crawl(
                 logger.info("Changed discovered page: %s", final_url)
 
                 if analyse:
-                    _save_and_analyse(source, fetch_result, extraction, now, db)
-                    _update_page_relevance(existing, final_url, db)
+                    _save_document_only(source, fetch_result, extraction, now, db)
+                    source.analysis_status = AnalysisStatus.pending
+                    db.commit()
 
             else:
                 existing.status = DiscoveredPageStatus.known
@@ -389,9 +396,7 @@ def discover_and_crawl(
     return result
 
 
-def _save_and_analyse(source, fetch_result, extraction, now, db):
-    from app.analyser.pipeline import analyse_document
-
+def _save_document_only(source, fetch_result, extraction, now, db):
     existing_doc = (
         db.query(Document).filter(Document.url == fetch_result.final_url).first()
     )
@@ -404,8 +409,6 @@ def _save_and_analyse(source, fetch_result, extraction, now, db):
         if extraction.published_at and not existing_doc.published_at:
             existing_doc.published_at = extraction.published_at
         db.commit()
-        db.refresh(existing_doc)
-        analyse_document(existing_doc, source.company_id, db)
     else:
         doc = Document(
             source_id=source.id,
@@ -419,5 +422,3 @@ def _save_and_analyse(source, fetch_result, extraction, now, db):
         )
         db.add(doc)
         db.commit()
-        db.refresh(doc)
-        analyse_document(doc, source.company_id, db)

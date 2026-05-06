@@ -416,11 +416,12 @@ def _make_signal(db_session, doc_id: str, company_id: str, relevance: float):
 
 def test_discover_auto_ignores_page_when_all_signals_low(db_session, monkeypatch):
     import app.config as cfg
+    from app.models.source import AnalysisStatus
 
     monkeypatch.setattr(cfg.settings, "discovery_depth", 1)
     source = _make_source(db_session, slug="disc-auteignore")
 
-    def mock_save_and_analyse(src, fetch_result, extraction, now, db):
+    def mock_save_document_only(src, fetch_result, extraction, now, db):
         doc = Document(
             source_id=src.id,
             url=fetch_result.final_url,
@@ -432,8 +433,6 @@ def test_discover_auto_ignores_page_when_all_signals_low(db_session, monkeypatch
         db.add(doc)
         db.commit()
         db.refresh(doc)
-        _make_signal(db, doc.id, src.company_id, relevance=0.1)
-        _make_signal(db, doc.id, src.company_id, relevance=0.2)
 
     mock_fetch = MagicMock(
         return_value=MagicMock(
@@ -450,25 +449,27 @@ def test_discover_auto_ignores_page_when_all_signals_low(db_session, monkeypatch
         patch("app.crawler.discovery.fetch_url_js", return_value=None),
         patch("app.crawler.discovery._get_robot_parser", return_value=mock_rp),
         patch(
-            "app.crawler.discovery._save_and_analyse", side_effect=mock_save_and_analyse
+            "app.crawler.discovery._save_document_only",
+            side_effect=mock_save_document_only,
         ),
     ):
         discover_and_crawl(source, SEED_HTML, db_session, analyse=True)
 
     page = db_session.query(DiscoveredPage).first()
     assert page is not None
-    assert page.is_active is False
-    assert page.status == DiscoveredPageStatus.ignored
-    assert page.last_signal_relevance == pytest.approx(0.2)
+    assert page.status == DiscoveredPageStatus.new
+    db_session.refresh(source)
+    assert source.analysis_status == AnalysisStatus.pending
 
 
 def test_discover_keeps_page_active_when_one_signal_relevant(db_session, monkeypatch):
     import app.config as cfg
+    from app.models.source import AnalysisStatus
 
     monkeypatch.setattr(cfg.settings, "discovery_depth", 1)
     source = _make_source(db_session, slug="disc-keep-active")
 
-    def mock_save_and_analyse(src, fetch_result, extraction, now, db):
+    def mock_save_document_only(src, fetch_result, extraction, now, db):
         doc = Document(
             source_id=src.id,
             url=fetch_result.final_url,
@@ -480,8 +481,6 @@ def test_discover_keeps_page_active_when_one_signal_relevant(db_session, monkeyp
         db.add(doc)
         db.commit()
         db.refresh(doc)
-        _make_signal(db, doc.id, src.company_id, relevance=0.1)
-        _make_signal(db, doc.id, src.company_id, relevance=0.5)
 
     mock_fetch = MagicMock(
         return_value=MagicMock(
@@ -498,11 +497,13 @@ def test_discover_keeps_page_active_when_one_signal_relevant(db_session, monkeyp
         patch("app.crawler.discovery.fetch_url_js", return_value=None),
         patch("app.crawler.discovery._get_robot_parser", return_value=mock_rp),
         patch(
-            "app.crawler.discovery._save_and_analyse", side_effect=mock_save_and_analyse
+            "app.crawler.discovery._save_document_only",
+            side_effect=mock_save_document_only,
         ),
     ):
         discover_and_crawl(source, SEED_HTML, db_session, analyse=True)
 
     page = db_session.query(DiscoveredPage).first()
     assert page.is_active is True
-    assert page.last_signal_relevance == pytest.approx(0.5)
+    db_session.refresh(source)
+    assert source.analysis_status == AnalysisStatus.pending

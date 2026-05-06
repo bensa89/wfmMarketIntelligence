@@ -20,6 +20,13 @@ class CrawlStatus(str, enum.Enum):
     changed = "changed"
 
 
+class AnalysisStatus(str, enum.Enum):
+    pending = "pending"
+    analysing = "analysing"
+    analysed = "analysed"
+    analysis_failed = "analysis_failed"
+
+
 class Source(Base):
     __tablename__ = "sources"
 
@@ -36,6 +43,7 @@ class Source(Base):
     content_hash = Column(String(64), nullable=True)
     last_changed_at = Column(DateTime, nullable=True)
     last_crawled_at = Column(DateTime, nullable=True)
+    analysis_status = Column(SAEnum(AnalysisStatus), nullable=True, default=None)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     company = relationship("Company", back_populates="sources")

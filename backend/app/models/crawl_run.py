@@ -18,6 +18,7 @@ class CrawlRunSourceStatus(str, enum.Enum):
     pending = "pending"
     running = "running"
     completed = "completed"
+    analysing = "analysing"
     failed = "failed"
     skipped = "skipped"
 
@@ -77,6 +78,8 @@ class CrawlRunSource(Base):
     discover_ms = Column(Integer, nullable=True)
     discover_pages_crawled = Column(Integer, nullable=True)
     discover_pages_found = Column(Integer, nullable=True)
+    analyse_started_at = Column(DateTime, nullable=True)
+    analyse_finished_at = Column(DateTime, nullable=True)
 
     crawl_run = relationship("CrawlRun", back_populates="sources")
     source = relationship("Source", back_populates="crawl_run_sources")

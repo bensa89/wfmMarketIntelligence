@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { useCompanies, useCreateCompany, useUpdateCompanyDynamic, useDeleteCompany } from '../hooks/useCompanies';
 import { useSources, useCreateSource, useUpdateSource, useDeleteSource } from '../hooks/useSources';
 import { useCrawlStream } from '../hooks/useCrawlStream';
+import { useAnalyseSource } from '../hooks/useCrawl';
 import { CrawlProgressPanel } from '../components/CrawlProgressPanel';
 import { useDiscoveredPages, useToggleDiscoveredPage, useDeleteDiscoveredPage } from '../hooks/useDiscoveredPages';
-import type { CompanyType, SourceType, Source, DiscoveredPage, Company, CrawlStatus } from '../types';
-import { Plus, Play, Trash2, Edit2, X, ChevronDown, ChevronRight, Shield, ShieldOff } from 'lucide-react';
+import { useSourceSearch } from '../hooks/useSourceSearch';
+import type { CompanyType, SourceType, Source, DiscoveredPage, Company, CrawlStatus, SourceSearchResult } from '../types';
+import { Plus, Play, Trash2, Edit2, X, ChevronDown, ChevronRight, Shield, ShieldOff, Search } from 'lucide-react';
 import { ApiError } from '../api/client';
 
 const sourceTypes: SourceType[] = ['news', 'blog', 'product', 'press', 'jobs'];
@@ -23,6 +25,27 @@ function crawlStatusBadge(status: CrawlStatus) {
   );
 }
 
+function analysisStatusBadge(status: Source['analysis_status']) {
+  if (!status) return null;
+  const styles: Record<string, string> = {
+    pending: 'bg-yellow-500/20 text-yellow-400',
+    analysing: 'bg-accent-blue/20 text-accent-blue animate-pulse',
+    analysed: 'bg-signal-high/20 text-signal-high',
+    analysis_failed: 'bg-red-500/20 text-red-400',
+  };
+  const labels: Record<string, string> = {
+    pending: 'Analyse ausstehend',
+    analysing: 'Analysiere...',
+    analysed: 'Analysiert',
+    analysis_failed: 'Analyse fehlgeschlagen',
+  };
+  return (
+    <span className={`text-xs px-1.5 py-0.5 rounded ${styles[status] ?? ''}`}>
+      {labels[status] ?? status}
+    </span>
+  );
+}
+
 function DiscoveredPagesSummary({ summary }: { summary: Record<string, number> }) {
   const parts: string[] = [];
   if ((summary['new'] ?? 0) > 0) parts.push(`${summary['new']} new`);
@@ -36,10 +59,12 @@ function DiscoveredPagesSection({
   sourceId,
   onToggle,
   onDelete,
+  highlightUrls,
 }: {
   sourceId: string;
   onToggle: (pageId: string, isActive: boolean) => void;
   onDelete: (pageId: string, sourceId: string) => void;
+  highlightUrls?: Set<string>;
 }) {
   const { data: pages, isLoading } = useDiscoveredPages(sourceId);
 
@@ -98,8 +123,9 @@ function DiscoveredPagesSection({
             key={page.id}
             className={`border-b border-app-border/20 ${!page.is_active ? 'opacity-40' : ''}`}
           >
-            <td className="py-1 px-4 max-w-sm truncate" title={page.url}>
-              {page.url}
+            <td className={`py-1 px-4 max-w-sm truncate ${highlightUrls?.has(page.url) ? 'bg-yellow-500/10' : ''}`} title={page.url}>
+              <a href={page.url} target="_blank" rel="noopener noreferrer" className="hover:underline">{page.url}</a>
+              {highlightUrls?.has(page.url) && <span className="ml-2 text-xs bg-yellow-500/20 text-yellow-400 px-1.5 py-0.5 rounded">Treffer</span>}
             </td>
             <td className="py-1">{statusBadge(page.status)}</td>
             <td className="py-1">{relevanceBadge(page.last_signal_relevance)}</td>
@@ -153,6 +179,9 @@ export default function SourcesAdmin() {
   const deleteCompany = useDeleteCompany();
   const updateCompanyDynamic = useUpdateCompanyDynamic();
   const stream = useCrawlStream();
+  const analyseSource = useAnalyseSource();
+  const [urlSearch, setUrlSearch] = useState('');
+  const sourceSearch = useSourceSearch(urlSearch);
 
   const [newCompanyOpen, setNewCompanyOpen] = useState(false);
   const [newCompanyName, setNewCompanyName] = useState('');
@@ -180,6 +209,7 @@ export default function SourcesAdmin() {
   const [editCompanyDescription, setEditCompanyDescription] = useState('');
 
   const [expandedSourceId, setExpandedSourceId] = useState<string | null>(null);
+  const [expandedCompanyIds, setExpandedCompanyIds] = useState<Set<string>>(() => new Set());
   const [sourceError, setSourceError] = useState<string | null>(null);
   const [companyEditError, setCompanyEditError] = useState<string | null>(null);
   const toggleDiscoveredPage = useToggleDiscoveredPage();
@@ -327,6 +357,7 @@ export default function SourcesAdmin() {
 
       <CrawlProgressPanel
         isRunning={stream.isRunning}
+        isAnalysing={stream.isAnalysing}
         sourceStates={stream.sourceStates}
         summary={stream.summary}
         connectionError={stream.connectionError}
@@ -336,135 +367,319 @@ export default function SourcesAdmin() {
         onDismiss={stream.reset}
       />
 
-      {isLoading ? (
+      <div className="flex items-center gap-3 mb-4">
+        <div className="relative flex-1">
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted" />
+          <input
+            type="text"
+            value={urlSearch}
+            onChange={(e) => setUrlSearch(e.target.value)}
+            className="input-field w-full pl-9"
+            placeholder="URL suchen..."
+          />
+        </div>
+        {urlSearch && (
+          <button onClick={() => setUrlSearch('')} className="text-ink-muted hover:text-ink text-sm">Clear</button>
+        )}
+      </div>
+
+      <div className="card mb-4">
+        <h2 className="text-lg font-semibold mb-4">Add Source</h2>
+        <form onSubmit={handleCreateSource} className="flex items-end gap-3">
+          <div className="flex-1">
+            <label className="block text-sm text-ink-muted mb-1">Company</label>
+            <select value={newSourceCompanyId} onChange={(e) => setNewSourceCompanyId(e.target.value)} className="input-field w-full" required>
+              <option value="">Select...</option>
+              {companies?.map((c) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
+          </div>
+          <div className="flex-[2]">
+            <label className="block text-sm text-ink-muted mb-1">URL</label>
+            <input value={newSourceUrl} onChange={(e) => setNewSourceUrl(e.target.value)} className="input-field w-full" required placeholder="https://..." />
+          </div>
+          <div>
+            <label className="block text-sm text-ink-muted mb-1">Label</label>
+            <input value={newSourceLabel} onChange={(e) => setNewSourceLabel(e.target.value)} className="input-field w-full" placeholder="News" />
+          </div>
+          <div>
+            <label className="block text-sm text-ink-muted mb-1">Type</label>
+            <select value={newSourceType} onChange={(e) => setNewSourceType(e.target.value as SourceType)} className="input-field w-full">
+              {sourceTypes.map((t) => <option key={t} value={t}>{t}</option>)}
+            </select>
+          </div>
+          <button type="submit" disabled={createSource.isPending} className="btn-primary">
+            {createSource.isPending ? 'Adding...' : 'Add Source'}
+          </button>
+        </form>
+        {sourceError && <p className="text-signal-low text-sm mt-2">{sourceError}</p>}
+      </div>
+
+      {isLoading && !urlSearch ? (
         <p className="text-ink-muted">Loading...</p>
       ) : companiesError ? (
         <p className="text-signal-low">Error loading companies: {companiesError.message}</p>
       ) : !companies || companies.length === 0 ? (
         <p className="text-ink-muted">No companies found. Create one first!</p>
-      ) : (
-        <div className="space-y-6">
-          {companies?.map((company) => {
-            const companySources = sources?.filter((s) => s.company_id === company.id) ?? [];
-            return (
-              <div key={company.id} className="card">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <h2 className="text-lg font-semibold">{company.name}</h2>
-                    <span className={`text-xs px-2 py-0.5 rounded ${company.type === 'competitor' ? 'bg-type-product_update/20 text-type-product_update' : 'bg-type-ai_announcement/20 text-type-ai_announcement'}`}>
-                      {company.type === 'competitor' ? 'Competitor' : 'Market Source'}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => openEditCompanyModal(company)}
-                      className="text-ink-muted hover:text-ink p-1"
-                      title="Edit company"
-                    >
-                      <Edit2 size={16} />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteCompany(company.slug, company.name)}
-                      className="text-signal-low hover:text-red-400 p-1"
-                      title="Delete company"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                </div>
-                {company.website && <p className="text-xs text-ink-muted mb-3">{company.website}</p>}
-                {company.description && <p className="text-sm text-ink-muted mb-3">{company.description}</p>}
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-app-border">
-                      <th className="text-left py-2 text-ink-muted font-medium">URL</th>
-                      <th className="text-left py-2 text-ink-muted font-medium">Label</th>
-                      <th className="text-left py-2 text-ink-muted font-medium">Type</th>
-                      <th className="text-left py-2 text-ink-muted font-medium">Robots</th>
-                      <th className="text-left py-2 text-ink-muted font-medium">Active</th>
-                      <th className="text-left py-2 text-ink-muted font-medium">Status</th>
-                      <th className="text-left py-2 text-ink-muted font-medium">Last Crawled</th>
-                      <th className="text-right py-2 text-ink-muted font-medium">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {companySources.map((source) => (
-                      <React.Fragment key={source.id}>
-                        <tr className="border-b border-app-border/50">
-                          <td className="py-2 max-w-xs truncate" title={source.url}>
-                            {source.url}
-                            <div className="mt-0.5">
-                              <DiscoveredPagesSummary summary={source.discovered_pages_summary} />
-                            </div>
-                          </td>
-                          <td className="py-2">{source.label || '-'}</td>
-                          <td className="py-2">
-                            <span className="text-xs px-1.5 py-0.5 rounded bg-app-bg">{source.source_type}</span>
-                          </td>
-                          <td className="py-2">
-                            {source.respect_robots_txt ? (
-                              <span title="robots.txt wird respektiert">
-                                <Shield size={14} className="text-signal-high" />
-                              </span>
-                            ) : (
-                              <span title="robots.txt wird ignoriert">
-                                <ShieldOff size={14} className="text-ink-muted" />
-                              </span>
-                            )}
-                          </td>
-                          <td className="py-2">
-                            <button
-                              onClick={() => handleToggleSource(source.id, source.is_active)}
-                              className={`text-xs px-2 py-0.5 rounded ${source.is_active ? 'bg-signal-high/20 text-signal-high' : 'bg-app-bg text-ink-muted'}`}
-                            >
-                              {source.is_active ? 'Active' : 'Inactive'}
-                            </button>
-                          </td>
-                          <td className="py-2">
-                            {crawlStatusBadge(source.crawl_status)}
-                          </td>
-                          <td className="py-2 text-ink-muted text-xs">
-                            {source.last_crawled_at ? new Date(source.last_crawled_at).toLocaleDateString('de-DE') : 'Never'}
-                          </td>
-                          <td className="py-2 text-right">
-                            <button
-                              onClick={() => setExpandedSourceId(expandedSourceId === source.id ? null : source.id)}
-                              className="text-ink-muted hover:text-ink mr-2"
-                              title="Toggle discovered pages"
-                            >
-                              {expandedSourceId === source.id ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-                            </button>
-                            <button onClick={() => handleCrawlSource(source.id)} className="text-accent-blue hover:text-accent-blue/80 mr-2" title="Crawl this source">
-                              <Play size={14} />
-                            </button>
-                            <button onClick={() => openEditModal(source)} className="text-ink-muted hover:text-ink mr-2" title="Edit source">
-                              <Edit2 size={14} />
-                            </button>
-                            <button onClick={() => handleDeleteSource(source.id)} className="text-signal-low hover:text-red-400" title="Delete source">
-                              <Trash2 size={14} />
-                            </button>
-                          </td>
+      ) : urlSearch && urlSearch.length >= 2 ? (
+        sourceSearch.isLoading ? (
+          <p className="text-ink-muted">Suche...</p>
+        ) : sourceSearch.data && sourceSearch.data.length > 0 ? (
+          <div className="space-y-4">
+            {(() => {
+              const byCompany = new Map<string, SourceSearchResult[]>();
+              for (const r of sourceSearch.data) {
+                const list = byCompany.get(r.source.company_id) ?? [];
+                list.push(r);
+                byCompany.set(r.source.company_id, list);
+              }
+              return Array.from(byCompany.entries()).map(([companyId, results]) => {
+                const company = companies?.find((c) => c.id === companyId);
+                if (!company) return null;
+                return (
+                  <div key={company.id} className="card">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <ChevronDown size={18} className="text-ink-muted flex-shrink-0" />
+                        <h2 className="text-lg font-semibold">{company.name}</h2>
+                        <span className={`text-xs px-2 py-0.5 rounded ${company.type === 'competitor' ? 'bg-type-product_update/20 text-type-product_update' : 'bg-type-ai_announcement/20 text-type-ai_announcement'}`}>
+                          {company.type === 'competitor' ? 'Competitor' : 'Market Source'}
+                        </span>
+                        <span className="text-xs text-ink-muted">{results.length} Treffer</span>
+                        {company.website && <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-xs text-accent-blue hover:underline truncate max-w-xs">{company.website}</a>}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => openEditCompanyModal(company)} className="text-ink-muted hover:text-ink p-1" title="Edit company"><Edit2 size={16} /></button>
+                        <button onClick={() => handleDeleteCompany(company.slug, company.name)} className="text-signal-low hover:text-red-400 p-1" title="Delete company"><Trash2 size={16} /></button>
+                      </div>
+                    </div>
+                    {company.description && <p className="text-sm text-ink-muted mt-1 ml-9">{company.description}</p>}
+                    <table className="w-full text-sm mt-3">
+                      <thead>
+                        <tr className="border-b border-app-border">
+                          <th className="w-8 py-2"></th>
+                          <th className="text-left py-2 text-ink-muted font-medium">URL</th>
+                          <th className="text-left py-2 text-ink-muted font-medium">Label</th>
+                          <th className="text-left py-2 text-ink-muted font-medium">Type</th>
+                          <th className="text-left py-2 text-ink-muted font-medium">Robots</th>
+                          <th className="text-left py-2 text-ink-muted font-medium">Active</th>
+<th className="text-left py-2 text-ink-muted font-medium">Status</th>
+                        <th className="text-left py-2 text-ink-muted font-medium">Analyse</th>
+                        <th className="text-left py-2 text-ink-muted font-medium">Last Crawled</th>
+                          <th className="text-right py-2 text-ink-muted font-medium">Actions</th>
                         </tr>
-                        {expandedSourceId === source.id && (
-                          <tr>
-                            <td colSpan={8} className="bg-app-bg/50">
-                              <DiscoveredPagesSection sourceId={source.id} onToggle={(pageId, isActive) => toggleDiscoveredPage.mutate({ pageId, isActive })} onDelete={(pageId, srcId) => deleteDiscoveredPage.mutate({ pageId, sourceId: srcId })} />
+                      </thead>
+                      <tbody>
+                        {results.map(({ source, matching_subsites }) => {
+                          const hasSubsiteMatch = matching_subsites.length > 0;
+                          const isSourceExpanded = expandedSourceId === source.id || hasSubsiteMatch;
+                          const highlightSet = new Set(matching_subsites);
+                          return (
+                          <React.Fragment key={source.id}>
+                            <tr className="border-b border-app-border/50">
+                              <td className="py-2 w-8">
+                                <button
+                                  onClick={() => setExpandedSourceId(expandedSourceId === source.id ? null : source.id)}
+                                  className="text-ink-muted hover:text-ink"
+                                  title="Toggle discovered pages"
+                                >
+                                  {isSourceExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                                </button>
+                              </td>
+                              <td className="py-2 max-w-xs truncate">
+                                <a href={source.url} target="_blank" rel="noopener noreferrer" className="text-accent-blue hover:underline" title={source.url}>{source.url}</a>
+                                <div className="mt-0.5"><DiscoveredPagesSummary summary={source.discovered_pages_summary} /></div>
+                              </td>
+                              <td className="py-2">{source.label || '-'}</td>
+                              <td className="py-2"><span className="text-xs px-1.5 py-0.5 rounded bg-app-bg">{source.source_type}</span></td>
+                              <td className="py-2">
+                                {source.respect_robots_txt ? (
+                                  <span title="robots.txt wird respektiert"><Shield size={14} className="text-signal-high" /></span>
+                                ) : (
+                                  <span title="robots.txt wird ignoriert"><ShieldOff size={14} className="text-ink-muted" /></span>
+                                )}
+                              </td>
+                              <td className="py-2">
+                                <button
+                                  onClick={() => handleToggleSource(source.id, source.is_active)}
+                                  className={`text-xs px-2 py-0.5 rounded ${source.is_active ? 'bg-signal-high/20 text-signal-high' : 'bg-app-bg text-ink-muted'}`}
+                                >
+                                  {source.is_active ? 'Active' : 'Inactive'}
+                                </button>
+                              </td>
+<td className="py-2">{crawlStatusBadge(source.crawl_status)}</td>
+                               <td className="py-2">{analysisStatusBadge(source.analysis_status)}</td>
+                               <td className="py-2 text-ink-muted text-xs">
+                                {source.last_crawled_at ? new Date(source.last_crawled_at).toLocaleDateString('de-DE') : 'Never'}
+                              </td>
+<td className="py-2 text-right">
+                                 {(source.analysis_status === 'pending' || source.analysis_status === 'analysis_failed') && (
+                                   <button onClick={() => analyseSource.mutate(source.id)} className="text-accent-blue hover:text-accent-blue/80 p-1 mr-1" title="Analyse starten"><Play size={12} /></button>
+                                 )}
+                                 <button onClick={() => handleCrawlSource(source.id)} className="text-accent-blue hover:text-accent-blue/80 mr-2" title="Crawl this source"><Play size={14} /></button>
+                                 <button onClick={() => openEditModal(source)} className="text-ink-muted hover:text-ink mr-2" title="Edit source"><Edit2 size={14} /></button>
+                                 <button onClick={() => handleDeleteSource(source.id)} className="text-signal-low hover:text-red-400" title="Delete source"><Trash2 size={14} /></button>
+                               </td>
+                             </tr>
+                             {isSourceExpanded && (
+                              <tr>
+                                <td colSpan={10} className="bg-app-bg/50">
+                                  <DiscoveredPagesSection sourceId={source.id} onToggle={(pageId, isActive) => toggleDiscoveredPage.mutate({ pageId, isActive })} onDelete={(pageId, srcId) => deleteDiscoveredPage.mutate({ pageId, sourceId: srcId })} highlightUrls={highlightSet} />
+                                </td>
+                              </tr>
+                            )}
+                          </React.Fragment>
+                        ); })}
+                      </tbody>
+                    </table>
+                  </div>
+                );
+              });
+            })()}
+          </div>
+        ) : (
+          <p className="text-ink-muted">Keine Treffer für "{urlSearch}"</p>
+        )
+      ) : (
+        <div className="space-y-4">
+           {companies?.map((company) => {
+             const companySources = sources?.filter((s) => s.company_id === company.id) ?? [];
+             const isExpanded = expandedCompanyIds.has(company.id);
+             return (
+               <div key={company.id} className="card">
+                 <div className="flex items-center justify-between">
+                   <button
+                     onClick={() => setExpandedCompanyIds((prev) => { const next = new Set(prev); next.has(company.id) ? next.delete(company.id) : next.add(company.id); return next; })}
+                     className="flex items-center gap-3 flex-1 text-left"
+                   >
+                     {isExpanded ? <ChevronDown size={18} className="text-ink-muted flex-shrink-0" /> : <ChevronRight size={18} className="text-ink-muted flex-shrink-0" />}
+                     <h2 className="text-lg font-semibold">{company.name}</h2>
+                     <span className={`text-xs px-2 py-0.5 rounded ${company.type === 'competitor' ? 'bg-type-product_update/20 text-type-product_update' : 'bg-type-ai_announcement/20 text-type-ai_announcement'}`}>
+                       {company.type === 'competitor' ? 'Competitor' : 'Market Source'}
+                     </span>
+                      <span className="text-xs text-ink-muted">{companySources.length} Source{companySources.length !== 1 ? 's' : ''}</span>
+                      {company.website && <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-xs text-accent-blue hover:underline truncate max-w-xs" onClick={(e) => e.stopPropagation()}>{company.website}</a>}
+                    </button>
+                   <div className="flex items-center gap-2">
+                     <button
+                       onClick={() => openEditCompanyModal(company)}
+                       className="text-ink-muted hover:text-ink p-1"
+                       title="Edit company"
+                     >
+                       <Edit2 size={16} />
+                     </button>
+                     <button
+                       onClick={() => handleDeleteCompany(company.slug, company.name)}
+                       className="text-signal-low hover:text-red-400 p-1"
+                       title="Delete company"
+                     >
+                       <Trash2 size={16} />
+                     </button>
+                   </div>
+                  </div>
+                  {company.description && <p className="text-sm text-ink-muted mt-1 ml-9">{company.description}</p>}
+                 {isExpanded && (
+                 <table className="w-full text-sm mt-3">
+                    <thead>
+                      <tr className="border-b border-app-border">
+                       <th className="w-8 py-2"></th>
+                       <th className="text-left py-2 text-ink-muted font-medium">URL</th>
+                       <th className="text-left py-2 text-ink-muted font-medium">Label</th>
+                       <th className="text-left py-2 text-ink-muted font-medium">Type</th>
+                       <th className="text-left py-2 text-ink-muted font-medium">Robots</th>
+                       <th className="text-left py-2 text-ink-muted font-medium">Active</th>
+<th className="text-left py-2 text-ink-muted font-medium">Status</th>
+                           <th className="text-left py-2 text-ink-muted font-medium">Analyse</th>
+                           <th className="text-left py-2 text-ink-muted font-medium">Last Crawled</th>
+                       <th className="text-right py-2 text-ink-muted font-medium">Actions</th>
+                     </tr>
+                   </thead>
+                   <tbody>
+                     {companySources.map((source) => (
+                       <React.Fragment key={source.id}>
+                        <tr className="border-b border-app-border/50">
+                            <td className="py-2 w-8">
+                              <button
+                                onClick={() => setExpandedSourceId(expandedSourceId === source.id ? null : source.id)}
+                                className="text-ink-muted hover:text-ink"
+                                title="Toggle discovered pages"
+                              >
+                                {expandedSourceId === source.id ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                              </button>
                             </td>
-                          </tr>
-                        )}
-                      </React.Fragment>
-                    ))}
-                    {companySources.length === 0 && (
-                      <tr>
-                        <td colSpan={8} className="py-2 text-ink-muted text-center">No sources configured</td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            );
-          })}
-        </div>
+                            <td className="py-2 max-w-xs truncate">
+                              <a href={source.url} target="_blank" rel="noopener noreferrer" className="text-accent-blue hover:underline" title={source.url}>{source.url}</a>
+                              <div className="mt-0.5">
+                                <DiscoveredPagesSummary summary={source.discovered_pages_summary} />
+                              </div>
+                            </td>
+                           <td className="py-2">{source.label || '-'}</td>
+                           <td className="py-2">
+                             <span className="text-xs px-1.5 py-0.5 rounded bg-app-bg">{source.source_type}</span>
+                           </td>
+                           <td className="py-2">
+                             {source.respect_robots_txt ? (
+                               <span title="robots.txt wird respektiert">
+                                 <Shield size={14} className="text-signal-high" />
+                               </span>
+                             ) : (
+                               <span title="robots.txt wird ignoriert">
+                                 <ShieldOff size={14} className="text-ink-muted" />
+                               </span>
+                             )}
+                           </td>
+                           <td className="py-2">
+                             <button
+                               onClick={() => handleToggleSource(source.id, source.is_active)}
+                               className={`text-xs px-2 py-0.5 rounded ${source.is_active ? 'bg-signal-high/20 text-signal-high' : 'bg-app-bg text-ink-muted'}`}
+                             >
+                               {source.is_active ? 'Active' : 'Inactive'}
+                             </button>
+                           </td>
+<td className="py-2">
+                              {crawlStatusBadge(source.crawl_status)}
+                            </td>
+                            <td className="py-2">{analysisStatusBadge(source.analysis_status)}</td>
+                            <td className="py-2 text-ink-muted text-xs">
+                              {source.last_crawled_at ? new Date(source.last_crawled_at).toLocaleDateString('de-DE') : 'Never'}
+                            </td>
+<td className="py-2 text-right">
+                              {(source.analysis_status === 'pending' || source.analysis_status === 'analysis_failed') && (
+                                <button onClick={() => analyseSource.mutate(source.id)} className="text-accent-blue hover:text-accent-blue/80 p-1 mr-1" title="Analyse starten"><Play size={12} /></button>
+                              )}
+                              <button onClick={() => handleCrawlSource(source.id)} className="text-accent-blue hover:text-accent-blue/80 mr-2" title="Crawl this source">
+                                <Play size={14} />
+                              </button>
+                             <button onClick={() => openEditModal(source)} className="text-ink-muted hover:text-ink mr-2" title="Edit source">
+                               <Edit2 size={14} />
+                             </button>
+                             <button onClick={() => handleDeleteSource(source.id)} className="text-signal-low hover:text-red-400" title="Delete source">
+                               <Trash2 size={14} />
+                             </button>
+                           </td>
+                         </tr>
+                         {expandedSourceId === source.id && (
+                           <tr>
+                             <td colSpan={10} className="bg-app-bg/50">
+                               <DiscoveredPagesSection sourceId={source.id} onToggle={(pageId, isActive) => toggleDiscoveredPage.mutate({ pageId, isActive })} onDelete={(pageId, srcId) => deleteDiscoveredPage.mutate({ pageId, sourceId: srcId })} />
+                             </td>
+                           </tr>
+                         )}
+                       </React.Fragment>
+                     ))}
+                     {companySources.length === 0 && (
+                       <tr>
+                         <td colSpan={10} className="py-2 text-ink-muted text-center">No sources configured</td>
+                       </tr>
+                     )}
+                   </tbody>
+                 </table>
+                 )}
+               </div>
+             );
+           })}
+         </div>
       )}
 
       {newCompanyOpen && (
@@ -501,39 +716,6 @@ export default function SourcesAdmin() {
           </div>
         </div>
       )}
-
-      <div className="card mt-6">
-        <h2 className="text-lg font-semibold mb-4">Add Source</h2>
-        <form onSubmit={handleCreateSource} className="flex items-end gap-3">
-          <div className="flex-1">
-            <label className="block text-sm text-ink-muted mb-1">Company</label>
-            <select value={newSourceCompanyId} onChange={(e) => setNewSourceCompanyId(e.target.value)} className="input-field w-full" required>
-              <option value="">Select...</option>
-              {companies?.map((c) => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-            </select>
-          </div>
-          <div className="flex-[2]">
-            <label className="block text-sm text-ink-muted mb-1">URL</label>
-            <input value={newSourceUrl} onChange={(e) => setNewSourceUrl(e.target.value)} className="input-field w-full" required placeholder="https://..." />
-          </div>
-          <div>
-            <label className="block text-sm text-ink-muted mb-1">Label</label>
-            <input value={newSourceLabel} onChange={(e) => setNewSourceLabel(e.target.value)} className="input-field w-full" placeholder="News" />
-          </div>
-          <div>
-            <label className="block text-sm text-ink-muted mb-1">Type</label>
-            <select value={newSourceType} onChange={(e) => setNewSourceType(e.target.value as SourceType)} className="input-field w-full">
-              {sourceTypes.map((t) => <option key={t} value={t}>{t}</option>)}
-            </select>
-          </div>
-          <button type="submit" disabled={createSource.isPending} className="btn-primary">
-            {createSource.isPending ? 'Adding...' : 'Add Source'}
-          </button>
-        </form>
-        {sourceError && <p className="text-signal-low text-sm mt-2">{sourceError}</p>}
-      </div>
 
       {editingSource && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-8 z-50" onClick={closeEditModal}>

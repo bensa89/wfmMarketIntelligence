@@ -3,7 +3,7 @@ import time
 from typing import Callable, Dict, Optional
 from datetime import datetime, timezone
 from sqlalchemy.orm import Session
-from app.models.source import Source, CrawlStatus
+from app.models.source import Source, CrawlStatus, AnalysisStatus
 from app.models.document import Document
 from app.crawler.fetcher import fetch_url
 from app.crawler.js_fetcher import fetch_url_js
@@ -127,36 +127,9 @@ def run_crawl_source(
             source.crawl_status = CrawlStatus.changed
             source.content_hash = extraction.content_hash
             source.last_changed_at = datetime.now(timezone.utc)
+            source.analysis_status = AnalysisStatus.pending
             db.commit()
             result["skipped"] += 1
-
-            if analyse and _is_article_content(fetch_result.html):
-                from app.analyser.pipeline import analyse_document
-
-                db.refresh(existing_by_url)
-                emit({"type": "step", "source_id": source.id, "step": "analysing"})
-                t0 = time.monotonic()
-                try:
-                    analyse_document(existing_by_url, source.company_id, db)
-                except Exception as e:
-                    result["errors"] += 1
-                    emit(
-                        {
-                            "type": "error",
-                            "source_id": source.id,
-                            "message": f"Analysis failed: {e}",
-                        }
-                    )
-                    db.rollback()
-                analyse_ms = int((time.monotonic() - t0) * 1000)
-                emit(
-                    {
-                        "type": "step_timing",
-                        "source_id": source.id,
-                        "step": "analysing",
-                        "duration_ms": analyse_ms,
-                    }
-                )
     else:
         doc = Document(
             source_id=source.id,
@@ -171,36 +144,9 @@ def run_crawl_source(
         db.add(doc)
         source.crawl_status = CrawlStatus.new
         source.content_hash = extraction.content_hash
+        source.analysis_status = AnalysisStatus.pending
         db.commit()
         result["new_documents"] += 1
-
-        if analyse and _is_article_content(fetch_result.html):
-            from app.analyser.pipeline import analyse_document
-
-            db.refresh(doc)
-            emit({"type": "step", "source_id": source.id, "step": "analysing"})
-            t0 = time.monotonic()
-            try:
-                analyse_document(doc, source.company_id, db)
-            except Exception as e:
-                result["errors"] += 1
-                emit(
-                    {
-                        "type": "error",
-                        "source_id": source.id,
-                        "message": f"Analysis failed: {e}",
-                    }
-                )
-                db.rollback()
-            analyse_ms = int((time.monotonic() - t0) * 1000)
-            emit(
-                {
-                    "type": "step_timing",
-                    "source_id": source.id,
-                    "step": "analysing",
-                    "duration_ms": analyse_ms,
-                }
-            )
 
     emit({"type": "step", "source_id": source.id, "step": "discovering"})
     t0 = time.monotonic()
@@ -226,5 +172,77 @@ def run_crawl_source(
         "analyse_ms": analyse_ms,
         "discover_ms": discover_ms,
     }
+
+    return result
+
+
+def analyse_unanalysed_for_source(
+    source: Source,
+    db: Session,
+    progress_callback: Optional[Callable[[dict], None]] = None,
+) -> Dict:
+    from app.analyser.pipeline import analyse_document
+    from app.models.discovered_page import DiscoveredPage
+    from app.crawler.discovery import _update_page_relevance
+
+    def emit(event: dict):
+        if progress_callback:
+            progress_callback(event)
+
+    result = {"source_id": source.id, "analysed": 0, "errors": 0, "analyse_ms": 0}
+
+    source.analysis_status = AnalysisStatus.analysing
+    db.commit()
+
+    unanalysed = (
+        db.query(Document)
+        .filter(
+            Document.source_id == source.id,
+            Document.is_analysed == False,
+        )
+        .order_by(Document.crawled_at.asc())
+        .all()
+    )
+
+    if not unanalysed:
+        source.analysis_status = AnalysisStatus.analysed
+        db.commit()
+        return result
+
+    total = len(unanalysed)
+    t0 = time.monotonic()
+
+    for i, doc in enumerate(unanalysed):
+        emit(
+            {
+                "type": "analysis_progress",
+                "source_id": source.id,
+                "current": i + 1,
+                "total": total,
+                "url": doc.url,
+            }
+        )
+        try:
+            analyse_document(doc, source.company_id, db)
+            result["analysed"] += 1
+
+            page = (
+                db.query(DiscoveredPage).filter(DiscoveredPage.url == doc.url).first()
+            )
+            if page:
+                _update_page_relevance(page, doc.url, db)
+        except Exception as e:
+            result["errors"] += 1
+            logger.exception("Analysis failed for doc %s: %s", doc.id, e)
+            db.rollback()
+
+    result["analyse_ms"] = int((time.monotonic() - t0) * 1000)
+
+    source.analysis_status = (
+        AnalysisStatus.analysed
+        if result["errors"] == 0
+        else AnalysisStatus.analysis_failed
+    )
+    db.commit()
 
     return result

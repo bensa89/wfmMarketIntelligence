@@ -1,4 +1,5 @@
 import pytest
+from app.models.discovered_page import DiscoveredPage, DiscoveredPageStatus
 
 
 @pytest.fixture
@@ -90,26 +91,94 @@ def test_filter_sources_by_company(client, company):
 
 
 def test_source_respect_robots_defaults_true(client, company):
-    response = client.post("/api/sources", json={
-        "company_id": company["id"],
-        "url": "https://robots-default.example.com",
-        "source_type": "news",
-    })
+    response = client.post(
+        "/api/sources",
+        json={
+            "company_id": company["id"],
+            "url": "https://robots-default.example.com",
+            "source_type": "news",
+        },
+    )
     assert response.status_code == 201
     assert response.json()["respect_robots_txt"] is True
 
 
 def test_source_respect_robots_can_be_set_false_and_updated(client, company):
-    response = client.post("/api/sources", json={
-        "company_id": company["id"],
-        "url": "https://robots-false.example.com",
-        "source_type": "news",
-        "respect_robots_txt": False,
-    })
+    response = client.post(
+        "/api/sources",
+        json={
+            "company_id": company["id"],
+            "url": "https://robots-false.example.com",
+            "source_type": "news",
+            "respect_robots_txt": False,
+        },
+    )
     assert response.status_code == 201
     assert response.json()["respect_robots_txt"] is False
     source_id = response.json()["id"]
 
-    patch_resp = client.put(f"/api/sources/{source_id}", json={"respect_robots_txt": True})
+    patch_resp = client.put(
+        f"/api/sources/{source_id}", json={"respect_robots_txt": True}
+    )
     assert patch_resp.status_code == 200
     assert patch_resp.json()["respect_robots_txt"] is True
+
+
+def test_search_sources_by_url(client, company):
+    client.post(
+        "/api/sources",
+        json={
+            "company_id": company["id"],
+            "url": "https://atoss.com/search-news",
+            "source_type": "news",
+        },
+    )
+    client.post(
+        "/api/sources",
+        json={
+            "company_id": company["id"],
+            "url": "https://atoss.com/search-blog",
+            "source_type": "blog",
+        },
+    )
+    response = client.get("/api/sources/search?q=search-news")
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data) == 1
+    assert data[0]["source"]["url"] == "https://atoss.com/search-news"
+    assert data[0]["matching_subsites"] == []
+
+
+def test_search_sources_includes_subsites(client, company, db_session):
+    r = client.post(
+        "/api/sources",
+        json={
+            "company_id": company["id"],
+            "url": "https://atoss.com/search-parent",
+            "source_type": "news",
+        },
+    )
+    source_id = r.json()["id"]
+    page = DiscoveredPage(
+        source_id=source_id,
+        url="https://atoss.com/search-parent/subpage",
+        depth=1,
+        status=DiscoveredPageStatus.new,
+        is_active=True,
+    )
+    db_session.add(page)
+    db_session.commit()
+
+    response = client.get("/api/sources/search?q=search-parent/sub")
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data) == 1
+    assert data[0]["source"]["url"] == "https://atoss.com/search-parent"
+    assert len(data[0]["matching_subsites"]) == 1
+    assert data[0]["matching_subsites"][0] == "https://atoss.com/search-parent/subpage"
+
+
+def test_search_sources_no_results(client):
+    response = client.get("/api/sources/search?q=nonexistent")
+    assert response.status_code == 200
+    assert response.json() == []

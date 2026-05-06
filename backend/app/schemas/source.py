@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional, Dict
 from datetime import datetime
-from app.models.source import SourceType, CrawlStatus
+from app.models.source import SourceType, CrawlStatus, AnalysisStatus
 
 
 class SourceCreate(BaseModel):
@@ -35,4 +35,5 @@ class SourceRead(BaseModel):
     last_crawled_at: Optional[datetime]
     last_changed_at: Optional[datetime]
     created_at: datetime
+    analysis_status: Optional[AnalysisStatus] = None
     discovered_pages_summary: Dict[str, int] = {}

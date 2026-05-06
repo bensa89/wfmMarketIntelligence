@@ -21,7 +21,7 @@ from app.models.crawl_run import (
     CrawlRunSourceStatus,
     CrawlRunStep,
 )
-from app.crawler.pipeline import run_crawl_source
+from app.crawler.pipeline import run_crawl_source, analyse_unanalysed_for_source
 from app.config import settings
 
 router = APIRouter()
@@ -106,7 +106,9 @@ def _crawl_single_source(
                     if crs_obj:
                         if event.get("type") == "step":
                             step_name = event.get("step")
-                            if step_name and step_name in [e.value for e in CrawlRunStep]:
+                            if step_name and step_name in [
+                                e.value for e in CrawlRunStep
+                            ]:
                                 crs_obj.current_step = CrawlRunStep(step_name)
                         else:
                             crs_obj.discover_pages_crawled = event.get("pages_crawled")
@@ -314,6 +316,86 @@ def _run_sources_in_thread(
             except Exception as e:
                 logger.warning("Post-crawl summary trigger failed: %s", e)
 
+            if total_new > 0:
+                loop.call_soon_threadsafe(
+                    queue.put_nowait,
+                    {"type": "analysis_phase_start", "crawl_run_id": crawl_run_id},
+                )
+                crawl_run = (
+                    thread_db.query(CrawlRun)
+                    .filter(CrawlRun.id == crawl_run_id)
+                    .first()
+                )
+                for crs in crawl_run.sources:
+                    if (
+                        crs.status != CrawlRunSourceStatus.completed
+                        or crs.new_documents <= 0
+                    ):
+                        continue
+                    crs.status = CrawlRunSourceStatus.analysing
+                    crs.analyse_started_at = datetime.now(timezone.utc)
+                    thread_db.commit()
+
+                    loop.call_soon_threadsafe(
+                        queue.put_nowait,
+                        {
+                            "type": "analysis_start",
+                            "crawl_run_id": crawl_run_id,
+                            "source_id": crs.source_id,
+                            "url": crs.url,
+                        },
+                    )
+
+                    source = (
+                        thread_db.query(Source)
+                        .filter(Source.id == crs.source_id)
+                        .first()
+                    )
+                    analysis_result = {"analysed": 0, "errors": 0, "analyse_ms": 0}
+                    if source:
+
+                        def make_analysis_callback(sid, crs_id_val):
+                            def cb(event):
+                                event_copy = dict(event)
+                                event_copy["crawl_run_id"] = crawl_run_id
+                                event_copy["source_id"] = sid
+                                if event.get("type") == "analysis_progress":
+                                    loop.call_soon_threadsafe(
+                                        queue.put_nowait, event_copy
+                                    )
+
+                            return cb
+
+                        analysis_result = analyse_unanalysed_for_source(
+                            source,
+                            thread_db,
+                            progress_callback=make_analysis_callback(
+                                crs.source_id, crs.id
+                            ),
+                        )
+
+                    crs.analyse_ms = analysis_result.get("analyse_ms", 0)
+                    crs.analyse_finished_at = datetime.now(timezone.utc)
+                    crs.status = CrawlRunSourceStatus.completed
+                    thread_db.commit()
+
+                    loop.call_soon_threadsafe(
+                        queue.put_nowait,
+                        {
+                            "type": "analysis_done",
+                            "crawl_run_id": crawl_run_id,
+                            "source_id": crs.source_id,
+                            "url": crs.url,
+                            "analysed": analysis_result.get("analysed", 0),
+                            "analyse_ms": crs.analyse_ms,
+                        },
+                    )
+
+                loop.call_soon_threadsafe(
+                    queue.put_nowait,
+                    {"type": "analysis_phase_done", "crawl_run_id": crawl_run_id},
+                )
+
         loop.call_soon_threadsafe(
             queue.put_nowait,
             {
@@ -383,7 +465,10 @@ def cancel_crawl(db: Session = Depends(get_db)) -> Dict[str, Any]:
         run.status = CrawlRunStatus.cancelled
         run.finished_at = datetime.now(timezone.utc)
         for crs in run.sources:
-            if crs.status in (CrawlRunSourceStatus.pending, CrawlRunSourceStatus.running):
+            if crs.status in (
+                CrawlRunSourceStatus.pending,
+                CrawlRunSourceStatus.running,
+            ):
                 crs.status = CrawlRunSourceStatus.failed
                 crs.finished_at = datetime.now(timezone.utc)
     db.commit()
@@ -401,6 +486,11 @@ def crawl_all_sources(db: Session = Depends(get_db)) -> Dict[str, Any]:
     results = []
     for source in active_sources:
         result = run_crawl_source(source, db, analyse=True)
+        if result.get("new_documents", 0) > 0:
+            source = db.query(Source).filter(Source.id == source.id).first()
+            if source:
+                analysis_result = analyse_unanalysed_for_source(source, db)
+                result["analysis"] = analysis_result
         results.append(result)
     return {"sources_processed": len(active_sources), "results": results}
 
@@ -412,7 +502,13 @@ def crawl_single_source(
     source = db.query(Source).filter(Source.id == source_id).first()
     if not source:
         raise HTTPException(status_code=404, detail="Source not found")
-    return run_crawl_source(source, db, analyse=True)
+    result = run_crawl_source(source, db, analyse=True)
+    if result.get("new_documents", 0) > 0:
+        source = db.query(Source).filter(Source.id == source_id).first()
+        if source:
+            analysis_result = analyse_unanalysed_for_source(source, db)
+            result["analysis"] = analysis_result
+    return result
 
 
 @router.get("/stream")
@@ -439,7 +535,9 @@ async def stream_all_sources(db: Session = Depends(get_db)) -> StreamingResponse
 
 @router.get("/stream/queued")
 async def stream_queued_run(db: Session = Depends(get_db)) -> StreamingResponse:
-    queued_run = db.query(CrawlRun).filter(CrawlRun.status == CrawlRunStatus.queued).first()
+    queued_run = (
+        db.query(CrawlRun).filter(CrawlRun.status == CrawlRunStatus.queued).first()
+    )
     if not queued_run:
         raise HTTPException(status_code=404, detail="No queued run found")
 
@@ -479,7 +577,9 @@ def enqueue_source(source_id: str, db: Session = Depends(get_db)) -> Dict[str, A
     if not source:
         raise HTTPException(status_code=404, detail="Source not found")
 
-    queued_run = db.query(CrawlRun).filter(CrawlRun.status == CrawlRunStatus.queued).first()
+    queued_run = (
+        db.query(CrawlRun).filter(CrawlRun.status == CrawlRunStatus.queued).first()
+    )
 
     if queued_run is None:
         queued_run = CrawlRun(
@@ -509,49 +609,74 @@ def enqueue_source(source_id: str, db: Session = Depends(get_db)) -> Dict[str, A
     return {"queued": True, "position": position, "crawl_run_id": queued_run.id}
 
 
+@router.post("/analyse/{source_id}")
+def analyse_source(source_id: str, db: Session = Depends(get_db)) -> Dict[str, Any]:
+    source = db.query(Source).filter(Source.id == source_id).first()
+    if not source:
+        raise HTTPException(status_code=404, detail="Source not found")
+    result = analyse_unanalysed_for_source(source, db)
+    return {
+        "source_id": source_id,
+        "analysed": result["analysed"],
+        "errors": result["errors"],
+        "analyse_ms": result["analyse_ms"],
+    }
+
+
 @router.get("/reconnect")
 async def reconnect_crawl(db: Session = Depends(get_db)) -> StreamingResponse:
-    running_run = db.query(CrawlRun).filter(CrawlRun.status == CrawlRunStatus.running).first()
-    queued_run = db.query(CrawlRun).filter(CrawlRun.status == CrawlRunStatus.queued).first()
+    running_run = (
+        db.query(CrawlRun).filter(CrawlRun.status == CrawlRunStatus.running).first()
+    )
+    queued_run = (
+        db.query(CrawlRun).filter(CrawlRun.status == CrawlRunStatus.queued).first()
+    )
 
     events: list[dict] = []
 
     if running_run:
         sources_data = []
         for crs in running_run.sources:
-            sources_data.append({
-                "source_id": crs.source_id,
-                "url": crs.url,
-                "status": crs.status.value if crs.status else "pending",
-                "current_step": crs.current_step.value if crs.current_step else None,
-                "new_documents": crs.new_documents,
-                "skipped": crs.skipped,
-                "errors": crs.errors,
-                "error_message": crs.error_message,
-                "fetch_ms": crs.fetch_ms,
-                "extract_ms": crs.extract_ms,
-                "analyse_ms": crs.analyse_ms,
-                "discover_ms": crs.discover_ms,
-                "discover_pages_crawled": crs.discover_pages_crawled,
-                "discover_pages_found": crs.discover_pages_found,
-            })
-        events.append({
-            "type": "initial_state",
-            "crawl_run_id": running_run.id,
-            "total": running_run.total_sources,
-            "sources": sources_data,
-        })
+            sources_data.append(
+                {
+                    "source_id": crs.source_id,
+                    "url": crs.url,
+                    "status": crs.status.value if crs.status else "pending",
+                    "current_step": crs.current_step.value
+                    if crs.current_step
+                    else None,
+                    "new_documents": crs.new_documents,
+                    "skipped": crs.skipped,
+                    "errors": crs.errors,
+                    "error_message": crs.error_message,
+                    "fetch_ms": crs.fetch_ms,
+                    "extract_ms": crs.extract_ms,
+                    "analyse_ms": crs.analyse_ms,
+                    "discover_ms": crs.discover_ms,
+                    "discover_pages_crawled": crs.discover_pages_crawled,
+                    "discover_pages_found": crs.discover_pages_found,
+                }
+            )
+        events.append(
+            {
+                "type": "initial_state",
+                "crawl_run_id": running_run.id,
+                "total": running_run.total_sources,
+                "sources": sources_data,
+            }
+        )
 
     if queued_run:
         queued_sources = [
-            {"source_id": crs.source_id, "url": crs.url}
-            for crs in queued_run.sources
+            {"source_id": crs.source_id, "url": crs.url} for crs in queued_run.sources
         ]
-        events.append({
-            "type": "queued_state",
-            "crawl_run_id": queued_run.id,
-            "sources": queued_sources,
-        })
+        events.append(
+            {
+                "type": "queued_state",
+                "crawl_run_id": queued_run.id,
+                "sources": queued_sources,
+            }
+        )
 
     if not running_run and not queued_run:
         events.append({"type": "no_active_run"})

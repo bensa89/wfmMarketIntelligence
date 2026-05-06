@@ -2,7 +2,11 @@ import pytest
 from datetime import datetime
 from unittest.mock import patch, MagicMock
 from app.crawler.fetcher import fetch_url, FetchResult
-from app.crawler.extractor import extract_content, ExtractionResult, _extract_published_at
+from app.crawler.extractor import (
+    extract_content,
+    ExtractionResult,
+    _extract_published_at,
+)
 from bs4 import BeautifulSoup
 
 
@@ -424,9 +428,9 @@ def test_run_crawl_source_skips_analysis_on_non_article_page(db_session):
     mock_analyse.assert_not_called()
 
 
-def test_run_crawl_source_analyses_article_page(db_session):
+def test_run_crawl_source_sets_analysis_pending(db_session):
     from app.models.company import Company, CompanyType
-    from app.models.source import Source, SourceType
+    from app.models.source import Source, SourceType, AnalysisStatus
     from app.crawler.pipeline import run_crawl_source
 
     company = Company(name="ATOSS", slug="atoss-art", type=CompanyType.competitor)
@@ -462,7 +466,9 @@ def test_run_crawl_source_analyses_article_page(db_session):
         result = run_crawl_source(source, db_session, analyse=True)
 
     assert result["new_documents"] == 1
-    mock_analyse.assert_called_once()
+    mock_analyse.assert_not_called()
+    db_session.refresh(source)
+    assert source.analysis_status == AnalysisStatus.pending
 
 
 def test_extract_published_at_from_json_ld():
@@ -514,3 +520,231 @@ def test_extract_content_published_at_none_when_missing():
     html = "<html><head><title>T</title></head><body><p>text</p></body></html>"
     result = extract_content(html)
     assert result.published_at is None
+
+
+def test_analyse_unanalysed_for_source_creates_signals(db_session):
+    from app.models.company import Company, CompanyType
+    from app.models.source import Source, SourceType, AnalysisStatus
+    from app.models.document import Document
+    from app.models.signal import Signal, SignalType
+    from app.crawler.pipeline import analyse_unanalysed_for_source
+
+    company = Company(name="ATOSS", slug="atoss-anl1", type=CompanyType.competitor)
+    db_session.add(company)
+    db_session.commit()
+    source = Source(
+        company_id=company.id,
+        url="https://atoss.com/anl1",
+        source_type=SourceType.news,
+        analysis_status=AnalysisStatus.pending,
+    )
+    db_session.add(source)
+    db_session.commit()
+    doc = Document(
+        source_id=source.id,
+        url="https://atoss.com/anl1/page1",
+        content_markdown="## Big AI Feature\n"
+        + "ATOSS launches new AI scheduling feature for enterprise. " * 20,
+        content_hash="h_anl1",
+    )
+    db_session.add(doc)
+    db_session.commit()
+
+    with patch(
+        "app.analyser.pipeline.call_llm",
+        return_value='{"title":"AI Feature","signal_type":"ai_announcement","topic":"AI","summary":"New AI feature.","why_it_matters":"Competes with us.","relevance_score":0.9,"confidence_score":0.85}',
+    ):
+        result = analyse_unanalysed_for_source(source, db_session)
+
+    assert result["analysed"] == 1
+    assert result["errors"] == 0
+    db_session.refresh(doc)
+    assert doc.is_analysed is True
+    db_session.refresh(source)
+    assert source.analysis_status == AnalysisStatus.analysed
+    signal = db_session.query(Signal).first()
+    assert signal is not None
+    assert signal.document_id == doc.id
+    assert signal.company_id == company.id
+
+
+def test_analyse_unanalysed_for_source_handles_errors(db_session):
+    from app.models.company import Company, CompanyType
+    from app.models.source import Source, SourceType, AnalysisStatus
+    from app.models.document import Document
+    from app.models.signal import Signal
+    from app.crawler.pipeline import analyse_unanalysed_for_source
+
+    company = Company(name="ATOSS", slug="atoss-anl-err", type=CompanyType.competitor)
+    db_session.add(company)
+    db_session.commit()
+    source = Source(
+        company_id=company.id,
+        url="https://atoss.com/anl-err",
+        source_type=SourceType.news,
+        analysis_status=AnalysisStatus.pending,
+    )
+    db_session.add(source)
+    db_session.commit()
+    doc1 = Document(
+        source_id=source.id,
+        url="https://atoss.com/anl-err/p1",
+        content_markdown="## Article one\n" + "Content for the first article. " * 20,
+        content_hash="h_anl_err1",
+    )
+    doc2 = Document(
+        source_id=source.id,
+        url="https://atoss.com/anl-err/p2",
+        content_markdown="## Article two\n" + "Content for the second article. " * 20,
+        content_hash="h_anl_err2",
+    )
+    db_session.add_all([doc1, doc2])
+    db_session.commit()
+
+    call_count = 0
+
+    def mock_llm(prompt):
+        nonlocal call_count
+        call_count += 1
+        if call_count == 1:
+            raise RuntimeError("LLM service unavailable")
+        return '{"title":"OK","signal_type":"other","topic":"OK","summary":"Fine.","why_it_matters":"OK","relevance_score":0.5,"confidence_score":0.5}'
+
+    with patch("app.analyser.pipeline.call_llm", side_effect=mock_llm):
+        result = analyse_unanalysed_for_source(source, db_session)
+
+    assert result["errors"] == 1
+    assert result["analysed"] == 1
+    db_session.refresh(source)
+    assert source.analysis_status == AnalysisStatus.analysis_failed
+    db_session.refresh(doc2)
+    assert doc2.is_analysed is True
+
+
+def test_analyse_unanalysed_for_source_skips_analysed_docs(db_session):
+    from app.models.company import Company, CompanyType
+    from app.models.source import Source, SourceType, AnalysisStatus
+    from app.models.document import Document
+    from app.models.signal import Signal, SignalType
+    from app.crawler.pipeline import analyse_unanalysed_for_source
+
+    company = Company(name="ATOSS", slug="atoss-anl-skip", type=CompanyType.competitor)
+    db_session.add(company)
+    db_session.commit()
+    source = Source(
+        company_id=company.id,
+        url="https://atoss.com/anl-skip",
+        source_type=SourceType.news,
+        analysis_status=AnalysisStatus.pending,
+    )
+    db_session.add(source)
+    db_session.commit()
+
+    analysed_doc = Document(
+        source_id=source.id,
+        url="https://atoss.com/anl-skip/old",
+        content_markdown="## Already done\n" + "Previously analysed content. " * 20,
+        content_hash="h_anl_skip_old",
+        is_analysed=True,
+    )
+    unanalysed_doc = Document(
+        source_id=source.id,
+        url="https://atoss.com/anl-skip/new",
+        content_markdown="## New stuff\n" + "New content to analyse. " * 20,
+        content_hash="h_anl_skip_new",
+        is_analysed=False,
+    )
+    db_session.add_all([analysed_doc, unanalysed_doc])
+    db_session.commit()
+
+    with patch(
+        "app.analyser.pipeline.call_llm",
+        return_value='{"title":"New Signal","signal_type":"other","topic":"New","summary":"New stuff.","why_it_matters":"OK","relevance_score":0.6,"confidence_score":0.7}',
+    ) as mock_llm:
+        result = analyse_unanalysed_for_source(source, db_session)
+
+    assert result["analysed"] == 1
+    assert mock_llm.call_count == 1
+    db_session.refresh(source)
+    assert source.analysis_status == AnalysisStatus.analysed
+
+
+def test_analyse_unanalysed_for_source_no_unanalysed_docs(db_session):
+    from app.models.company import Company, CompanyType
+    from app.models.source import Source, SourceType, AnalysisStatus
+    from app.models.document import Document
+    from app.crawler.pipeline import analyse_unanalysed_for_source
+
+    company = Company(name="ATOSS", slug="atoss-anl-none", type=CompanyType.competitor)
+    db_session.add(company)
+    db_session.commit()
+    source = Source(
+        company_id=company.id,
+        url="https://atoss.com/anl-none",
+        source_type=SourceType.news,
+        analysis_status=AnalysisStatus.pending,
+    )
+    db_session.add(source)
+    db_session.commit()
+
+    doc = Document(
+        source_id=source.id,
+        url="https://atoss.com/anl-none/done",
+        content_markdown="## Done\n" + "Already analysed. " * 20,
+        content_hash="h_anl_none",
+        is_analysed=True,
+    )
+    db_session.add(doc)
+    db_session.commit()
+
+    with patch("app.analyser.pipeline.call_llm") as mock_llm:
+        result = analyse_unanalysed_for_source(source, db_session)
+
+    assert result["analysed"] == 0
+    mock_llm.assert_not_called()
+    db_session.refresh(source)
+    assert source.analysis_status == AnalysisStatus.analysed
+
+
+def test_analyse_unanalysed_for_source_emits_progress(db_session):
+    from app.models.company import Company, CompanyType
+    from app.models.source import Source, SourceType, AnalysisStatus
+    from app.models.document import Document
+    from app.crawler.pipeline import analyse_unanalysed_for_source
+
+    company = Company(name="ATOSS", slug="atoss-anl-prog", type=CompanyType.competitor)
+    db_session.add(company)
+    db_session.commit()
+    source = Source(
+        company_id=company.id,
+        url="https://atoss.com/anl-prog",
+        source_type=SourceType.news,
+        analysis_status=AnalysisStatus.pending,
+    )
+    db_session.add(source)
+    db_session.commit()
+    doc = Document(
+        source_id=source.id,
+        url="https://atoss.com/anl-prog/p1",
+        content_markdown="## Progress test\n" + "Content for progress callback. " * 20,
+        content_hash="h_anl_prog",
+        is_analysed=False,
+    )
+    db_session.add(doc)
+    db_session.commit()
+
+    events = []
+
+    with patch(
+        "app.analyser.pipeline.call_llm",
+        return_value='{"title":"Prog","signal_type":"other","topic":"Prog","summary":"OK.","why_it_matters":"OK","relevance_score":0.5,"confidence_score":0.5}',
+    ):
+        result = analyse_unanalysed_for_source(
+            source, db_session, progress_callback=lambda e: events.append(e)
+        )
+
+    progress_events = [e for e in events if e.get("type") == "analysis_progress"]
+    assert len(progress_events) == 1
+    assert progress_events[0]["source_id"] == source.id
+    assert progress_events[0]["current"] == 1
+    assert progress_events[0]["total"] == 1

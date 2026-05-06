@@ -336,9 +336,11 @@ def test_enqueue_creates_queued_run(client, seed_source, db_engine):
 
     verify_db = TestSessionLocal()
     try:
-        queued = verify_db.query(CrawlRun).filter(
-            CrawlRun.status == CrawlRunStatus.queued
-        ).first()
+        queued = (
+            verify_db.query(CrawlRun)
+            .filter(CrawlRun.status == CrawlRunStatus.queued)
+            .first()
+        )
         assert queued is not None
         assert len(queued.sources) == 1
         assert queued.sources[0].source_id == seed_source.id
@@ -354,8 +356,18 @@ def test_enqueue_appends_to_existing_queued_run(client, db_session, db_engine):
     db_session.add(company)
     db_session.commit()
 
-    source_a = Source(company_id=company.id, url="https://a.com", source_type=SourceType.news, is_active=True)
-    source_b = Source(company_id=company.id, url="https://b.com", source_type=SourceType.news, is_active=True)
+    source_a = Source(
+        company_id=company.id,
+        url="https://a.com",
+        source_type=SourceType.news,
+        is_active=True,
+    )
+    source_b = Source(
+        company_id=company.id,
+        url="https://b.com",
+        source_type=SourceType.news,
+        is_active=True,
+    )
     db_session.add_all([source_a, source_b])
     db_session.commit()
 
@@ -367,12 +379,14 @@ def test_enqueue_appends_to_existing_queued_run(client, db_session, db_engine):
         queued = CrawlRun(status=CrawlRunStatus.queued, total_sources=1)
         setup_db.add(queued)
         setup_db.flush()
-        setup_db.add(CrawlRunSource(
-            crawl_run_id=queued.id,
-            source_id=source_a.id,
-            url=source_a.url,
-            status=CrawlRunSourceStatus.pending,
-        ))
+        setup_db.add(
+            CrawlRunSource(
+                crawl_run_id=queued.id,
+                source_id=source_a.id,
+                url=source_a.url,
+                status=CrawlRunSourceStatus.pending,
+            )
+        )
         setup_db.commit()
     finally:
         setup_db.close()
@@ -384,9 +398,11 @@ def test_enqueue_appends_to_existing_queued_run(client, db_session, db_engine):
 
     verify_db = TestSessionLocal()
     try:
-        queued_runs = verify_db.query(CrawlRun).filter(
-            CrawlRun.status == CrawlRunStatus.queued
-        ).all()
+        queued_runs = (
+            verify_db.query(CrawlRun)
+            .filter(CrawlRun.status == CrawlRunStatus.queued)
+            .all()
+        )
         assert len(queued_runs) == 1  # still only one queued run
         assert len(queued_runs[0].sources) == 2
     finally:
@@ -400,7 +416,12 @@ def test_enqueue_noop_for_duplicate_source(client, db_session, db_engine):
     company = Company(name="Co3", slug="co3-enqueue", type=CompanyType.competitor)
     db_session.add(company)
     db_session.commit()
-    source = Source(company_id=company.id, url="https://dup.com", source_type=SourceType.news, is_active=True)
+    source = Source(
+        company_id=company.id,
+        url="https://dup.com",
+        source_type=SourceType.news,
+        is_active=True,
+    )
     db_session.add(source)
     db_session.commit()
 
@@ -411,12 +432,14 @@ def test_enqueue_noop_for_duplicate_source(client, db_session, db_engine):
         queued = CrawlRun(status=CrawlRunStatus.queued, total_sources=1)
         setup_db.add(queued)
         setup_db.flush()
-        setup_db.add(CrawlRunSource(
-            crawl_run_id=queued.id,
-            source_id=source.id,
-            url=source.url,
-            status=CrawlRunSourceStatus.pending,
-        ))
+        setup_db.add(
+            CrawlRunSource(
+                crawl_run_id=queued.id,
+                source_id=source.id,
+                url=source.url,
+                status=CrawlRunSourceStatus.pending,
+            )
+        )
         setup_db.commit()
     finally:
         setup_db.close()
@@ -427,7 +450,11 @@ def test_enqueue_noop_for_duplicate_source(client, db_session, db_engine):
 
     verify_db = TestSessionLocal()
     try:
-        queued = verify_db.query(CrawlRun).filter(CrawlRun.status == CrawlRunStatus.queued).first()
+        queued = (
+            verify_db.query(CrawlRun)
+            .filter(CrawlRun.status == CrawlRunStatus.queued)
+            .first()
+        )
         assert len(queued.sources) == 1
     finally:
         verify_db.close()
@@ -452,19 +479,27 @@ def test_stream_queued_runs_queued_sources(client, seed_source, db_engine):
         queued_run = CrawlRun(status=CrawlRunStatus.queued, total_sources=1)
         setup_db.add(queued_run)
         setup_db.flush()
-        setup_db.add(CrawlRunSource(
-            crawl_run_id=queued_run.id,
-            source_id=seed_source.id,
-            url=seed_source.url,
-            status=CrawlRunSourceStatus.pending,
-        ))
+        setup_db.add(
+            CrawlRunSource(
+                crawl_run_id=queued_run.id,
+                source_id=seed_source.id,
+                url=seed_source.url,
+                status=CrawlRunSourceStatus.pending,
+            )
+        )
         setup_db.commit()
         queued_run_id = queued_run.id
     finally:
         setup_db.close()
 
     def mock_run(source, db, analyse=True, progress_callback=None):
-        return {"source_id": source.id, "new_documents": 1, "skipped": 0, "errors": 0, "discovery": {}}
+        return {
+            "source_id": source.id,
+            "new_documents": 1,
+            "skipped": 0,
+            "errors": 0,
+            "discovery": {},
+        }
 
     with (
         patch("app.routers.crawl.SessionLocal", TestSessionLocal),
@@ -502,21 +537,25 @@ def test_reconnect_returns_queued_state(client, seed_source, db_engine):
         running = CrawlRun(status=CrawlRunStatus.running, total_sources=1)
         setup_db.add(running)
         setup_db.flush()
-        setup_db.add(CrawlRunSource(
-            crawl_run_id=running.id,
-            source_id=seed_source.id,
-            url=seed_source.url,
-            status=CrawlRunSourceStatus.running,
-        ))
+        setup_db.add(
+            CrawlRunSource(
+                crawl_run_id=running.id,
+                source_id=seed_source.id,
+                url=seed_source.url,
+                status=CrawlRunSourceStatus.running,
+            )
+        )
         queued = CrawlRun(status=CrawlRunStatus.queued, total_sources=1)
         setup_db.add(queued)
         setup_db.flush()
-        setup_db.add(CrawlRunSource(
-            crawl_run_id=queued.id,
-            source_id=seed_source.id,
-            url=seed_source.url,
-            status=CrawlRunSourceStatus.pending,
-        ))
+        setup_db.add(
+            CrawlRunSource(
+                crawl_run_id=queued.id,
+                source_id=seed_source.id,
+                url=seed_source.url,
+                status=CrawlRunSourceStatus.pending,
+            )
+        )
         setup_db.commit()
         queued_id = queued.id
     finally:
@@ -538,7 +577,173 @@ def test_reconnect_returns_queued_state(client, seed_source, db_engine):
     assert qs["sources"][0]["source_id"] == seed_source.id
 
 
-def test_reconnect_queued_state_only_when_no_running_run(client, seed_source, db_engine):
+def test_crawl_run_source_status_has_analysing():
+    assert CrawlRunSourceStatus.analysing == "analysing"
+    assert CrawlRunStep.analysing == "analysing"
+
+
+def test_stream_all_sources_includes_analysis_events(client, seed_source, db_engine):
+    from app.models.source import AnalysisStatus
+
+    TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
+
+    def mock_run(source, db, analyse=True, progress_callback=None):
+        if progress_callback:
+            progress_callback(
+                {"type": "step", "source_id": source.id, "step": "fetching"}
+            )
+            progress_callback(
+                {"type": "step", "source_id": source.id, "step": "extracting"}
+            )
+        return {
+            "source_id": source.id,
+            "new_documents": 1,
+            "skipped": 0,
+            "errors": 0,
+            "discovery": {},
+        }
+
+    def mock_analyse(source, db, progress_callback=None):
+        events_out = []
+        if progress_callback:
+            events_out.append(
+                {
+                    "type": "analysis_progress",
+                    "source_id": source.id,
+                    "current": 1,
+                    "total": 1,
+                    "url": source.url,
+                }
+            )
+        return {"source_id": source.id, "analysed": 1, "errors": 0, "analyse_ms": 50}
+
+    with (
+        patch("app.routers.crawl.SessionLocal", TestSessionLocal),
+        patch("app.routers.crawl.run_crawl_source", side_effect=mock_run),
+        patch(
+            "app.routers.crawl.analyse_unanalysed_for_source", side_effect=mock_analyse
+        ),
+    ):
+        response = client.get("/api/crawl/stream")
+
+    assert response.status_code == 200
+    events = [
+        json.loads(line[6:])
+        for line in response.text.splitlines()
+        if line.startswith("data: ")
+    ]
+    event_types = [e["type"] for e in events]
+    assert "analysis_phase_start" in event_types
+    assert "analysis_start" in event_types
+    assert "analysis_done" in event_types
+    assert "analysis_phase_done" in event_types
+
+    phase_start = next(e for e in events if e["type"] == "analysis_phase_start")
+    assert "crawl_run_id" in phase_start
+
+    analysis_start = next(e for e in events if e["type"] == "analysis_start")
+    assert analysis_start["source_id"] == seed_source.id
+    assert "crawl_run_id" in analysis_start
+
+    analysis_done = next(e for e in events if e["type"] == "analysis_done")
+    assert analysis_done["source_id"] == seed_source.id
+    assert analysis_done["analysed"] == 1
+
+    phase_done = next(e for e in events if e["type"] == "analysis_phase_done")
+    assert "crawl_run_id" in phase_done
+
+
+def test_stream_skips_analysis_when_no_new_documents(client, seed_source, db_engine):
+    TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
+
+    def mock_run(source, db, analyse=True, progress_callback=None):
+        if progress_callback:
+            progress_callback(
+                {"type": "step", "source_id": source.id, "step": "fetching"}
+            )
+        return {
+            "source_id": source.id,
+            "new_documents": 0,
+            "skipped": 1,
+            "errors": 0,
+            "discovery": {},
+        }
+
+    with (
+        patch("app.routers.crawl.SessionLocal", TestSessionLocal),
+        patch("app.routers.crawl.run_crawl_source", side_effect=mock_run),
+        patch("app.routers.crawl.analyse_unanalysed_for_source") as mock_analyse,
+    ):
+        response = client.get("/api/crawl/stream")
+
+    assert response.status_code == 200
+    events = [
+        json.loads(line[6:])
+        for line in response.text.splitlines()
+        if line.startswith("data: ")
+    ]
+    event_types = [e["type"] for e in events]
+    assert "analysis_phase_start" not in event_types
+    assert "analysis_start" not in event_types
+    assert "analysis_done" not in event_types
+    mock_analyse.assert_not_called()
+
+
+def test_crawl_all_sources_calls_analyse_unanalysed(client, seed_source):
+    from app.models.source import AnalysisStatus
+
+    mock_result = {
+        "source_id": seed_source.id,
+        "new_documents": 1,
+        "skipped": 0,
+        "errors": 0,
+    }
+    mock_analysis = {
+        "source_id": seed_source.id,
+        "analysed": 1,
+        "errors": 0,
+        "analyse_ms": 42,
+    }
+    with (
+        patch("app.routers.crawl.run_crawl_source", return_value=mock_result),
+        patch(
+            "app.routers.crawl.analyse_unanalysed_for_source",
+            return_value=mock_analysis,
+        ) as mock_analyse,
+    ):
+        response = client.post("/api/crawl/run")
+    assert response.status_code == 200
+    mock_analyse.assert_called_once()
+
+
+def test_crawl_single_source_calls_analyse_unanalysed(client, seed_source):
+    mock_result = {
+        "source_id": seed_source.id,
+        "new_documents": 1,
+        "skipped": 0,
+        "errors": 0,
+    }
+    mock_analysis = {
+        "source_id": seed_source.id,
+        "analysed": 1,
+        "errors": 0,
+        "analyse_ms": 30,
+    }
+    with (
+        patch("app.routers.crawl.run_crawl_source", return_value=mock_result),
+        patch(
+            "app.routers.crawl.analyse_unanalysed_for_source",
+            return_value=mock_analysis,
+        ) as mock_analyse,
+    ):
+        response = client.post(f"/api/crawl/run/{seed_source.id}")
+    assert response.status_code == 200
+    mock_analyse.assert_called_once()
+
+
+def test_reconnect_queued_state_only_when_no_running_run(
+    client, seed_source, db_engine
+):
     """When no running run exists but a queued one does, only queued_state is sent."""
     TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
 
@@ -547,12 +752,14 @@ def test_reconnect_queued_state_only_when_no_running_run(client, seed_source, db
         queued = CrawlRun(status=CrawlRunStatus.queued, total_sources=1)
         setup_db.add(queued)
         setup_db.flush()
-        setup_db.add(CrawlRunSource(
-            crawl_run_id=queued.id,
-            source_id=seed_source.id,
-            url=seed_source.url,
-            status=CrawlRunSourceStatus.pending,
-        ))
+        setup_db.add(
+            CrawlRunSource(
+                crawl_run_id=queued.id,
+                source_id=seed_source.id,
+                url=seed_source.url,
+                status=CrawlRunSourceStatus.pending,
+            )
+        )
         setup_db.commit()
         queued_id = queued.id
     finally:

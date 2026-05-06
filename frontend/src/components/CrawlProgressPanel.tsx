@@ -1,4 +1,5 @@
-import { X, Check, AlertCircle, Loader2, Minus } from 'lucide-react';
+import { X, Check, AlertCircle, Loader2, Minus, ChevronDown, ChevronRight } from 'lucide-react';
+import { useState } from 'react';
 import type { SourceCrawlState, CrawlStreamSummary, CrawlStep } from '../types';
 
 const STEP_LABELS: Record<CrawlStep, string> = {
@@ -15,18 +16,17 @@ function formatMs(ms: number | undefined): string {
 }
 
 function SourceRow({ state }: { state: SourceCrawlState }) {
-  let domain: string;
-  try {
-    domain = new URL(state.url).hostname;
-  } catch {
-    domain = state.url;
-  }
+  const [expanded, setExpanded] = useState(false);
+  const discoveredUrls = state.discoveredUrls;
+  const hasDiscovered = discoveredUrls && discoveredUrls.length > 0;
 
   const stepLabel =
     state.status === 'running' && state.currentStep
       ? state.currentStep === 'discovering' && state.discoveryProgress
         ? `Discovering ${state.discoveryProgress.pages_crawled}/${state.discoveryProgress.max_pages} Seiten`
-        : STEP_LABELS[state.currentStep]
+        : state.currentStep === 'analysing' && state.analysisProgress
+          ? `Analysing ${state.analysisProgress.current}/${state.analysisProgress.total} Dokumente`
+          : STEP_LABELS[state.currentStep]
       : null;
 
   const timingsParts: string[] = [];
@@ -42,36 +42,55 @@ function SourceRow({ state }: { state: SourceCrawlState }) {
   }
 
   return (
-    <div className="flex items-center gap-3 py-1.5 px-4 text-sm border-b border-app-border/20 last:border-0">
-      <span className="w-4 flex-shrink-0 flex justify-center">
-        {state.status === 'done' ? (
-          <Check className="w-3.5 h-3.5 text-signal-high" />
-        ) : state.status === 'error' ? (
-          <AlertCircle className="w-3.5 h-3.5 text-signal-low" />
-        ) : state.status === 'running' ? (
-          <Loader2 className="w-3.5 h-3.5 animate-spin text-accent-blue" />
-        ) : (
-          <Minus className="w-3.5 h-3.5 text-ink-muted" />
+    <div>
+      <div className="flex items-center gap-3 py-1.5 px-4 text-sm border-b border-app-border/20 last:border-0">
+        <span className="w-4 flex-shrink-0 flex justify-center">
+          {state.status === 'done' ? (
+            <Check className="w-3.5 h-3.5 text-signal-high" />
+          ) : state.status === 'error' ? (
+            <AlertCircle className="w-3.5 h-3.5 text-signal-low" />
+          ) : state.status === 'running' ? (
+            <Loader2 className="w-3.5 h-3.5 animate-spin text-accent-blue" />
+          ) : (
+            <Minus className="w-3.5 h-3.5 text-ink-muted" />
+          )}
+        </span>
+        <span className="flex-1 truncate text-ink" title={state.url}>{state.url}</span>
+        <span className="text-xs text-ink-muted flex-shrink-0">
+          {state.status === 'done' && state.result
+            ? timingsParts.length > 0
+              ? timingsParts.join(' · ')
+              : `${state.result.new_documents} new · ${state.result.skipped} skipped`
+            : state.status === 'error'
+              ? (state.errorMessage ?? 'Error')
+              : state.status === 'running' && stepLabel
+                ? stepLabel
+                : 'Waiting...'}
+        </span>
+        {hasDiscovered && (
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="text-ink-muted hover:text-ink flex-shrink-0 flex items-center gap-1"
+          >
+            {expanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+            <span className="text-xs">{discoveredUrls!.length} discovered</span>
+          </button>
         )}
-      </span>
-      <span className="flex-1 truncate text-ink" title={state.url}>{domain}</span>
-      <span className="text-xs text-ink-muted flex-shrink-0">
-        {state.status === 'done' && state.result
-          ? timingsParts.length > 0
-            ? timingsParts.join(' · ')
-            : `${state.result.new_documents} new · ${state.result.skipped} skipped`
-          : state.status === 'error'
-            ? (state.errorMessage ?? 'Error')
-            : state.status === 'running' && stepLabel
-              ? stepLabel
-              : 'Waiting...'}
-      </span>
+      </div>
+      {expanded && hasDiscovered && (
+        <div className="pl-11 pr-4 pb-1.5 text-xs text-ink-muted border-b border-app-border/20">
+          {discoveredUrls!.map((url) => (
+            <div key={url} className="py-0.5 truncate" title={url}>{url}</div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
 
 interface Props {
   isRunning: boolean;
+  isAnalysing: boolean;
   sourceStates: SourceCrawlState[];
   summary: CrawlStreamSummary | null;
   connectionError: string | null;
@@ -83,6 +102,7 @@ interface Props {
 
 export function CrawlProgressPanel({
   isRunning,
+  isAnalysing,
   sourceStates,
   summary,
   connectionError,
@@ -129,6 +149,13 @@ export function CrawlProgressPanel({
           </button>
         )}
       </div>
+      {isAnalysing && (
+        <div className="px-4 py-2 bg-accent-blue/10 border-b border-app-border/30">
+          <span className="text-xs text-accent-blue font-medium">
+            Analyse-Phase läuft...
+          </span>
+        </div>
+      )}
       <div>
         {sourceStates.map((s) => (
           <SourceRow key={s.source_id} state={s} />
@@ -141,12 +168,10 @@ export function CrawlProgressPanel({
           </div>
           <div>
             {queuedSources.map((s) => {
-              let domain: string;
-              try { domain = new URL(s.url).hostname; } catch { domain = s.url; }
               return (
                 <div key={s.source_id} className="flex items-center gap-3 py-1.5 px-4 text-sm border-b border-app-border/20 last:border-0 opacity-60">
                   <Minus className="w-3.5 h-3.5 text-ink-muted flex-shrink-0" />
-                  <span className="flex-1 truncate text-ink">{domain}</span>
+                  <span className="flex-1 truncate text-ink" title={s.url}>{s.url}</span>
                 </div>
               );
             })}
