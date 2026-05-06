@@ -3,6 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { apiGet, apiPost } from '../api/client';
 import type {
   CrawlEvent,
+  CrawlPhase,
   CrawlStreamSummary,
   CrawlRunList,
   CrawlRunSourceState,
@@ -41,10 +42,11 @@ function mapSourceStatus(
 
 export function useCrawlStream() {
   const qc = useQueryClient();
-  const [isRunning, setIsRunning] = useState(false);
+  const [phase, setPhase] = useState<CrawlPhase>('idle');
+  const phaseRef = useRef<CrawlPhase>('idle');
+  const [analysisDocsTotal, setAnalysisDocsTotal] = useState(0);
+  const [analysisDocsDone, setAnalysisDocsDone] = useState(0);
   const isRunningRef = useRef(false);
-  const [isAnalysing, setIsAnalysing] = useState(false);
-  const isAnalysingRef = useRef(false);
   const [crawlRunId, setCrawlRunId] = useState<string | null>(null);
   const [sourceStates, setSourceStates] = useState<SourceCrawlState[]>([]);
   const [summary, setSummary] = useState<CrawlStreamSummary | null>(null);
@@ -57,6 +59,11 @@ export function useCrawlStream() {
   const queuedRunIdRef = useRef<string | null>(null);
   const startQueuedStreamRef = useRef<() => Promise<void>>(() => Promise.resolve());
 
+  const setPhaseSync = useCallback((p: CrawlPhase) => {
+    phaseRef.current = p;
+    setPhase(p);
+  }, []);
+
   const handleEvent = useCallback(
     (event: CrawlEvent) => {
       switch (event.type) {
@@ -65,6 +72,9 @@ export function useCrawlStream() {
           setCrawlTotal(event.total);
           setQueuedSources([]);
           queuedRunIdRef.current = null;
+          setAnalysisDocsTotal(0);
+          setAnalysisDocsDone(0);
+          setPhaseSync('crawling');
           break;
         case 'initial_state':
           setCrawlRunId(event.crawl_run_id);
@@ -96,12 +106,12 @@ export function useCrawlStream() {
                   : undefined,
             })),
           );
-          setIsRunning(true);
+          setPhaseSync(event.analysis_phase_active ? 'analysing' : 'crawling');
           break;
         case 'reconnect_complete':
           break;
         case 'no_active_run':
-          setIsRunning(false);
+          setPhaseSync('idle');
           break;
         case 'queued_state':
           setQueuedSources(event.sources);
@@ -211,6 +221,7 @@ export function useCrawlStream() {
             total_new: event.total_new,
             total_errors: event.total_errors,
           });
+          setAnalysisDocsTotal(event.docs_to_analyse);
           qc.invalidateQueries({ queryKey: ['documents'] });
           qc.invalidateQueries({ queryKey: ['signals'] });
           qc.invalidateQueries({ queryKey: ['sources'] });
@@ -220,16 +231,18 @@ export function useCrawlStream() {
           qc.invalidateQueries({ queryKey: ['signalsOverTime'] });
           qc.invalidateQueries({ queryKey: ['signalDistribution'] });
           qc.invalidateQueries({ queryKey: ['sourceCandidates'] });
-          if (!isAnalysingRef.current) {
-            setIsRunning(false);
-          }
-          if (queuedRunIdRef.current) {
-            setTimeout(() => startQueuedStreamRef.current(), 300);
+          if (event.analysis_pending) {
+            setPhaseSync('analysing');
+          } else {
+            setPhaseSync('done');
+            isRunningRef.current = false;
+            if (queuedRunIdRef.current) {
+              setTimeout(() => startQueuedStreamRef.current(), 300);
+            }
           }
           break;
         case 'analysis_phase_start':
-          setIsAnalysing(true);
-          isAnalysingRef.current = true;
+          setPhaseSync('analysing');
           break;
         case 'analysis_start':
           setSourceStates((prev) =>
@@ -239,6 +252,7 @@ export function useCrawlStream() {
                 : s
             ),
           );
+          qc.invalidateQueries({ queryKey: ['sources'] });
           break;
         case 'analysis_progress':
           setSourceStates((prev) =>
@@ -273,25 +287,31 @@ export function useCrawlStream() {
                 : s
             ),
           );
+          setAnalysisDocsDone((n) => n + event.analysed);
+          qc.invalidateQueries({ queryKey: ['sources'] });
           break;
         case 'analysis_phase_done':
-          setIsAnalysing(false);
-          isAnalysingRef.current = false;
-          setIsRunning(false);
+          setPhaseSync('done');
+          isRunningRef.current = false;
+          if (queuedRunIdRef.current) {
+            setTimeout(() => startQueuedStreamRef.current(), 300);
+          }
           break;
       }
     },
-    [qc],
+    [qc, setPhaseSync],
   );
 
   const startQueuedStream = useCallback(async () => {
     if (isRunningRef.current) return;
     isRunningRef.current = true;
-    setIsRunning(true);
+    setPhaseSync('crawling');
     setSourceStates([]);
     setSummary(null);
     setConnectionError(null);
     setCrawlTotal(0);
+    setAnalysisDocsTotal(0);
+    setAnalysisDocsDone(0);
 
     abortRef.current = new AbortController();
 
@@ -342,9 +362,9 @@ export function useCrawlStream() {
       }
     } finally {
       isRunningRef.current = false;
-      setIsRunning(false);
+      // phase is set by events, not here
     }
-  }, [handleEvent]);
+  }, [handleEvent, setPhaseSync]);
 
   // Keep the ref in sync so handleEvent can call it without a direct dependency
   startQueuedStreamRef.current = startQueuedStream;
@@ -366,7 +386,7 @@ export function useCrawlStream() {
         const run = runs[0];
         setCrawlRunId(run.id);
         setCrawlTotal(run.total_sources);
-        setIsRunning(true);
+        setPhaseSync('crawling');
         isRunningRef.current = true;
 
         abortRef.current = new AbortController();
@@ -428,7 +448,7 @@ export function useCrawlStream() {
         isRunningRef.current = false;
       }
     })();
-  }, [handleEvent, startQueuedStream]);
+  }, [handleEvent, startQueuedStream, setPhaseSync]);
 
   const start = useCallback(
     async (sourceId?: string) => {
@@ -472,7 +492,9 @@ export function useCrawlStream() {
 
       if (isRunningRef.current) return;
       isRunningRef.current = true;
-      setIsRunning(true);
+      setPhaseSync('crawling');
+      setAnalysisDocsTotal(0);
+      setAnalysisDocsDone(0);
 
       abortRef.current = new AbortController();
       setSourceStates([]);
@@ -529,18 +551,18 @@ export function useCrawlStream() {
         }
       } finally {
         isRunningRef.current = false;
-        setIsRunning(false);
+        // phase is set by events; AbortError (cancel) is handled by cancel() setting 'idle'
       }
     },
-    [handleEvent],
+    [handleEvent, setPhaseSync],
   );
 
   const cancel = useCallback(() => {
     abortRef.current?.abort();
     apiPost('/crawl/cancel').catch(() => {});
     isRunningRef.current = false;
-    setIsRunning(false);
-  }, []);
+    setPhaseSync('idle');
+  }, [setPhaseSync]);
 
   const reset = useCallback(() => {
     abortRef.current?.abort();
@@ -549,16 +571,22 @@ export function useCrawlStream() {
     setConnectionError(null);
     setCrawlTotal(0);
     setCrawlRunId(null);
-    setIsAnalysing(false);
-    isAnalysingRef.current = false;
-  }, []);
+    setAnalysisDocsTotal(0);
+    setAnalysisDocsDone(0);
+    setPhaseSync('idle');
+  }, [setPhaseSync]);
 
+  const isRunning = phase === 'crawling' || phase === 'analysing';
+  const isAnalysing = phase === 'analysing';
   return {
+    phase,
+    analysisDocsTotal,
+    analysisDocsDone,
+    isRunning,
+    isAnalysing,
     start,
     cancel,
     reset,
-    isRunning,
-    isAnalysing,
     crawlRunId,
     sourceStates,
     summary,
