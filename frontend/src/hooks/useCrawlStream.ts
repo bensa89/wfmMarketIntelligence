@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { apiGet } from '../api/client';
+import { apiGet, apiPost } from '../api/client';
 import type {
   CrawlEvent,
   CrawlStreamSummary,
@@ -50,12 +50,19 @@ export function useCrawlStream() {
   const [crawlTotal, setCrawlTotal] = useState(0);
   const abortRef = useRef<AbortController | null>(null);
 
+  // Queue state
+  const [queuedSources, setQueuedSources] = useState<{ source_id: string; url: string }[]>([]);
+  const queuedRunIdRef = useRef<string | null>(null);
+  const startQueuedStreamRef = useRef<() => Promise<void>>(() => Promise.resolve());
+
   const handleEvent = useCallback(
     (event: CrawlEvent) => {
       switch (event.type) {
         case 'crawl_start':
           setCrawlRunId(event.crawl_run_id);
           setCrawlTotal(event.total);
+          setQueuedSources([]);
+          queuedRunIdRef.current = null;
           break;
         case 'initial_state':
           setCrawlRunId(event.crawl_run_id);
@@ -77,6 +84,14 @@ export function useCrawlStream() {
                 analysing: s.analyse_ms!,
                 discovering: s.discover_ms!,
               } : undefined,
+              discoveryProgress:
+                s.current_step === 'discovering' && s.discover_pages_crawled != null
+                  ? {
+                      pages_found: s.discover_pages_found ?? s.discover_pages_crawled,
+                      pages_crawled: s.discover_pages_crawled,
+                      max_pages: 50,
+                    }
+                  : undefined,
             })),
           );
           setIsRunning(true);
@@ -85,6 +100,10 @@ export function useCrawlStream() {
           break;
         case 'no_active_run':
           setIsRunning(false);
+          break;
+        case 'queued_state':
+          setQueuedSources(event.sources);
+          queuedRunIdRef.current = event.crawl_run_id;
           break;
         case 'source_start':
           setSourceStates((prev) => {
@@ -110,18 +129,23 @@ export function useCrawlStream() {
           break;
         case 'discovery_progress':
           setSourceStates((prev) =>
-            prev.map((s) =>
-              s.source_id === event.source_id
-                ? {
-                    ...s,
-                    discoveryProgress: {
-                      pages_found: event.pages_found,
-                      pages_crawled: event.pages_crawled,
-                      max_pages: event.max_pages,
-                    },
-                  }
-                : s,
-            ),
+            prev.map((s) => {
+              if (s.source_id !== event.source_id) return s;
+              const existing = s.discoveredUrls ?? [];
+              const updated =
+                event.current_url && !existing.includes(event.current_url)
+                  ? [...existing, event.current_url]
+                  : existing;
+              return {
+                ...s,
+                discoveryProgress: {
+                  pages_found: event.pages_found,
+                  pages_crawled: event.pages_crawled,
+                  max_pages: event.max_pages,
+                },
+                discoveredUrls: updated,
+              };
+            }),
           );
           break;
         case 'step_timing':
@@ -195,11 +219,79 @@ export function useCrawlStream() {
           qc.invalidateQueries({ queryKey: ['signalDistribution'] });
           qc.invalidateQueries({ queryKey: ['sourceCandidates'] });
           setIsRunning(false);
+          if (queuedRunIdRef.current) {
+            setTimeout(() => startQueuedStreamRef.current(), 300);
+          }
           break;
       }
     },
     [qc],
   );
+
+  const startQueuedStream = useCallback(async () => {
+    if (isRunningRef.current) return;
+    isRunningRef.current = true;
+    setIsRunning(true);
+    setSourceStates([]);
+    setSummary(null);
+    setConnectionError(null);
+    setCrawlTotal(0);
+
+    abortRef.current = new AbortController();
+
+    try {
+      const res = await fetch('/api/crawl/stream/queued', {
+        headers: getAuthHeader(),
+        signal: abortRef.current.signal,
+      });
+
+      if (!res.ok) {
+        if (res.status === 404) {
+          queuedRunIdRef.current = null;
+          setQueuedSources([]);
+        } else {
+          setConnectionError(`Request failed: ${res.status}`);
+        }
+        return;
+      }
+
+      if (!res.body) {
+        setConnectionError('Streaming not supported');
+        return;
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop()!;
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue;
+          try {
+            const event: CrawlEvent = JSON.parse(line.slice(6));
+            handleEvent(event);
+          } catch {
+            // ignore malformed lines
+          }
+        }
+      }
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name !== 'AbortError') {
+        setConnectionError(err.message);
+      }
+    } finally {
+      isRunningRef.current = false;
+      setIsRunning(false);
+    }
+  }, [handleEvent]);
+
+  // Keep the ref in sync so handleEvent can call it without a direct dependency
+  startQueuedStreamRef.current = startQueuedStream;
 
   useEffect(() => {
     (async () => {
@@ -207,7 +299,13 @@ export function useCrawlStream() {
         const runs = await apiGet<CrawlRunList[]>('/crawl-runs/', {
           status: 'running',
         });
-        if (runs.length === 0) return;
+        if (runs.length === 0) {
+          // No active run — check if there's a queued run we should start
+          if (queuedRunIdRef.current && !isRunningRef.current) {
+            await startQueuedStream();
+          }
+          return;
+        }
 
         const run = runs[0];
         setCrawlRunId(run.id);
@@ -215,41 +313,107 @@ export function useCrawlStream() {
         setIsRunning(true);
         isRunningRef.current = true;
 
+        abortRef.current = new AbortController();
         const res = await fetch('/api/crawl/reconnect', {
           headers: getAuthHeader(),
+          signal: abortRef.current.signal,
         });
-        if (!res.ok || !res.body) return;
+        if (!res.ok || !res.body) {
+          isRunningRef.current = false;
+          return;
+        }
 
         const reader = res.body.getReader();
         const decoder = new TextDecoder();
         let buffer = '';
 
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
 
-          buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split('\n');
-          buffer = lines.pop()!;
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n');
+            buffer = lines.pop()!;
 
-          for (const line of lines) {
-            if (!line.startsWith('data: ')) continue;
-            try {
-              const event: CrawlEvent = JSON.parse(line.slice(6));
-              handleEvent(event);
-            } catch {
-              // ignore malformed lines
+            for (const line of lines) {
+              if (!line.startsWith('data: ')) continue;
+              try {
+                const event: CrawlEvent = JSON.parse(line.slice(6));
+                handleEvent(event);
+                if (event.type === 'initial_state') {
+                  Promise.all(
+                    event.sources.map((s) =>
+                      apiGet<{ url: string }[]>('/discovered-pages', { source_id: s.source_id })
+                        .then((pages) => ({ source_id: s.source_id, urls: pages.map((p) => p.url) }))
+                        .catch(() => ({ source_id: s.source_id, urls: [] as string[] })),
+                    ),
+                  ).then((results) => {
+                    setSourceStates((prev) =>
+                      prev.map((s) => {
+                        const r = results.find((r) => r.source_id === s.source_id);
+                        return r && r.urls.length > 0 ? { ...s, discoveredUrls: r.urls } : s;
+                      }),
+                    );
+                  });
+                }
+              } catch {
+                // ignore malformed lines
+              }
             }
           }
+        } catch (err) {
+          if (err instanceof Error && err.name !== 'AbortError') throw err;
+        } finally {
+          isRunningRef.current = false;
         }
       } catch {
         // no active run or reconnect failed — that's fine
+        isRunningRef.current = false;
       }
     })();
-  }, [handleEvent]);
+  }, [handleEvent, startQueuedStream]);
 
   const start = useCallback(
     async (sourceId?: string) => {
+      // If a crawl is already running, enqueue the source instead
+      if (isRunningRef.current && sourceId) {
+        try {
+          const res = await fetch(`/api/crawl/enqueue/${sourceId}`, {
+            method: 'POST',
+            headers: getAuthHeader(),
+          });
+          if (res.ok) {
+            const data = await res.json();
+            queuedRunIdRef.current = data.crawl_run_id;
+            // Re-fetch queue state via reconnect to get the URL for display
+            const reconnectRes = await fetch('/api/crawl/reconnect', { headers: getAuthHeader() });
+            if (reconnectRes.ok && reconnectRes.body) {
+              const reader = reconnectRes.body.getReader();
+              const decoder = new TextDecoder();
+              let buf = '';
+              while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                buf += decoder.decode(value, { stream: true });
+                const lines = buf.split('\n');
+                buf = lines.pop()!;
+                for (const line of lines) {
+                  if (!line.startsWith('data: ')) continue;
+                  try {
+                    const event: CrawlEvent = JSON.parse(line.slice(6));
+                    if (event.type === 'queued_state') handleEvent(event);
+                  } catch { /* ignore */ }
+                }
+              }
+            }
+          }
+        } catch {
+          // enqueue failed silently — user can retry
+        }
+        return;
+      }
+
       if (isRunningRef.current) return;
       isRunningRef.current = true;
       setIsRunning(true);
@@ -317,6 +481,9 @@ export function useCrawlStream() {
 
   const cancel = useCallback(() => {
     abortRef.current?.abort();
+    apiPost('/crawl/cancel').catch(() => {});
+    isRunningRef.current = false;
+    setIsRunning(false);
   }, []);
 
   const reset = useCallback(() => {
@@ -338,5 +505,6 @@ export function useCrawlStream() {
     summary,
     connectionError,
     crawlTotal,
+    queuedSources,
   };
 }
