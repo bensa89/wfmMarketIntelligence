@@ -1,6 +1,6 @@
 import { X, Check, AlertCircle, Loader2, Minus, ChevronDown, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
-import type { SourceCrawlState, CrawlStreamSummary, CrawlStep } from '../types';
+import type { SourceCrawlState, CrawlStreamSummary, CrawlStep, CrawlPhase } from '../types';
 
 const STEP_LABELS: Record<CrawlStep, string> = {
   fetching: 'Fetching...',
@@ -89,8 +89,9 @@ function SourceRow({ state }: { state: SourceCrawlState }) {
 }
 
 interface Props {
-  isRunning: boolean;
-  isAnalysing: boolean;
+  phase: CrawlPhase;
+  analysisDocsTotal: number;
+  analysisDocsDone: number;
   sourceStates: SourceCrawlState[];
   summary: CrawlStreamSummary | null;
   connectionError: string | null;
@@ -101,8 +102,9 @@ interface Props {
 }
 
 export function CrawlProgressPanel({
-  isRunning,
-  isAnalysing,
+  phase,
+  analysisDocsTotal,
+  analysisDocsDone,
   sourceStates,
   summary,
   connectionError,
@@ -111,7 +113,7 @@ export function CrawlProgressPanel({
   onCancel,
   onDismiss,
 }: Props) {
-  if (!isRunning && !summary && !connectionError && sourceStates.length === 0 && queuedSources.length === 0) return null;
+  if (phase === 'idle' && !summary && !connectionError && sourceStates.length === 0 && queuedSources.length === 0) return null;
 
   const doneCount = sourceStates.filter(
     (s) => s.status === 'done' || s.status === 'error',
@@ -122,24 +124,28 @@ export function CrawlProgressPanel({
 
   const borderColor = hasErrors
     ? 'border-signal-low/40'
-    : summary
+    : phase === 'done'
       ? 'border-signal-high/40'
       : 'border-accent-blue/40';
 
+  const isActive = phase === 'crawling' || phase === 'analysing';
   const runCounter = hasQueue ? ' (1/2)' : '';
+
   const headerText = connectionError
     ? `Connection failed: ${connectionError}`
-    : isRunning
-      ? `Crawling...${runCounter} (${doneCount}/${total})`
-      : hasErrors
-        ? `Crawl complete — ${total} sources, ${summary?.total_new ?? 0} new docs, ${summary?.total_errors ?? 0} errors`
-        : `Crawl complete — ${total} sources, ${summary?.total_new ?? 0} new docs`;
+    : phase === 'crawling'
+      ? `Crawl läuft…${runCounter} (${doneCount}/${total})`
+      : phase === 'analysing'
+        ? `Analyse läuft… (${analysisDocsDone}/${analysisDocsTotal} Docs)`
+        : hasErrors
+          ? `Fertig — ${total} Sources, ${summary?.total_new ?? 0} neue Docs, ${summary?.total_errors ?? 0} Fehler`
+          : `Fertig — ${summary?.total_new ?? 0} neue Docs${analysisDocsDone > 0 ? `, ${analysisDocsDone} analysiert` : ''}`;
 
   return (
     <div className={`mb-6 rounded-lg border ${borderColor} bg-app-card overflow-hidden`}>
       <div className="flex items-center justify-between px-4 py-2.5 border-b border-app-border/30">
         <span className="text-sm font-medium text-ink">{headerText}</span>
-        {isRunning ? (
+        {isActive ? (
           <button onClick={onCancel} className="text-xs text-ink-muted hover:text-ink px-2 py-0.5 rounded">
             Cancel
           </button>
@@ -149,18 +155,26 @@ export function CrawlProgressPanel({
           </button>
         )}
       </div>
-      {isAnalysing && (
-        <div className="px-4 py-2 bg-accent-blue/10 border-b border-app-border/30">
-          <span className="text-xs text-accent-blue font-medium">
-            Analyse-Phase läuft...
-          </span>
-        </div>
-      )}
       <div>
         {sourceStates.map((s) => (
           <SourceRow key={s.source_id} state={s} />
         ))}
       </div>
+      {(phase === 'analysing' || (phase === 'done' && analysisDocsDone > 0)) && (
+        <div className="px-4 py-2 border-t border-app-border/30 bg-app-bg/40 flex items-center gap-2">
+          {phase === 'analysing' && (
+            <Loader2 className="w-3 h-3 animate-spin text-accent-blue flex-shrink-0" />
+          )}
+          {phase === 'done' && analysisDocsDone > 0 && (
+            <Check className="w-3 h-3 text-signal-high flex-shrink-0" />
+          )}
+          <span className="text-xs text-ink-muted">
+            {phase === 'analysing'
+              ? `Analyse läuft… ${analysisDocsDone}/${analysisDocsTotal} Dokumente`
+              : `${analysisDocsDone} Dokumente analysiert`}
+          </span>
+        </div>
+      )}
       {hasQueue && (
         <>
           <div className="px-4 py-1.5 border-t border-app-border/30 bg-app-bg/40">
