@@ -97,17 +97,21 @@ def _crawl_single_source(
                 event_copy = dict(event)
                 event_copy["crawl_run_id"] = crawl_run_id
                 event_copy["source_id"] = sid
-                if event.get("type") == "step":
+                if event.get("type") in ("step", "discovery_progress"):
                     crs_obj = (
                         worker_db.query(CrawlRunSource)
                         .filter(CrawlRunSource.id == crs_id_val)
                         .first()
                     )
                     if crs_obj:
-                        step_name = event.get("step")
-                        if step_name and step_name in [e.value for e in CrawlRunStep]:
-                            crs_obj.current_step = CrawlRunStep(step_name)
-                            worker_db.commit()
+                        if event.get("type") == "step":
+                            step_name = event.get("step")
+                            if step_name and step_name in [e.value for e in CrawlRunStep]:
+                                crs_obj.current_step = CrawlRunStep(step_name)
+                        else:
+                            crs_obj.discover_pages_crawled = event.get("pages_crawled")
+                            crs_obj.discover_pages_found = event.get("pages_found")
+                        worker_db.commit()
                 loop.call_soon_threadsafe(queue.put_nowait, event_copy)
 
             return callback
@@ -364,6 +368,22 @@ async def _sse_generator(
         yield f"data: {json.dumps(event)}\n\n"
 
 
+@router.post("/cancel")
+def cancel_crawl(db: Session = Depends(get_db)) -> Dict[str, Any]:
+    running = db.query(CrawlRun).filter(CrawlRun.status == CrawlRunStatus.running).all()
+    if not running:
+        return {"cancelled": 0}
+    for run in running:
+        run.status = CrawlRunStatus.cancelled
+        run.finished_at = datetime.now(timezone.utc)
+        for crs in run.sources:
+            if crs.status in (CrawlRunSourceStatus.pending, CrawlRunSourceStatus.running):
+                crs.status = CrawlRunSourceStatus.failed
+                crs.finished_at = datetime.now(timezone.utc)
+    db.commit()
+    return {"cancelled": len(running)}
+
+
 @router.post("/run")
 def crawl_all_sources(db: Session = Depends(get_db)) -> Dict[str, Any]:
     active_sources = (
@@ -429,6 +449,39 @@ async def stream_single_source(
     )
 
 
+@router.post("/enqueue/{source_id}", status_code=202)
+def enqueue_source(source_id: str, db: Session = Depends(get_db)) -> Dict[str, Any]:
+    source = db.query(Source).filter(Source.id == source_id).first()
+    if not source:
+        raise HTTPException(status_code=404, detail="Source not found")
+
+    queued_run = db.query(CrawlRun).filter(CrawlRun.status == CrawlRunStatus.queued).first()
+
+    if queued_run is None:
+        queued_run = CrawlRun(
+            status=CrawlRunStatus.queued,
+            total_sources=0,
+        )
+        db.add(queued_run)
+        db.flush()
+
+    # No-op if source already queued
+    already_queued = any(crs.source_id == source_id for crs in queued_run.sources)
+    if not already_queued:
+        crs = CrawlRunSource(
+            crawl_run_id=queued_run.id,
+            source_id=source_id,
+            url=source.url,
+            status=CrawlRunSourceStatus.pending,
+        )
+        db.add(crs)
+        queued_run.total_sources = len(queued_run.sources) + 1
+        db.commit()
+
+    position = len(queued_run.sources)
+    return {"queued": True, "position": position, "crawl_run_id": queued_run.id}
+
+
 @router.get("/reconnect")
 async def reconnect_crawl(db: Session = Depends(get_db)) -> StreamingResponse:
     running_run = (
@@ -461,6 +514,8 @@ async def reconnect_crawl(db: Session = Depends(get_db)) -> StreamingResponse:
                 "extract_ms": crs.extract_ms,
                 "analyse_ms": crs.analyse_ms,
                 "discover_ms": crs.discover_ms,
+                "discover_pages_crawled": crs.discover_pages_crawled,
+                "discover_pages_found": crs.discover_pages_found,
             }
         )
 

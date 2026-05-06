@@ -313,3 +313,126 @@ def test_reconnect_with_active_run(client, seed_source, db_engine):
     assert events[0]["sources"][0]["status"] == "running"
     assert events[0]["sources"][0]["current_step"] == "fetching"
     assert events[1]["type"] == "reconnect_complete"
+
+
+def test_enqueue_creates_queued_run(client, seed_source, db_engine):
+    """Enqueue a source when no queued run exists — creates one."""
+    TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
+
+    # Create a running run first so enqueue is valid
+    setup_db = TestSessionLocal()
+    try:
+        running_run = CrawlRun(status=CrawlRunStatus.running, total_sources=1)
+        setup_db.add(running_run)
+        setup_db.commit()
+    finally:
+        setup_db.close()
+
+    response = client.post(f"/api/crawl/enqueue/{seed_source.id}")
+    assert response.status_code == 202
+    data = response.json()
+    assert data["queued"] is True
+    assert data["position"] == 1
+
+    verify_db = TestSessionLocal()
+    try:
+        queued = verify_db.query(CrawlRun).filter(
+            CrawlRun.status == CrawlRunStatus.queued
+        ).first()
+        assert queued is not None
+        assert len(queued.sources) == 1
+        assert queued.sources[0].source_id == seed_source.id
+    finally:
+        verify_db.close()
+
+
+def test_enqueue_appends_to_existing_queued_run(client, db_session, db_engine):
+    """Enqueueing a second source appends to the existing queued run."""
+    TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
+
+    company = Company(name="Co2", slug="co2-enqueue", type=CompanyType.competitor)
+    db_session.add(company)
+    db_session.commit()
+
+    source_a = Source(company_id=company.id, url="https://a.com", source_type=SourceType.news, is_active=True)
+    source_b = Source(company_id=company.id, url="https://b.com", source_type=SourceType.news, is_active=True)
+    db_session.add_all([source_a, source_b])
+    db_session.commit()
+
+    # Seed a running run + queued run with source_a already in it
+    setup_db = TestSessionLocal()
+    try:
+        running = CrawlRun(status=CrawlRunStatus.running, total_sources=1)
+        setup_db.add(running)
+        queued = CrawlRun(status=CrawlRunStatus.queued, total_sources=1)
+        setup_db.add(queued)
+        setup_db.flush()
+        setup_db.add(CrawlRunSource(
+            crawl_run_id=queued.id,
+            source_id=source_a.id,
+            url=source_a.url,
+            status=CrawlRunSourceStatus.pending,
+        ))
+        setup_db.commit()
+    finally:
+        setup_db.close()
+
+    response = client.post(f"/api/crawl/enqueue/{source_b.id}")
+    assert response.status_code == 202
+    data = response.json()
+    assert data["position"] == 2
+
+    verify_db = TestSessionLocal()
+    try:
+        queued_runs = verify_db.query(CrawlRun).filter(
+            CrawlRun.status == CrawlRunStatus.queued
+        ).all()
+        assert len(queued_runs) == 1  # still only one queued run
+        assert len(queued_runs[0].sources) == 2
+    finally:
+        verify_db.close()
+
+
+def test_enqueue_noop_for_duplicate_source(client, db_session, db_engine):
+    """Enqueueing a source already in the queue returns current position."""
+    TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
+
+    company = Company(name="Co3", slug="co3-enqueue", type=CompanyType.competitor)
+    db_session.add(company)
+    db_session.commit()
+    source = Source(company_id=company.id, url="https://dup.com", source_type=SourceType.news, is_active=True)
+    db_session.add(source)
+    db_session.commit()
+
+    setup_db = TestSessionLocal()
+    try:
+        running = CrawlRun(status=CrawlRunStatus.running, total_sources=1)
+        setup_db.add(running)
+        queued = CrawlRun(status=CrawlRunStatus.queued, total_sources=1)
+        setup_db.add(queued)
+        setup_db.flush()
+        setup_db.add(CrawlRunSource(
+            crawl_run_id=queued.id,
+            source_id=source.id,
+            url=source.url,
+            status=CrawlRunSourceStatus.pending,
+        ))
+        setup_db.commit()
+    finally:
+        setup_db.close()
+
+    response = client.post(f"/api/crawl/enqueue/{source.id}")
+    assert response.status_code == 202
+    assert response.json()["position"] == 1  # still 1, not added twice
+
+    verify_db = TestSessionLocal()
+    try:
+        queued = verify_db.query(CrawlRun).filter(CrawlRun.status == CrawlRunStatus.queued).first()
+        assert len(queued.sources) == 1
+    finally:
+        verify_db.close()
+
+
+def test_enqueue_nonexistent_source_returns_404(client):
+    response = client.post("/api/crawl/enqueue/nonexistent-id")
+    assert response.status_code == 404
