@@ -258,8 +258,8 @@ def test_reconnect_no_active_run(client):
         for line in response.text.splitlines()
         if line.startswith("data: ")
     ]
-    assert len(events) == 1
     assert events[0]["type"] == "no_active_run"
+    assert events[-1]["type"] == "reconnect_complete"
 
 
 def test_reconnect_with_active_run(client, seed_source, db_engine):
@@ -491,3 +491,81 @@ def test_stream_queued_runs_queued_sources(client, seed_source, db_engine):
         assert run.status == CrawlRunStatus.completed
     finally:
         verify_db.close()
+
+
+def test_reconnect_returns_queued_state(client, seed_source, db_engine):
+    """Reconnect includes queued_state event when a queued run exists."""
+    TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
+
+    setup_db = TestSessionLocal()
+    try:
+        running = CrawlRun(status=CrawlRunStatus.running, total_sources=1)
+        setup_db.add(running)
+        setup_db.flush()
+        setup_db.add(CrawlRunSource(
+            crawl_run_id=running.id,
+            source_id=seed_source.id,
+            url=seed_source.url,
+            status=CrawlRunSourceStatus.running,
+        ))
+        queued = CrawlRun(status=CrawlRunStatus.queued, total_sources=1)
+        setup_db.add(queued)
+        setup_db.flush()
+        setup_db.add(CrawlRunSource(
+            crawl_run_id=queued.id,
+            source_id=seed_source.id,
+            url=seed_source.url,
+            status=CrawlRunSourceStatus.pending,
+        ))
+        setup_db.commit()
+        queued_id = queued.id
+    finally:
+        setup_db.close()
+
+    response = client.get("/api/crawl/reconnect")
+    events = [
+        json.loads(line[6:])
+        for line in response.text.splitlines()
+        if line.startswith("data: ")
+    ]
+    types = [e["type"] for e in events]
+    assert "initial_state" in types
+    assert "queued_state" in types
+
+    qs = next(e for e in events if e["type"] == "queued_state")
+    assert qs["crawl_run_id"] == queued_id
+    assert len(qs["sources"]) == 1
+    assert qs["sources"][0]["source_id"] == seed_source.id
+
+
+def test_reconnect_queued_state_only_when_no_running_run(client, seed_source, db_engine):
+    """When no running run exists but a queued one does, only queued_state is sent."""
+    TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
+
+    setup_db = TestSessionLocal()
+    try:
+        queued = CrawlRun(status=CrawlRunStatus.queued, total_sources=1)
+        setup_db.add(queued)
+        setup_db.flush()
+        setup_db.add(CrawlRunSource(
+            crawl_run_id=queued.id,
+            source_id=seed_source.id,
+            url=seed_source.url,
+            status=CrawlRunSourceStatus.pending,
+        ))
+        setup_db.commit()
+        queued_id = queued.id
+    finally:
+        setup_db.close()
+
+    response = client.get("/api/crawl/reconnect")
+    events = [
+        json.loads(line[6:])
+        for line in response.text.splitlines()
+        if line.startswith("data: ")
+    ]
+    types = [e["type"] for e in events]
+    assert "initial_state" not in types
+    assert "no_active_run" not in types
+    assert "queued_state" in types
+    assert types[-1] == "reconnect_complete"

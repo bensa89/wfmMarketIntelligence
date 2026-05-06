@@ -511,24 +511,15 @@ def enqueue_source(source_id: str, db: Session = Depends(get_db)) -> Dict[str, A
 
 @router.get("/reconnect")
 async def reconnect_crawl(db: Session = Depends(get_db)) -> StreamingResponse:
-    running_run = (
-        db.query(CrawlRun).filter(CrawlRun.status == CrawlRunStatus.running).first()
-    )
-    if not running_run:
-        return StreamingResponse(
-            iter([f"data: {json.dumps({'type': 'no_active_run'})}\n\n"]),
-            media_type="text/event-stream",
-            headers={
-                "Cache-Control": "no-cache",
-                "Connection": "keep-alive",
-                "X-Accel-Buffering": "no",
-            },
-        )
+    running_run = db.query(CrawlRun).filter(CrawlRun.status == CrawlRunStatus.running).first()
+    queued_run = db.query(CrawlRun).filter(CrawlRun.status == CrawlRunStatus.queued).first()
 
-    sources_data = []
-    for crs in running_run.sources:
-        sources_data.append(
-            {
+    events: list[dict] = []
+
+    if running_run:
+        sources_data = []
+        for crs in running_run.sources:
+            sources_data.append({
                 "source_id": crs.source_id,
                 "url": crs.url,
                 "status": crs.status.value if crs.status else "pending",
@@ -543,19 +534,33 @@ async def reconnect_crawl(db: Session = Depends(get_db)) -> StreamingResponse:
                 "discover_ms": crs.discover_ms,
                 "discover_pages_crawled": crs.discover_pages_crawled,
                 "discover_pages_found": crs.discover_pages_found,
-            }
-        )
+            })
+        events.append({
+            "type": "initial_state",
+            "crawl_run_id": running_run.id,
+            "total": running_run.total_sources,
+            "sources": sources_data,
+        })
 
-    initial_event = {
-        "type": "initial_state",
-        "crawl_run_id": running_run.id,
-        "total": running_run.total_sources,
-        "sources": sources_data,
-    }
+    if queued_run:
+        queued_sources = [
+            {"source_id": crs.source_id, "url": crs.url}
+            for crs in queued_run.sources
+        ]
+        events.append({
+            "type": "queued_state",
+            "crawl_run_id": queued_run.id,
+            "sources": queued_sources,
+        })
+
+    if not running_run and not queued_run:
+        events.append({"type": "no_active_run"})
+
+    events.append({"type": "reconnect_complete"})
 
     async def generate():
-        yield f"data: {json.dumps(initial_event)}\n\n"
-        yield f"data: {json.dumps({'type': 'reconnect_complete'})}\n\n"
+        for event in events:
+            yield f"data: {json.dumps(event)}\n\n"
 
     return StreamingResponse(
         generate(),
