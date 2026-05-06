@@ -43,7 +43,6 @@ function mapSourceStatus(
 export function useCrawlStream() {
   const qc = useQueryClient();
   const [phase, setPhase] = useState<CrawlPhase>('idle');
-  const phaseRef = useRef<CrawlPhase>('idle');
   const [analysisDocsTotal, setAnalysisDocsTotal] = useState(0);
   const [analysisDocsDone, setAnalysisDocsDone] = useState(0);
   const isRunningRef = useRef(false);
@@ -60,7 +59,6 @@ export function useCrawlStream() {
   const startQueuedStreamRef = useRef<() => Promise<void>>(() => Promise.resolve());
 
   const setPhaseSync = useCallback((p: CrawlPhase) => {
-    phaseRef.current = p;
     setPhase(p);
   }, []);
 
