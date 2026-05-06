@@ -13,6 +13,10 @@ from app.models.crawl_run import (
 )
 
 
+def test_crawl_run_status_has_queued():
+    assert CrawlRunStatus.queued == "queued"
+
+
 @pytest.fixture
 def seed_source(db_session):
     company = Company(name="ATOSS", slug="atoss-crawl", type=CompanyType.competitor)
@@ -254,8 +258,8 @@ def test_reconnect_no_active_run(client):
         for line in response.text.splitlines()
         if line.startswith("data: ")
     ]
-    assert len(events) == 1
     assert events[0]["type"] == "no_active_run"
+    assert events[-1]["type"] == "reconnect_complete"
 
 
 def test_reconnect_with_active_run(client, seed_source, db_engine):
@@ -309,3 +313,259 @@ def test_reconnect_with_active_run(client, seed_source, db_engine):
     assert events[0]["sources"][0]["status"] == "running"
     assert events[0]["sources"][0]["current_step"] == "fetching"
     assert events[1]["type"] == "reconnect_complete"
+
+
+def test_enqueue_creates_queued_run(client, seed_source, db_engine):
+    """Enqueue a source when no queued run exists — creates one."""
+    TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
+
+    # Create a running run first so enqueue is valid
+    setup_db = TestSessionLocal()
+    try:
+        running_run = CrawlRun(status=CrawlRunStatus.running, total_sources=1)
+        setup_db.add(running_run)
+        setup_db.commit()
+    finally:
+        setup_db.close()
+
+    response = client.post(f"/api/crawl/enqueue/{seed_source.id}")
+    assert response.status_code == 202
+    data = response.json()
+    assert data["queued"] is True
+    assert data["position"] == 1
+
+    verify_db = TestSessionLocal()
+    try:
+        queued = verify_db.query(CrawlRun).filter(
+            CrawlRun.status == CrawlRunStatus.queued
+        ).first()
+        assert queued is not None
+        assert len(queued.sources) == 1
+        assert queued.sources[0].source_id == seed_source.id
+    finally:
+        verify_db.close()
+
+
+def test_enqueue_appends_to_existing_queued_run(client, db_session, db_engine):
+    """Enqueueing a second source appends to the existing queued run."""
+    TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
+
+    company = Company(name="Co2", slug="co2-enqueue", type=CompanyType.competitor)
+    db_session.add(company)
+    db_session.commit()
+
+    source_a = Source(company_id=company.id, url="https://a.com", source_type=SourceType.news, is_active=True)
+    source_b = Source(company_id=company.id, url="https://b.com", source_type=SourceType.news, is_active=True)
+    db_session.add_all([source_a, source_b])
+    db_session.commit()
+
+    # Seed a running run + queued run with source_a already in it
+    setup_db = TestSessionLocal()
+    try:
+        running = CrawlRun(status=CrawlRunStatus.running, total_sources=1)
+        setup_db.add(running)
+        queued = CrawlRun(status=CrawlRunStatus.queued, total_sources=1)
+        setup_db.add(queued)
+        setup_db.flush()
+        setup_db.add(CrawlRunSource(
+            crawl_run_id=queued.id,
+            source_id=source_a.id,
+            url=source_a.url,
+            status=CrawlRunSourceStatus.pending,
+        ))
+        setup_db.commit()
+    finally:
+        setup_db.close()
+
+    response = client.post(f"/api/crawl/enqueue/{source_b.id}")
+    assert response.status_code == 202
+    data = response.json()
+    assert data["position"] == 2
+
+    verify_db = TestSessionLocal()
+    try:
+        queued_runs = verify_db.query(CrawlRun).filter(
+            CrawlRun.status == CrawlRunStatus.queued
+        ).all()
+        assert len(queued_runs) == 1  # still only one queued run
+        assert len(queued_runs[0].sources) == 2
+    finally:
+        verify_db.close()
+
+
+def test_enqueue_noop_for_duplicate_source(client, db_session, db_engine):
+    """Enqueueing a source already in the queue returns current position."""
+    TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
+
+    company = Company(name="Co3", slug="co3-enqueue", type=CompanyType.competitor)
+    db_session.add(company)
+    db_session.commit()
+    source = Source(company_id=company.id, url="https://dup.com", source_type=SourceType.news, is_active=True)
+    db_session.add(source)
+    db_session.commit()
+
+    setup_db = TestSessionLocal()
+    try:
+        running = CrawlRun(status=CrawlRunStatus.running, total_sources=1)
+        setup_db.add(running)
+        queued = CrawlRun(status=CrawlRunStatus.queued, total_sources=1)
+        setup_db.add(queued)
+        setup_db.flush()
+        setup_db.add(CrawlRunSource(
+            crawl_run_id=queued.id,
+            source_id=source.id,
+            url=source.url,
+            status=CrawlRunSourceStatus.pending,
+        ))
+        setup_db.commit()
+    finally:
+        setup_db.close()
+
+    response = client.post(f"/api/crawl/enqueue/{source.id}")
+    assert response.status_code == 202
+    assert response.json()["position"] == 1  # still 1, not added twice
+
+    verify_db = TestSessionLocal()
+    try:
+        queued = verify_db.query(CrawlRun).filter(CrawlRun.status == CrawlRunStatus.queued).first()
+        assert len(queued.sources) == 1
+    finally:
+        verify_db.close()
+
+
+def test_enqueue_nonexistent_source_returns_404(client):
+    response = client.post("/api/crawl/enqueue/nonexistent-id")
+    assert response.status_code == 404
+
+
+def test_stream_queued_returns_404_when_no_queue(client):
+    response = client.get("/api/crawl/stream/queued")
+    assert response.status_code == 404
+
+
+def test_stream_queued_runs_queued_sources(client, seed_source, db_engine):
+    """Starting stream/queued transitions the queued run to running and streams events."""
+    TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
+
+    setup_db = TestSessionLocal()
+    try:
+        queued_run = CrawlRun(status=CrawlRunStatus.queued, total_sources=1)
+        setup_db.add(queued_run)
+        setup_db.flush()
+        setup_db.add(CrawlRunSource(
+            crawl_run_id=queued_run.id,
+            source_id=seed_source.id,
+            url=seed_source.url,
+            status=CrawlRunSourceStatus.pending,
+        ))
+        setup_db.commit()
+        queued_run_id = queued_run.id
+    finally:
+        setup_db.close()
+
+    def mock_run(source, db, analyse=True, progress_callback=None):
+        return {"source_id": source.id, "new_documents": 1, "skipped": 0, "errors": 0, "discovery": {}}
+
+    with (
+        patch("app.routers.crawl.SessionLocal", TestSessionLocal),
+        patch("app.routers.crawl.run_crawl_source", side_effect=mock_run),
+    ):
+        response = client.get("/api/crawl/stream/queued")
+
+    assert response.status_code == 200
+    assert "text/event-stream" in response.headers["content-type"]
+
+    events = [
+        json.loads(line[6:])
+        for line in response.text.splitlines()
+        if line.startswith("data: ")
+    ]
+    event_types = [e["type"] for e in events]
+    assert "crawl_start" in event_types
+    assert "crawl_done" in event_types
+
+    # Verify the queued run is now completed in DB
+    verify_db = TestSessionLocal()
+    try:
+        run = verify_db.query(CrawlRun).filter(CrawlRun.id == queued_run_id).first()
+        assert run.status == CrawlRunStatus.completed
+    finally:
+        verify_db.close()
+
+
+def test_reconnect_returns_queued_state(client, seed_source, db_engine):
+    """Reconnect includes queued_state event when a queued run exists."""
+    TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
+
+    setup_db = TestSessionLocal()
+    try:
+        running = CrawlRun(status=CrawlRunStatus.running, total_sources=1)
+        setup_db.add(running)
+        setup_db.flush()
+        setup_db.add(CrawlRunSource(
+            crawl_run_id=running.id,
+            source_id=seed_source.id,
+            url=seed_source.url,
+            status=CrawlRunSourceStatus.running,
+        ))
+        queued = CrawlRun(status=CrawlRunStatus.queued, total_sources=1)
+        setup_db.add(queued)
+        setup_db.flush()
+        setup_db.add(CrawlRunSource(
+            crawl_run_id=queued.id,
+            source_id=seed_source.id,
+            url=seed_source.url,
+            status=CrawlRunSourceStatus.pending,
+        ))
+        setup_db.commit()
+        queued_id = queued.id
+    finally:
+        setup_db.close()
+
+    response = client.get("/api/crawl/reconnect")
+    events = [
+        json.loads(line[6:])
+        for line in response.text.splitlines()
+        if line.startswith("data: ")
+    ]
+    types = [e["type"] for e in events]
+    assert "initial_state" in types
+    assert "queued_state" in types
+
+    qs = next(e for e in events if e["type"] == "queued_state")
+    assert qs["crawl_run_id"] == queued_id
+    assert len(qs["sources"]) == 1
+    assert qs["sources"][0]["source_id"] == seed_source.id
+
+
+def test_reconnect_queued_state_only_when_no_running_run(client, seed_source, db_engine):
+    """When no running run exists but a queued one does, only queued_state is sent."""
+    TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
+
+    setup_db = TestSessionLocal()
+    try:
+        queued = CrawlRun(status=CrawlRunStatus.queued, total_sources=1)
+        setup_db.add(queued)
+        setup_db.flush()
+        setup_db.add(CrawlRunSource(
+            crawl_run_id=queued.id,
+            source_id=seed_source.id,
+            url=seed_source.url,
+            status=CrawlRunSourceStatus.pending,
+        ))
+        setup_db.commit()
+        queued_id = queued.id
+    finally:
+        setup_db.close()
+
+    response = client.get("/api/crawl/reconnect")
+    events = [
+        json.loads(line[6:])
+        for line in response.text.splitlines()
+        if line.startswith("data: ")
+    ]
+    types = [e["type"] for e in events]
+    assert "initial_state" not in types
+    assert "no_active_run" not in types
+    assert "queued_state" in types
+    assert types[-1] == "reconnect_complete"

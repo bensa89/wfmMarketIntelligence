@@ -8,6 +8,7 @@ from app.database import Base
 
 class CrawlRunStatus(str, enum.Enum):
     running = "running"
+    queued = "queued"
     completed = "completed"
     failed = "failed"
     cancelled = "cancelled"

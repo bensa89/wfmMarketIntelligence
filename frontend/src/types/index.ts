@@ -251,6 +251,11 @@ export interface CrawlReconnectCompleteEvent {
 export interface CrawlNoActiveRunEvent {
   type: 'no_active_run';
 }
+export interface CrawlQueuedStateEvent {
+  type: 'queued_state';
+  crawl_run_id: string;
+  sources: { source_id: string; url: string }[];
+}
 export type CrawlEvent =
   | CrawlStartEvent
   | CrawlSourceStartEvent
@@ -262,7 +267,8 @@ export type CrawlEvent =
   | CrawlErrorEvent
   | CrawlInitialStateEvent
   | CrawlReconnectCompleteEvent
-  | CrawlNoActiveRunEvent;
+  | CrawlNoActiveRunEvent
+  | CrawlQueuedStateEvent;
 
 export interface CrawlRunSourceState {
   source_id: string;
@@ -277,6 +283,8 @@ export interface CrawlRunSourceState {
   extract_ms?: number;
   analyse_ms?: number;
   discover_ms?: number;
+  discover_pages_crawled?: number;
+  discover_pages_found?: number;
 }
 
 export interface CrawlRunList {
@@ -303,6 +311,7 @@ export interface SourceCrawlState {
   errorMessage?: string;
   discoveryProgress?: { pages_found: number; pages_crawled: number; max_pages: number };
   stepTimings?: Partial<Record<CrawlStep, number>>;
+  discoveredUrls?: string[];
 }
 
 export interface CrawlStreamSummary {
