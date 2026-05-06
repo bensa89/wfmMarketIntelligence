@@ -35,6 +35,7 @@ export interface Source {
   source_type: SourceType;
   is_active: boolean;
   respect_robots_txt: boolean;
+  discovery_depth: number | null;
   crawl_status: CrawlStatus;
   content_hash: string | null;
   last_crawled_at: string | null;
@@ -58,6 +59,7 @@ export interface SourceUpdate {
   source_type?: SourceType;
   is_active?: boolean;
   respect_robots_txt?: boolean;
+  discovery_depth?: number | null;
 }
 
 export interface Document {
@@ -174,6 +176,7 @@ export interface DiscoveredPage {
   last_crawled_at: string | null;
   last_changed_at: string | null;
   last_signal_relevance: number | null;
+  analysis_status: string | null;
 }
 
 export interface SourceSearchResult {
@@ -255,6 +258,8 @@ export interface CrawlInitialStateEvent {
   total: number;
   sources: CrawlRunSourceState[];
   analysis_phase_active: boolean;
+  docs_to_analyse: number;
+  docs_analysed: number;
 }
 export interface CrawlReconnectCompleteEvent {
   type: 'reconnect_complete';
