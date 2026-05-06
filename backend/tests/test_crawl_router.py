@@ -14,7 +14,6 @@ from app.models.crawl_run import (
 
 
 def test_crawl_run_status_has_queued():
-    from app.models.crawl_run import CrawlRunStatus
     assert CrawlRunStatus.queued == "queued"
 
 
