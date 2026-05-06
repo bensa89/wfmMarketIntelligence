@@ -100,6 +100,27 @@ function DiscoveredPagesSection({
     );
   };
 
+  const pageAnalysisBadge = (status: string | null) => {
+    if (!status) return <span className="text-xs text-ink-muted">—</span>;
+    const styles: Record<string, string> = {
+      pending: 'bg-yellow-500/20 text-yellow-400',
+      analysing: 'bg-accent-blue/20 text-accent-blue animate-pulse',
+      analysed: 'bg-signal-high/20 text-signal-high',
+      analysis_failed: 'bg-red-500/20 text-red-400',
+    };
+    const labels: Record<string, string> = {
+      pending: 'Ausstehend',
+      analysing: 'Analysiere...',
+      analysed: 'Analysiert',
+      analysis_failed: 'Fehler',
+    };
+    return (
+      <span className={`text-xs px-1.5 py-0.5 rounded ${styles[status] ?? ''}`}>
+        {labels[status] ?? status}
+      </span>
+    );
+  };
+
   if (isLoading) return <p className="text-xs text-ink-muted py-2 px-4">Loading…</p>;
   if (!pages || pages.length === 0)
     return <p className="text-xs text-ink-muted py-2 px-4">No pages discovered yet.</p>;
@@ -110,6 +131,7 @@ function DiscoveredPagesSection({
         <tr className="border-b border-app-border/30">
           <th className="text-left py-1 px-4 text-ink-muted font-medium">Discovered URL</th>
           <th className="text-left py-1 text-ink-muted font-medium">Status</th>
+          <th className="text-left py-1 text-ink-muted font-medium">Analyse</th>
           <th className="text-left py-1 text-ink-muted font-medium">Relevanz</th>
           <th className="text-left py-1 text-ink-muted font-medium">Depth</th>
           <th className="text-left py-1 text-ink-muted font-medium">Last Changed</th>
@@ -128,6 +150,7 @@ function DiscoveredPagesSection({
               {highlightUrls?.has(page.url) && <span className="ml-2 text-xs bg-yellow-500/20 text-yellow-400 px-1.5 py-0.5 rounded">Treffer</span>}
             </td>
             <td className="py-1">{statusBadge(page.status)}</td>
+            <td className="py-1">{pageAnalysisBadge(page.analysis_status)}</td>
             <td className="py-1">{relevanceBadge(page.last_signal_relevance)}</td>
             <td className="py-1 text-ink-muted">{page.depth}</td>
             <td className="py-1 text-ink-muted">
@@ -200,6 +223,7 @@ export default function SourcesAdmin() {
   const [editLabel, setEditLabel] = useState('');
   const [editType, setEditType] = useState<SourceType>('news');
   const [editRespectRobots, setEditRespectRobots] = useState<boolean>(true);
+  const [editDiscoveryDepth, setEditDiscoveryDepth] = useState<number | null>(null);
 
   // Edit company state
   const [editingCompany, setEditingCompany] = useState<Company | null>(null);
@@ -273,6 +297,7 @@ export default function SourcesAdmin() {
     setEditLabel(source.label || '');
     setEditType(source.source_type);
     setEditRespectRobots(source.respect_robots_txt);
+    setEditDiscoveryDepth(source.discovery_depth);
   }
 
   function closeEditModal() {
@@ -281,17 +306,19 @@ export default function SourcesAdmin() {
     setEditLabel('');
     setEditType('news');
     setEditRespectRobots(true);
+    setEditDiscoveryDepth(null);
   }
 
   function handleSaveEdit(e: React.FormEvent) {
     e.preventDefault();
     if (!editingSource) return;
 
-    const updates: { url?: string; label?: string | null; source_type?: SourceType; respect_robots_txt?: boolean } = {};
+    const updates: { url?: string; label?: string | null; source_type?: SourceType; respect_robots_txt?: boolean; discovery_depth?: number | null } = {};
     if (editUrl !== editingSource.url) updates.url = editUrl;
     if (editLabel !== (editingSource.label || '')) updates.label = editLabel || null;
     if (editType !== editingSource.source_type) updates.source_type = editType;
     if (editRespectRobots !== editingSource.respect_robots_txt) updates.respect_robots_txt = editRespectRobots;
+    if (editDiscoveryDepth !== editingSource.discovery_depth) updates.discovery_depth = editDiscoveryDepth;
 
     if (Object.keys(updates).length > 0) {
       updateSource.mutate(
@@ -787,6 +814,25 @@ export default function SourcesAdmin() {
                 <span className="text-xs text-ink-muted">
                   — wenn aktiv, werden gesperrte URLs beim Discovery übersprungen
                 </span>
+              </div>
+              <div>
+                <label className="block text-sm text-ink-muted mb-1">Discovery Depth</label>
+                <input
+                  type="number"
+                  min={0}
+                  max={5}
+                  step={1}
+                  value={editDiscoveryDepth ?? ''}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setEditDiscoveryDepth(val === '' ? null : parseInt(val, 10));
+                  }}
+                  className="input-field w-full"
+                  placeholder="Global default"
+                />
+                <p className="text-xs text-ink-muted mt-1">
+                  0 = Discovery deaktiviert · leer = globaler Standard · 1–5 = Override
+                </p>
               </div>
               <div className="flex gap-2 pt-2">
                 <button type="submit" disabled={updateSource.isPending} className="btn-primary flex-1">
