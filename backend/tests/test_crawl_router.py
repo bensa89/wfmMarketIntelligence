@@ -436,3 +436,58 @@ def test_enqueue_noop_for_duplicate_source(client, db_session, db_engine):
 def test_enqueue_nonexistent_source_returns_404(client):
     response = client.post("/api/crawl/enqueue/nonexistent-id")
     assert response.status_code == 404
+
+
+def test_stream_queued_returns_404_when_no_queue(client):
+    response = client.get("/api/crawl/stream/queued")
+    assert response.status_code == 404
+
+
+def test_stream_queued_runs_queued_sources(client, seed_source, db_engine):
+    """Starting stream/queued transitions the queued run to running and streams events."""
+    TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
+
+    setup_db = TestSessionLocal()
+    try:
+        queued_run = CrawlRun(status=CrawlRunStatus.queued, total_sources=1)
+        setup_db.add(queued_run)
+        setup_db.flush()
+        setup_db.add(CrawlRunSource(
+            crawl_run_id=queued_run.id,
+            source_id=seed_source.id,
+            url=seed_source.url,
+            status=CrawlRunSourceStatus.pending,
+        ))
+        setup_db.commit()
+        queued_run_id = queued_run.id
+    finally:
+        setup_db.close()
+
+    def mock_run(source, db, analyse=True, progress_callback=None):
+        return {"source_id": source.id, "new_documents": 1, "skipped": 0, "errors": 0, "discovery": {}}
+
+    with (
+        patch("app.routers.crawl.SessionLocal", TestSessionLocal),
+        patch("app.routers.crawl.run_crawl_source", side_effect=mock_run),
+    ):
+        response = client.get("/api/crawl/stream/queued")
+
+    assert response.status_code == 200
+    assert "text/event-stream" in response.headers["content-type"]
+
+    events = [
+        json.loads(line[6:])
+        for line in response.text.splitlines()
+        if line.startswith("data: ")
+    ]
+    event_types = [e["type"] for e in events]
+    assert "crawl_start" in event_types
+    assert "crawl_done" in event_types
+
+    # Verify the queued run is now completed in DB
+    verify_db = TestSessionLocal()
+    try:
+        run = verify_db.query(CrawlRun).filter(CrawlRun.id == queued_run_id).first()
+        assert run.status == CrawlRunStatus.completed
+    finally:
+        verify_db.close()

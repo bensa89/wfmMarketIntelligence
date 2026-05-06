@@ -4,7 +4,7 @@ import logging
 import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
-from typing import AsyncGenerator, Dict, Any, List
+from typing import AsyncGenerator, Dict, Any, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -347,9 +347,15 @@ def _run_sources_in_thread(
 
 
 async def _sse_generator(
-    source_ids: List[str], db: Session
+    source_ids: List[str], db: Session, existing_run_id: Optional[str] = None
 ) -> AsyncGenerator[str, None]:
-    crawl_run = _create_crawl_run(source_ids, db)
+    if existing_run_id is not None:
+        crawl_run = db.query(CrawlRun).filter(CrawlRun.id == existing_run_id).first()
+        crawl_run.status = CrawlRunStatus.running
+        crawl_run.started_at = datetime.now(timezone.utc)
+        db.commit()
+    else:
+        crawl_run = _create_crawl_run(source_ids, db)
 
     loop = asyncio.get_running_loop()
     queue: asyncio.Queue = asyncio.Queue()
@@ -422,6 +428,24 @@ async def stream_all_sources(db: Session = Depends(get_db)) -> StreamingResponse
     ]
     return StreamingResponse(
         _sse_generator(source_ids, db),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )
+
+
+@router.get("/stream/queued")
+async def stream_queued_run(db: Session = Depends(get_db)) -> StreamingResponse:
+    queued_run = db.query(CrawlRun).filter(CrawlRun.status == CrawlRunStatus.queued).first()
+    if not queued_run:
+        raise HTTPException(status_code=404, detail="No queued run found")
+
+    source_ids = [crs.source_id for crs in queued_run.sources]
+    return StreamingResponse(
+        _sse_generator(source_ids, db, existing_run_id=queued_run.id),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",
