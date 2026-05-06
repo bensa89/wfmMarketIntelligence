@@ -75,6 +75,8 @@ class CrawlRunSource(Base):
     extract_ms = Column(Integer, nullable=True)
     analyse_ms = Column(Integer, nullable=True)
     discover_ms = Column(Integer, nullable=True)
+    discover_pages_crawled = Column(Integer, nullable=True)
+    discover_pages_found = Column(Integer, nullable=True)
 
     crawl_run = relationship("CrawlRun", back_populates="sources")
     source = relationship("Source", back_populates="crawl_run_sources")
