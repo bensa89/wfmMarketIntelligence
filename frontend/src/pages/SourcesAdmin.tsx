@@ -347,7 +347,7 @@ export default function SourcesAdmin() {
         <h1 className="text-2xl font-bold">Sources Admin</h1>
         <div className="flex gap-2">
           <button onClick={() => stream.start()} disabled={stream.isRunning} className="btn-primary flex items-center gap-2">
-            <Play size={16} /> {stream.isRunning ? 'Crawling...' : 'Run Full Crawl'}
+            <Play size={16} /> {stream.isRunning ? (stream.isAnalysing ? 'Analysiere...' : 'Crawling...') : 'Run Full Crawl'}
           </button>
           <button onClick={() => setNewCompanyOpen(true)} className="btn-secondary flex items-center gap-2">
             <Plus size={16} /> Add Company
@@ -356,8 +356,9 @@ export default function SourcesAdmin() {
       </div>
 
       <CrawlProgressPanel
-        isRunning={stream.isRunning}
-        isAnalysing={stream.isAnalysing}
+        phase={stream.phase}
+        analysisDocsTotal={stream.analysisDocsTotal}
+        analysisDocsDone={stream.analysisDocsDone}
         sourceStates={stream.sourceStates}
         summary={stream.summary}
         connectionError={stream.connectionError}
