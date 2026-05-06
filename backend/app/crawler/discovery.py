@@ -164,7 +164,8 @@ def discover_and_crawl(
     analyse: bool = True,
     progress_callback: Optional[Callable[[dict], None]] = None,
 ) -> Dict:
-    if settings.discovery_depth == 0:
+    effective_depth = source.discovery_depth if source.discovery_depth is not None else settings.discovery_depth
+    if effective_depth == 0:
         logger.info(
             "Discovery disabled (discovery_depth=0), skipping for source %s", source.url
         )
@@ -185,7 +186,7 @@ def discover_and_crawl(
         "Discovery for source %s: %d known inactive pages, discovery_depth=%d",
         source.url,
         len(known_inactive),
-        settings.discovery_depth,
+        effective_depth,
     )
     if known_inactive:
         logger.debug("Known inactive URLs: %s", known_inactive)
@@ -234,11 +235,11 @@ def discover_and_crawl(
         if url in visited:
             logger.debug("Skipping already visited URL: %s", url)
             continue
-        if depth > settings.discovery_depth:
+        if depth > effective_depth:
             logger.debug(
                 "Skipping URL (depth %d > discovery_depth %d): %s",
                 depth,
-                settings.discovery_depth,
+                effective_depth,
                 url,
             )
             continue
@@ -332,6 +333,7 @@ def discover_and_crawl(
                 if analyse:
                     _save_document_only(source, fetch_result, extraction, now, db)
                     source.analysis_status = AnalysisStatus.pending
+                    page.analysis_status = "pending"
                     db.commit()
 
             elif not existing.is_active:
@@ -352,6 +354,7 @@ def discover_and_crawl(
                 if analyse:
                     _save_document_only(source, fetch_result, extraction, now, db)
                     source.analysis_status = AnalysisStatus.pending
+                    existing.analysis_status = "pending"
                     db.commit()
 
             else:
@@ -364,7 +367,7 @@ def discover_and_crawl(
             db.rollback()
             logger.exception("Error processing discovered page %s", final_url)
 
-        if depth < settings.discovery_depth:
+        if depth < effective_depth:
             sub_links = _extract_internal_links(fetch_result.html, final_url)
             new_enqueued = 0
             for next_url in sub_links:

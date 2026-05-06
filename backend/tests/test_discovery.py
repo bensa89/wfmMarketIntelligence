@@ -507,3 +507,31 @@ def test_discover_keeps_page_active_when_one_signal_relevant(db_session, monkeyp
     assert page.is_active is True
     db_session.refresh(source)
     assert source.analysis_status == AnalysisStatus.pending
+
+
+def test_discover_uses_source_depth_override(db_session, monkeypatch):
+    """Source with discovery_depth=0 skips discovery even if global depth > 0."""
+    import app.config as cfg
+
+    monkeypatch.setattr(cfg.settings, "discovery_depth", 2)
+    source = _make_source(db_session, slug="disc-src-override")
+    source.discovery_depth = 0
+    db_session.commit()
+
+    result = discover_and_crawl(source, SEED_HTML, db_session, analyse=False)
+    assert result["discovered"] == 0
+    assert db_session.query(DiscoveredPage).count() == 0
+
+
+def test_discover_falls_back_to_global_depth_when_source_depth_is_none(db_session, monkeypatch):
+    """Source with discovery_depth=None uses global settings.discovery_depth=0 → skips."""
+    import app.config as cfg
+
+    monkeypatch.setattr(cfg.settings, "discovery_depth", 0)
+    source = _make_source(db_session, slug="disc-src-fallback")
+    source.discovery_depth = None
+    db_session.commit()
+
+    result = discover_and_crawl(source, SEED_HTML, db_session, analyse=False)
+    assert result["discovered"] == 0
+    assert db_session.query(DiscoveredPage).count() == 0
