@@ -13,6 +13,11 @@ from app.models.crawl_run import (
 )
 
 
+def test_crawl_run_status_has_queued():
+    from app.models.crawl_run import CrawlRunStatus
+    assert CrawlRunStatus.queued == "queued"
+
+
 @pytest.fixture
 def seed_source(db_session):
     company = Company(name="ATOSS", slug="atoss-crawl", type=CompanyType.competitor)
