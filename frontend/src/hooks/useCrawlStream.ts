@@ -402,7 +402,7 @@ export function useCrawlStream() {
                   if (!line.startsWith('data: ')) continue;
                   try {
                     const event: CrawlEvent = JSON.parse(line.slice(6));
-                    if (event.type === 'queued_state') handleEvent(event);
+                    if (event.type === 'queued_state') { handleEvent(event); reader.cancel(); break; }
                   } catch { /* ignore */ }
                 }
               }
