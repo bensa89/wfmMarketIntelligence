@@ -316,6 +316,12 @@ def _run_sources_in_thread(
             except Exception as e:
                 logger.warning("Post-crawl summary trigger failed: %s", e)
 
+            if total_new > 0:
+                loop.call_soon_threadsafe(
+                    queue.put_nowait,
+                    {"type": "analysis_phase_start", "crawl_run_id": crawl_run_id},
+                )
+
             loop.call_soon_threadsafe(
                 queue.put_nowait,
                 {
@@ -328,10 +334,6 @@ def _run_sources_in_thread(
             )
 
             if total_new > 0:
-                loop.call_soon_threadsafe(
-                    queue.put_nowait,
-                    {"type": "analysis_phase_start", "crawl_run_id": crawl_run_id},
-                )
                 crawl_run = (
                     thread_db.query(CrawlRun)
                     .filter(CrawlRun.id == crawl_run_id)
