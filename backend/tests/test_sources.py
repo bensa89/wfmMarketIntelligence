@@ -182,3 +182,34 @@ def test_search_sources_no_results(client):
     response = client.get("/api/sources/search?q=nonexistent")
     assert response.status_code == 200
     assert response.json() == []
+
+
+def test_create_source_default_discovery_depth_is_null(client, company):
+    r = client.post(
+        "/api/sources",
+        json={"company_id": company["id"], "url": "https://atoss.com/depth-default", "source_type": "news"},
+    )
+    assert r.status_code == 201
+    assert r.json()["discovery_depth"] is None
+
+
+def test_update_source_discovery_depth(client, company):
+    r = client.post(
+        "/api/sources",
+        json={"company_id": company["id"], "url": "https://atoss.com/depth-update", "source_type": "news"},
+    )
+    source_id = r.json()["id"]
+    r2 = client.put(f"/api/sources/{source_id}", json={"discovery_depth": 3})
+    assert r2.status_code == 200
+    assert r2.json()["discovery_depth"] == 3
+
+
+def test_update_source_discovery_depth_to_null(client, company):
+    r = client.post(
+        "/api/sources",
+        json={"company_id": company["id"], "url": "https://atoss.com/depth-null", "source_type": "news", "discovery_depth": 2},
+    )
+    source_id = r.json()["id"]
+    r2 = client.put(f"/api/sources/{source_id}", json={"discovery_depth": None})
+    assert r2.status_code == 200
+    assert r2.json()["discovery_depth"] is None

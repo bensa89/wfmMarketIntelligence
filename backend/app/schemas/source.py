@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional, Dict
 from datetime import datetime
-from app.models.source import SourceType, CrawlStatus, AnalysisStatus
+from app.models.source import SourceType, CrawlStatus
 
 
 class SourceCreate(BaseModel):
@@ -11,6 +11,7 @@ class SourceCreate(BaseModel):
     source_type: SourceType = SourceType.news
     is_active: bool = True
     respect_robots_txt: bool = True
+    discovery_depth: Optional[int] = None
 
 
 class SourceUpdate(BaseModel):
@@ -18,6 +19,7 @@ class SourceUpdate(BaseModel):
     source_type: Optional[SourceType] = None
     is_active: Optional[bool] = None
     respect_robots_txt: Optional[bool] = None
+    discovery_depth: Optional[int] = None
 
 
 class SourceRead(BaseModel):
@@ -30,10 +32,10 @@ class SourceRead(BaseModel):
     source_type: SourceType
     is_active: bool
     respect_robots_txt: bool
+    discovery_depth: Optional[int]
     crawl_status: CrawlStatus
     content_hash: Optional[str]
     last_crawled_at: Optional[datetime]
     last_changed_at: Optional[datetime]
     created_at: datetime
-    analysis_status: Optional[AnalysisStatus] = None
     discovered_pages_summary: Dict[str, int] = {}
