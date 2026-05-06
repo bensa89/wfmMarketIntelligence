@@ -113,7 +113,9 @@ def test_stream_all_sources_returns_events(client, seed_source, db_engine):
     assert "source_start" in event_types
     assert "step" in event_types
     assert "source_done" in event_types
-    assert event_types[-1] == "crawl_done"
+    assert "crawl_done" in event_types
+    assert "analysis_phase_start" in event_types
+    assert "analysis_phase_done" in event_types
 
     start = next(e for e in events if e["type"] == "crawl_start")
     assert "crawl_run_id" in start

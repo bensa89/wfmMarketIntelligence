@@ -316,6 +316,17 @@ def _run_sources_in_thread(
             except Exception as e:
                 logger.warning("Post-crawl summary trigger failed: %s", e)
 
+            loop.call_soon_threadsafe(
+                queue.put_nowait,
+                {
+                    "type": "crawl_done",
+                    "crawl_run_id": crawl_run_id,
+                    "sources_processed": total,
+                    "total_new": total_new,
+                    "total_errors": total_errors,
+                },
+            )
+
             if total_new > 0:
                 loop.call_soon_threadsafe(
                     queue.put_nowait,
@@ -353,26 +364,44 @@ def _run_sources_in_thread(
                     )
                     analysis_result = {"analysed": 0, "errors": 0, "analyse_ms": 0}
                     if source:
+                        try:
+                            from app.models.source import AnalysisStatus
 
-                        def make_analysis_callback(sid, crs_id_val):
-                            def cb(event):
-                                event_copy = dict(event)
-                                event_copy["crawl_run_id"] = crawl_run_id
-                                event_copy["source_id"] = sid
-                                if event.get("type") == "analysis_progress":
-                                    loop.call_soon_threadsafe(
-                                        queue.put_nowait, event_copy
-                                    )
+                            def make_analysis_callback(sid, crs_id_val):
+                                def cb(event):
+                                    event_copy = dict(event)
+                                    event_copy["crawl_run_id"] = crawl_run_id
+                                    event_copy["source_id"] = sid
+                                    if event.get("type") == "analysis_progress":
+                                        loop.call_soon_threadsafe(
+                                            queue.put_nowait, event_copy
+                                        )
 
-                            return cb
+                                return cb
 
-                        analysis_result = analyse_unanalysed_for_source(
-                            source,
-                            thread_db,
-                            progress_callback=make_analysis_callback(
-                                crs.source_id, crs.id
-                            ),
-                        )
+                            analysis_result = analyse_unanalysed_for_source(
+                                source,
+                                thread_db,
+                                progress_callback=make_analysis_callback(
+                                    crs.source_id, crs.id
+                                ),
+                            )
+                        except Exception as analysis_exc:
+                            logger.warning(
+                                "Analysis failed for source %s: %s",
+                                crs.source_id,
+                                analysis_exc,
+                            )
+                            analysis_result = {
+                                "analysed": 0,
+                                "errors": 1,
+                                "analyse_ms": 0,
+                            }
+                            try:
+                                source.analysis_status = AnalysisStatus.analysis_failed
+                                thread_db.commit()
+                            except Exception:
+                                thread_db.rollback()
 
                     crs.analyse_ms = analysis_result.get("analyse_ms", 0)
                     crs.analyse_finished_at = datetime.now(timezone.utc)
@@ -395,17 +424,6 @@ def _run_sources_in_thread(
                     queue.put_nowait,
                     {"type": "analysis_phase_done", "crawl_run_id": crawl_run_id},
                 )
-
-        loop.call_soon_threadsafe(
-            queue.put_nowait,
-            {
-                "type": "crawl_done",
-                "crawl_run_id": crawl_run_id,
-                "sources_processed": total,
-                "total_new": total_new,
-                "total_errors": total_errors,
-            },
-        )
     except Exception as e:
         crawl_run = (
             thread_db.query(CrawlRun).filter(CrawlRun.id == crawl_run_id).first()
@@ -468,9 +486,12 @@ def cancel_crawl(db: Session = Depends(get_db)) -> Dict[str, Any]:
             if crs.status in (
                 CrawlRunSourceStatus.pending,
                 CrawlRunSourceStatus.running,
+                CrawlRunSourceStatus.analysing,
             ):
                 crs.status = CrawlRunSourceStatus.failed
                 crs.finished_at = datetime.now(timezone.utc)
+                if crs.analyse_started_at and not crs.analyse_finished_at:
+                    crs.analyse_finished_at = datetime.now(timezone.utc)
     db.commit()
     return {"cancelled": len(running)}
 
@@ -611,9 +632,16 @@ def enqueue_source(source_id: str, db: Session = Depends(get_db)) -> Dict[str, A
 
 @router.post("/analyse/{source_id}")
 def analyse_source(source_id: str, db: Session = Depends(get_db)) -> Dict[str, Any]:
+    from app.models.source import AnalysisStatus
+
     source = db.query(Source).filter(Source.id == source_id).first()
     if not source:
         raise HTTPException(status_code=404, detail="Source not found")
+
+    if source.analysis_status == AnalysisStatus.analysing:
+        source.analysis_status = AnalysisStatus.pending
+        db.commit()
+
     result = analyse_unanalysed_for_source(source, db)
     return {
         "source_id": source_id,

@@ -36,6 +36,22 @@ def upgrade() -> None:
         "sources", sa.Column("analysis_status", analysis_status, nullable=True)
     )
 
+    op.execute(
+        "UPDATE sources SET analysis_status = 'pending' "
+        "WHERE analysis_status IS NULL "
+        "AND EXISTS (SELECT 1 FROM documents d WHERE d.source_id = sources.id AND d.is_analysed = false AND d.content_markdown IS NOT NULL)"
+    )
+    op.execute(
+        "UPDATE sources SET analysis_status = 'analysed' "
+        "WHERE analysis_status IS NULL "
+        "AND NOT EXISTS (SELECT 1 FROM documents d WHERE d.source_id = sources.id AND d.is_analysed = false) "
+        "AND EXISTS (SELECT 1 FROM documents d WHERE d.source_id = sources.id)"
+    )
+    op.execute(
+        "UPDATE crawl_run_sources SET status = 'completed', analyse_finished_at = NOW() "
+        "WHERE status = 'analysing'"
+    )
+
 
 def downgrade() -> None:
     op.drop_column("sources", "analysis_status")

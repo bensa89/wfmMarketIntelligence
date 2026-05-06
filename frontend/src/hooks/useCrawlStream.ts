@@ -264,6 +264,7 @@ export function useCrawlStream() {
                     ...s,
                     status: 'done',
                     currentStep: undefined,
+                    analysisProgress: undefined,
                     stepTimings: {
                       ...s.stepTimings,
                       analysing: event.analyse_ms,
