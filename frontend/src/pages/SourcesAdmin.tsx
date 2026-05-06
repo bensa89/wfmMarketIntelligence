@@ -331,6 +331,7 @@ export default function SourcesAdmin() {
         summary={stream.summary}
         connectionError={stream.connectionError}
         crawlTotal={stream.crawlTotal}
+        queuedSources={stream.queuedSources}
         onCancel={stream.cancel}
         onDismiss={stream.reset}
       />
