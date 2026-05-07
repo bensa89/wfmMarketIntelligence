@@ -105,6 +105,10 @@ export function useCrawlStream() {
             })),
           );
           setPhaseSync(event.analysis_phase_active ? 'analysing' : 'crawling');
+          if (event.analysis_phase_active) {
+            setAnalysisDocsTotal(event.docs_to_analyse + event.docs_analysed);
+            setAnalysisDocsDone(event.docs_analysed);
+          }
           break;
         case 'reconnect_complete':
           break;
@@ -261,7 +265,6 @@ export function useCrawlStream() {
                     analysisProgress: {
                       current: event.current,
                       total: event.total,
-                      currentUrl: event.url,
                     },
                   }
                 : s

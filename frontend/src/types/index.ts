@@ -290,7 +290,6 @@ export interface CrawlAnalysisProgressEvent {
   source_id: string;
   current: number;
   total: number;
-  url: string;
 }
 
 export interface CrawlAnalysisDoneEvent {
@@ -370,7 +369,6 @@ export interface SourceCrawlState {
   analysisProgress?: {
     current: number;
     total: number;
-    currentUrl: string;
   };
   discoveredUrls?: string[];
 }
