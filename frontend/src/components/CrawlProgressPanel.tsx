@@ -1,126 +1,86 @@
-import { X, Check, AlertCircle, Loader2, Minus, ChevronDown, ChevronRight } from 'lucide-react';
-import { useState } from 'react';
-import type { SourceCrawlState, CrawlStreamSummary, CrawlStep, CrawlPhase } from '../types';
+import { X, Check, AlertCircle, Loader2, Minus } from 'lucide-react';
+import type { CrawlStatusRun, CrawlStatusSource, CrawlStatusQueuedRun, CrawlPhase } from '../types';
 
-const STEP_LABELS: Record<CrawlStep, string> = {
-  fetching: 'Fetching...',
-  extracting: 'Extracting...',
-  analysing: 'Analysing...',
-  discovering: 'Discovering...',
-};
-
-function formatMs(ms: number | undefined): string {
+function formatMs(ms: number | null | undefined): string {
   if (ms == null) return '';
   if (ms < 1000) return `${ms}ms`;
   return `${(ms / 1000).toFixed(1)}s`;
 }
 
-function SourceRow({ state }: { state: SourceCrawlState }) {
-  const [expanded, setExpanded] = useState(false);
-  const discoveredUrls = state.discoveredUrls;
-  const hasDiscovered = discoveredUrls && discoveredUrls.length > 0;
+function SourceRow({ source }: { source: CrawlStatusSource }) {
+  const isRunning = source.status === 'running' || source.status === 'analysing';
+  const isDone = source.status === 'completed';
+  const isError = source.status === 'failed';
 
-  const stepLabel =
-    state.status === 'running' && state.currentStep
-      ? state.currentStep === 'discovering' && state.discoveryProgress
-        ? `Discovering ${state.discoveryProgress.pages_crawled}/${state.discoveryProgress.max_pages} Seiten`
-        : state.currentStep === 'analysing' && state.analysisProgress
-          ? `Analysing ${state.analysisProgress.current}/${state.analysisProgress.total} Dokumente`
-          : STEP_LABELS[state.currentStep]
-      : null;
-
-  const timingsParts: string[] = [];
-  if (state.stepTimings) {
-    const order: CrawlStep[] = ['fetching', 'extracting', 'analysing', 'discovering'];
-    for (const step of order) {
-      const ms = state.stepTimings[step];
-      if (ms != null) {
-        const shortLabel = step === 'analysing' ? 'analyse' : step === 'discovering' ? 'discover' : step === 'extracting' ? 'extract' : 'fetch';
-        timingsParts.push(`${shortLabel} ${formatMs(ms)}`);
-      }
-    }
+  let detail = 'Waiting...';
+  if (source.status === 'analysing') {
+    detail = source.analyse_docs_total > 0
+      ? `Analysiere ${source.analyse_docs_done}/${source.analyse_docs_total}${source.analyse_current_url ? ` — ${source.analyse_current_url}` : ''}`
+      : 'Analysiere...';
+  } else if (source.status === 'running' && source.current_step) {
+    const labels: Record<string, string> = {
+      fetching: 'Fetching...',
+      extracting: 'Extracting...',
+      discovering: source.discover_pages_crawled != null
+        ? `Discovering ${source.discover_pages_crawled} Seiten`
+        : 'Discovering...',
+    };
+    detail = labels[source.current_step] ?? source.current_step;
+  } else if (isDone) {
+    const parts: string[] = [];
+    if (source.fetch_ms) parts.push(`fetch ${formatMs(source.fetch_ms)}`);
+    if (source.extract_ms) parts.push(`extract ${formatMs(source.extract_ms)}`);
+    if (source.discover_ms) parts.push(`discover ${formatMs(source.discover_ms)}`);
+    if (source.analyse_ms) parts.push(`analyse ${formatMs(source.analyse_ms)}`);
+    detail = parts.length > 0
+      ? parts.join(' · ')
+      : `${source.new_documents} new · ${source.skipped} skipped`;
+  } else if (isError) {
+    detail = source.error_message ?? 'Error';
   }
 
   return (
-    <div>
-      <div className="flex items-center gap-3 py-1.5 px-4 text-sm border-b border-app-border/20 last:border-0">
-        <span className="w-4 flex-shrink-0 flex justify-center">
-          {state.status === 'done' ? (
-            <Check className="w-3.5 h-3.5 text-signal-high" />
-          ) : state.status === 'error' ? (
-            <AlertCircle className="w-3.5 h-3.5 text-signal-low" />
-          ) : state.status === 'running' ? (
-            <Loader2 className="w-3.5 h-3.5 animate-spin text-accent-blue" />
-          ) : (
-            <Minus className="w-3.5 h-3.5 text-ink-muted" />
-          )}
-        </span>
-        <span className="flex-1 truncate text-ink" title={state.url}>{state.url}</span>
-        <span className="text-xs text-ink-muted flex-shrink-0">
-          {state.status === 'done' && state.result
-            ? timingsParts.length > 0
-              ? timingsParts.join(' · ')
-              : `${state.result.new_documents} new · ${state.result.skipped} skipped`
-            : state.status === 'error'
-              ? (state.errorMessage ?? 'Error')
-              : state.status === 'running' && stepLabel
-                ? stepLabel
-                : 'Waiting...'}
-        </span>
-        {hasDiscovered && (
-          <button
-            onClick={() => setExpanded(!expanded)}
-            className="text-ink-muted hover:text-ink flex-shrink-0 flex items-center gap-1"
-          >
-            {expanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
-            <span className="text-xs">{discoveredUrls!.length} discovered</span>
-          </button>
+    <div className="flex items-center gap-3 py-1.5 px-4 text-sm border-b border-app-border/20 last:border-0">
+      <span className="w-4 flex-shrink-0 flex justify-center">
+        {isDone ? (
+          <Check className="w-3.5 h-3.5 text-signal-high" />
+        ) : isError ? (
+          <AlertCircle className="w-3.5 h-3.5 text-signal-low" />
+        ) : isRunning ? (
+          <Loader2 className="w-3.5 h-3.5 animate-spin text-accent-blue" />
+        ) : (
+          <Minus className="w-3.5 h-3.5 text-ink-muted" />
         )}
-      </div>
-      {expanded && hasDiscovered && (
-        <div className="pl-11 pr-4 pb-1.5 text-xs text-ink-muted border-b border-app-border/20">
-          {discoveredUrls!.map((url) => (
-            <div key={url} className="py-0.5 truncate" title={url}>{url}</div>
-          ))}
-        </div>
-      )}
+      </span>
+      <span className="flex-1 truncate text-ink" title={source.url}>{source.url}</span>
+      <span className="text-xs text-ink-muted flex-shrink-0 max-w-xs truncate" title={detail}>
+        {detail}
+      </span>
     </div>
   );
 }
 
 interface Props {
   phase: CrawlPhase;
-  analysisDocsTotal: number;
-  analysisDocsDone: number;
-  sourceStates: SourceCrawlState[];
-  summary: CrawlStreamSummary | null;
-  connectionError: string | null;
-  crawlTotal?: number;
-  queuedSources?: { source_id: string; url: string }[];
+  run: CrawlStatusRun | null;
+  queuedRun?: CrawlStatusQueuedRun | null;
   onCancel: () => void;
   onDismiss: () => void;
 }
 
-export function CrawlProgressPanel({
-  phase,
-  analysisDocsTotal,
-  analysisDocsDone,
-  sourceStates,
-  summary,
-  connectionError,
-  crawlTotal,
-  queuedSources = [],
-  onCancel,
-  onDismiss,
-}: Props) {
-  if (phase === 'idle' && !summary && !connectionError && sourceStates.length === 0 && queuedSources.length === 0) return null;
+export function CrawlProgressPanel({ phase, run, queuedRun, onCancel, onDismiss }: Props) {
+  if (phase === 'idle' || !run) return null;
 
-  const doneCount = sourceStates.filter(
-    (s) => s.status === 'done' || s.status === 'error',
-  ).length;
-  const total = summary?.sources_processed ?? crawlTotal ?? sourceStates.length;
-  const hasErrors = (summary?.total_errors ?? 0) > 0 || connectionError != null;
-  const hasQueue = queuedSources.length > 0;
+  const sources = run.sources;
+  const doneCount = sources.filter((s) => s.status === 'completed' || s.status === 'failed').length;
+  const total = run.total_sources;
+  const hasErrors = run.total_errors > 0;
+  const isActive = phase === 'crawling' || phase === 'analysing';
+  const hasQueue = (queuedRun?.sources.length ?? 0) > 0;
+
+  const analysingSource = sources.find((s) => s.status === 'analysing');
+  const analysisTotal = analysingSource?.analyse_docs_total ?? 0;
+  const analysisDone = analysingSource?.analyse_docs_done ?? 0;
 
   const borderColor = hasErrors
     ? 'border-signal-low/40'
@@ -128,18 +88,17 @@ export function CrawlProgressPanel({
       ? 'border-signal-high/40'
       : 'border-accent-blue/40';
 
-  const isActive = phase === 'crawling' || phase === 'analysing';
-  const runCounter = hasQueue ? ' (1/2)' : '';
-
-  const headerText = connectionError
-    ? `Connection failed: ${connectionError}`
-    : phase === 'crawling'
-      ? `Crawl läuft…${runCounter} (${doneCount}/${total})`
+  const queueSuffix = hasQueue ? ' (1/2)' : '';
+  const headerText =
+    phase === 'crawling'
+      ? `Crawl läuft…${queueSuffix} (${doneCount}/${total})`
       : phase === 'analysing'
-        ? `Analyse läuft… (${analysisDocsDone}/${analysisDocsTotal} Docs)`
+        ? analysisTotal > 0
+          ? `Analyse läuft… (${analysisDone}/${analysisTotal} Docs)`
+          : 'Analyse läuft…'
         : hasErrors
-          ? `Fertig — ${total} Sources, ${summary?.total_new ?? 0} neue Docs, ${summary?.total_errors ?? 0} Fehler`
-          : `Fertig — ${summary?.total_new ?? 0} neue Docs${analysisDocsDone > 0 ? `, ${analysisDocsDone} analysiert` : ''}`;
+          ? `Fertig — ${total} Sources, ${run.total_new} neue Docs, ${run.total_errors} Fehler`
+          : `Fertig — ${run.total_new} neue Docs`;
 
   return (
     <div className={`mb-6 rounded-lg border ${borderColor} bg-app-card overflow-hidden`}>
@@ -156,39 +115,22 @@ export function CrawlProgressPanel({
         )}
       </div>
       <div>
-        {sourceStates.map((s) => (
-          <SourceRow key={s.source_id} state={s} />
+        {sources.map((s) => (
+          <SourceRow key={s.source_id} source={s} />
         ))}
       </div>
-      {(phase === 'analysing' || (phase === 'done' && analysisDocsDone > 0)) && (
-        <div className="px-4 py-2 border-t border-app-border/30 bg-app-bg/40 flex items-center gap-2">
-          {phase === 'analysing' && (
-            <Loader2 className="w-3 h-3 animate-spin text-accent-blue flex-shrink-0" />
-          )}
-          {phase === 'done' && analysisDocsDone > 0 && (
-            <Check className="w-3 h-3 text-signal-high flex-shrink-0" />
-          )}
-          <span className="text-xs text-ink-muted">
-            {phase === 'analysing'
-              ? `Analyse läuft… ${analysisDocsDone}/${analysisDocsTotal} Dokumente`
-              : `${analysisDocsDone} Dokumente analysiert`}
-          </span>
-        </div>
-      )}
-      {hasQueue && (
+      {hasQueue && queuedRun && (
         <>
           <div className="px-4 py-1.5 border-t border-app-border/30 bg-app-bg/40">
             <span className="text-xs text-ink-muted font-medium">Queued (startet danach)</span>
           </div>
           <div>
-            {queuedSources.map((s) => {
-              return (
-                <div key={s.source_id} className="flex items-center gap-3 py-1.5 px-4 text-sm border-b border-app-border/20 last:border-0 opacity-60">
-                  <Minus className="w-3.5 h-3.5 text-ink-muted flex-shrink-0" />
-                  <span className="flex-1 truncate text-ink" title={s.url}>{s.url}</span>
-                </div>
-              );
-            })}
+            {queuedRun.sources.map((s) => (
+              <div key={s.source_id} className="flex items-center gap-3 py-1.5 px-4 text-sm border-b border-app-border/20 last:border-0 opacity-60">
+                <Minus className="w-3.5 h-3.5 text-ink-muted flex-shrink-0" />
+                <span className="flex-1 truncate text-ink" title={s.url}>{s.url}</span>
+              </div>
+            ))}
           </div>
         </>
       )}
