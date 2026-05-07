@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     assessment_threshold: float = 0.4
     crawl_concurrency: int = 4
     discovery_concurrency: int = 3
+    analysis_concurrency: int = 3
 
 
 settings = Settings()
