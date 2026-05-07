@@ -16,7 +16,28 @@ _MIN_CONTENT_WORDS = 50
 _MAX_AGE_DAYS = 365
 
 
-def analyse_document(doc: Document, company_id: str, db: Session) -> None:
+def _build_context_dict(ctx_record) -> dict:
+    if not ctx_record:
+        return {}
+    return {
+        "company_name": ctx_record.company_name,
+        "short_description": ctx_record.short_description,
+        "target_industries": ctx_record.target_industries or [],
+        "target_segments": ctx_record.target_segments or [],
+        "core_capabilities": ctx_record.core_capabilities or [],
+        "strategic_priorities": ctx_record.strategic_priorities or [],
+        "differentiators": ctx_record.differentiators or [],
+        "relevant_competitive_areas": ctx_record.relevant_competitive_areas or [],
+        "non_focus_areas": ctx_record.non_focus_areas or [],
+    }
+
+
+def analyse_document(
+    doc: Document,
+    company_id: str,
+    db: Session,
+    preloaded_context: dict | None = None,
+) -> None:
     if not doc.content_markdown:
         return
 
@@ -71,20 +92,11 @@ def analyse_document(doc: Document, company_id: str, db: Session) -> None:
         db.commit()
         return
 
-    ctx_record = db.query(InternalCompanyContext).first()
-    context = {}
-    if ctx_record:
-        context = {
-            "company_name": ctx_record.company_name,
-            "short_description": ctx_record.short_description,
-            "target_industries": ctx_record.target_industries or [],
-            "target_segments": ctx_record.target_segments or [],
-            "core_capabilities": ctx_record.core_capabilities or [],
-            "strategic_priorities": ctx_record.strategic_priorities or [],
-            "differentiators": ctx_record.differentiators or [],
-            "relevant_competitive_areas": ctx_record.relevant_competitive_areas or [],
-            "non_focus_areas": ctx_record.non_focus_areas or [],
-        }
+    if preloaded_context is not None:
+        context = preloaded_context
+    else:
+        ctx_record = db.query(InternalCompanyContext).first()
+        context = _build_context_dict(ctx_record)
 
     prompt = build_analysis_prompt(doc.content_markdown, context)
     raw_response = call_llm(prompt)
