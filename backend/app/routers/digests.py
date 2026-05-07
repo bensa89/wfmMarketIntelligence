@@ -5,7 +5,7 @@ from datetime import date, timedelta
 from app.database import get_db
 from app.models.digest import WeeklyDigest
 from app.models.signal import Signal
-from app.schemas.digest import DigestRead, DigestSignalRead
+from app.schemas.digest import DigestRead, DigestSignalRead, DigestSection
 
 router = APIRouter()
 
@@ -42,12 +42,15 @@ def _expand_key_signals(digest: WeeklyDigest, db: Session) -> List[DigestSignalR
 
 def _to_digest_read(digest: WeeklyDigest, db: Session) -> DigestRead:
     expanded = _expand_key_signals(digest, db)
+    raw_sections = digest.sections or []
+    sections = [DigestSection(**s) for s in raw_sections]
     return DigestRead(
         id=digest.id,
         week_start=digest.week_start,
         week_end=digest.week_end,
         summary=digest.summary,
         key_signals=expanded,
+        sections=sections,
         generated_at=digest.generated_at,
         is_published=digest.is_published,
     )

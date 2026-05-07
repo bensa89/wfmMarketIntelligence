@@ -95,3 +95,11 @@ def test_generate_digest(client):
     assert "week_start" in data
     assert "week_end" in data
     assert isinstance(data["key_signals"], list)
+
+
+def test_digest_read_has_sections_field(client, seed_digest):
+    response = client.get(f"/api/digests/{seed_digest.id}")
+    assert response.status_code == 200
+    data = response.json()
+    assert "sections" in data
+    assert isinstance(data["sections"], list)
