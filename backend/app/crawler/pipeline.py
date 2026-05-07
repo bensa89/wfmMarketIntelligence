@@ -23,6 +23,7 @@ from app.analyser.pipeline import _build_context_dict
 logger = logging.getLogger(__name__)
 
 _JS_RENDER_LINK_THRESHOLD = 5
+_MIN_CONTENT_WORDS = 50
 
 
 def _looks_like_js_app(html: str) -> bool:
@@ -135,45 +136,54 @@ def run_crawl_source(
         }
     )
 
-    existing_by_url = (
-        db.query(Document).filter(Document.url == fetch_result.final_url).first()
-    )
-    if existing_by_url:
-        if existing_by_url.content_hash == extraction.content_hash:
-            source.crawl_status = CrawlStatus.known
-            result["skipped"] += 1
+    word_count = len(extraction.markdown.split())
+    if word_count < _MIN_CONTENT_WORDS:
+        logger.info(
+            "Skipping document for %s: only %d words after extraction",
+            fetch_result.final_url,
+            word_count,
+        )
+        result["skipped"] += 1
+    else:
+        existing_by_url = (
+            db.query(Document).filter(Document.url == fetch_result.final_url).first()
+        )
+        if existing_by_url:
+            if existing_by_url.content_hash == extraction.content_hash:
+                source.crawl_status = CrawlStatus.known
+                result["skipped"] += 1
+            else:
+                existing_by_url.title = extraction.title
+                existing_by_url.content_markdown = extraction.markdown
+                existing_by_url.content_raw_html = fetch_result.html.replace("\x00", "")
+                existing_by_url.content_hash = extraction.content_hash
+                existing_by_url.crawled_at = datetime.now(timezone.utc)
+                existing_by_url.is_analysed = False
+                if extraction.published_at and not existing_by_url.published_at:
+                    existing_by_url.published_at = extraction.published_at
+                source.crawl_status = CrawlStatus.changed
+                source.content_hash = extraction.content_hash
+                source.last_changed_at = datetime.now(timezone.utc)
+                source.analysis_status = AnalysisStatus.pending
+                db.commit()
+                result["new_documents"] += 1
         else:
-            existing_by_url.title = extraction.title
-            existing_by_url.content_markdown = extraction.markdown
-            existing_by_url.content_raw_html = fetch_result.html.replace("\x00", "")
-            existing_by_url.content_hash = extraction.content_hash
-            existing_by_url.crawled_at = datetime.now(timezone.utc)
-            existing_by_url.is_analysed = False
-            if extraction.published_at and not existing_by_url.published_at:
-                existing_by_url.published_at = extraction.published_at
-            source.crawl_status = CrawlStatus.changed
+            doc = Document(
+                source_id=source.id,
+                url=fetch_result.final_url,
+                title=extraction.title,
+                content_markdown=extraction.markdown,
+                content_raw_html=fetch_result.html.replace("\x00", ""),
+                content_hash=extraction.content_hash,
+                crawled_at=datetime.now(timezone.utc),
+                published_at=extraction.published_at,
+            )
+            db.add(doc)
+            source.crawl_status = CrawlStatus.new
             source.content_hash = extraction.content_hash
-            source.last_changed_at = datetime.now(timezone.utc)
             source.analysis_status = AnalysisStatus.pending
             db.commit()
             result["new_documents"] += 1
-    else:
-        doc = Document(
-            source_id=source.id,
-            url=fetch_result.final_url,
-            title=extraction.title,
-            content_markdown=extraction.markdown,
-            content_raw_html=fetch_result.html.replace("\x00", ""),
-            content_hash=extraction.content_hash,
-            crawled_at=datetime.now(timezone.utc),
-            published_at=extraction.published_at,
-        )
-        db.add(doc)
-        source.crawl_status = CrawlStatus.new
-        source.content_hash = extraction.content_hash
-        source.analysis_status = AnalysisStatus.pending
-        db.commit()
-        result["new_documents"] += 1
 
     emit({"type": "step", "source_id": source.id, "step": "discovering"})
     t0 = time.monotonic()
