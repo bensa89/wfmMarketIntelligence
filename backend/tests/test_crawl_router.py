@@ -34,7 +34,7 @@ def seed_source(db_session):
 
 
 def test_analysis_progress_callback_receives_doc_url(db_session, seed_source):
-    from unittest.mock import patch, MagicMock
+    from unittest.mock import patch
     from app.crawler.pipeline import analyse_unanalysed_for_source
     from app.models.document import Document
 
