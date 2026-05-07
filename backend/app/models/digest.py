@@ -13,5 +13,6 @@ class WeeklyDigest(Base):
     week_end = Column(Date, nullable=False)
     summary = Column(Text, nullable=True)
     key_signals = Column(JSON, default=list)
+    sections = Column(JSON, nullable=True)
     generated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     is_published = Column(Boolean, default=False)
