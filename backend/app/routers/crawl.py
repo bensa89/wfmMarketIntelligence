@@ -500,3 +500,35 @@ def start_single_source_background(
         daemon=True,
     ).start()
     return {"crawl_run_id": crawl_run.id, "status": "running", "total_sources": 1}
+
+
+@router.get("/status")
+def get_crawl_status(db: Session = Depends(get_db)) -> Dict[str, Any]:
+    from app.schemas.crawl_run import CrawlRunRead, CrawlQueuedRunStatus
+    from datetime import timedelta
+
+    active_run = db.query(CrawlRun).filter(CrawlRun.status == CrawlRunStatus.running).first()
+
+    if not active_run:
+        cutoff = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(hours=24)
+        active_run = (
+            db.query(CrawlRun)
+            .filter(
+                CrawlRun.status.in_(
+                    [CrawlRunStatus.completed, CrawlRunStatus.failed, CrawlRunStatus.cancelled]
+                ),
+                CrawlRun.finished_at >= cutoff,
+            )
+            .order_by(CrawlRun.finished_at.desc())
+            .first()
+        )
+
+    queued_run = db.query(CrawlRun).filter(CrawlRun.status == CrawlRunStatus.queued).first()
+
+    return {
+        "active_run": CrawlRunRead.model_validate(active_run).model_dump() if active_run else None,
+        "queued_run": CrawlQueuedRunStatus(
+            id=queued_run.id,
+            sources=[{"source_id": crs.source_id, "url": crs.url} for crs in queued_run.sources],
+        ).model_dump() if queued_run else None,
+    }

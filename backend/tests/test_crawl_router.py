@@ -1,5 +1,6 @@
 import json
 import pytest
+from datetime import datetime, timezone
 from unittest.mock import patch
 from sqlalchemy.orm import sessionmaker
 from app.models.company import Company, CompanyType
@@ -1004,3 +1005,107 @@ def test_crawl_run_source_has_analyse_progress_fields(db_session, seed_source):
     assert loaded.analyse_docs_done == 2
     assert loaded.analyse_docs_total == 5
     assert loaded.analyse_current_url == "https://example.com/page"
+
+
+def test_crawl_status_no_active_run(client):
+    response = client.get("/api/crawl/status")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["active_run"] is None
+    assert data["queued_run"] is None
+
+
+def test_crawl_status_running_run(client, seed_source, db_engine):
+    from sqlalchemy.orm import sessionmaker
+    TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
+    setup_db = TestSessionLocal()
+    try:
+        run = CrawlRun(status=CrawlRunStatus.running, total_sources=1)
+        setup_db.add(run)
+        setup_db.flush()
+        crs = CrawlRunSource(
+            crawl_run_id=run.id,
+            source_id=seed_source.id,
+            url=seed_source.url,
+            status=CrawlRunSourceStatus.analysing,
+            analyse_docs_done=1,
+            analyse_docs_total=3,
+            analyse_current_url="https://example.com/p",
+        )
+        setup_db.add(crs)
+        setup_db.commit()
+    finally:
+        setup_db.close()
+
+    response = client.get("/api/crawl/status")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["active_run"] is not None
+    assert data["active_run"]["status"] == "running"
+    assert len(data["active_run"]["sources"]) == 1
+    src = data["active_run"]["sources"][0]
+    assert src["status"] == "analysing"
+    assert src["analyse_docs_done"] == 1
+    assert src["analyse_docs_total"] == 3
+    assert src["analyse_current_url"] == "https://example.com/p"
+
+
+def test_crawl_status_shows_queued_run(client, seed_source, db_engine):
+    from sqlalchemy.orm import sessionmaker
+    TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
+    setup_db = TestSessionLocal()
+    try:
+        running = CrawlRun(status=CrawlRunStatus.running, total_sources=1)
+        setup_db.add(running)
+        queued = CrawlRun(status=CrawlRunStatus.queued, total_sources=1)
+        setup_db.add(queued)
+        setup_db.flush()
+        setup_db.add(CrawlRunSource(
+            crawl_run_id=running.id,
+            source_id=seed_source.id,
+            url=seed_source.url,
+            status=CrawlRunSourceStatus.running,
+        ))
+        setup_db.add(CrawlRunSource(
+            crawl_run_id=queued.id,
+            source_id=seed_source.id,
+            url=seed_source.url,
+            status=CrawlRunSourceStatus.pending,
+        ))
+        setup_db.commit()
+        queued_id = queued.id
+    finally:
+        setup_db.close()
+
+    response = client.get("/api/crawl/status")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["active_run"]["status"] == "running"
+    assert data["queued_run"] is not None
+    assert data["queued_run"]["id"] == queued_id
+    assert len(data["queued_run"]["sources"]) == 1
+
+
+def test_crawl_status_returns_recent_completed_run(client, seed_source, db_engine):
+    from sqlalchemy.orm import sessionmaker
+    from datetime import timedelta
+    TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
+    setup_db = TestSessionLocal()
+    try:
+        run = CrawlRun(
+            status=CrawlRunStatus.completed,
+            total_sources=1,
+            total_new=2,
+            finished_at=datetime.now(timezone.utc) - timedelta(hours=1),
+        )
+        setup_db.add(run)
+        setup_db.commit()
+    finally:
+        setup_db.close()
+
+    response = client.get("/api/crawl/status")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["active_run"] is not None
+    assert data["active_run"]["status"] == "completed"
+    assert data["active_run"]["total_new"] == 2
