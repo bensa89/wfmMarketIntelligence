@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useCompanies, useCreateCompany, useUpdateCompanyDynamic, useDeleteCompany } from '../hooks/useCompanies';
 import { useSources, useCreateSource, useUpdateSource, useDeleteSource } from '../hooks/useSources';
-import { useCrawlStream } from '../hooks/useCrawlStream';
+import { useCrawlStatus } from '../hooks/useCrawlStatus';
 import { useAnalyseSource } from '../hooks/useCrawl';
 import { CrawlProgressPanel } from '../components/CrawlProgressPanel';
 import { useDiscoveredPages, useToggleDiscoveredPage, useDeleteDiscoveredPage } from '../hooks/useDiscoveredPages';
 import { useSourceSearch } from '../hooks/useSourceSearch';
 import type { CompanyType, SourceType, Source, DiscoveredPage, Company, CrawlStatus, SourceSearchResult } from '../types';
-import { Plus, Play, Trash2, Edit2, X, ChevronDown, ChevronRight, Shield, ShieldOff, Search } from 'lucide-react';
+import { Plus, Play, Trash2, Edit2, X, ChevronDown, ChevronRight, Shield, ShieldOff, Search, Zap, Loader2 } from 'lucide-react';
 import { ApiError } from '../api/client';
 
 const sourceTypes: SourceType[] = ['news', 'blog', 'product', 'press', 'jobs'];
@@ -40,7 +40,8 @@ function analysisStatusBadge(status: Source['analysis_status']) {
     analysis_failed: 'Analyse fehlgeschlagen',
   };
   return (
-    <span className={`text-xs px-1.5 py-0.5 rounded ${styles[status] ?? ''}`}>
+    <span className={`inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded ${styles[status] ?? ''}`}>
+      {status === 'analysing' && <Loader2 size={11} className="animate-spin" />}
       {labels[status] ?? status}
     </span>
   );
@@ -201,7 +202,7 @@ export default function SourcesAdmin() {
   const deleteSource = useDeleteSource();
   const deleteCompany = useDeleteCompany();
   const updateCompanyDynamic = useUpdateCompanyDynamic();
-  const stream = useCrawlStream();
+  const crawl = useCrawlStatus();
   const analyseSource = useAnalyseSource();
   const [urlSearch, setUrlSearch] = useState('');
   const sourceSearch = useSourceSearch(urlSearch);
@@ -288,7 +289,7 @@ export default function SourcesAdmin() {
   }
 
   function handleCrawlSource(sourceId: string) {
-    stream.start(sourceId);
+    crawl.start(sourceId);
   }
 
   function openEditModal(source: Source) {
@@ -373,8 +374,8 @@ export default function SourcesAdmin() {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Sources Admin</h1>
         <div className="flex gap-2">
-          <button onClick={() => stream.start()} disabled={stream.isRunning} className="btn-primary flex items-center gap-2">
-            <Play size={16} /> {stream.phase === 'analysing' ? 'Analysiere...' : stream.phase === 'crawling' ? 'Crawling...' : 'Run Full Crawl'}
+          <button onClick={() => crawl.start()} disabled={crawl.isRunning} className="btn-primary flex items-center gap-2">
+            <Play size={16} /> {crawl.phase === 'analysing' ? 'Analysiere...' : crawl.phase === 'crawling' ? 'Crawling...' : 'Run Full Crawl'}
           </button>
           <button onClick={() => setNewCompanyOpen(true)} className="btn-secondary flex items-center gap-2">
             <Plus size={16} /> Add Company
@@ -383,16 +384,11 @@ export default function SourcesAdmin() {
       </div>
 
       <CrawlProgressPanel
-        phase={stream.phase}
-        analysisDocsTotal={stream.analysisDocsTotal}
-        analysisDocsDone={stream.analysisDocsDone}
-        sourceStates={stream.sourceStates}
-        summary={stream.summary}
-        connectionError={stream.connectionError}
-        crawlTotal={stream.crawlTotal}
-        queuedSources={stream.queuedSources}
-        onCancel={stream.cancel}
-        onDismiss={stream.reset}
+        phase={crawl.phase}
+        run={crawl.run}
+        queuedRun={crawl.queuedRun}
+        onCancel={crawl.cancel}
+        onDismiss={crawl.dismiss}
       />
 
       <div className="flex items-center gap-3 mb-4">
@@ -537,14 +533,16 @@ export default function SourcesAdmin() {
                                 </button>
                               </td>
 <td className="py-2">{crawlStatusBadge(source.crawl_status)}</td>
-                               <td className="py-2">{analysisStatusBadge(source.analysis_status)}</td>
+                               <td className="py-2">
+                                {analyseSource.isPending && analyseSource.variables === source.id
+                                  ? <span className="flex items-center gap-1 text-xs text-accent-blue"><Loader2 size={12} className="animate-spin" />Analysiere…</span>
+                                  : analysisStatusBadge(source.analysis_status)}
+                               </td>
                                <td className="py-2 text-ink-muted text-xs">
                                 {source.last_crawled_at ? new Date(source.last_crawled_at).toLocaleDateString('de-DE') : 'Never'}
                               </td>
 <td className="py-2 text-right">
-                                 {(source.analysis_status === 'pending' || source.analysis_status === 'analysis_failed') && (
-                                   <button onClick={() => analyseSource.mutate(source.id)} className="text-accent-blue hover:text-accent-blue/80 p-1 mr-1" title="Analyse starten"><Play size={12} /></button>
-                                 )}
+                                 <button onClick={() => analyseSource.mutate(source.id)} disabled={analyseSource.isPending} className="text-accent-blue hover:text-accent-blue/80 p-1 mr-1 disabled:opacity-40" title="Analyse starten"><Zap size={14} /></button>
                                  <button onClick={() => handleCrawlSource(source.id)} className="text-accent-blue hover:text-accent-blue/80 mr-2" title="Crawl this source"><Play size={14} /></button>
                                  <button onClick={() => openEditModal(source)} className="text-ink-muted hover:text-ink mr-2" title="Edit source"><Edit2 size={14} /></button>
                                  <button onClick={() => handleDeleteSource(source.id)} className="text-signal-low hover:text-red-400" title="Delete source"><Trash2 size={14} /></button>
@@ -668,14 +666,16 @@ export default function SourcesAdmin() {
 <td className="py-2">
                               {crawlStatusBadge(source.crawl_status)}
                             </td>
-                            <td className="py-2">{analysisStatusBadge(source.analysis_status)}</td>
+                            <td className="py-2">
+                              {analyseSource.isPending && analyseSource.variables === source.id
+                                ? <span className="flex items-center gap-1 text-xs text-accent-blue"><Loader2 size={12} className="animate-spin" />Analysiere…</span>
+                                : analysisStatusBadge(source.analysis_status)}
+                            </td>
                             <td className="py-2 text-ink-muted text-xs">
                               {source.last_crawled_at ? new Date(source.last_crawled_at).toLocaleDateString('de-DE') : 'Never'}
                             </td>
 <td className="py-2 text-right">
-                              {(source.analysis_status === 'pending' || source.analysis_status === 'analysis_failed') && (
-                                <button onClick={() => analyseSource.mutate(source.id)} className="text-accent-blue hover:text-accent-blue/80 p-1 mr-1" title="Analyse starten"><Play size={12} /></button>
-                              )}
+                              <button onClick={() => analyseSource.mutate(source.id)} disabled={analyseSource.isPending} className="text-accent-blue hover:text-accent-blue/80 p-1 mr-1 disabled:opacity-40" title="Analyse starten"><Zap size={14} /></button>
                               <button onClick={() => handleCrawlSource(source.id)} className="text-accent-blue hover:text-accent-blue/80 mr-2" title="Crawl this source">
                                 <Play size={14} />
                               </button>
