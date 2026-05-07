@@ -33,6 +33,35 @@ def seed_source(db_session):
     return source
 
 
+def test_analysis_progress_callback_receives_doc_url(db_session, seed_source):
+    from unittest.mock import patch, MagicMock
+    from app.crawler.pipeline import analyse_unanalysed_for_source
+    from app.models.document import Document
+
+    doc = Document(
+        source_id=seed_source.id,
+        url="https://seed.example.com/article",
+        title="Test",
+        content_markdown="word " * 60,
+        content_hash="abc123",
+        is_analysed=False,
+    )
+    db_session.add(doc)
+    db_session.commit()
+
+    received_urls = []
+
+    def cb(event):
+        if event.get("type") == "analysis_progress":
+            received_urls.append(event.get("url"))
+
+    with patch("app.crawler.pipeline._analyse_doc_worker", return_value=(doc.id, True)):
+        analyse_unanalysed_for_source(seed_source, db_session, progress_callback=cb)
+
+    assert len(received_urls) == 1
+    assert received_urls[0] == "https://seed.example.com/article"
+
+
 def test_crawl_all_sources(client, seed_source):
     mock_result = {
         "source_id": seed_source.id,

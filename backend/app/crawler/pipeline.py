@@ -276,6 +276,7 @@ def analyse_unanalysed_for_source(
         }
         for future in as_completed(futures):
             doc_id, success = future.result()
+            completed_doc = futures[future]
             with lock:
                 completed_count += 1
                 current = completed_count
@@ -289,7 +290,7 @@ def analyse_unanalysed_for_source(
                     "source_id": source.id,
                     "current": current,
                     "total": total,
-                    "url": "",
+                    "url": completed_doc.url,
                 }
             )
 
