@@ -1,7 +1,7 @@
 import logging
 import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Dict, Any, List, Optional
 
 logger = logging.getLogger(__name__)
@@ -20,6 +20,7 @@ from app.models.crawl_run import (
 )
 from app.crawler.pipeline import run_crawl_source, analyse_unanalysed_for_source
 from app.config import settings
+from app.schemas.crawl_run import CrawlRunRead, CrawlQueuedRunStatus, CrawlStatusResponse
 
 router = APIRouter()
 
@@ -502,11 +503,8 @@ def start_single_source_background(
     return {"crawl_run_id": crawl_run.id, "status": "running", "total_sources": 1}
 
 
-@router.get("/status")
+@router.get("/status", response_model=CrawlStatusResponse)
 def get_crawl_status(db: Session = Depends(get_db)) -> Dict[str, Any]:
-    from app.schemas.crawl_run import CrawlRunRead, CrawlQueuedRunStatus
-    from datetime import timedelta
-
     active_run = db.query(CrawlRun).filter(CrawlRun.status == CrawlRunStatus.running).first()
 
     if not active_run:
