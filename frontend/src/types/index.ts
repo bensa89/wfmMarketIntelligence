@@ -114,12 +114,31 @@ export interface DigestSignal {
   company_name: string | null;
 }
 
+export interface DigestSectionItem {
+  signal_id: string;
+  company: string;
+  title: string;
+  narrative: string;
+  implication_for_us: string;
+  movement_strength: 'weak' | 'relevant' | 'strong' | 'market_shaping' | null;
+  source_url: string | null;
+  source_domain: string | null;
+  source_title: string | null;
+}
+
+export interface DigestSection {
+  key: string;
+  title: string;
+  items: DigestSectionItem[];
+}
+
 export interface Digest {
   id: string;
   week_start: string;
   week_end: string;
   summary: string | null;
   key_signals: DigestSignal[];
+  sections: DigestSection[];
   generated_at: string;
   is_published: boolean;
 }
