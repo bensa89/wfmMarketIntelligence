@@ -553,7 +553,7 @@ def test_analyse_unanalysed_for_source_creates_signals(db_session):
     with patch(
         "app.analyser.pipeline.call_llm",
         return_value='{"title":"AI Feature","signal_type":"ai_announcement","topic":"AI","summary":"New AI feature.","why_it_matters":"Competes with us.","relevance_score":0.9,"confidence_score":0.85}',
-    ):
+    ), patch("app.crawler.pipeline.SessionLocal", side_effect=lambda: MagicMock(wraps=db_session, close=MagicMock())):
         result = analyse_unanalysed_for_source(source, db_session)
 
     assert result["analysed"] == 1
@@ -568,7 +568,8 @@ def test_analyse_unanalysed_for_source_creates_signals(db_session):
     assert signal.company_id == company.id
 
 
-def test_analyse_unanalysed_for_source_handles_errors(db_session):
+def test_analyse_unanalysed_for_source_handles_errors(db_session, db_engine):
+    from sqlalchemy.orm import sessionmaker
     from app.models.company import Company, CompanyType
     from app.models.source import Source, SourceType, AnalysisStatus
     from app.models.document import Document
@@ -601,6 +602,10 @@ def test_analyse_unanalysed_for_source_handles_errors(db_session):
     db_session.add_all([doc1, doc2])
     db_session.commit()
 
+    # Use a real session factory from the test engine so each worker gets its own
+    # independent session (needed when one worker rollbacks on error).
+    TestSessionFactory = sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
+
     call_count = 0
 
     def mock_llm(prompt):
@@ -610,7 +615,9 @@ def test_analyse_unanalysed_for_source_handles_errors(db_session):
             raise RuntimeError("LLM service unavailable")
         return '{"title":"OK","signal_type":"other","topic":"OK","summary":"Fine.","why_it_matters":"OK","relevance_score":0.5,"confidence_score":0.5}'
 
-    with patch("app.analyser.pipeline.call_llm", side_effect=mock_llm):
+    with patch("app.analyser.pipeline.call_llm", side_effect=mock_llm), patch(
+        "app.crawler.pipeline.SessionLocal", side_effect=TestSessionFactory
+    ):
         result = analyse_unanalysed_for_source(source, db_session)
 
     assert result["errors"] == 1
@@ -660,7 +667,7 @@ def test_analyse_unanalysed_for_source_skips_analysed_docs(db_session):
     with patch(
         "app.analyser.pipeline.call_llm",
         return_value='{"title":"New Signal","signal_type":"other","topic":"New","summary":"New stuff.","why_it_matters":"OK","relevance_score":0.6,"confidence_score":0.7}',
-    ) as mock_llm:
+    ) as mock_llm, patch("app.crawler.pipeline.SessionLocal", side_effect=lambda: MagicMock(wraps=db_session, close=MagicMock())):
         result = analyse_unanalysed_for_source(source, db_session)
 
     assert result["analysed"] == 1
@@ -697,7 +704,9 @@ def test_analyse_unanalysed_for_source_no_unanalysed_docs(db_session):
     db_session.add(doc)
     db_session.commit()
 
-    with patch("app.analyser.pipeline.call_llm") as mock_llm:
+    with patch("app.analyser.pipeline.call_llm") as mock_llm, patch(
+        "app.crawler.pipeline.SessionLocal", side_effect=lambda: MagicMock(wraps=db_session, close=MagicMock())
+    ):
         result = analyse_unanalysed_for_source(source, db_session)
 
     assert result["analysed"] == 0
@@ -738,7 +747,7 @@ def test_analyse_unanalysed_for_source_emits_progress(db_session):
     with patch(
         "app.analyser.pipeline.call_llm",
         return_value='{"title":"Prog","signal_type":"other","topic":"Prog","summary":"OK.","why_it_matters":"OK","relevance_score":0.5,"confidence_score":0.5}',
-    ):
+    ), patch("app.crawler.pipeline.SessionLocal", side_effect=lambda: MagicMock(wraps=db_session, close=MagicMock())):
         result = analyse_unanalysed_for_source(
             source, db_session, progress_callback=lambda e: events.append(e)
         )

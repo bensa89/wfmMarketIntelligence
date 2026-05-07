@@ -1,5 +1,7 @@
 import logging
+import threading
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Callable, Dict, Optional
 from datetime import datetime, timezone
 from sqlalchemy.orm import Session
@@ -14,6 +16,9 @@ from app.crawler.discovery import (
     _is_article_content,
 )
 from app.config import settings
+from app.database import SessionLocal
+from app.models.context import InternalCompanyContext
+from app.analyser.pipeline import _build_context_dict
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +48,28 @@ def _needs_js_rendering(html: str, url: str) -> bool:
     if len(links) < _JS_RENDER_LINK_THRESHOLD:
         return True
     return _looks_like_js_app(html)
+
+
+def _analyse_doc_worker(
+    doc_id: str,
+    company_id: str,
+    context: dict,
+    db_factory: Optional[Callable] = None,
+) -> tuple[str, bool]:
+    factory = db_factory if db_factory is not None else SessionLocal
+    db = factory()
+    try:
+        from app.analyser.pipeline import analyse_document
+        doc = db.query(Document).filter(Document.id == doc_id).first()
+        if doc:
+            analyse_document(doc, company_id, db, preloaded_context=context)
+        return doc_id, True
+    except Exception as e:
+        logger.exception("Analysis worker failed for doc %s: %s", doc_id, e)
+        db.rollback()
+        return doc_id, False
+    finally:
+        db.close()
 
 
 def run_crawl_source(
@@ -129,7 +156,7 @@ def run_crawl_source(
             source.last_changed_at = datetime.now(timezone.utc)
             source.analysis_status = AnalysisStatus.pending
             db.commit()
-            result["skipped"] += 1
+            result["new_documents"] += 1
     else:
         doc = Document(
             source_id=source.id,
@@ -163,6 +190,10 @@ def run_crawl_source(
         }
     )
 
+    result["new_documents"] += result["discovery"].get("new", 0) + result[
+        "discovery"
+    ].get("changed", 0)
+
     source.last_crawled_at = datetime.now(timezone.utc)
     db.commit()
 
@@ -181,7 +212,6 @@ def analyse_unanalysed_for_source(
     db: Session,
     progress_callback: Optional[Callable[[dict], None]] = None,
 ) -> Dict:
-    from app.analyser.pipeline import analyse_document
     from app.models.discovered_page import DiscoveredPage
     from app.crawler.discovery import _update_page_relevance
 
@@ -209,34 +239,63 @@ def analyse_unanalysed_for_source(
         db.commit()
         return result
 
+    for page in (
+        db.query(DiscoveredPage)
+        .filter(
+            DiscoveredPage.source_id == source.id,
+            DiscoveredPage.analysis_status == "pending",
+        )
+        .all()
+    ):
+        page.analysis_status = "analysing"
+    db.commit()
+
     total = len(unanalysed)
     t0 = time.monotonic()
 
-    for i, doc in enumerate(unanalysed):
-        emit(
-            {
-                "type": "analysis_progress",
-                "source_id": source.id,
-                "current": i + 1,
-                "total": total,
-                "url": doc.url,
-            }
-        )
-        try:
-            analyse_document(doc, source.company_id, db)
-            result["analysed"] += 1
+    ctx_record = db.query(InternalCompanyContext).first()
+    context = _build_context_dict(ctx_record)
 
-            page = (
-                db.query(DiscoveredPage).filter(DiscoveredPage.url == doc.url).first()
+    completed_count = 0
+    lock = threading.Lock()
+
+    with ThreadPoolExecutor(max_workers=settings.analysis_concurrency) as executor:
+        futures = {
+            executor.submit(_analyse_doc_worker, doc.id, source.company_id, context): doc
+            for doc in unanalysed
+        }
+        for future in as_completed(futures):
+            doc_id, success = future.result()
+            with lock:
+                completed_count += 1
+                current = completed_count
+            if success:
+                result["analysed"] += 1
+            else:
+                result["errors"] += 1
+            emit(
+                {
+                    "type": "analysis_progress",
+                    "source_id": source.id,
+                    "current": current,
+                    "total": total,
+                    "url": "",
+                }
             )
-            if page:
-                _update_page_relevance(page, doc.url, db)
-        except Exception as e:
-            result["errors"] += 1
-            logger.exception("Analysis failed for doc %s: %s", doc.id, e)
-            db.rollback()
 
     result["analyse_ms"] = int((time.monotonic() - t0) * 1000)
+
+    # Post-pool: update DiscoveredPage statuses in main thread
+    for doc in unanalysed:
+        page = db.query(DiscoveredPage).filter(DiscoveredPage.url == doc.url).first()
+        if page:
+            try:
+                _update_page_relevance(page, doc.url, db)
+                page.analysis_status = "analysed"
+            except Exception as e:
+                logger.warning("DiscoveredPage update failed for %s: %s", doc.url, e)
+                page.analysis_status = "analysis_failed"
+    db.commit()
 
     source.analysis_status = (
         AnalysisStatus.analysed
