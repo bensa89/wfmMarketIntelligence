@@ -357,6 +357,50 @@ export interface CrawlRun extends CrawlRunList {
   sources: CrawlRunSourceState[];
 }
 
+export interface CrawlStatusSource {
+  id: string;
+  crawl_run_id: string;
+  source_id: string;
+  url: string;
+  status: 'pending' | 'running' | 'analysing' | 'completed' | 'failed' | 'skipped';
+  current_step: string | null;
+  new_documents: number;
+  skipped: number;
+  errors: number;
+  error_message: string | null;
+  fetch_ms: number | null;
+  extract_ms: number | null;
+  analyse_ms: number | null;
+  discover_ms: number | null;
+  discover_pages_crawled: number | null;
+  discover_pages_found: number | null;
+  analyse_docs_done: number;
+  analyse_docs_total: number;
+  analyse_current_url: string | null;
+}
+
+export interface CrawlStatusRun {
+  id: string;
+  status: 'running' | 'completed' | 'failed' | 'cancelled';
+  started_at: string | null;
+  finished_at: string | null;
+  total_sources: number;
+  total_new: number;
+  total_skipped: number;
+  total_errors: number;
+  sources: CrawlStatusSource[];
+}
+
+export interface CrawlStatusQueuedRun {
+  id: string;
+  sources: { source_id: string; url: string }[];
+}
+
+export interface CrawlStatusResponse {
+  active_run: CrawlStatusRun | null;
+  queued_run: CrawlStatusQueuedRun | null;
+}
+
 export interface SourceCrawlState {
   source_id: string;
   url: string;
