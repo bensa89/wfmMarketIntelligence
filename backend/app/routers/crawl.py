@@ -57,7 +57,6 @@ def _create_crawl_run(source_ids: List[str], db: Session) -> CrawlRun:
 
 def _crawl_source_worker(
     source_id: str,
-    source_url: str,
     crs_id: str,
     crawl_run_id: str,
 ) -> Dict:
@@ -144,7 +143,6 @@ def _run_crawl_background(
 ) -> None:
     thread_db = SessionLocal()
     try:
-        total = len(source_ids)
         total_new = 0
         total_skipped = 0
         total_errors = 0
@@ -174,7 +172,6 @@ def _run_crawl_background(
                 future = executor.submit(
                     _crawl_source_worker,
                     source_id,
-                    source.url,
                     crs_id,
                     crawl_run_id,
                 )
@@ -199,7 +196,6 @@ def _run_crawl_background(
             thread_db.commit()
 
             from app.models.source import AnalysisStatus as _AS
-            from app.models.document import Document as _Doc
 
             thread_db.expire_all()
 
@@ -317,6 +313,11 @@ def _run_crawl_background(
                                         period,
                                         period_exc,
                                     )
+                elif crawl_run:
+                    logger.warning(
+                        "Skipping post-crawl summary: crawl_run.started_at is None for run %s",
+                        crawl_run_id,
+                    )
             except Exception as e:
                 logger.warning("Post-crawl summary trigger failed: %s", e)
 
