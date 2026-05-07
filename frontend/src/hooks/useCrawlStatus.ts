@@ -3,6 +3,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiGet, apiPost } from '../api/client';
 import type { CrawlStatusResponse, CrawlStatusRun, CrawlStatusQueuedRun, CrawlPhase } from '../types';
 
+const DISMISSED_KEY = 'crawlStatus.dismissedRunId';
+
 export function useCrawlStatus() {
   const qc = useQueryClient();
   const dismissedRef = useRef(false);
@@ -37,6 +39,7 @@ export function useCrawlStatus() {
       qc.invalidateQueries({ queryKey: ['sourceCandidates'] });
     }
     if (status === 'running') {
+      localStorage.removeItem(DISMISSED_KEY);
       dismissedRef.current = false;
       setDismissed(false);
     }
@@ -45,6 +48,7 @@ export function useCrawlStatus() {
 
   const start = useCallback(
     async (sourceId?: string) => {
+      localStorage.removeItem(DISMISSED_KEY);
       dismissedRef.current = false;
       setDismissed(false);
       const path = sourceId ? `/crawl/start/${sourceId}` : '/crawl/start';
@@ -68,15 +72,18 @@ export function useCrawlStatus() {
   }, [qc]);
 
   const dismiss = useCallback(() => {
+    if (run?.id) localStorage.setItem(DISMISSED_KEY, run.id);
     dismissedRef.current = true;
     setDismissed(true);
-  }, []);
+  }, [run]);
 
   const run: CrawlStatusRun | null = data?.active_run ?? null;
   const queuedRun: CrawlStatusQueuedRun | null = data?.queued_run ?? null;
 
   const phase = useMemo((): CrawlPhase => {
-    if (dismissed || !run) return 'idle';
+    if (!run) return 'idle';
+    const persistedDismissedId = localStorage.getItem(DISMISSED_KEY);
+    if (dismissed || persistedDismissedId === run.id) return 'idle';
     if (run.status === 'running') {
       return run.sources.some((s) => s.status === 'analysing') ? 'analysing' : 'crawling';
     }
