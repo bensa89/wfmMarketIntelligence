@@ -71,14 +71,14 @@ export function useCrawlStatus() {
     qc.invalidateQueries({ queryKey: ['crawlStatus'] });
   }, [qc]);
 
+  const run: CrawlStatusRun | null = data?.active_run ?? null;
+  const queuedRun: CrawlStatusQueuedRun | null = data?.queued_run ?? null;
+
   const dismiss = useCallback(() => {
     if (run?.id) localStorage.setItem(DISMISSED_KEY, run.id);
     dismissedRef.current = true;
     setDismissed(true);
   }, [run]);
-
-  const run: CrawlStatusRun | null = data?.active_run ?? null;
-  const queuedRun: CrawlStatusQueuedRun | null = data?.queued_run ?? null;
 
   const phase = useMemo((): CrawlPhase => {
     if (!run) return 'idle';
