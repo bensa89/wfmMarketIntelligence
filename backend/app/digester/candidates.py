@@ -42,12 +42,13 @@ def query_candidates(
         q = q.filter(Signal.id.notin_(excluded_signal_ids))
 
     from sqlalchemy import func
+
     q = q.order_by(
         func.coalesce(SignalAssessment.movement_score, -1).desc(),
         func.coalesce(Signal.relevance_score, 0.0).desc(),
     )
 
-    return q.limit(15).all()
+    return q.limit(30).all()
 
 
 def build_candidate_dict(signal: Signal) -> dict:
@@ -58,10 +59,16 @@ def build_candidate_dict(signal: Signal) -> dict:
         "signal_id": signal.id,
         "company": signal.company.name if signal.company else "Unknown",
         "title": signal.title or "",
-        "assessment_summary": assessment.assessment_summary if assessment else (signal.summary or ""),
+        "assessment_summary": assessment.assessment_summary
+        if assessment
+        else (signal.summary or ""),
         "implication_for_us": assessment.implication_for_us if assessment else None,
-        "strategic_intent_guess": assessment.strategic_intent_guess if assessment else None,
-        "movement_strength": assessment.movement_strength.value if assessment and assessment.movement_strength else None,
+        "strategic_intent_guess": assessment.strategic_intent_guess
+        if assessment
+        else None,
+        "movement_strength": assessment.movement_strength.value
+        if assessment and assessment.movement_strength
+        else None,
         "source_url": doc.url if doc else None,
         "source_domain": domain,
         "source_title": (doc.title or domain) if doc else None,
