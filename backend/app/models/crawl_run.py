@@ -80,6 +80,9 @@ class CrawlRunSource(Base):
     discover_pages_found = Column(Integer, nullable=True)
     analyse_started_at = Column(DateTime, nullable=True)
     analyse_finished_at = Column(DateTime, nullable=True)
+    analyse_docs_done = Column(Integer, default=0, nullable=False)
+    analyse_docs_total = Column(Integer, default=0, nullable=False)
+    analyse_current_url = Column(String(2000), nullable=True)
 
     crawl_run = relationship("CrawlRun", back_populates="sources")
     source = relationship("Source", back_populates="crawl_run_sources")

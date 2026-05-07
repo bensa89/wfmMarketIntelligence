@@ -350,7 +350,9 @@ def test_reconnect_initial_state_analysis_phase_active(client, seed_source, db_e
     assert state["analysis_phase_active"] is True
 
 
-def test_reconnect_initial_state_analysis_phase_inactive(client, seed_source, db_engine):
+def test_reconnect_initial_state_analysis_phase_inactive(
+    client, seed_source, db_engine
+):
     """initial_state.analysis_phase_active=False when no source is being analysed."""
     TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
     verify_db = TestSessionLocal()
@@ -645,7 +647,33 @@ def test_reconnect_returns_queued_state(client, seed_source, db_engine):
 
 def test_crawl_done_includes_analysis_pending_true(client, seed_source, db_engine):
     """crawl_done carries analysis_pending=True when new documents were found."""
+    from app.models.document import Document as DocModel
+
     TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
+
+    setup_db = TestSessionLocal()
+    setup_db.add(
+        DocModel(
+            source_id=seed_source.id,
+            url="https://example.com/doc1",
+            title="Doc 1",
+            content_markdown="content",
+            content_hash="hash1",
+            is_analysed=False,
+        )
+    )
+    setup_db.add(
+        DocModel(
+            source_id=seed_source.id,
+            url="https://example.com/doc2",
+            title="Doc 2",
+            content_markdown="content",
+            content_hash="hash2",
+            is_analysed=False,
+        )
+    )
+    setup_db.commit()
+    setup_db.close()
 
     def mock_run(source, db, analyse=True, progress_callback=None):
         return {
@@ -901,3 +929,26 @@ def test_reconnect_queued_state_only_when_no_running_run(
     assert "no_active_run" not in types
     assert "queued_state" in types
     assert types[-1] == "reconnect_complete"
+
+
+def test_crawl_run_source_has_analyse_progress_fields(db_session, seed_source):
+    from app.models.crawl_run import CrawlRun, CrawlRunSource, CrawlRunStatus, CrawlRunSourceStatus
+    run = CrawlRun(status=CrawlRunStatus.running, total_sources=1)
+    db_session.add(run)
+    db_session.flush()
+    crs = CrawlRunSource(
+        crawl_run_id=run.id,
+        source_id=seed_source.id,
+        url=seed_source.url,
+        status=CrawlRunSourceStatus.analysing,
+        analyse_docs_done=2,
+        analyse_docs_total=5,
+        analyse_current_url="https://example.com/page",
+    )
+    db_session.add(crs)
+    db_session.commit()
+    db_session.expire_all()
+    loaded = db_session.query(CrawlRunSource).filter(CrawlRunSource.id == crs.id).first()
+    assert loaded.analyse_docs_done == 2
+    assert loaded.analyse_docs_total == 5
+    assert loaded.analyse_current_url == "https://example.com/page"
