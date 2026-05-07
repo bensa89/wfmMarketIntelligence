@@ -97,6 +97,14 @@ def test_generate_digest(client):
     assert isinstance(data["key_signals"], list)
 
 
+def test_generate_digest_returns_sections_field(client):
+    response = client.post("/api/digests/generate")
+    assert response.status_code == 201
+    data = response.json()
+    assert "sections" in data
+    assert isinstance(data["sections"], list)
+
+
 def test_digest_read_has_sections_field(client, seed_digest):
     response = client.get(f"/api/digests/{seed_digest.id}")
     assert response.status_code == 200

@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session, selectinload
 from typing import List
-from datetime import date, timedelta
 from app.database import get_db
 from app.models.digest import WeeklyDigest
 from app.models.signal import Signal
@@ -74,39 +73,7 @@ def get_digest(digest_id: str, db: Session = Depends(get_db)):
     "/generate", response_model=DigestRead, status_code=status.HTTP_201_CREATED
 )
 def generate_digest(db: Session = Depends(get_db)):
-    today = date.today()
-    week_start = today - timedelta(days=today.weekday())
-    week_end = week_start + timedelta(days=6)
+    from app.digester.pipeline import generate_digest as run_pipeline
 
-    signals = (
-        db.query(Signal)
-        .options(selectinload(Signal.document), selectinload(Signal.company))
-        .filter(Signal.created_at >= week_start)
-        .order_by(Signal.relevance_score.desc())
-        .limit(10)
-        .all()
-    )
-    key_signal_ids = [s.id for s in signals]
-
-    summary_parts = []
-    for s in signals[:5]:
-        summary_parts.append(
-            f"- {s.title} ({s.signal_type.value}, relevance: {s.relevance_score:.1f})"
-        )
-    summary = (
-        f"Week {week_start} – {week_end}. Top signals:\n" + "\n".join(summary_parts)
-        if summary_parts
-        else f"No signals for week {week_start}."
-    )
-
-    digest = WeeklyDigest(
-        week_start=week_start,
-        week_end=week_end,
-        summary=summary,
-        key_signals=key_signal_ids,
-        is_published=False,
-    )
-    db.add(digest)
-    db.commit()
-    db.refresh(digest)
+    digest = run_pipeline(db)
     return _to_digest_read(digest, db)
