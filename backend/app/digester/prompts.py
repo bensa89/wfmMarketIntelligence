@@ -18,33 +18,33 @@ def build_section_curation_prompt(
     prev_text = ""
     if prev_section_items:
         prev_text = (
-            "\nPrevious digest (same section — avoid repeating unless significantly updated):\n"
+            "\nVorheriger Digest (gleiche Sektion — nicht wiederholen, außer bei signifikanter Aktualisierung):\n"
             + "\n".join(f"- {item.get('title', '')}" for item in prev_section_items)
         )
 
-    return f"""You are a competitive intelligence analyst curating the "{section_title}" section of a weekly briefing for a Workforce Management (WFM) software company.
+    return f"""Du bist ein Competitive-Intelligence-Analyst und kurierst die Sektion "{section_title}" eines wöchentlichen Briefings für ein Workforce-Management-Unternehmen (WFM).
 
-Our context: {context_summary}
+Unser Kontext: {context_summary}
 {prev_text}
 
-Candidates — select 1–3 most important:
+Kandidaten — wähle die 1–3 wichtigsten:
 {candidates_text}
 
-Return ONLY valid JSON, no prose, no markdown fences:
+Antworte AUSSCHLIESSLICH auf Deutsch und als valides JSON, ohne Prosa, ohne Markdown-Zäune:
 {{
   "selected_items": [
     {{
-      "signal_id": "<exact signal_id from candidates above>",
-      "narrative": "<2-3 sentences summarising the finding as a clear insight>",
-      "implication_for_us": "<1-2 sentences on what this means for our product or strategy>"
+      "signal_id": "<exakte signal_id aus den Kandidaten>",
+      "narrative": "<2–3 Sätze: Erkenntnis klar und prägnant formuliert>",
+      "implication_for_us": "<1–2 Sätze: Was bedeutet das für unser Produkt oder unsere Strategie?>"
     }}
   ]
 }}
 
-Rules:
-- Only use signal_ids from the candidates list
-- Do not invent new analysis — reframe existing assessment data
-- If no candidates are worth including, return {{"selected_items": []}}
+Regeln:
+- Nur signal_ids aus der Kandidatenliste verwenden
+- Keine neuen Analysen erfinden — vorhandene Assessment-Daten umformulieren
+- Wenn keine Kandidaten relevant sind, {{"selected_items": []}} zurückgeben
 """
 
 
@@ -54,11 +54,10 @@ def build_intro_summary_prompt(sections: list[dict]) -> str:
         for section in sections
         for item in section.get("items", [])
     )
-    return f"""Write a 1–2 sentence executive summary of this week's most important competitive intelligence finding.
-
-Items this week:
-{items_text}
-
-Return ONLY valid JSON, no prose:
-{{"summary": "<1-2 sentences>"}}
-"""
+    return (
+        "Schreibe eine 1–2 Sätze lange Zusammenfassung auf Deutsch "
+        "der wichtigsten Competitive-Intelligence-Erkenntnis dieser Woche.\n\n"
+        f"Diese Woche:\n{items_text}\n\n"
+        "Antworte AUSSCHLIESSLICH als valides JSON, auf Deutsch, ohne Prosa:\n"
+        '{"summary": "<1–2 Sätze auf Deutsch>"}'
+    )
