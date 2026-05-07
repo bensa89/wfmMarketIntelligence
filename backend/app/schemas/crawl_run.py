@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 from pydantic import BaseModel
 
 
@@ -22,8 +22,13 @@ class CrawlRunSourceRead(BaseModel):
     extract_ms: Optional[int] = None
     analyse_ms: Optional[int] = None
     discover_ms: Optional[int] = None
+    discover_pages_crawled: Optional[int] = None
+    discover_pages_found: Optional[int] = None
     analyse_started_at: Optional[datetime] = None
     analyse_finished_at: Optional[datetime] = None
+    analyse_docs_done: int = 0
+    analyse_docs_total: int = 0
+    analyse_current_url: Optional[str] = None
 
 
 class CrawlRunRead(BaseModel):
@@ -31,7 +36,7 @@ class CrawlRunRead(BaseModel):
 
     id: str
     status: str
-    started_at: datetime
+    started_at: Optional[datetime] = None
     finished_at: Optional[datetime] = None
     total_sources: int = 0
     total_new: int = 0
@@ -45,9 +50,19 @@ class CrawlRunListRead(BaseModel):
 
     id: str
     status: str
-    started_at: datetime
+    started_at: Optional[datetime] = None
     finished_at: Optional[datetime] = None
     total_sources: int = 0
     total_new: int = 0
     total_skipped: int = 0
     total_errors: int = 0
+
+
+class CrawlQueuedRunStatus(BaseModel):
+    id: str
+    sources: List[Dict[str, str]]
+
+
+class CrawlStatusResponse(BaseModel):
+    active_run: Optional[CrawlRunRead] = None
+    queued_run: Optional[CrawlQueuedRunStatus] = None

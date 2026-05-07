@@ -931,6 +931,29 @@ def test_reconnect_queued_state_only_when_no_running_run(
     assert types[-1] == "reconnect_complete"
 
 
+def test_crawl_run_source_read_schema_has_analyse_progress(db_session, seed_source):
+    from app.models.crawl_run import CrawlRun, CrawlRunSource, CrawlRunStatus, CrawlRunSourceStatus
+    from app.schemas.crawl_run import CrawlRunSourceRead
+    run = CrawlRun(status=CrawlRunStatus.running, total_sources=1)
+    db_session.add(run)
+    db_session.flush()
+    crs = CrawlRunSource(
+        crawl_run_id=run.id,
+        source_id=seed_source.id,
+        url=seed_source.url,
+        status=CrawlRunSourceStatus.analysing,
+        analyse_docs_done=3,
+        analyse_docs_total=7,
+        analyse_current_url="https://example.com/doc",
+    )
+    db_session.add(crs)
+    db_session.commit()
+    schema = CrawlRunSourceRead.model_validate(crs)
+    assert schema.analyse_docs_done == 3
+    assert schema.analyse_docs_total == 7
+    assert schema.analyse_current_url == "https://example.com/doc"
+
+
 def test_crawl_run_source_has_analyse_progress_fields(db_session, seed_source):
     from app.models.crawl_run import CrawlRun, CrawlRunSource, CrawlRunStatus, CrawlRunSourceStatus
     run = CrawlRun(status=CrawlRunStatus.running, total_sources=1)
