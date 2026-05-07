@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCompanies } from '../hooks/useCompanies';
 import { useSignals } from '../hooks/useSignals';
-import { useCrawlStream } from '../hooks/useCrawlStream';
+import { useCrawlStatus } from '../hooks/useCrawlStatus';
 import { useLastCompletedCrawl } from '../hooks/useCrawlRuns';
 import { useActiveCrawlRun } from '../hooks/useActiveCrawlRun';
 import { useSignalsOverTime, useSignalDistribution } from '../hooks/useSignalStats';
@@ -32,7 +32,7 @@ export default function Dashboard() {
   const [lastMonth, setLastMonth] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSignal, setSelectedSignal] = useState<Signal | null>(null);
-  const { start: startCrawl, isRunning: isCrawlRunning, summary: crawlSummary } = useCrawlStream();
+  const { start: startCrawl, isRunning: isCrawlRunning, run: crawlRun, phase: crawlPhase } = useCrawlStatus();
   const { activeRun } = useActiveCrawlRun();
   const { lastCrawl } = useLastCompletedCrawl();
   const { data: allSignals } = useSignals({});
@@ -109,10 +109,10 @@ export default function Dashboard() {
             {activeRun?.total_new != null && activeRun.total_new > 0 && ` · ${activeRun.total_new} neue Dokumente`}
           </div>
         )}
-        {crawlSummary && !isCrawlRunning && (
+        {crawlPhase === 'done' && crawlRun && (
           <div className="mb-4 px-4 py-2.5 rounded-xl text-[12px] font-medium border bg-emerald-50 text-emerald-700 border-emerald-200">
-            Crawl abgeschlossen: {crawlSummary.sources_processed} Quellen verarbeitet
-            {crawlSummary.total_new > 0 && ` · ${crawlSummary.total_new} neue Dokumente`}
+            Crawl abgeschlossen: {crawlRun.total_sources} Quellen verarbeitet
+            {crawlRun.total_new > 0 && ` · ${crawlRun.total_new} neue Dokumente`}
           </div>
         )}
 
