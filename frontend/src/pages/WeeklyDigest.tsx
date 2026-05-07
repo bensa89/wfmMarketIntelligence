@@ -1,11 +1,117 @@
+import { useState } from 'react';
 import { useDigests, useGenerateDigest } from '../hooks/useDigests';
-import RelevanceBadge from '../components/RelevanceBadge';
-import SignalTypeIcon from '../components/SignalTypeIcon';
-import { Calendar, RefreshCw, ExternalLink } from 'lucide-react';
+import { Calendar, RefreshCw } from 'lucide-react';
+import type { Digest, DigestSectionItem } from '../types';
+
+const MOVEMENT_COLOURS: Record<string, string> = {
+  weak: 'bg-gray-100 text-gray-600',
+  relevant: 'bg-blue-100 text-blue-700',
+  strong: 'bg-orange-100 text-orange-700',
+  market_shaping: 'bg-red-100 text-red-700',
+};
+
+function movementBadge(strength: string | null): React.ReactElement | null {
+  if (!strength) return null;
+  const cls = MOVEMENT_COLOURS[strength] ?? 'bg-gray-100 text-gray-600';
+  return (
+    <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${cls}`}>
+      {strength.replace('_', ' ')}
+    </span>
+  );
+}
+
+function getISOWeek(dateStr: string): number {
+  const d = new Date(dateStr);
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+  const yearStart = new Date(d.getFullYear(), 0, 1);
+  return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
+}
+
+function formatDateDE(dateStr: string): string {
+  return new Date(dateStr).toLocaleDateString('de-DE', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+function SectionItems({ items }: { items: DigestSectionItem[] }) {
+  return (
+    <div className="space-y-5">
+      {items.map((item) => (
+        <div key={item.signal_id} className="space-y-1">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded">
+              {item.company}
+            </span>
+            {movementBadge(item.movement_strength)}
+          </div>
+          <div>
+            {item.source_url ? (
+              <a
+                href={item.source_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-gray-900 hover:underline"
+              >
+                {item.title}
+              </a>
+            ) : (
+              <span className="font-medium text-gray-900">{item.title}</span>
+            )}
+          </div>
+          <p className="text-sm text-gray-700">{item.narrative}</p>
+          {item.implication_for_us && (
+            <p className="text-sm text-gray-500 italic">{item.implication_for_us}</p>
+          )}
+          {(item.source_domain || item.source_title) && (
+            <p className="text-xs text-gray-400">
+              Quelle: {[item.source_domain, item.source_title].filter(Boolean).join(' — ')}
+            </p>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function WeeklyDigest() {
   const { data: digests, isLoading } = useDigests();
   const generateDigest = useGenerateDigest();
+  const [selectedDigestId, setSelectedDigestId] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const selectedDigest = digests?.find((d: Digest) => d.id === selectedDigestId) ?? digests?.[0] ?? null;
+
+  const handleCopyEmail = async (digest: Digest) => {
+    const kw = getISOWeek(digest.week_start);
+    const start = formatDateDE(digest.week_start);
+    const end = formatDateDE(digest.week_end);
+
+    let text = `WFM Market Intelligence — KW ${kw} | ${start} – ${end}\n`;
+    if (digest.summary) {
+      text += `\n${digest.summary}\n`;
+    }
+    text += '\n';
+
+    for (const section of digest.sections ?? []) {
+      text += `${section.title}\n${'─'.repeat(25)}\n`;
+      for (const item of section.items) {
+        text += `▸ ${item.title} (${item.company})\n`;
+        text += `  ${item.narrative}`;
+        if (item.implication_for_us) text += ` ${item.implication_for_us}`;
+        text += '\n';
+        const source = [item.source_domain, item.source_title].filter(Boolean).join(' — ');
+        if (source) text += `  Quelle: ${source}\n`;
+        if (item.source_url) text += `  ${item.source_url}\n`;
+        text += '\n';
+      }
+      text += '\n';
+    }
+
+    text += `${'─'.repeat(25)}\nVollständiger Digest: ${window.location.origin}/digest/${digest.id}`;
+
+    await navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
     <div className="p-6">
@@ -37,58 +143,79 @@ export default function WeeklyDigest() {
           <p className="text-ink-muted">No digests yet. Generate one to get started.</p>
         </div>
       ) : (
-        <div className="space-y-6">
-          {digests?.map((digest) => (
-            <div key={digest.id} className="card">
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="text-lg font-semibold">
+        <div className="flex gap-6">
+          <div className="w-64 shrink-0 space-y-2">
+            {digests?.map((digest: Digest) => (
+              <button
+                key={digest.id}
+                onClick={() => setSelectedDigestId(digest.id)}
+                className={`w-full text-left p-3 rounded border transition-colors ${
+                  selectedDigest?.id === digest.id
+                    ? 'border-accent-blue bg-accent-blue/5'
+                    : 'border-gray-200 bg-white hover:bg-gray-50'
+                }`}
+              >
+                <div className="text-sm font-medium text-gray-900">
                   {digest.week_start} — {digest.week_end}
-                </h2>
-                <span className={`text-xs px-2 py-0.5 rounded ${digest.is_published ? 'bg-signal-high/20 text-signal-high' : 'bg-app-bg text-ink-muted'}`}>
-                  {digest.is_published ? 'Published' : 'Draft'}
-                </span>
-              </div>
-              {digest.summary && (
-                <div className="text-sm text-ink whitespace-pre-line mb-4">
-                  {digest.summary}
                 </div>
-              )}
-              {digest.key_signals.length > 0 && (
-                <div>
-                  <h3 className="text-sm font-medium text-ink-muted mb-2">Key Signals:</h3>
-                  <div className="space-y-2">
-                    {digest.key_signals.map((signal) => (
-                      <div
-                        key={signal.id}
-                        className="flex items-center justify-between bg-app-bg rounded p-2"
-                      >
-                        <div className="flex items-center gap-2 min-w-0">
-                          <SignalTypeIcon type={signal.signal_type} size={14} />
-                          {signal.source_url ? (
-                            <a
-                              href={signal.source_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-sm hover:text-accent-blue transition-colors truncate flex items-center gap-1"
-                            >
-                              {signal.title}
-                              <ExternalLink size={12} className="shrink-0 opacity-50" />
-                            </a>
-                          ) : (
-                            <span className="text-sm truncate">{signal.title}</span>
-                          )}
-                          {signal.company_name && (
-                            <span className="text-xs text-ink-muted shrink-0">({signal.company_name})</span>
-                          )}
-                        </div>
-                        <RelevanceBadge score={signal.relevance_score} size="sm" />
+                <div className="text-xs text-gray-500 mt-1">
+                  {digest.sections?.length ?? 0} sections · {digest.is_published ? 'Published' : 'Draft'}
+                </div>
+              </button>
+            ))}
+          </div>
+
+          {selectedDigest && (
+            <div className="flex-1 min-w-0">
+              <div className="card">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h2 className="text-lg font-semibold text-gray-900">
+                      KW {getISOWeek(selectedDigest.week_start)}: {formatDateDE(selectedDigest.week_start)} – {formatDateDE(selectedDigest.week_end)}
+                    </h2>
+                    {selectedDigest.summary && (
+                      <p className="text-sm text-gray-600 mt-1">{selectedDigest.summary}</p>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => handleCopyEmail(selectedDigest)}
+                    disabled={!selectedDigest.sections?.length}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    {copied ? '✓ Kopiert' : 'Als E-Mail kopieren'}
+                  </button>
+                </div>
+
+                {selectedDigest.sections && selectedDigest.sections.length > 0 ? (
+                  <div className="space-y-8">
+                    {selectedDigest.sections.map((section) => (
+                      <div key={section.key}>
+                        <h3 className="text-base font-semibold text-gray-900 mb-3 pb-2 border-b border-gray-200">
+                          {section.title}
+                        </h3>
+                        <SectionItems items={section.items} />
                       </div>
                     ))}
                   </div>
-                </div>
-              )}
+                ) : selectedDigest.key_signals && selectedDigest.key_signals.length > 0 ? (
+                  <ul className="space-y-3">
+                    {selectedDigest.key_signals.map((sig) => (
+                      <li key={sig.id} className="text-sm">
+                        <span className="font-medium">{sig.company_name}</span> — {sig.title}
+                        {sig.source_url && (
+                          <a href={sig.source_url} target="_blank" rel="noopener noreferrer" className="ml-2 text-blue-600 hover:underline text-xs">
+                            source
+                          </a>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-gray-400">Keine Signale für diese Woche.</p>
+                )}
+              </div>
             </div>
-          ))}
+          )}
         </div>
       )}
     </div>
