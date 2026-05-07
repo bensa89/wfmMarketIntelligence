@@ -1,6 +1,9 @@
+import logging
 from dataclasses import dataclass
 from typing import Optional
 import httpx
+
+logger = logging.getLogger(__name__)
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
@@ -25,5 +28,6 @@ def fetch_url(url: str, timeout: int = 15) -> Optional[FetchResult]:
             final_url=str(response.url),
             status_code=response.status_code,
         )
-    except Exception:
+    except Exception as e:
+        logger.warning("Fetch failed for %s: %s", url, e)
         return None

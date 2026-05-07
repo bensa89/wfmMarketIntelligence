@@ -19,6 +19,7 @@ class DiscoveredPageRead(BaseModel):
     last_crawled_at: Optional[datetime]
     last_changed_at: Optional[datetime]
     last_signal_relevance: Optional[float] = None
+    analysis_status: Optional[str] = None
 
 
 class DiscoveredPageUpdate(BaseModel):

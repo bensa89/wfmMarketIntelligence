@@ -7,6 +7,8 @@ export function useSources(companyId?: string) {
   return useQuery<Source[]>({
     queryKey: ['sources', params],
     queryFn: () => apiGet<Source[]>('/sources', params),
+    refetchInterval: (query) =>
+      query.state.data?.some((s) => s.analysis_status === 'analysing') ? 3000 : false,
   });
 }
 

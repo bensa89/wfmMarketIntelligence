@@ -44,5 +44,6 @@ class DiscoveredPage(Base):
     last_crawled_at = Column(DateTime, nullable=True)
     last_changed_at = Column(DateTime, nullable=True)
     last_signal_relevance = Column(Float, nullable=True)
+    analysis_status = Column(String(20), nullable=True, default=None)
 
     source = relationship("Source", back_populates="discovered_pages")

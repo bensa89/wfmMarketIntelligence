@@ -1,5 +1,8 @@
-import { X, Check, AlertCircle, Loader2, Minus } from 'lucide-react';
+import { useState } from 'react';
+import { X, Check, AlertCircle, Loader2, Minus, ChevronRight, ChevronDown, FileText } from 'lucide-react';
 import type { CrawlStatusRun, CrawlStatusSource, CrawlStatusQueuedRun, CrawlPhase } from '../types';
+import { useDiscoveredPages } from '../hooks/useDiscoveredPages';
+import { useDocuments } from '../hooks/useDocuments';
 
 function formatMs(ms: number | null | undefined): string {
   if (ms == null) return '';
@@ -7,10 +10,103 @@ function formatMs(ms: number | null | undefined): string {
   return `${(ms / 1000).toFixed(1)}s`;
 }
 
-function SourceRow({ source }: { source: CrawlStatusSource }) {
+function AllNewDocsSection({ run }: { run: CrawlStatusRun }) {
+  const [open, setOpen] = useState(true);
+  const { data: docs, isLoading } = useDocuments();
+
+  const since = run.started_at;
+  const newDocs = since
+    ? (docs ?? []).filter((d) => new Date(d.crawled_at) >= new Date(since))
+    : (docs ?? []);
+
+  if (run.total_new === 0) return null;
+
+  return (
+    <div className="border-b border-app-border/30">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="flex items-center gap-2 w-full px-4 py-2 text-xs font-medium text-ink hover:bg-app-bg/40"
+      >
+        {open ? <ChevronDown size={13} /> : <ChevronRight size={13} />}
+        <FileText size={13} className="text-signal-high" />
+        <span>{run.total_new} neue Dokumente</span>
+      </button>
+      {open && (
+        <div className="bg-app-bg/40 max-h-52 overflow-y-auto">
+          {isLoading ? (
+            <p className="text-xs text-ink-muted px-8 py-2">Lade Dokumente…</p>
+          ) : newDocs.length === 0 ? (
+            <p className="text-xs text-ink-muted px-8 py-2">Keine neuen Dokumente gefunden.</p>
+          ) : (
+            newDocs.map((doc) => (
+              <div key={doc.id} className="flex items-center gap-2 px-8 py-1 border-b border-app-border/10 last:border-0">
+                <a
+                  href={doc.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-ink-muted hover:text-ink truncate"
+                  title={doc.url}
+                >
+                  {doc.title || doc.url}
+                </a>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DiscoveredPagesExpander({ sourceId }: { sourceId: string }) {
+  const { data: pages, isLoading } = useDiscoveredPages(sourceId);
+
+  if (isLoading) return <p className="text-xs text-ink-muted px-10 py-1">Lade Seiten…</p>;
+  if (!pages || pages.length === 0)
+    return <p className="text-xs text-ink-muted px-10 py-1">Keine Seiten gefunden.</p>;
+
+  const statusColor: Record<string, string> = {
+    new: 'text-signal-high',
+    changed: 'text-yellow-400',
+    known: 'text-ink-muted',
+    ignored: 'text-ink-muted',
+  };
+
+  return (
+    <div className="border-t border-app-border/20 bg-app-bg/40 max-h-48 overflow-y-auto">
+      {pages.map((page) => (
+        <div key={page.id} className="flex items-center gap-2 px-10 py-1 border-b border-app-border/10 last:border-0">
+          <span className={`text-xs flex-shrink-0 w-14 ${statusColor[page.status] ?? 'text-ink-muted'}`}>
+            {page.status}
+          </span>
+          <a
+            href={page.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-ink-muted hover:text-ink truncate"
+            title={page.url}
+          >
+            {page.url}
+          </a>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function SourceRow({
+  source,
+  expanded,
+  onToggle,
+}: {
+  source: CrawlStatusSource;
+  expanded: boolean;
+  onToggle: () => void;
+}) {
   const isRunning = source.status === 'running' || source.status === 'analysing';
   const isDone = source.status === 'completed';
   const isError = source.status === 'failed';
+  const hasPages = (source.discover_pages_found ?? 0) > 0;
 
   let detail = 'Waiting...';
   if (source.status === 'analysing') {
@@ -40,22 +136,37 @@ function SourceRow({ source }: { source: CrawlStatusSource }) {
   }
 
   return (
-    <div className="flex items-center gap-3 py-1.5 px-4 text-sm border-b border-app-border/20 last:border-0">
-      <span className="w-4 flex-shrink-0 flex justify-center">
-        {isDone ? (
-          <Check className="w-3.5 h-3.5 text-signal-high" />
-        ) : isError ? (
-          <AlertCircle className="w-3.5 h-3.5 text-signal-low" />
-        ) : isRunning ? (
-          <Loader2 className="w-3.5 h-3.5 animate-spin text-accent-blue" />
-        ) : (
-          <Minus className="w-3.5 h-3.5 text-ink-muted" />
+    <div className="border-b border-app-border/20 last:border-0">
+      <div className="flex items-center gap-3 py-1.5 px-4 text-sm">
+        <span className="w-4 flex-shrink-0 flex justify-center">
+          {isDone ? (
+            <Check className="w-3.5 h-3.5 text-signal-high" />
+          ) : isError ? (
+            <AlertCircle className="w-3.5 h-3.5 text-signal-low" />
+          ) : isRunning ? (
+            <Loader2 className="w-3.5 h-3.5 animate-spin text-accent-blue" />
+          ) : (
+            <Minus className="w-3.5 h-3.5 text-ink-muted" />
+          )}
+        </span>
+        {hasPages && (
+          <button
+            onClick={onToggle}
+            className="flex-shrink-0 flex justify-center text-ink-muted hover:text-ink"
+            title={expanded ? 'Subsites ausblenden' : 'Subsites anzeigen'}
+          >
+            {expanded ? <ChevronDown size={13} /> : <ChevronRight size={13} />}
+          </button>
         )}
-      </span>
-      <span className="flex-1 truncate text-ink" title={source.url}>{source.url}</span>
-      <span className="text-xs text-ink-muted flex-shrink-0 max-w-xs truncate" title={detail}>
-        {detail}
-      </span>
+        <span className="flex-1 truncate text-ink" title={source.url}>{source.url}</span>
+        <span className="text-xs text-ink-muted flex-shrink-0 max-w-xs truncate" title={detail}>
+          {detail}
+        </span>
+        {hasPages && (
+          <span className="text-xs text-ink-muted flex-shrink-0">{source.discover_pages_found}</span>
+        )}
+      </div>
+      {expanded && hasPages && <DiscoveredPagesExpander sourceId={source.source_id} />}
     </div>
   );
 }
@@ -69,6 +180,8 @@ interface Props {
 }
 
 export function CrawlProgressPanel({ phase, run, queuedRun, onCancel, onDismiss }: Props) {
+  const [expandedSourceIds, setExpandedSourceIds] = useState<Set<string>>(() => new Set());
+
   if (phase === 'idle' || !run) return null;
 
   const sources = run.sources;
@@ -100,6 +213,14 @@ export function CrawlProgressPanel({ phase, run, queuedRun, onCancel, onDismiss 
           ? `Fertig — ${total} Sources, ${run.total_new} neue Docs, ${run.total_errors} Fehler`
           : `Fertig — ${run.total_new} neue Docs`;
 
+  function toggleSource(sourceId: string) {
+    setExpandedSourceIds((prev) => {
+      const next = new Set(prev);
+      next.has(sourceId) ? next.delete(sourceId) : next.add(sourceId);
+      return next;
+    });
+  }
+
   return (
     <div className={`mb-6 rounded-lg border ${borderColor} bg-app-card overflow-hidden`}>
       <div className="flex items-center justify-between px-4 py-2.5 border-b border-app-border/30">
@@ -114,9 +235,17 @@ export function CrawlProgressPanel({ phase, run, queuedRun, onCancel, onDismiss 
           </button>
         )}
       </div>
+
+      {phase === 'done' && <AllNewDocsSection run={run} />}
+
       <div>
         {sources.map((s) => (
-          <SourceRow key={s.source_id} source={s} />
+          <SourceRow
+            key={s.source_id}
+            source={s}
+            expanded={expandedSourceIds.has(s.source_id)}
+            onToggle={() => toggleSource(s.source_id)}
+          />
         ))}
       </div>
       {hasQueue && queuedRun && (

@@ -17,6 +17,7 @@ docker compose -f docker-compose.dev.yml up -d
 docker compose -f docker-compose.dev.yml exec backend alembic upgrade head
 
 # Tests
+Important note for all remaining backend subagents: Tests must be run inside Docker: docker compose -f /Users/benjaminsaure/dev/wfmMarketIntelligence/docker-compose.dev.yml exec backend python -m pytest tests/ -v
 cd backend && python -m pytest tests/ -v
 
 # Migrations
