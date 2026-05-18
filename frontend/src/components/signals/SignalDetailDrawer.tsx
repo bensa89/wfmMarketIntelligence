@@ -24,21 +24,21 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
   const a = item.assessment;
 
   return (
-    <>
-      {/* Backdrop + centering wrapper */}
+    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={onClose}>
+      {/* Modal */}
       <div
-        className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4"
-        onClick={onClose}
+        className="bg-white rounded-xl max-w-3xl w-full max-h-[85vh] flex flex-col overflow-hidden"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="signal-modal-title"
+        tabIndex={-1}
+        autoFocus
+        onClick={(e) => e.stopPropagation()}
       >
-        {/* Modal */}
-        <div
-          className="bg-white rounded-xl max-w-3xl w-full max-h-[85vh] flex flex-col"
-          onClick={(e) => e.stopPropagation()}
-        >
           {/* Header */}
           <div className="flex items-start justify-between p-5 border-b border-slate-200 flex-shrink-0">
             <div className="flex-1 pr-4">
-              <div className="text-[13px] font-semibold text-slate-900 leading-snug">{item.title}</div>
+              <div id="signal-modal-title" className="text-[13px] font-semibold text-slate-900 leading-snug">{item.title}</div>
               <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                 <span className="text-[11px] text-slate-500">{item.company_name}</span>
                 {item.published_at && (
@@ -55,7 +55,7 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
                 </span>
               </div>
             </div>
-            <button onClick={onClose} className="text-slate-400 hover:text-slate-700 transition-colors flex-shrink-0">
+            <button onClick={onClose} aria-label="Schließen" className="text-slate-400 hover:text-slate-700 transition-colors flex-shrink-0">
               <X size={16} />
             </button>
           </div>
@@ -181,8 +181,7 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
               </button>
             )}
           </div>
-        </div>
       </div>
-    </>
+    </div>
   );
 }
