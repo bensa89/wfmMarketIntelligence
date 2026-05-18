@@ -36,7 +36,7 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={onClose}>
       {/* Modal */}
       <div
-        className="bg-white rounded-xl max-w-5xl w-full max-h-[85vh] flex flex-col overflow-hidden"
+        className="bg-white rounded-xl max-w-5xl w-full max-h-[93vh] flex flex-col overflow-hidden"
         role="dialog"
         aria-modal="true"
         aria-labelledby="signal-modal-title"
