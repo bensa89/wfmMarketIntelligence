@@ -53,6 +53,20 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
                 <span className="text-[11px] text-slate-500">
                   Analysiert: <DateWithTooltip date={item.created_at} />
                 </span>
+                {item.source_url && (
+                  <>
+                    <span className="text-slate-300">·</span>
+                    <a
+                      href={item.source_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 text-[11px] text-blue-600 hover:text-blue-700 transition-colors"
+                    >
+                      <ExternalLink size={11} className="flex-shrink-0" />
+                      {item.document_title || 'Source'}
+                    </a>
+                  </>
+                )}
               </div>
             </div>
             <button onClick={onClose} aria-label="Schließen" className="text-slate-400 hover:text-slate-700 transition-colors flex-shrink-0">
@@ -152,22 +166,6 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
                   </section>
                 )}
               </>
-            )}
-
-            {/* Source link */}
-            {item.source_url && (
-              <section>
-                <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Source</h4>
-                <a
-                  href={item.source_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-[12px] text-blue-600 hover:text-blue-700 transition-colors break-all"
-                >
-                  <ExternalLink size={12} className="flex-shrink-0" />
-                  {item.document_title || item.source_url}
-                </a>
-              </section>
             )}
 
             {/* Re-assess button */}
