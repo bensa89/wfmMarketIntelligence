@@ -48,6 +48,17 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
         <div className="flex items-start justify-between p-5 border-b border-slate-200 flex-shrink-0">
           <div className="flex-1 pr-4">
             <div id="signal-modal-title" className="text-[16px] font-semibold text-slate-900 leading-snug">{item.title}</div>
+            {item.source_url && (
+              <a
+                href={item.source_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 mt-1 text-[11px] text-blue-600 hover:text-blue-700 transition-colors"
+              >
+                <ExternalLink size={11} className="flex-shrink-0" />
+                {item.document_title || item.source_url}
+              </a>
+            )}
           </div>
           <button onClick={onClose} aria-label="Schließen" className="text-slate-400 hover:text-slate-700 transition-colors flex-shrink-0">
             <X size={16} />
@@ -246,21 +257,6 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
                 </div>
               </section>
 
-              {/* Source */}
-              {item.source_url && (
-                <section>
-                  <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Source</h4>
-                  <a
-                    href={item.source_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 text-[12px] text-blue-600 hover:text-blue-700 transition-colors break-all"
-                  >
-                    <ExternalLink size={12} className="flex-shrink-0" />
-                    {item.document_title || item.source_url}
-                  </a>
-                </section>
-              )}
             </div>
 
           </div>
