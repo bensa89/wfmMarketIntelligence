@@ -3,6 +3,7 @@ import type { MovementStrength } from '../../types/intelligence';
 interface Props {
   strength: MovementStrength | null | undefined;
   size?: 'sm' | 'md';
+  score?: number | null;
 }
 
 const CONFIG: Record<MovementStrength, { label: string; bg: string; text: string; dot: string }> = {
@@ -12,7 +13,7 @@ const CONFIG: Record<MovementStrength, { label: string; bg: string; text: string
   market_shaping: { label: 'Market Shaping', bg: 'rgba(251,146,60,0.18)', text: '#fb923c', dot: '#f97316' },
 };
 
-export default function MovementBadge({ strength, size = 'sm' }: Props) {
+export default function MovementBadge({ strength, size = 'sm', score }: Props) {
   if (!strength) {
     return (
       <span
@@ -32,7 +33,7 @@ export default function MovementBadge({ strength, size = 'sm' }: Props) {
       style={{ background: c.bg, color: c.text }}
     >
       <span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: c.dot }} />
-      {c.label}
+      {c.label}{score != null ? ` (${score})` : ''}
     </span>
   );
 }

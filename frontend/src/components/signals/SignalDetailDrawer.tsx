@@ -122,10 +122,7 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
               <section>
                 <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Bewegung</h4>
                 <div className="flex flex-col gap-2">
-                  <MovementBadge strength={a?.movement_strength} size="md" />
-                  {a?.movement_score != null && (
-                    <span className="text-[12px] text-slate-500">Score: <span className="font-semibold text-slate-900">{a.movement_score}</span></span>
-                  )}
+                  <MovementBadge strength={a?.movement_strength} size="md" score={a?.movement_score} />
                 </div>
               </section>
 
