@@ -192,7 +192,7 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
               {item.relevance_score != null && (
                 <section>
                   <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Relevanz</h4>
-                  <span className="text-[12px] font-semibold text-slate-900">{item.relevance_score}</span>
+                  <span className="text-[12px] font-semibold text-slate-900">{Math.round(item.relevance_score * 100)}</span>
                   <span className="text-[11px] text-slate-400"> / 100</span>
                 </section>
               )}
