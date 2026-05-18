@@ -99,13 +99,6 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
               </section>
             )}
 
-            {item.why_it_matters && (
-              <section>
-                <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Why It Matters</h4>
-                <p className="text-[13px] text-slate-700 leading-relaxed">{item.why_it_matters}</p>
-              </section>
-            )}
-
             {/* Assessment details */}
             {a && (
               <>
@@ -124,6 +117,13 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
                     </div>
                   </section>
                 )}
+
+            {item.why_it_matters && (
+              <section>
+                <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Why It Matters</h4>
+                <p className="text-[13px] text-slate-700 leading-relaxed">{item.why_it_matters}</p>
+              </section>
+            )}
 
                 {a.assessment_summary && (
                   <section>
