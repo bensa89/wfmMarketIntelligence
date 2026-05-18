@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { X, ExternalLink } from 'lucide-react';
-import type { SignalFeedItem } from '../../types/intelligence';
+import type { SignalFeedItem, SignalClass, VisibilityImpact } from '../../types/intelligence';
 import MovementBadge from './MovementBadge';
 import ConfidenceBar from './ConfidenceBar';
 import { getCapabilityLabel } from '../../constants/capabilities';
@@ -11,6 +11,22 @@ interface Props {
   item: SignalFeedItem;
   onClose: () => void;
 }
+
+const SIGNAL_CLASS_LABELS: Record<SignalClass, string> = {
+  product_capability_move: 'Product Capability Move',
+  positioning_move:        'Positioning Move',
+  ecosystem_move:          'Ecosystem Move',
+  thought_leadership_signal: 'Thought Leadership',
+  hiring_signal:           'Hiring Signal',
+  weak_signal:             'Weak Signal',
+  market_expansion_move:   'Market Expansion',
+};
+
+const VISIBILITY_LABELS: Record<VisibilityImpact, { label: string; color: string }> = {
+  low:    { label: 'Low',    color: 'text-slate-500 bg-slate-100' },
+  medium: { label: 'Medium', color: 'text-blue-600 bg-blue-50' },
+  high:   { label: 'High',   color: 'text-orange-600 bg-orange-50' },
+};
 
 export default function SignalDetailDrawer({ item, onClose }: Props) {
   const assess = useAssessSignal();
@@ -51,6 +67,10 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
 
             {/* Left — 2/3: textual content */}
             <div className="col-span-2 p-5 space-y-5 border-r border-slate-100">
+              {item.topic && (
+                <div className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">{item.topic}</div>
+              )}
+
               {item.summary && (
                 <section>
                   <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Summary</h4>
@@ -118,6 +138,7 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
                 <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Competitor</h4>
                 <span className="text-[12px] text-slate-700">{item.company_name}</span>
               </section>
+
               {/* Movement + Confidence */}
               <div className="flex gap-8">
                 <section>
@@ -129,6 +150,52 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
                   <ConfidenceBar value={a?.confidence} />
                 </section>
               </div>
+
+              {/* Signal Class */}
+              {a?.signal_class && (
+                <section>
+                  <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Signal Type</h4>
+                  <span className="text-[12px] px-2 py-0.5 rounded-full bg-white border border-slate-200 text-slate-600">
+                    {SIGNAL_CLASS_LABELS[a.signal_class]}
+                  </span>
+                </section>
+              )}
+
+              {/* Evidence Strength + Visibility Impact */}
+              <div className="flex gap-8">
+                {a?.evidence_strength != null && (
+                  <section>
+                    <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Evidenz</h4>
+                    <div className="flex items-center gap-0.5">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <span
+                          key={i}
+                          className={`w-2.5 h-2.5 rounded-sm ${i < a.evidence_strength! ? 'bg-slate-700' : 'bg-slate-200'}`}
+                        />
+                      ))}
+                      <span className="text-[11px] text-slate-500 ml-1.5">{a.evidence_strength}/5</span>
+                    </div>
+                  </section>
+                )}
+
+                {a?.visibility_impact && (
+                  <section>
+                    <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Sichtbarkeit</h4>
+                    <span className={`text-[12px] px-2 py-0.5 rounded-full font-medium ${VISIBILITY_LABELS[a.visibility_impact].color}`}>
+                      {VISIBILITY_LABELS[a.visibility_impact].label}
+                    </span>
+                  </section>
+                )}
+              </div>
+
+              {/* Relevance Score */}
+              {item.relevance_score != null && (
+                <section>
+                  <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Relevanz</h4>
+                  <span className="text-[12px] font-semibold text-slate-900">{item.relevance_score}</span>
+                  <span className="text-[11px] text-slate-400"> / 100</span>
+                </section>
+              )}
 
               {/* Capabilities */}
               {a?.capability_primary && (
