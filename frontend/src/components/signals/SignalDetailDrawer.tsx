@@ -1,27 +1,19 @@
 import { useEffect } from 'react';
 import { X, ExternalLink } from 'lucide-react';
-import type { SignalFeedItem, SignalClass, VisibilityImpact } from '../../types/intelligence';
+import type { SignalFeedItem, VisibilityImpact } from '../../types/intelligence';
 import MovementBadge from './MovementBadge';
 import ConfidenceBar from './ConfidenceBar';
 import { getCapabilityLabel } from '../../constants/capabilities';
 import { useAssessSignal } from '../../hooks/useAssessSignal';
 import DateWithTooltip from '../DateWithTooltip';
 import InfoTooltip from '../InfoTooltip';
+import SignalTypeIcon from '../SignalTypeIcon';
 
 interface Props {
   item: SignalFeedItem;
   onClose: () => void;
 }
 
-const SIGNAL_CLASS_LABELS: Record<SignalClass, string> = {
-  product_capability_move: 'Product Capability Move',
-  positioning_move:        'Positioning Move',
-  ecosystem_move:          'Ecosystem Move',
-  thought_leadership_signal: 'Thought Leadership',
-  hiring_signal:           'Hiring Signal',
-  weak_signal:             'Weak Signal',
-  market_expansion_move:   'Market Expansion',
-};
 
 const VISIBILITY_LABELS: Record<VisibilityImpact, { label: string; color: string }> = {
   low:    { label: 'Low',    color: 'text-slate-500 bg-slate-100' },
@@ -169,17 +161,13 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
                 </section>
               </div>
 
-              {/* Signal Class */}
-              {a?.signal_class && (
-                <section>
-                  <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2 flex items-center">
-                    Signal Type<InfoTooltip text="Art der Competitor-Bewegung, z.B. Produkterweiterung, Marktpositionierung oder Hiring-Aktivität." />
-                  </h4>
-                  <span className="text-[12px] px-2 py-0.5 rounded-full bg-white border border-slate-200 text-slate-600">
-                    {SIGNAL_CLASS_LABELS[a.signal_class]}
-                  </span>
-                </section>
-              )}
+              {/* Signal Type */}
+              <section>
+                <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2 flex items-center">
+                  Signal Type<InfoTooltip text="Art der Competitor-Bewegung, z.B. Produkterweiterung, Marktpositionierung oder Hiring-Aktivität." />
+                </h4>
+                <SignalTypeIcon type={item.signal_type} variant="chip" />
+              </section>
 
               {/* Evidence Strength + Visibility Impact */}
               <div className="flex gap-8">
