@@ -81,7 +81,14 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
               {a?.movement_score != null && (
                 <span className="text-[12px] text-slate-500">Score: <span className="font-semibold text-slate-900">{a.movement_score}</span></span>
               )}
-              <ConfidenceBar value={a?.confidence} />
+              <span className="flex items-center gap-1.5 text-[12px] text-slate-500">
+                Konfidenz: <ConfidenceBar value={a?.confidence} />
+              </span>
+              {a?.gameplay_tags && a.gameplay_tags.map((tag) => (
+                <span key={tag} className="text-[11px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                  {tag}
+                </span>
+              ))}
             </div>
 
             {/* Signal basics */}
@@ -153,18 +160,7 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
                   </section>
                 )}
 
-                {a.gameplay_tags.length > 0 && (
-                  <section>
-                    <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Gameplay Tags</h4>
-                    <div className="flex flex-wrap gap-1">
-                      {a.gameplay_tags.map((tag) => (
-                        <span key={tag} className="text-[11px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </section>
-                )}
+
               </>
             )}
 
