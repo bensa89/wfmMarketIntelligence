@@ -113,6 +113,11 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
 
             {/* Right — 1/3: metadata */}
             <div className="col-span-1 p-5 space-y-5 bg-slate-50">
+              {/* Competitor */}
+              <section>
+                <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Competitor</h4>
+                <span className="text-[12px] text-slate-700">{item.company_name}</span>
+              </section>
               {/* Movement + Score */}
               <section>
                 <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Bewegung</h4>
@@ -170,12 +175,6 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
                   )}
                   <div className="text-[12px] text-slate-500">Analysiert: <DateWithTooltip date={item.created_at} /></div>
                 </div>
-              </section>
-
-              {/* Competitor */}
-              <section>
-                <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Competitor</h4>
-                <span className="text-[12px] text-slate-700">{item.company_name}</span>
               </section>
 
               {/* Source */}
