@@ -6,6 +6,7 @@ import ConfidenceBar from './ConfidenceBar';
 import { getCapabilityLabel } from '../../constants/capabilities';
 import { useAssessSignal } from '../../hooks/useAssessSignal';
 import DateWithTooltip from '../DateWithTooltip';
+import InfoTooltip from '../InfoTooltip';
 
 interface Props {
   item: SignalFeedItem;
@@ -136,12 +137,16 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
               {/* Competitor + Relevanz */}
               <div className="flex gap-8">
                 <section>
-                  <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Competitor</h4>
+                  <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2 flex items-center">
+                    Competitor
+                  </h4>
                   <span className="text-[12px] text-slate-700">{item.company_name}</span>
                 </section>
                 {item.relevance_score != null && (
                   <section>
-                    <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Relevanz</h4>
+                    <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2 flex items-center">
+                      Relevanz<InfoTooltip text="Wie relevant ist dieses Signal für unser Unternehmen? Vom LLM bewertet auf einer Skala von 0–100." />
+                    </h4>
                     <span className="text-[12px] font-semibold text-slate-900">{Math.round(item.relevance_score * 100)}</span>
                     <span className="text-[11px] text-slate-400"> / 100</span>
                   </section>
@@ -151,11 +156,15 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
               {/* Movement + Confidence */}
               <div className="flex gap-8">
                 <section>
-                  <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Bewegung</h4>
+                  <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2 flex items-center">
+                    Bewegung<InfoTooltip text="Stärke und Score der Competitor-Bewegung. Weak → Relevant → Strong → Market Shaping. Der Score (0–100) ist die numerische Ausprägung innerhalb der Kategorie." />
+                  </h4>
                   <MovementBadge strength={a?.movement_strength} size="md" score={a?.movement_score} />
                 </section>
                 <section>
-                  <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Konfidenz</h4>
+                  <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2 flex items-center">
+                    Konfidenz<InfoTooltip text="Wie sicher ist das LLM in seiner Bewertung dieses Signals? Hohe Konfidenz bedeutet klare, eindeutige Evidenz." />
+                  </h4>
                   <ConfidenceBar value={a?.confidence} />
                 </section>
               </div>
@@ -163,7 +172,9 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
               {/* Signal Class */}
               {a?.signal_class && (
                 <section>
-                  <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Signal Type</h4>
+                  <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2 flex items-center">
+                    Signal Type<InfoTooltip text="Art der Competitor-Bewegung, z.B. Produkterweiterung, Marktpositionierung oder Hiring-Aktivität." />
+                  </h4>
                   <span className="text-[12px] px-2 py-0.5 rounded-full bg-white border border-slate-200 text-slate-600">
                     {SIGNAL_CLASS_LABELS[a.signal_class]}
                   </span>
@@ -174,7 +185,9 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
               <div className="flex gap-8">
                 {a?.evidence_strength != null && (
                   <section>
-                    <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Evidenz</h4>
+                    <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2 flex items-center">
+                      Evidenz<InfoTooltip text="Wie belastbar ist die Datenlage? 1 = schwache Indizien, 5 = eindeutige, gut belegte Evidenz." />
+                    </h4>
                     <div className="flex items-center gap-0.5">
                       {Array.from({ length: 5 }).map((_, i) => (
                         <span
@@ -189,7 +202,9 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
 
                 {a?.visibility_impact && (
                   <section>
-                    <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Sichtbarkeit</h4>
+                    <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2 flex items-center">
+                      Sichtbarkeit<InfoTooltip text="Wie öffentlich sichtbar ist diese Bewegung am Markt? High = breit wahrnehmbar, Low = nur intern oder schwach signalisiert." />
+                    </h4>
                     <span className={`text-[12px] px-2 py-0.5 rounded-full font-medium ${VISIBILITY_LABELS[a.visibility_impact].color}`}>
                       {VISIBILITY_LABELS[a.visibility_impact].label}
                     </span>
@@ -200,7 +215,9 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
               {/* Capabilities */}
               {a?.capability_primary && (
                 <section>
-                  <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Capability</h4>
+                  <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2 flex items-center">
+                    Capability<InfoTooltip text="Welche Produktfähigkeiten des Competitors werden durch dieses Signal berührt? Primary = Hauptfokus, Secondary = indirekt betroffen." />
+                  </h4>
                   <div className="flex flex-wrap gap-1.5">
                     <span className="text-[12px] px-2 py-0.5 rounded-full bg-white border border-slate-200 text-slate-600">
                       {getCapabilityLabel(a.capability_primary)}
@@ -217,7 +234,9 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
               {/* Gameplay Tags */}
               {a?.gameplay_tags && a.gameplay_tags.length > 0 && (
                 <section>
-                  <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Gameplay Tags</h4>
+                  <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2 flex items-center">
+                    Gameplay Tags<InfoTooltip text="Strategische Muster hinter der Bewegung, z.B. 'land-and-expand', 'price-pressure' oder 'ecosystem-lock-in'." />
+                  </h4>
                   <div className="flex flex-wrap gap-1">
                     {a.gameplay_tags.map((tag) => (
                       <span key={tag} className="text-[11px] px-2 py-0.5 rounded-full bg-white border border-slate-200 text-slate-600">
