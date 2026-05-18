@@ -40,7 +40,7 @@ The WFM Market Intelligence Hub already collects Signals, generates SignalAssess
 | `kpi_targets` | `JSON` (list of KPI IDs) | `[]` | DimensionRouter (rules, at assessment creation) |
 | `assessment_weight` | `Float` | `1.0` | LLM supplement (when `evidence_strength >= 4` or `movement_strength = market_shaping`) |
 | `valid_from` | `DateTime` | `signal.published_at or created_at` | Set at assessment creation |
-| `valid_until` | `DateTime` nullable | `null` | Optional expiry; null = no expiry |
+| `valid_until` | `DateTime` nullable | `null` | Set **only** when the assessment has a real-world expiry (e.g. a time-limited offer, a beta programme ending). Must **not** be set as a default or a calculated TTL. Null means the assessment remains valid indefinitely. See §3.1a. |
 | `buyer_relevance` | `SmallInteger` (1–5) nullable | `null` | LLM-populated; initially null |
 | `routing_version` | `String(20)` | `"v1"` | Set at routing time |
 
@@ -60,7 +60,7 @@ Table: `competitor_scorecards`
 | `overall_trend` | `String(10)` nullable | `"rising"`, `"stable"`, `"declining"`, `null` |
 | `dimension_scores` | `JSON` | See §3.3 |
 | `top_capabilities` | `JSON` | Ordered list of `{capability_key, score}` |
-| `top_moves` | `JSON` | Top 5 `{assessment_id, title, movement_score, signal_class}` |
+| `top_moves` | `JSON` | Top 5 `{assessment_id, signal_id, title, movement_score, signal_class}` |
 | `risk_flags` | `JSON` | `{assessment_id, capability_key, movement_strength, title}` |
 | `watchpoints` | `JSON` | Deduplicated strings ordered by frequency |
 | `benchmark_position` | `JSON` | `{rank, percentile, total_competitors}` |
@@ -69,7 +69,9 @@ Table: `competitor_scorecards`
 | `scorecard_version` | `String(20)` | e.g. `"sc_v1"` |
 | `routing_version` | `String(20)` | e.g. `"v1"` |
 
-**Unique constraint:** `(company_id, period_type, generated_at)`
+**Snapshot semantics:** Multiple scorecards per `(company_id, period_type)` are explicitly allowed and expected. Every build run produces a new row — this is the historical record. `is_current = True` marks the most recent build for a given `(company_id, period_type)`. Only one row per `(company_id, period_type)` may have `is_current = True` at any time (enforced by the flip-then-insert pattern in §6.2 steps 11–12, not by a DB constraint). Querying "the current scorecard" always filters `WHERE is_current = True`.
+
+**Unique constraint:** `(company_id, period_type, generated_at)` — prevents duplicate builds within the same millisecond, not duplicate periods.
 **Index:** `(company_id, period_type, is_current)` for fast current-snapshot queries.
 
 ### 3.3 dimension_scores JSON shape
@@ -134,6 +136,17 @@ The existing assessor LLM prompt is extended with two optional fields:
 
 The LLM supplement **only runs** when `evidence_strength >= 4` OR `movement_strength = market_shaping`. Otherwise the rule defaults apply.
 
+### 3.1a valid_until business rule
+
+`valid_until` is set **only** when an assessment explicitly describes something with a known end date in the real world — e.g. a beta access programme ending in Q3, a temporary promotional pricing window, a time-limited partnership.
+
+`valid_until` is **never** set:
+- as a default TTL on all assessments
+- as a calculated expiry based on age
+- to represent "this signal is old" (recency decay handles that)
+
+The temporal overlap query in ScorecardBuilder (§6.2 step 2) already handles null correctly: `valid_until IS NULL` means the assessment is always in scope once its `valid_from` is reached.
+
 ### 4.3 Versioning
 
 ```python
@@ -150,18 +163,28 @@ On bump, a backfill job re-routes all existing assessments by re-running the rul
 
 Pure functions only. No DB access, no side effects. Takes weighted assessment lists, returns `KPIValue(value: float | None, contributing_ids: list[str])`.
 
-### 5.1 Effective weight
+### 5.1 Weight terminology and effective weight
 
-Applied before all KPI calculations. Decay adjusts contribution weight, not KPI values:
+Four distinct weight factors must never be conflated:
 
+| Term | Definition | Source |
+|---|---|---|
+| `assessment_weight` | Global importance of this assessment. Default 1.0; LLM may override to 0.5–2.0 for high-evidence signals. | Persisted on `SignalAssessment` |
+| `dimension_modifier` | Per-dimension routing factor for this assessment. Set by DimensionRouter rules (e.g. hiring→activity=0.6, hiring→momentum=1.0). Default 1.0. | Derived from routing rules at compute time |
+| `recency_weight` | Time-decay factor. Reduces contribution of older assessments within the period. | Computed from `age_days` at KPIEngine call time |
+| `dimension_weight` | Weight of this dimension in the overall score. Configured in `DIMENSION_WEIGHTS`. Not used inside KPIEngine. | `ScorecardBuilder.DIMENSION_WEIGHTS` |
+
+**Effective weight formula:**
 ```python
 RECENCY_DECAY_MAX = 0.30  # floor: recency_weight >= 0.70 — defined here, imported by ScorecardBuilder
 
 recency_weight = 1.0 - (age_days / period_days) * RECENCY_DECAY_MAX
-effective_weight = assessment_weight * recency_weight
+effective_weight = assessment_weight * dimension_modifier * recency_weight
 ```
 
-Raw counts use integer counting (no weight). Weighted counts use `effective_weight`.
+`dimension_modifier` is passed by the caller (ScorecardBuilder) when invoking KPIEngine for a specific dimension. KPIEngine does not look up routing rules itself.
+
+Raw counts use integer counting (ignoring all weights). Weighted counts use `effective_weight`.
 
 ### 5.2 Capability Strength KPIs
 
@@ -315,16 +338,16 @@ New router: `backend/app/routers/scorecards.py`. Mounted in `main.py`.
 ### 7.1 Scorecard endpoints
 
 **`GET /api/scorecards/{company_slug}?period_type=30d`**
-- `period_type` is required (no default). Returns 400 if omitted.
-- Returns single `ScorecardRead` or 404 if no scorecard exists for this company + period.
+- `period_type` is **required**. No default. Returns HTTP 400 with `{"detail": "period_type is required. Valid values: 30d, 90d, 180d"}` if omitted or invalid.
+- Returns single `ScorecardRead` (current snapshot only) or HTTP 404 if no scorecard exists for this company + period.
 
 **`GET /api/scorecards/{company_slug}/history?period_type=30d&limit=10`**
 - All snapshots for a competitor + period, ordered by `generated_at` desc.
 - Returns list of `ScorecardHistoryItem` (lightweight: score, trend, generated_at, scorecard_version).
 
 **`GET /api/scorecards/{company_slug}/explain?period_type=30d`**
-- Reads from persisted `dimension_scores` JSON. No recompute.
-- Caps contributing assessment detail at **top 5 per dimension** by weighted contribution.
+- Reads from persisted `dimension_scores` JSON and `contributing_assessment_ids`. No recompute.
+- Caps contributing assessment detail at **top 5 per dimension** by `effective_weight` (descending).
 - Returns `ScorecardExplain`:
   ```json
   {
@@ -333,13 +356,13 @@ New router: `backend/app/routers/scorecards.py`. Mounted in `main.py`.
       {
         "dimension": "market_impact",
         "score": 81.0,
-        "weight": 0.25,
+        "dimension_weight": 0.25,
         "effective_weight": 0.31,
         "weighted_contribution": 25.1,
+        "assessment_count": 12,
         "top_contributing_assessments": [
-          { "assessment_id": "...", "title": "...", "movement_score": 82, "signal_class": "product_capability_move" }
+          { "assessment_id": "...", "signal_id": "...", "title": "...", "movement_score": 82, "signal_class": "product_capability_move" }
         ],
-        "total_contributing": 12,
         "kpi_detail": { ... }
       }
     ],
@@ -349,7 +372,10 @@ New router: `backend/app/routers/scorecards.py`. Mounted in `main.py`.
     "scorecard_version": "sc_v1"
   }
   ```
-  `effective_weight` = re-normalised weight after null dimensions excluded.
+
+**`weighted_contribution` semantics:** Computed as `dimension_score × effective_weight` where `effective_weight` is the **post-re-normalisation** dimension weight (i.e. after null dimensions are excluded and remaining weights are re-normalised to sum to 1.0). This means `Σ(weighted_contribution)` across all non-null dimensions equals `overall_score`. `dimension_weight` is the raw configured weight from `DIMENSION_WEIGHTS` (pre-normalisation), shown for transparency.
+
+**`assessment_count`:** Total number of assessments contributing to this dimension (integer). Replaces the previously ambiguous `total_contributing` field.
 
 **`POST /api/scorecards/{company_slug}/recompute`**
 - Triggers `ScorecardBuilder.build()` for all period types.
@@ -371,6 +397,7 @@ New router: `backend/app/routers/scorecards.py`. Mounted in `main.py`.
 ### 7.2 Benchmark endpoints
 
 **`GET /api/scorecards/benchmark?period_type=30d&page=1&page_size=20`**
+- `period_type` is **required**. Returns HTTP 400 if omitted.
 - `page_size` max 50.
 - Response:
   ```json
@@ -442,10 +469,10 @@ Right column:
 - `WatchpointsPanel` — watchpoints ordered by frequency. Empty state: *"No watchpoints in this period."*
 
 **Top bar:**
-- Period selector
+- Period selector (`period_type` required — UI always passes the currently selected value, never omits it)
 - `generated_at` label: *"Last updated May 18, 2026"*
 - "Why this score?" button → opens `ExplainabilityDrawer` (lazy-fetched on open)
-- "Recompute" button → calls `POST …/recompute`, shows spinner, refreshes on resolve. Disabled while loading.
+- "Recompute" button → calls `POST …/recompute`. While the request is in flight: button shows spinner and is disabled, existing scorecard data remains visible (stale-while-recomputing, not blanked). On resolve: data refreshes via `useScorecard` refetch. On error: toast with error message, existing data unchanged.
 
 **No-data state (entire tab):** When no scorecard exists for the selected period:
 > *"No scorecard available for this period. Scorecards are generated automatically when new signals are analysed. You can also trigger a manual recompute above."*
@@ -495,15 +522,15 @@ type CompetitorScorecard = {
   overall_score: number | null; overall_trend: 'rising' | 'stable' | 'declining' | null
   dimension_scores: Record<string, ScorecardDimension>
   top_capabilities: Array<{ capability_key: string; score: number | null }>
-  top_moves: Array<{ assessment_id: string; title: string; movement_score: number; signal_class: string }>
+  top_moves: Array<{ assessment_id: string; signal_id: string; title: string; movement_score: number; signal_class: string }>
   risk_flags: Array<{ assessment_id: string; capability_key: string; movement_strength: string; title: string }>
   watchpoints: string[]
   benchmark_position: { rank: number; percentile: number; total_competitors: number } | null
   contributing_assessment_ids: string[]
   is_current: boolean; scorecard_version: string; routing_version: string
 }
-type ScorecardExplainAssessment = { assessment_id: string; title: string; movement_score: number; signal_class: string }
-type ScorecardExplainDimension = { dimension: string; score: number | null; weight: number; effective_weight: number; weighted_contribution: number | null; top_contributing_assessments: ScorecardExplainAssessment[]; total_contributing: number; kpi_detail: Record<string, ScorecardKPIValue> }
+type ScorecardExplainAssessment = { assessment_id: string; signal_id: string; title: string; movement_score: number; signal_class: string }
+type ScorecardExplainDimension = { dimension: string; score: number | null; dimension_weight: number; effective_weight: number; weighted_contribution: number | null; assessment_count: number; top_contributing_assessments: ScorecardExplainAssessment[]; kpi_detail: Record<string, ScorecardKPIValue> }
 type ScorecardExplain = { overall_score: number | null; dimension_breakdown: ScorecardExplainDimension[]; null_dimensions: string[]; score_formula: string; routing_version: string; scorecard_version: string }
 type BenchmarkScorecardItem = { company_id: string; slug: string; name: string; overall_score: number | null; rank: number; percentile: number; dimension_scores: Record<string, ScorecardDimension>; overall_trend: string | null; scorecard_version: string }
 type BenchmarkScorecardView = { items: BenchmarkScorecardItem[]; total: number; page: number; page_size: number; pages: number; period_type: string; capability_leaders: Record<string, { company_slug: string; score: number }>; highest_momentum: { company_slug: string; mom_period_delta: number } | null; threat_flags: Array<{ company_slug: string; capability: string; movement_strength: string }> }
