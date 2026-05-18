@@ -41,18 +41,6 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
             <div id="signal-modal-title" className="text-[13px] font-semibold text-slate-900 leading-snug">{item.title}</div>
             <div className="flex items-center gap-2 mt-1.5 flex-wrap">
               <span className="text-[11px] text-slate-500">{item.company_name}</span>
-              {item.published_at && (
-                <>
-                  <span className="text-slate-300">·</span>
-                  <span className="text-[11px] text-slate-500">
-                    Artikel: <DateWithTooltip date={item.published_at} />
-                  </span>
-                </>
-              )}
-              <span className="text-slate-300">·</span>
-              <span className="text-[11px] text-slate-500">
-                Analysiert: <DateWithTooltip date={item.created_at} />
-              </span>
               {item.source_url && (
                 <>
                   <span className="text-slate-300">·</span>
@@ -189,6 +177,17 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
                   </div>
                 </section>
               )}
+
+              {/* Dates */}
+              <section>
+                <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Datum</h4>
+                <div className="space-y-1">
+                  {item.published_at && (
+                    <div className="text-[12px] text-slate-500">Artikel: <DateWithTooltip date={item.published_at} /></div>
+                  )}
+                  <div className="text-[12px] text-slate-500">Analysiert: <DateWithTooltip date={item.created_at} /></div>
+                </div>
+              </section>
 
               {/* Competitor */}
               <section>
