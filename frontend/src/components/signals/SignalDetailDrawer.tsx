@@ -39,23 +39,6 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
         <div className="flex items-start justify-between p-5 border-b border-slate-200 flex-shrink-0">
           <div className="flex-1 pr-4">
             <div id="signal-modal-title" className="text-[13px] font-semibold text-slate-900 leading-snug">{item.title}</div>
-            <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-              <span className="text-[11px] text-slate-500">{item.company_name}</span>
-              {item.source_url && (
-                <>
-                  <span className="text-slate-300">·</span>
-                  <a
-                    href={item.source_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-[11px] text-blue-600 hover:text-blue-700 transition-colors"
-                  >
-                    <ExternalLink size={11} className="flex-shrink-0" />
-                    {item.document_title || 'Source'}
-                  </a>
-                </>
-              )}
-            </div>
           </div>
           <button onClick={onClose} aria-label="Schließen" className="text-slate-400 hover:text-slate-700 transition-colors flex-shrink-0">
             <X size={16} />
