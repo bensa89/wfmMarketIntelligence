@@ -38,7 +38,7 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
         {/* Header */}
         <div className="flex items-start justify-between p-5 border-b border-slate-200 flex-shrink-0">
           <div className="flex-1 pr-4">
-            <div id="signal-modal-title" className="text-[13px] font-semibold text-slate-900 leading-snug">{item.title}</div>
+            <div id="signal-modal-title" className="text-[16px] font-semibold text-slate-900 leading-snug">{item.title}</div>
           </div>
           <button onClick={onClose} aria-label="Schließen" className="text-slate-400 hover:text-slate-700 transition-colors flex-shrink-0">
             <X size={16} />
