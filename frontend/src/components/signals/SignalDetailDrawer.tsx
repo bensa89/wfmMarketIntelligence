@@ -119,7 +119,7 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
                 <span className="text-[12px] text-slate-700">{item.company_name}</span>
               </section>
               {/* Movement + Confidence */}
-              <div className="flex justify-between">
+              <div className="flex gap-8">
                 <section>
                   <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Bewegung</h4>
                   <MovementBadge strength={a?.movement_strength} size="md" score={a?.movement_score} />
