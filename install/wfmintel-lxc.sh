@@ -27,9 +27,7 @@ echo "  WFM Market Intelligence — Proxmox LXC Setup"
 echo "  LXC ID: ${CT_ID}  |  Hostname: ${CT_HOSTNAME}"
 echo "========================================================"
 
-read -rp "LXC IP with CIDR (e.g. 192.168.1.50/24): " CT_IP
-read -rp "Default gateway (e.g. 192.168.1.1):        " CT_GW
-read -rp "Storage pool [${CT_STORAGE}]:               " CT_STORAGE_IN
+read -rp "Storage pool [${CT_STORAGE}]: " CT_STORAGE_IN
 CT_STORAGE="${CT_STORAGE_IN:-$CT_STORAGE}"
 
 msg "Checking for Debian 12 template"
@@ -45,7 +43,7 @@ pct create "$CT_ID" "${TEMPLATE_STORAGE}:vztmpl/${TEMPLATE}" \
     --cores "$CT_CORES" \
     --memory "$CT_RAM" \
     --rootfs "${CT_STORAGE}:${CT_DISK}" \
-    --net0 "name=eth0,bridge=${CT_BRIDGE},ip=${CT_IP},gw=${CT_GW}" \
+    --net0 "name=eth0,bridge=${CT_BRIDGE},ip=dhcp" \
     --unprivileged 1 \
     --features "nesting=1" \
     --onboot 1
@@ -68,7 +66,8 @@ pct exec "$CT_ID" -- bash /root/wfmintel-install.sh
 
 echo ""
 echo "========================================================"
+LXC_IP=$(pct exec "$CT_ID" -- hostname -I | awk '{print $1}')
 echo "  LXC ${CT_ID} (${CT_HOSTNAME}) setup complete."
-echo "  IP: ${CT_IP%/*}"
+echo "  IP: ${LXC_IP}"
 echo "  Run 'pct enter ${CT_ID}' to open a shell."
 echo "========================================================"
