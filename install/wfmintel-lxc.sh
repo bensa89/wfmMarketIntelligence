@@ -1,78 +1,118 @@
-#!/bin/bash
-# Usage: GITHUB_TOKEN=ghp_xxxx bash -c "$(curl -fsSL -H "Authorization: Bearer $GITHUB_TOKEN" \
-#   https://raw.githubusercontent.com/bensa89/wfmMarketIntelligence/main/install/wfmintel-lxc.sh)"
+#!/usr/bin/env bash
+# Usage: bash -c "$(curl -fsSL https://raw.githubusercontent.com/bensa89/wfmMarketIntelligence/main/install/wfmintel-lxc.sh)"
 set -euo pipefail
 
-RAW_BASE="https://raw.githubusercontent.com/bensa89/wfmMarketIntelligence/main"
-CURL_ARGS=(-fsSL)
-if [[ -n "${GITHUB_TOKEN:-}" ]]; then
-    CURL_ARGS+=(-H "Authorization: Bearer ${GITHUB_TOKEN}")
-fi
+INSTALL_SCRIPT_URL="https://raw.githubusercontent.com/bensa89/wfmMarketIntelligence/main/install/wfmintel-install.sh"
 
-msg() { echo -e "\n\033[1;34m>>> $*\033[0m"; }
+RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; BLUE='\033[0;34m'; NC='\033[0m'
+info()   { echo -e "${GREEN}[INFO]${NC} $*"; }
+warn()   { echo -e "${YELLOW}[WARN]${NC} $*"; }
+error()  { echo -e "${RED}[ERROR]${NC} $*"; exit 1; }
+prompt() { echo -e "${BLUE}[?]${NC} $*"; }
 
-# --- Configuration ---
-CT_ID=${1:-200}
-CT_HOSTNAME="wfmintel"
-CT_CORES=2
-CT_RAM=2048
+command -v pct &>/dev/null || error "pct nicht gefunden. Dieses Script muss auf dem Proxmox-Host ausgeführt werden."
+[[ $EUID -ne 0 ]] && error "Dieses Script muss als root ausgeführt werden."
+
+echo ""
+echo -e "${GREEN}╔══════════════════════════════════════════════╗${NC}"
+echo -e "${GREEN}║   WFM Market Intelligence — LXC Setup        ║${NC}"
+echo -e "${GREEN}╚══════════════════════════════════════════════╝${NC}"
+echo ""
+
+NEXT_ID=$(pvesh get /cluster/nextid 2>/dev/null || echo "200")
+prompt "Container ID [${NEXT_ID}]:"
+read -r CT_ID
+CT_ID=${CT_ID:-$NEXT_ID}
+
+prompt "Hostname [wfmintel]:"
+read -r CT_HOSTNAME
+CT_HOSTNAME=${CT_HOSTNAME:-"wfmintel"}
+
+DEFAULT_STORAGE=$(pvesm status --content rootdir 2>/dev/null | tail -n +2 | awk 'NR==1{print $1}' || echo "local-lvm")
+prompt "Storage [${DEFAULT_STORAGE}]:"
+read -r CT_STORAGE
+CT_STORAGE=${CT_STORAGE:-$DEFAULT_STORAGE}
+
 CT_DISK=20
-CT_STORAGE="local-lvm"
+CT_MEMORY=2048
 CT_BRIDGE="vmbr0"
-TEMPLATE="debian-12-standard_12.12-1_amd64.tar.zst"
-TEMPLATE_STORAGE="local"
 
-echo "========================================================"
-echo "  WFM Market Intelligence — Proxmox LXC Setup"
-echo "  LXC ID: ${CT_ID}  |  Hostname: ${CT_HOSTNAME}"
-echo "========================================================"
+echo ""
+info "Konfiguration:"
+info "  Container ID : $CT_ID"
+info "  Hostname     : $CT_HOSTNAME"
+info "  Storage      : $CT_STORAGE  |  Disk: ${CT_DISK}GB  |  RAM: ${CT_MEMORY}MB"
+echo ""
 
-read -rp "LXC ID [${CT_ID}]: " CT_ID_IN
-CT_ID="${CT_ID_IN:-$CT_ID}"
-read -rp "IP-Adresse mit CIDR (z.B. 192.168.1.50/24): " CT_IP
-read -rp "Gateway (z.B. 192.168.1.1): " CT_GW
-read -rp "Storage pool [${CT_STORAGE}]: " CT_STORAGE_IN
-CT_STORAGE="${CT_STORAGE_IN:-$CT_STORAGE}"
+# ── Debian 12 Template ────────────────────────────────────────────────────────
+info "Suche Debian 12 Template..."
+TEMPLATE_FILE=$(pveam list local 2>/dev/null | awk '{print $1}' | grep "debian-12-standard" | head -1 || true)
 
-msg "Checking for Debian 12 template"
-if ! pveam list "$TEMPLATE_STORAGE" 2>/dev/null | grep -q "$TEMPLATE"; then
-    msg "Downloading Debian 12 template (this may take a moment)..."
-    pveam download "$TEMPLATE_STORAGE" "$TEMPLATE"
+if [[ -z "$TEMPLATE_FILE" ]]; then
+    info "Template nicht gefunden — lade herunter..."
+    pveam update >/dev/null
+    TEMPLATE_NAME=$(pveam available --section system 2>/dev/null | grep "debian-12-standard" | tail -1 | awk '{print $2}')
+    [[ -z "$TEMPLATE_NAME" ]] && error "Debian 12 Template nicht im PVE-Repository gefunden."
+    pveam download local "$TEMPLATE_NAME"
+    TEMPLATE="local:vztmpl/$TEMPLATE_NAME"
+else
+    TEMPLATE="$TEMPLATE_FILE"
 fi
-echo "    ✓ Template ready"
+info "Verwende Template: $TEMPLATE"
 
-msg "Creating LXC ${CT_ID}"
-pct create "$CT_ID" "${TEMPLATE_STORAGE}:vztmpl/${TEMPLATE}" \
+# ── LXC erstellen ─────────────────────────────────────────────────────────────
+info "Erstelle LXC Container $CT_ID..."
+pct create "$CT_ID" "$TEMPLATE" \
     --hostname "$CT_HOSTNAME" \
-    --cores "$CT_CORES" \
-    --memory "$CT_RAM" \
     --rootfs "${CT_STORAGE}:${CT_DISK}" \
-    --net0 "name=eth0,bridge=${CT_BRIDGE},ip=${CT_IP},gw=${CT_GW}" \
+    --memory "$CT_MEMORY" \
+    --cores 2 \
+    --net0 "name=eth0,bridge=${CT_BRIDGE},ip=dhcp" \
     --unprivileged 1 \
-    --features "nesting=1" \
+    --features "nesting=1,keyctl=1" \
     --onboot 1 \
     --nameserver 8.8.8.8
 
-msg "Starting LXC"
+info "Starte Container..."
 pct start "$CT_ID"
 
-msg "Waiting for LXC to boot (10s)"
-sleep 10
+# ── Warten bis Container + Netzwerk bereit ────────────────────────────────────
+info "Warte auf Container-Start..."
+RETRIES=20
+until pct exec "$CT_ID" -- test -f /etc/os-release 2>/dev/null; do
+    ((RETRIES--)) || error "Container hat nicht rechtzeitig gestartet."
+    sleep 3
+done
 
-msg "Downloading install script from GitHub"
-INSTALL_TMP=$(mktemp)
-curl "${CURL_ARGS[@]}" "${RAW_BASE}/install/wfmintel-install.sh" -o "$INSTALL_TMP"
-pct push "$CT_ID" "$INSTALL_TMP" /root/wfmintel-install.sh
-rm "$INSTALL_TMP"
-pct exec "$CT_ID" -- chmod +x /root/wfmintel-install.sh
+info "Warte auf DHCP..."
+RETRIES=20
+until pct exec "$CT_ID" -- ip addr show eth0 2>/dev/null | grep -q "inet "; do
+    ((RETRIES--)) || error "Kein DHCP nach 60s. Netzwerk/Bridge prüfen."
+    sleep 3
+done
+info "Netzwerk bereit."
 
-msg "Running install script inside LXC"
-pct exec "$CT_ID" -- bash /root/wfmintel-install.sh
-
+# ── Install-Script im Container ausführen ─────────────────────────────────────
+info "Führe WFM Install-Script im Container aus..."
 echo ""
-echo "========================================================"
-LXC_IP="${CT_IP%/*}"
-echo "  LXC ${CT_ID} (${CT_HOSTNAME}) setup complete."
-echo "  IP: ${LXC_IP}"
-echo "  Run 'pct enter ${CT_ID}' to open a shell."
-echo "========================================================"
+pct exec "$CT_ID" -- bash -c \
+    "apt-get update -qq && apt-get install -y -qq curl && bash <(curl -fsSL ${INSTALL_SCRIPT_URL})"
+
+# ── Abschluss ─────────────────────────────────────────────────────────────────
+echo ""
+CT_IP=$(pct exec "$CT_ID" -- hostname -I 2>/dev/null | awk '{print $1}' || echo "unbekannt")
+echo -e "${GREEN}════════════════════════════════════════════════════════${NC}"
+echo -e "${GREEN}  LXC erfolgreich erstellt und provisioniert!${NC}"
+echo -e "${GREEN}════════════════════════════════════════════════════════${NC}"
+echo ""
+echo "  Container ID : $CT_ID"
+echo "  IP-Adresse   : $CT_IP"
+echo ""
+echo "Nächste Schritte:"
+echo "  1. GitHub Actions Deploy auslösen:"
+echo "     GitHub → Actions → Deploy → Run workflow"
+echo ""
+echo "  2. Nginx Proxy Manager konfigurieren:"
+echo "     Frontend : http://${CT_IP}:80"
+echo "     API      : http://${CT_IP}:8000"
+echo -e "${GREEN}════════════════════════════════════════════════════════${NC}"
