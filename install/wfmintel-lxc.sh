@@ -13,7 +13,7 @@ CT_RAM=2048
 CT_DISK=20
 CT_STORAGE="local-lvm"
 CT_BRIDGE="vmbr0"
-TEMPLATE="debian-12-standard_12.7-1_amd64.tar.zst"
+TEMPLATE="debian-12-standard_12.12-1_amd64.tar.zst"
 TEMPLATE_STORAGE="local"
 
 echo "========================================================"
