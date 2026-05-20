@@ -35,13 +35,35 @@ CT_STORAGE=${CT_STORAGE:-$DEFAULT_STORAGE}
 
 CT_DISK=20
 CT_MEMORY=2048
-CT_BRIDGE="vmbr0"
+
+prompt "Netzwerk-Bridge [vmbr0]:"
+read -r CT_BRIDGE
+CT_BRIDGE=${CT_BRIDGE:-"vmbr0"}
+
+echo ""
+info "IP-Konfiguration: Statische IP oder DHCP?"
+info "  (DHCP funktioniert nur wenn die Bridge einen DHCP-Server hat)"
+prompt "Statische IP (z.B. 192.168.1.100/24) oder 'dhcp' [dhcp]:"
+read -r CT_IP_INPUT
+CT_IP_INPUT=${CT_IP_INPUT:-"dhcp"}
+
+if [[ "$CT_IP_INPUT" == "dhcp" ]]; then
+    NET_CONFIG="name=eth0,bridge=${CT_BRIDGE},ip=dhcp"
+    NAMESERVER_ARG="--nameserver 8.8.8.8"
+else
+    prompt "Gateway (z.B. 192.168.1.1):"
+    read -r CT_GW
+    NET_CONFIG="name=eth0,bridge=${CT_BRIDGE},ip=${CT_IP_INPUT},gw=${CT_GW}"
+    NAMESERVER_ARG="--nameserver 8.8.8.8"
+fi
 
 echo ""
 info "Konfiguration:"
 info "  Container ID : $CT_ID"
 info "  Hostname     : $CT_HOSTNAME"
 info "  Storage      : $CT_STORAGE  |  Disk: ${CT_DISK}GB  |  RAM: ${CT_MEMORY}MB"
+info "  Bridge       : $CT_BRIDGE"
+info "  Netzwerk     : $CT_IP_INPUT"
 echo ""
 
 # ── Debian 12 Template ────────────────────────────────────────────────────────
@@ -64,14 +86,16 @@ info "Verwende Template: $TEMPLATE"
 info "Erstelle LXC Container $CT_ID..."
 pct create "$CT_ID" "$TEMPLATE" \
     --hostname "$CT_HOSTNAME" \
+    --storage "$CT_STORAGE" \
     --rootfs "${CT_STORAGE}:${CT_DISK}" \
     --memory "$CT_MEMORY" \
     --cores 2 \
-    --net0 "name=eth0,bridge=${CT_BRIDGE},ip=dhcp" \
+    --net0 "$NET_CONFIG" \
     --unprivileged 1 \
     --features "nesting=1,keyctl=1" \
+    --ostype ubuntu \
     --onboot 1 \
-    --nameserver 8.8.8.8
+    $NAMESERVER_ARG
 
 info "Starte Container..."
 pct start "$CT_ID"
@@ -84,10 +108,10 @@ until pct exec "$CT_ID" -- test -f /etc/os-release 2>/dev/null; do
     sleep 3
 done
 
-info "Warte auf DHCP..."
-RETRIES=20
+info "Warte auf Netzwerk (eth0 mit IP)..."
+RETRIES=30
 until pct exec "$CT_ID" -- ip addr show eth0 2>/dev/null | grep -q "inet "; do
-    ((RETRIES--)) || error "Kein DHCP nach 60s. Netzwerk/Bridge prüfen."
+    ((RETRIES--)) || error "Kein Netzwerk nach 90s. Bridge/IP-Konfiguration prüfen."
     sleep 3
 done
 info "Netzwerk bereit."
