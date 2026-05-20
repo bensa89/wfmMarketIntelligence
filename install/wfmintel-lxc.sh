@@ -105,7 +105,7 @@ info "Bereit."
 info "Führe WFM Install-Script im Container aus..."
 echo ""
 pct exec "$CT_ID" -- bash -c \
-    "apt-get update -qq && apt-get install -y -qq curl && bash <(curl -fsSL ${INSTALL_SCRIPT_URL})"
+    "printf 'nameserver 8.8.8.8\nnameserver 1.1.1.1\n' > /etc/resolv.conf && apt-get update -qq && apt-get install -y -qq curl && bash <(curl -fsSL ${INSTALL_SCRIPT_URL})"
 
 # ── Abschluss ─────────────────────────────────────────────────────────────────
 echo ""
