@@ -1,7 +1,13 @@
 #!/bin/bash
+# Usage: GITHUB_TOKEN=ghp_xxxx bash -c "$(curl -fsSL -H "Authorization: Bearer $GITHUB_TOKEN" \
+#   https://raw.githubusercontent.com/bensa89/wfmMarketIntelligence/main/install/wfmintel-lxc.sh)"
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+RAW_BASE="https://raw.githubusercontent.com/bensa89/wfmMarketIntelligence/main"
+CURL_ARGS=(-fsSL)
+if [[ -n "${GITHUB_TOKEN:-}" ]]; then
+    CURL_ARGS+=(-H "Authorization: Bearer ${GITHUB_TOKEN}")
+fi
 
 msg() { echo -e "\n\033[1;34m>>> $*\033[0m"; }
 
@@ -50,8 +56,11 @@ pct start "$CT_ID"
 msg "Waiting for LXC to boot (10s)"
 sleep 10
 
-msg "Copying install script into LXC"
-pct push "$CT_ID" "${SCRIPT_DIR}/wfmintel-install.sh" /root/wfmintel-install.sh
+msg "Downloading install script from GitHub"
+INSTALL_TMP=$(mktemp)
+curl "${CURL_ARGS[@]}" "${RAW_BASE}/install/wfmintel-install.sh" -o "$INSTALL_TMP"
+pct push "$CT_ID" "$INSTALL_TMP" /root/wfmintel-install.sh
+rm "$INSTALL_TMP"
 pct exec "$CT_ID" -- chmod +x /root/wfmintel-install.sh
 
 msg "Running install script inside LXC"
