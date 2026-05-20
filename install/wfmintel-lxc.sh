@@ -45,14 +45,14 @@ info "  Storage      : $CT_STORAGE  |  Disk: ${CT_DISK}GB  |  RAM: ${CT_MEMORY}M
 echo ""
 
 # ── Debian 12 Template ────────────────────────────────────────────────────────
-info "Suche Debian 12 Template..."
-TEMPLATE_FILE=$(pveam list local 2>/dev/null | awk '{print $1}' | grep "debian-12-standard" | head -1 || true)
+info "Suche Ubuntu 22.04 Template..."
+TEMPLATE_FILE=$(pveam list local 2>/dev/null | awk '{print $1}' | grep "ubuntu-22.04-standard" | head -1 || true)
 
 if [[ -z "$TEMPLATE_FILE" ]]; then
     info "Template nicht gefunden — lade herunter..."
     pveam update >/dev/null
-    TEMPLATE_NAME=$(pveam available --section system 2>/dev/null | grep "debian-12-standard" | tail -1 | awk '{print $2}')
-    [[ -z "$TEMPLATE_NAME" ]] && error "Debian 12 Template nicht im PVE-Repository gefunden."
+    TEMPLATE_NAME=$(pveam available --section system 2>/dev/null | grep "ubuntu-22.04-standard" | tail -1 | awk '{print $2}')
+    [[ -z "$TEMPLATE_NAME" ]] && error "Ubuntu 22.04 Template nicht im PVE-Repository gefunden."
     pveam download local "$TEMPLATE_NAME"
     TEMPLATE="local:vztmpl/$TEMPLATE_NAME"
 else
