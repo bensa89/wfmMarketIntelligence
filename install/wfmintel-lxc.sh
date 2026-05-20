@@ -27,6 +27,8 @@ echo "  WFM Market Intelligence — Proxmox LXC Setup"
 echo "  LXC ID: ${CT_ID}  |  Hostname: ${CT_HOSTNAME}"
 echo "========================================================"
 
+read -rp "LXC ID [${CT_ID}]: " CT_ID_IN
+CT_ID="${CT_ID_IN:-$CT_ID}"
 read -rp "Storage pool [${CT_STORAGE}]: " CT_STORAGE_IN
 CT_STORAGE="${CT_STORAGE_IN:-$CT_STORAGE}"
 
