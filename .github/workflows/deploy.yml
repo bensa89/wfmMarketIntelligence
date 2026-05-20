@@ -1,0 +1,59 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to deploy'
+        required: true
+        default: 'main'
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Pull latest code
+        run: git -C /opt/wfmintel pull origin ${{ github.event.inputs.branch }}
+
+      - name: Write .env
+        env:
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          AUTH_PASSWORD: ${{ secrets.AUTH_PASSWORD }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
+          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+        run: |
+          {
+            echo "DATABASE_URL=postgresql://wfm:${DB_PASSWORD}@db:5432/wfmintel"
+            echo "POSTGRES_USER=wfm"
+            echo "POSTGRES_PASSWORD=${DB_PASSWORD}"
+            echo "POSTGRES_DB=wfmintel"
+            echo "AUTH_USERNAME=${{ vars.AUTH_USERNAME }}"
+            echo "AUTH_PASSWORD=${AUTH_PASSWORD}"
+            echo "LLM_PROVIDER=${{ vars.LLM_PROVIDER }}"
+            echo "ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}"
+            echo "CLAUDE_MODEL=${{ vars.CLAUDE_MODEL }}"
+            echo "OLLAMA_BASE_URL=${{ vars.OLLAMA_BASE_URL }}"
+            echo "OLLAMA_MODEL=${{ vars.OLLAMA_MODEL }}"
+            echo "OPENCODE_API_KEY=${OPENCODE_API_KEY}"
+            echo "OPENCODE_BASE_URL=${{ vars.OPENCODE_BASE_URL }}"
+            echo "OPENCODE_MODEL=${{ vars.OPENCODE_MODEL }}"
+            echo "DISCOVERY_DEPTH=${{ vars.DISCOVERY_DEPTH }}"
+            echo "JS_RENDERING_ENABLED=${{ vars.JS_RENDERING_ENABLED }}"
+            echo "CRAWL_CONCURRENCY=${{ vars.CRAWL_CONCURRENCY }}"
+            echo "DISCOVERY_CONCURRENCY=${{ vars.DISCOVERY_CONCURRENCY }}"
+            echo "ANALYSIS_CONCURRENCY=${{ vars.ANALYSIS_CONCURRENCY }}"
+            echo "SEARCH_RELEVANCE_THRESHOLD=${{ vars.SEARCH_RELEVANCE_THRESHOLD }}"
+            echo "SEARCH_QUERIES_PER_COMPANY=${{ vars.SEARCH_QUERIES_PER_COMPANY }}"
+            echo "ASSESSMENT_THRESHOLD=${{ vars.ASSESSMENT_THRESHOLD }}"
+            echo "TAVILY_API_KEY=${TAVILY_API_KEY}"
+          } > /opt/wfmintel/.env
+
+      - name: Deploy stack
+        run: |
+          cd /opt/wfmintel
+          docker compose up -d --build
+
+      - name: Run migrations
+        run: |
+          docker compose -f /opt/wfmintel/docker-compose.yml exec -T backend alembic upgrade head
