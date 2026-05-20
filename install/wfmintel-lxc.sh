@@ -100,7 +100,7 @@ pct create "$CT_ID" "$TEMPLATE" \
 info "Starte Container..."
 pct start "$CT_ID"
 
-# ── Warten bis Container + Netzwerk bereit ────────────────────────────────────
+# ── Warten bis Container bereit ───────────────────────────────────────────────
 info "Warte auf Container-Start..."
 RETRIES=20
 until pct exec "$CT_ID" -- test -f /etc/os-release 2>/dev/null; do
@@ -108,12 +108,21 @@ until pct exec "$CT_ID" -- test -f /etc/os-release 2>/dev/null; do
     sleep 3
 done
 
-info "Warte auf Netzwerk (eth0 mit IP)..."
-RETRIES=30
-until pct exec "$CT_ID" -- ip addr show eth0 2>/dev/null | grep -q "inet "; do
-    ((RETRIES--)) || error "Kein Netzwerk nach 90s. Bridge/IP-Konfiguration prüfen."
-    sleep 3
-done
+# ── Warten auf Netzwerk (DHCP: progressiv bis 120s; statisch: kurz) ───────────
+if [[ "$CT_IP_INPUT" == "dhcp" ]]; then
+    info "Warte auf DHCP-IP (bis zu 120s)..."
+    ip_found=""
+    for i in {1..60}; do
+        ip_found=$(pct exec "$CT_ID" -- ip -4 addr show dev eth0 2>/dev/null | awk '/inet / {print $2}' | cut -d/ -f1)
+        [[ -z "$ip_found" ]] && ip_found=$(pct exec "$CT_ID" -- ip -6 addr show dev eth0 scope global 2>/dev/null | awk '/inet6 / {print $2}' | cut -d/ -f1 | head -n1)
+        [[ -n "$ip_found" ]] && break
+        [[ "$i" -le 20 ]] && sleep 1 || { [[ "$i" -le 40 ]] && sleep 2 || sleep 3; }
+    done
+    [[ -n "$ip_found" ]] || error "Kein DHCP nach 120s. Bridge hat keinen DHCP-Server — statische IP verwenden."
+else
+    info "Statische IP — warte kurz auf Netzwerk-Init..."
+    sleep 5
+fi
 info "Netzwerk bereit."
 
 # ── Install-Script im Container ausführen ─────────────────────────────────────
