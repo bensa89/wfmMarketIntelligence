@@ -21,6 +21,8 @@ class AssessmentLLMOutput(BaseModel):
     implication_for_us: Optional[str] = None
     watch_items: list[str] = Field(default_factory=list)
     confidence: Optional[float] = None  # valid range: 0.0–1.0
+    buyer_relevance: Optional[int] = None
+    assessment_weight: Optional[float] = None
 
     @field_validator("evidence_strength")
     @classmethod
@@ -52,6 +54,26 @@ class AssessmentLLMOutput(BaseModel):
         }
         if v is not None and v not in valid:
             return None
+        return v
+
+    @field_validator("buyer_relevance")
+    @classmethod
+    def validate_buyer_relevance(cls, v):
+        if v is not None:
+            try:
+                v = max(1, min(5, int(v)))
+            except (TypeError, ValueError):
+                return None
+        return v
+
+    @field_validator("assessment_weight")
+    @classmethod
+    def validate_assessment_weight(cls, v):
+        if v is not None:
+            try:
+                v = max(0.5, min(2.0, float(v)))
+            except (TypeError, ValueError):
+                return None
         return v
 
 

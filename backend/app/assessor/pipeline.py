@@ -10,6 +10,8 @@ from app.assessor.capabilities import CAPABILITY_KEYS, CAPABILITIES
 from app.models.signal import Signal
 from app.models.signal_assessment import SignalAssessment
 from app.models.context import InternalCompanyContext
+from app.scorecard.dimension_router import DimensionRouter
+from app.scorecard.constants import ROUTING_VERSION, VALID_PERIOD_TYPES
 
 logger = logging.getLogger(__name__)
 
@@ -73,9 +75,22 @@ def assess_signal(signal: Signal, db: Session) -> SignalAssessment | None:
         signal_class=signal_class,
     )
     movement_strength = compute_movement_strength(movement_score)
+    now = datetime.now(timezone.utc)
+
+    routing_result = DimensionRouter.route(
+        type("_A", (), {
+            "signal_class": signal_class,
+            "evidence_strength": parsed.evidence_strength or 3,
+            "visibility_impact": parsed.visibility_impact or "low",
+            "movement_strength": movement_strength,
+            "assessment_weight": parsed.assessment_weight or 1.0,
+        })()
+    )
+    assessment_weight = parsed.assessment_weight or 1.0
+    buyer_relevance = parsed.buyer_relevance
+    valid_from = signal.published_at if signal.published_at else now
 
     existing = db.query(SignalAssessment).filter(SignalAssessment.signal_id == signal.id).first()
-    now = datetime.now(timezone.utc)
 
     if existing:
         existing.capability_primary = capability_primary
@@ -92,6 +107,12 @@ def assess_signal(signal: Signal, db: Session) -> SignalAssessment | None:
         existing.assessment_summary = parsed.assessment_summary
         existing.implication_for_us = parsed.implication_for_us
         existing.watch_items = parsed.watch_items
+        existing.dimension_targets = routing_result.dimension_targets
+        existing.kpi_targets = routing_result.kpi_targets
+        existing.assessment_weight = assessment_weight
+        existing.buyer_relevance = buyer_relevance
+        existing.valid_from = valid_from
+        existing.routing_version = ROUTING_VERSION
         existing.updated_at = now
         db.commit()
         # Trigger benchmark recompute for this company (best-effort, non-blocking)
@@ -100,6 +121,13 @@ def assess_signal(signal: Signal, db: Session) -> SignalAssessment | None:
             BenchmarkAggregationService(db).recompute_company(existing.company_id, "30d")
         except Exception as exc:
             logger.warning("Benchmark recompute failed: %s", exc)
+        try:
+            from app.scorecard.builder import ScorecardBuilder
+            builder = ScorecardBuilder(db)
+            for period_type in VALID_PERIOD_TYPES:
+                builder.build(existing.company_id, period_type)
+        except Exception as exc:
+            logger.warning("Scorecard build failed: %s", exc)
         return existing
 
     assessment = SignalAssessment(
@@ -119,6 +147,12 @@ def assess_signal(signal: Signal, db: Session) -> SignalAssessment | None:
         assessment_summary=parsed.assessment_summary,
         implication_for_us=parsed.implication_for_us,
         watch_items=parsed.watch_items,
+        dimension_targets=routing_result.dimension_targets,
+        kpi_targets=routing_result.kpi_targets,
+        assessment_weight=assessment_weight,
+        buyer_relevance=buyer_relevance,
+        valid_from=valid_from,
+        routing_version=ROUTING_VERSION,
         created_at=now,
         updated_at=now,
     )
@@ -130,4 +164,11 @@ def assess_signal(signal: Signal, db: Session) -> SignalAssessment | None:
         BenchmarkAggregationService(db).recompute_company(assessment.company_id, "30d")
     except Exception as exc:
         logger.warning("Benchmark recompute failed: %s", exc)
+    try:
+        from app.scorecard.builder import ScorecardBuilder
+        builder = ScorecardBuilder(db)
+        for period_type in VALID_PERIOD_TYPES:
+            builder.build(assessment.company_id, period_type)
+    except Exception as exc:
+        logger.warning("Scorecard build failed: %s", exc)
     return assessment

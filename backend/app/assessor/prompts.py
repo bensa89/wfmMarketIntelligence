@@ -50,8 +50,15 @@ Return exactly this JSON object (no other text):
   "assessment_summary": "<2-3 sentence summary of what this signal means>",
   "implication_for_us": "<1-2 sentences on what this means for our product/strategy>",
   "watch_items": ["<specific thing to monitor>"],
-  "confidence": <float 0.0-1.0>
-}}"""
+  "confidence": <float 0.0-1.0>,
+  "buyer_relevance": <integer 1-5, only if evidence_strength >= 4 or movement is market_shaping — else omit>,
+  "assessment_weight": <float 0.5-2.0, only if evidence_strength >= 4 or movement is market_shaping — else omit>
+}}
+
+If this signal has evidence_strength >= 4 or is market-shaping, also include:
+- buyer_relevance (1=no direct buyer impact, 5=directly influences purchasing decisions)
+- assessment_weight (0.5=significantly less important than typical, 2.0=exceptionally significant, default 1.0)
+Otherwise omit these two fields entirely."""
 
 
 SUMMARY_SYSTEM_PROMPT = """You are a competitive intelligence analyst for a WFM software company.
