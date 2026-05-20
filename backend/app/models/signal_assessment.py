@@ -49,6 +49,13 @@ class SignalAssessment(Base):
     assessment_summary = Column(Text, nullable=True)
     implication_for_us = Column(Text, nullable=True)
     watch_items = Column(JSON, nullable=True)
+    dimension_targets = Column(JSON, nullable=True)   # {dimension_key: dimension_modifier}
+    kpi_targets = Column(JSON, nullable=True)          # [kpi_id, ...]
+    assessment_weight = Column(Float, nullable=True, default=1.0)
+    valid_from = Column(DateTime, nullable=True)
+    valid_until = Column(DateTime, nullable=True)
+    buyer_relevance = Column(SmallInteger, nullable=True)
+    routing_version = Column(String(20), nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
