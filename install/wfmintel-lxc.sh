@@ -29,6 +29,8 @@ echo "========================================================"
 
 read -rp "LXC ID [${CT_ID}]: " CT_ID_IN
 CT_ID="${CT_ID_IN:-$CT_ID}"
+read -rp "IP-Adresse mit CIDR (z.B. 192.168.1.50/24): " CT_IP
+read -rp "Gateway (z.B. 192.168.1.1): " CT_GW
 read -rp "Storage pool [${CT_STORAGE}]: " CT_STORAGE_IN
 CT_STORAGE="${CT_STORAGE_IN:-$CT_STORAGE}"
 
@@ -45,7 +47,7 @@ pct create "$CT_ID" "${TEMPLATE_STORAGE}:vztmpl/${TEMPLATE}" \
     --cores "$CT_CORES" \
     --memory "$CT_RAM" \
     --rootfs "${CT_STORAGE}:${CT_DISK}" \
-    --net0 "name=eth0,bridge=${CT_BRIDGE},ip=dhcp" \
+    --net0 "name=eth0,bridge=${CT_BRIDGE},ip=${CT_IP},gw=${CT_GW}" \
     --unprivileged 1 \
     --features "nesting=1" \
     --onboot 1 \
@@ -69,7 +71,7 @@ pct exec "$CT_ID" -- bash /root/wfmintel-install.sh
 
 echo ""
 echo "========================================================"
-LXC_IP=$(pct exec "$CT_ID" -- hostname -I | awk '{print $1}')
+LXC_IP="${CT_IP%/*}"
 echo "  LXC ${CT_ID} (${CT_HOSTNAME}) setup complete."
 echo "  IP: ${LXC_IP}"
 echo "  Run 'pct enter ${CT_ID}' to open a shell."
