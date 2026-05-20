@@ -144,3 +144,106 @@ def test_act_diversity_zero_inputs():
     from app.scorecard.kpi_engine import compute_activity_kpis
     result = compute_activity_kpis([])
     assert result["act_signal_class_diversity"].value == pytest.approx(0.0)
+
+
+# --- market_impact KPIs ---
+
+def test_mkt_weighted_visibility_empty_returns_null():
+    from app.scorecard.kpi_engine import compute_market_impact_kpis
+    result = compute_market_impact_kpis([])
+    assert result["mkt_weighted_visibility"].value is None
+
+
+def test_mkt_weighted_visibility_weights_by_visibility():
+    from app.scorecard.kpi_engine import compute_market_impact_kpis
+    inputs = [
+        _inp(id="a1", movement_score=100, visibility_impact="high"),
+        _inp(id="a2", movement_score=100, visibility_impact="low"),
+    ]
+    result = compute_market_impact_kpis(inputs)
+    # high (1.0) should pull score towards 100; low (0.3) pulls towards 100 too
+    # With equal movement_score, result should be 100 regardless
+    assert result["mkt_weighted_visibility"].value == pytest.approx(100.0)
+
+
+def test_mkt_move_quality_only_includes_qualifying_classes():
+    from app.scorecard.kpi_engine import compute_market_impact_kpis
+    inputs = [
+        _inp(id="a1", movement_score=80, signal_class="product_capability_move"),
+        _inp(id="a2", movement_score=20, signal_class="hiring_signal"),
+    ]
+    result = compute_market_impact_kpis(inputs)
+    assert result["mkt_move_quality"].value == pytest.approx(80.0)
+    assert result["mkt_move_quality"].contributing_ids == ["a1"]
+
+
+def test_mkt_move_quality_null_when_no_qualifying():
+    from app.scorecard.kpi_engine import compute_market_impact_kpis
+    inputs = [_inp(signal_class="hiring_signal")]
+    result = compute_market_impact_kpis(inputs)
+    assert result["mkt_move_quality"].value is None
+
+
+# --- customer_proof KPIs ---
+
+def test_cp_validation_score_null_when_no_data():
+    from app.scorecard.kpi_engine import compute_customer_proof_kpis
+    result = compute_customer_proof_kpis([])
+    assert result["cp_validation_score"].value is None
+
+
+def test_cp_high_evidence_ratio():
+    from app.scorecard.kpi_engine import compute_customer_proof_kpis
+    inputs = [
+        _inp(id="a1", signal_class="ecosystem_move", evidence_strength=4),
+        _inp(id="a2", signal_class="ecosystem_move", evidence_strength=2),
+    ]
+    result = compute_customer_proof_kpis(inputs)
+    assert result["cp_high_evidence_ratio"].value == pytest.approx(0.5)
+
+
+# --- momentum KPIs ---
+
+def test_mom_period_delta_null_when_no_prior():
+    from app.scorecard.kpi_engine import compute_momentum_kpis
+    current = [_inp(id="a1", movement_score=70)]
+    result = compute_momentum_kpis(current, prior=[])
+    assert result["mom_period_delta"].value is None
+
+
+def test_mom_trend_rising():
+    from app.scorecard.kpi_engine import compute_momentum_kpis
+    from app.scorecard.constants import MOMENTUM_RISING_THRESHOLD
+    current = [_inp(id="c1", movement_score=80)]
+    prior = [_inp(id="p1", movement_score=80 - MOMENTUM_RISING_THRESHOLD - 1)]
+    result = compute_momentum_kpis(current, prior)
+    assert result["mom_trend"].value == "rising"
+
+
+def test_mom_trend_stable():
+    from app.scorecard.kpi_engine import compute_momentum_kpis
+    current = [_inp(id="c1", movement_score=70)]
+    prior = [_inp(id="p1", movement_score=70)]
+    result = compute_momentum_kpis(current, prior)
+    assert result["mom_trend"].value == "stable"
+
+
+# --- dimension score ---
+
+def test_capability_dimension_score_uses_cap_weighted_score():
+    from app.scorecard.kpi_engine import compute_dimension_score
+    kpis = {"cap_weighted_score": {"value": 75.0}, "cap_strong_move_count_raw": {"value": 2}}
+    assert compute_dimension_score("capability_strength", kpis) == pytest.approx(75.0)
+
+
+def test_momentum_dimension_score_centered_at_50():
+    from app.scorecard.kpi_engine import compute_dimension_score
+    kpis = {"mom_period_delta": {"value": 20.0}, "mom_trend": {"value": "rising"}}
+    # 50 + 20/2 = 60
+    assert compute_dimension_score("momentum", kpis) == pytest.approx(60.0)
+
+
+def test_dimension_score_null_when_primary_kpi_null():
+    from app.scorecard.kpi_engine import compute_dimension_score
+    kpis = {"cap_weighted_score": {"value": None}}
+    assert compute_dimension_score("capability_strength", kpis) is None
