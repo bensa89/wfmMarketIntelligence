@@ -10,6 +10,10 @@ REPO_HTTPS="https://github.com/bensa89/wfmMarketIntelligence"
 msg() { echo -e "\n\033[1;34m>>> $*\033[0m"; }
 ok()  { echo -e "\033[1;32m    ✓ $*\033[0m"; }
 
+msg "Configuring DNS"
+printf 'nameserver 8.8.8.8\nnameserver 1.1.1.1\n' > /etc/resolv.conf
+ok "DNS set to 8.8.8.8 / 1.1.1.1"
+
 msg "Updating system packages"
 apt-get update -qq && apt-get upgrade -y -qq
 
