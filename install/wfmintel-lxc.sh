@@ -67,19 +67,16 @@ info "  Netzwerk     : $CT_IP_INPUT"
 echo ""
 
 # ── Debian 12 Template ────────────────────────────────────────────────────────
-info "Suche Ubuntu 22.04 Template..."
-TEMPLATE_FILE=$(pveam list local 2>/dev/null | awk '{print $1}' | grep "ubuntu-22.04-standard" | head -1 || true)
+info "Suche Debian 12 Template..."
+pveam update 2>/dev/null || true
+TEMPLATE_NAME=$(pveam available --section system 2>/dev/null | awk '/debian-12/ {print $2}' | sort -V | tail -1)
+[[ -z "$TEMPLATE_NAME" ]] && error "Kein Debian 12 Template gefunden. Internetverbindung prüfen."
 
-if [[ -z "$TEMPLATE_FILE" ]]; then
-    info "Template nicht gefunden — lade herunter..."
-    pveam update >/dev/null
-    TEMPLATE_NAME=$(pveam available --section system 2>/dev/null | grep "ubuntu-22.04-standard" | tail -1 | awk '{print $2}')
-    [[ -z "$TEMPLATE_NAME" ]] && error "Ubuntu 22.04 Template nicht im PVE-Repository gefunden."
-    pveam download local "$TEMPLATE_NAME"
-    TEMPLATE="local:vztmpl/$TEMPLATE_NAME"
-else
-    TEMPLATE="$TEMPLATE_FILE"
+if ! pveam list local 2>/dev/null | grep -q "$TEMPLATE_NAME"; then
+    info "Template herunterladen..."
+    pveam download local "$TEMPLATE_NAME" || error "Template-Download fehlgeschlagen."
 fi
+TEMPLATE="local:vztmpl/${TEMPLATE_NAME}"
 info "Verwende Template: $TEMPLATE"
 
 # ── LXC erstellen ─────────────────────────────────────────────────────────────
@@ -93,37 +90,16 @@ pct create "$CT_ID" "$TEMPLATE" \
     --net0 "$NET_CONFIG" \
     --unprivileged 1 \
     --features "nesting=1,keyctl=1" \
-    --ostype ubuntu \
+    --ostype debian \
     --onboot 1 \
     $NAMESERVER_ARG
 
 info "Starte Container..."
 pct start "$CT_ID"
 
-# ── Warten bis Container bereit ───────────────────────────────────────────────
-info "Warte auf Container-Start..."
-RETRIES=20
-until pct exec "$CT_ID" -- test -f /etc/os-release 2>/dev/null; do
-    ((RETRIES--)) || error "Container hat nicht rechtzeitig gestartet."
-    sleep 3
-done
-
-# ── Warten auf Netzwerk (DHCP: progressiv bis 120s; statisch: kurz) ───────────
-if [[ "$CT_IP_INPUT" == "dhcp" ]]; then
-    info "Warte auf DHCP-IP (bis zu 120s)..."
-    ip_found=""
-    for i in {1..60}; do
-        ip_found=$(pct exec "$CT_ID" -- ip -4 addr show dev eth0 2>/dev/null | awk '/inet / {print $2}' | cut -d/ -f1)
-        [[ -z "$ip_found" ]] && ip_found=$(pct exec "$CT_ID" -- ip -6 addr show dev eth0 scope global 2>/dev/null | awk '/inet6 / {print $2}' | cut -d/ -f1 | head -n1)
-        [[ -n "$ip_found" ]] && break
-        [[ "$i" -le 20 ]] && sleep 1 || { [[ "$i" -le 40 ]] && sleep 2 || sleep 3; }
-    done
-    [[ -n "$ip_found" ]] || error "Kein DHCP nach 120s. Bridge hat keinen DHCP-Server — statische IP verwenden."
-else
-    info "Statische IP — warte kurz auf Netzwerk-Init..."
-    sleep 5
-fi
-info "Netzwerk bereit."
+info "Container gestartet — warte auf Boot..."
+sleep 8
+info "Bereit."
 
 # ── Install-Script im Container ausführen ─────────────────────────────────────
 info "Führe WFM Install-Script im Container aus..."
