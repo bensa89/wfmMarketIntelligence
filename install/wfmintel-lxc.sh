@@ -48,7 +48,8 @@ pct create "$CT_ID" "${TEMPLATE_STORAGE}:vztmpl/${TEMPLATE}" \
     --net0 "name=eth0,bridge=${CT_BRIDGE},ip=dhcp" \
     --unprivileged 1 \
     --features "nesting=1" \
-    --onboot 1
+    --onboot 1 \
+    --nameserver 8.8.8.8
 
 msg "Starting LXC"
 pct start "$CT_ID"
