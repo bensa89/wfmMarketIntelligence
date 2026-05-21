@@ -46,7 +46,7 @@ export function useRecomputeCompanyBenchmark() {
   return useMutation({
     mutationFn: ({ companyId, periodType = '30d' }: { companyId: string; periodType?: BenchmarkPeriodType }) =>
       recomputeCompanyBenchmark(companyId, periodType),
-    onSuccess: (_data, { companyId }) => {
+    onSuccess: (_data, { companyId: _companyId }) => {
       queryClient.invalidateQueries({ queryKey: ['benchmark'] });
     },
   });

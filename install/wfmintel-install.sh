@@ -42,6 +42,7 @@ ok "User ${APP_USER} created and added to docker group"
 msg "Generating SSH deploy key"
 SSH_DIR="/home/${APP_USER}/.ssh"
 mkdir -p "$SSH_DIR"
+chown "${APP_USER}:${APP_USER}" "$SSH_DIR"
 su -s /bin/bash -c "ssh-keygen -t ed25519 -f '${SSH_DIR}/deploy_key' -N '' -C 'wfmintel-deploy' -q" "$APP_USER"
 cat > "${SSH_DIR}/config" << 'EOF'
 Host github.com
@@ -63,7 +64,8 @@ echo "========================================================"
 read -rp "Press ENTER once the deploy key has been added..."
 
 msg "Cloning repository"
-mkdir -p "$(dirname "$APP_DIR")"
+mkdir -p "$APP_DIR"
+chown "${APP_USER}:${APP_USER}" "$APP_DIR"
 su -s /bin/bash -c "git clone '$REPO_SSH' '$APP_DIR'" "$APP_USER"
 chown -R "${APP_USER}:${APP_USER}" "$APP_DIR"
 ok "Repository cloned to ${APP_DIR}"
