@@ -2,7 +2,9 @@
 # Usage: bash -c "$(curl -fsSL https://raw.githubusercontent.com/bensa89/wfmMarketIntelligence/main/install/wfmintel-lxc.sh)"
 set -euo pipefail
 
-INSTALL_SCRIPT_URL="https://raw.githubusercontent.com/bensa89/wfmMarketIntelligence/main/install/wfmintel-install.sh"
+_LATEST_SHA=$(curl -fsSL "https://api.github.com/repos/bensa89/wfmMarketIntelligence/commits/main" \
+  | grep '"sha"' | head -1 | cut -d'"' -f4)
+INSTALL_SCRIPT_URL="https://raw.githubusercontent.com/bensa89/wfmMarketIntelligence/${_LATEST_SHA}/install/wfmintel-install.sh"
 
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; BLUE='\033[0;34m'; NC='\033[0m'
 info()   { echo -e "${GREEN}[INFO]${NC} $*"; }
