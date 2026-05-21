@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, time, timezone
 
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.models.company import Company
 from app.models.capability_benchmark import CompetitorCapabilityBenchmark
@@ -195,8 +195,8 @@ class BenchmarkQueryService:
             raise ValueError(f"Company not found: {slug!r}")
 
         period_start, period_end = get_period_bounds(period_type)
-        dt_start = datetime(period_start.year, period_start.month, period_start.day, 0, 0, 0)
-        dt_end = datetime(period_end.year, period_end.month, period_end.day, 23, 59, 59)
+        dt_start = datetime.combine(period_start, time.min, tzinfo=timezone.utc)
+        dt_end = datetime.combine(period_end, time.max, tzinfo=timezone.utc)
 
         base_filter = [
             SignalAssessment.company_id == company.id,
@@ -210,6 +210,7 @@ class BenchmarkQueryService:
         )
         assessments = (
             self.db.query(SignalAssessment)
+            .options(joinedload(SignalAssessment.signal))
             .filter(*base_filter)
             .order_by(SignalAssessment.movement_score.desc())
             .limit(20)
