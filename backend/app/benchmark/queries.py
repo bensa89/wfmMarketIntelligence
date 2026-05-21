@@ -1,15 +1,20 @@
 from __future__ import annotations
 
+from datetime import datetime
+
 from sqlalchemy.orm import Session
 
 from app.models.company import Company
 from app.models.capability_benchmark import CompetitorCapabilityBenchmark
+from app.models.signal_assessment import SignalAssessment
 from app.assessor.capabilities import CAPABILITIES, CAPABILITY_KEYS
 from app.benchmark.period import get_period_bounds
 from app.schemas.benchmark import (
     BenchmarkMatrixCell,
     BenchmarkOverviewResponse,
     BenchmarkSubScores,
+    CapabilityAssessmentItem,
+    CapabilityAssessmentsResponse,
     CapabilityLeaderboardResponse,
     CompetitorBenchmarkDetail,
     CompetitorBenchmarkResponse,
@@ -180,4 +185,56 @@ class BenchmarkQueryService:
             leaderboard=entries,
             strongest_competitor=strongest,
             fastest_riser=fastest_riser,
+        )
+
+    def get_capability_assessments(
+        self, slug: str, cap_key: str, period_type: str = "30d"
+    ) -> CapabilityAssessmentsResponse:
+        company = self.db.query(Company).filter_by(slug=slug).first()
+        if company is None:
+            raise ValueError(f"Company not found: {slug!r}")
+
+        period_start, period_end = get_period_bounds(period_type)
+        dt_start = datetime(period_start.year, period_start.month, period_start.day, 0, 0, 0)
+        dt_end = datetime(period_end.year, period_end.month, period_end.day, 23, 59, 59)
+
+        base_filter = [
+            SignalAssessment.company_id == company.id,
+            SignalAssessment.capability_primary == cap_key,
+            SignalAssessment.created_at >= dt_start,
+            SignalAssessment.created_at <= dt_end,
+        ]
+
+        total_count = (
+            self.db.query(SignalAssessment).filter(*base_filter).count()
+        )
+        assessments = (
+            self.db.query(SignalAssessment)
+            .filter(*base_filter)
+            .order_by(SignalAssessment.movement_score.desc())
+            .limit(20)
+            .all()
+        )
+
+        cap_meta = CAPABILITIES.get(cap_key, {})
+        label = cap_meta.get("label", cap_key) if cap_meta else cap_key
+
+        items = [
+            CapabilityAssessmentItem(
+                assessment_id=a.id,
+                signal_id=a.signal_id,
+                title=a.signal.title if a.signal else "—",
+                movement_score=a.movement_score or 0,
+                signal_class=a.signal_class.value if a.signal_class else "unknown",
+                created_at=a.created_at,
+            )
+            for a in assessments
+        ]
+
+        return CapabilityAssessmentsResponse(
+            capability_key=cap_key,
+            label=label,
+            period_type=period_type,
+            assessments=items,
+            total_count=total_count,
         )
