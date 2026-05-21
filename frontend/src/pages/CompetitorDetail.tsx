@@ -9,6 +9,15 @@ import FilterBar from '../components/FilterBar';
 import MarkdownViewer from '../components/MarkdownViewer';
 import type { DedupResult, SignalType } from '../types';
 import { ArrowLeft, Merge, X, CheckCircle2, AlertCircle } from 'lucide-react';
+import { useScorecard, useScorecardExplain, useRecomputeScorecard } from '../hooks/useScorecard';
+import { DimensionScoreGrid } from '../components/scorecard/DimensionScoreGrid';
+import { CapabilityStrengthPanel } from '../components/scorecard/CapabilityStrengthPanel';
+import { TopMovesTimeline } from '../components/scorecard/TopMovesTimeline';
+import { RiskFlagsPanel } from '../components/scorecard/RiskFlagsPanel';
+import { WatchpointsPanel } from '../components/scorecard/WatchpointsPanel';
+import { ExplainabilityDrawer } from '../components/scorecard/ExplainabilityDrawer';
+import type { ScorecardPeriodType } from '../types/scorecard';
+import { RefreshCw, HelpCircle } from 'lucide-react';
 
 export default function CompetitorDetail() {
   const { slug } = useParams<{ slug: string }>();
@@ -32,6 +41,17 @@ export default function CompetitorDetail() {
   const deduplicate = useDeduplicate();
   const [dedupResult, setDedupResult] = useState<DedupResult | null>(null);
   const [showDedupPanel, setShowDedupPanel] = useState(false);
+  const [activeTab, setActiveTab] = useState<'signals' | 'scorecard'>('signals');
+  const [scorecardPeriod, setScorecardPeriod] = useState<ScorecardPeriodType>('30d');
+  const [explainOpen, setExplainOpen] = useState(false);
+
+  const { data: scorecard, isLoading: scorecardLoading } = useScorecard(slug!, scorecardPeriod);
+  const {
+    data: explain,
+    isLoading: explainLoading,
+    isError: explainError,
+  } = useScorecardExplain(slug!, scorecardPeriod, explainOpen);
+  const recompute = useRecomputeScorecard(slug!);
 
   function handleDeduplicate() {
     if (!company) return;
@@ -153,30 +173,148 @@ export default function CompetitorDetail() {
           )}
         </div>
       )}
-      <FilterBar
-        signalType={signalType}
-        onSignalTypeChange={setSignalType}
-        minRelevance={minRelevance}
-        onMinRelevanceChange={setMinRelevance}
-        searchQuery={searchQuery}
-        onSearchQueryChange={setSearchQuery}
-      />
-      {signalsLoading ? (
-        <p className="text-ink-muted">Loading signals...</p>
-      ) : (
-        <div className="space-y-4">
-          {signals?.map((signal) => (
-            <SignalCard
-              key={signal.id}
-              signal={signal}
-              onClick={signal.document_id ? () => setSelectedDocId(signal.document_id) : undefined}
-            />
-          ))}
-          {signals?.length === 0 && (
-            <p className="text-ink-muted">No signals found for this company.</p>
+      {/* Tab bar */}
+      <div className="flex border-b border-gray-200 mb-4">
+        <button
+          onClick={() => setActiveTab('signals')}
+          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+            activeTab === 'signals'
+              ? 'border-indigo-600 text-indigo-700'
+              : 'border-transparent text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          Signals
+        </button>
+        <button
+          onClick={() => setActiveTab('scorecard')}
+          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+            activeTab === 'scorecard'
+              ? 'border-indigo-600 text-indigo-700'
+              : 'border-transparent text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          Scorecard
+        </button>
+      </div>
+
+      {activeTab === 'signals' && (
+        <>
+          <FilterBar
+            signalType={signalType}
+            onSignalTypeChange={setSignalType}
+            minRelevance={minRelevance}
+            onMinRelevanceChange={setMinRelevance}
+            searchQuery={searchQuery}
+            onSearchQueryChange={setSearchQuery}
+          />
+          {signalsLoading ? (
+            <p className="text-ink-muted">Loading signals...</p>
+          ) : (
+            <div className="space-y-4">
+              {signals?.map((signal) => (
+                <SignalCard
+                  key={signal.id}
+                  signal={signal}
+                  onClick={signal.document_id ? () => setSelectedDocId(signal.document_id) : undefined}
+                />
+              ))}
+              {signals?.length === 0 && (
+                <p className="text-ink-muted">No signals found for this company.</p>
+              )}
+            </div>
           )}
+        </>
+      )}
+
+      {activeTab === 'scorecard' && (
+        <div>
+          {/* Top bar */}
+          <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+            {/* Period selector */}
+            <div className="flex items-center gap-2">
+              {(['30d', '90d', '180d'] as ScorecardPeriodType[]).map((p) => (
+                <button
+                  key={p}
+                  onClick={() => setScorecardPeriod(p)}
+                  className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                    scorecardPeriod === p
+                      ? 'bg-indigo-600 text-white'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  {p}
+                </button>
+              ))}
+            </div>
+
+            {/* Actions */}
+            <div className="flex items-center gap-2">
+              {scorecard && (
+                <span className="text-xs text-gray-400">
+                  Last updated {new Date(scorecard.generated_at).toLocaleDateString()}
+                </span>
+              )}
+              <button
+                onClick={() => setExplainOpen(true)}
+                disabled={!scorecard}
+                className="flex items-center gap-1 px-3 py-1.5 text-sm rounded border border-gray-200 hover:bg-gray-50 disabled:opacity-40"
+              >
+                <HelpCircle className="w-4 h-4" />
+                Why this score?
+              </button>
+              <button
+                onClick={() => recompute.mutate()}
+                disabled={recompute.isPending}
+                className="flex items-center gap-1 px-3 py-1.5 text-sm rounded bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-60"
+              >
+                <RefreshCw className={`w-4 h-4 ${recompute.isPending ? 'animate-spin' : ''}`} />
+                {recompute.isPending ? 'Recomputing…' : 'Recompute'}
+              </button>
+            </div>
+          </div>
+
+          {/* No scorecard state */}
+          {!scorecardLoading && !scorecard && (
+            <div className="rounded-lg border border-dashed border-gray-300 p-8 text-center">
+              <p className="text-sm text-gray-500">
+                No scorecard available for this period. Scorecards are generated automatically when new
+                signals are analysed. You can also trigger a manual recompute above.
+              </p>
+            </div>
+          )}
+
+          {/* Scorecard content */}
+          {(scorecardLoading || scorecard) && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Left column */}
+              <div className="space-y-4">
+                <DimensionScoreGrid
+                  dimensionScores={scorecard?.dimension_scores}
+                  loading={scorecardLoading}
+                />
+                <RiskFlagsPanel flags={scorecard?.risk_flags} loading={scorecardLoading} />
+              </div>
+
+              {/* Right column */}
+              <div className="space-y-4">
+                <CapabilityStrengthPanel scorecard={scorecard} loading={scorecardLoading} />
+                <TopMovesTimeline moves={scorecard?.top_moves} loading={scorecardLoading} />
+                <WatchpointsPanel watchpoints={scorecard?.watchpoints} loading={scorecardLoading} />
+              </div>
+            </div>
+          )}
+
+          {/* Explainability drawer */}
+          <ExplainabilityDrawer
+            open={explainOpen}
+            onClose={() => setExplainOpen(false)}
+            explain={explain}
+            loading={explainLoading}
+            error={explainError}
+          />
         </div>
       )}
+
       {selectedDocId && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-8 z-50" onClick={() => setSelectedDocId(null)}>
           <div className="card max-w-3xl w-full max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
