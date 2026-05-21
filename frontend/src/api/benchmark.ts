@@ -18,11 +18,11 @@ export function fetchCapabilityLeaderboard(capKey: string, periodType: Benchmark
   return apiGet<CapabilityLeaderboardResponse>(`/benchmark/capabilities/${capKey}`, { period_type: periodType });
 }
 
-export function recomputeAllBenchmarks(periodType: BenchmarkPeriodType = '30d') {
+export function recomputeAllBenchmarks(_periodType: BenchmarkPeriodType = '30d') {
   return apiPost<{ recomputed: number; period_type: string }>('/benchmark/recompute', null);
 }
 
-export function recomputeCompanyBenchmark(companyId: string, periodType: BenchmarkPeriodType = '30d') {
+export function recomputeCompanyBenchmark(companyId: string, _periodType: BenchmarkPeriodType = '30d') {
   return apiPost<{ recomputed: number; company_id: string; period_type: string }>(
     `/benchmark/recompute/${companyId}`,
     null,
