@@ -19,7 +19,10 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    op.execute("ALTER TYPE crawlrunsourcestatus ADD VALUE IF NOT EXISTS 'analysing'")
+    # ALTER TYPE ADD VALUE cannot be used in the same transaction as queries using the new value
+    connection = op.get_bind()
+    connection.execute(sa.text("COMMIT"))
+    connection.execute(sa.text("ALTER TYPE crawlrunsourcestatus ADD VALUE IF NOT EXISTS 'analysing'"))
     op.add_column(
         "crawl_run_sources",
         sa.Column("analyse_started_at", sa.DateTime(), nullable=True),
