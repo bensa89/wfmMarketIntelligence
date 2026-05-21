@@ -213,7 +213,7 @@ def _run_crawl_background(
                     thread_db.query(CrawlRun).filter(CrawlRun.id == crawl_run_id).first()
                 )
                 for crs in crawl_run.sources:
-                    if crs.status != CrawlRunSourceStatus.completed:
+                    if crs.status not in (CrawlRunSourceStatus.completed, CrawlRunSourceStatus.failed):
                         continue
                     src = thread_db.query(Source).filter(Source.id == crs.source_id).first()
                     if not src or src.analysis_status != _AS.pending:
