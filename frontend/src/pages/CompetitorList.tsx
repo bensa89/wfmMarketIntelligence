@@ -7,6 +7,9 @@ import type { BenchmarkPeriodType } from '../types/benchmark';
 import { CapabilityStrengthMatrix } from '../components/benchmark/CapabilityStrengthMatrix';
 import { CapabilityLeaderboardDrawer } from '../components/benchmark/CapabilityLeaderboardDrawer';
 import { Users, BarChart3 } from 'lucide-react';
+import { useBenchmarkScorecard } from '../hooks/useScorecard';
+import { ScorecardSummaryStrip } from '../components/scorecard/ScorecardSummaryStrip';
+import type { ScorecardPeriodType } from '../types/scorecard';
 
 export default function CompetitorList() {
   const { data: companies, isLoading } = useCompanies();
@@ -17,6 +20,12 @@ export default function CompetitorList() {
   const navigate = useNavigate();
   const { data: benchmarkData, isLoading: benchmarkLoading } = useBenchmarkOverview(benchmarkPeriod);
   const recompute = useRecomputeBenchmarks();
+
+  const [scorecardPeriod, setScorecardPeriod] = useState<ScorecardPeriodType>('30d');
+  const { data: scorecardBenchmark, isLoading: scorecardLoading } = useBenchmarkScorecard(scorecardPeriod);
+  const scorecardByCompanyId = Object.fromEntries(
+    (scorecardBenchmark?.items ?? []).map((item) => [item.company_id, item])
+  );
 
   const competitors = companies?.filter((c) => c.type === 'competitor') ?? [];
   const marketSources = companies?.filter((c) => c.type === 'market_source') ?? [];
@@ -55,6 +64,23 @@ export default function CompetitorList() {
             >
               {recompute.isPending ? 'Recomputing…' : 'Recompute'}
             </button>
+            {/* Scorecard period selector */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-gray-500">Scorecard period:</span>
+              {(['30d', '90d', '180d'] as ScorecardPeriodType[]).map((p) => (
+                <button
+                  key={p}
+                  onClick={() => setScorecardPeriod(p)}
+                  className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
+                    scorecardPeriod === p
+                      ? 'bg-indigo-600 text-white'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  {p}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -104,6 +130,10 @@ export default function CompetitorList() {
                   <BarChart3 size={14} />
                   {countSignals(c.id)} signals
                 </div>
+                <ScorecardSummaryStrip
+                  scorecard={scorecardByCompanyId[c.id] ?? null}
+                  loading={scorecardLoading}
+                />
               </Link>
             ))}
             {competitors.length === 0 && (
