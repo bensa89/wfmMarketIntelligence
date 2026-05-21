@@ -42,7 +42,7 @@ ok "User ${APP_USER} created and added to docker group"
 msg "Generating SSH deploy key"
 SSH_DIR="/home/${APP_USER}/.ssh"
 mkdir -p "$SSH_DIR"
-sudo -u "$APP_USER" ssh-keygen -t ed25519 -f "${SSH_DIR}/deploy_key" -N "" -C "wfmintel-deploy" -q
+su -s /bin/bash -c "ssh-keygen -t ed25519 -f '${SSH_DIR}/deploy_key' -N '' -C 'wfmintel-deploy' -q" "$APP_USER"
 cat > "${SSH_DIR}/config" << 'EOF'
 Host github.com
     IdentityFile ~/.ssh/deploy_key
@@ -64,7 +64,7 @@ read -rp "Press ENTER once the deploy key has been added..."
 
 msg "Cloning repository"
 mkdir -p "$(dirname "$APP_DIR")"
-sudo -u "$APP_USER" git clone "$REPO_SSH" "$APP_DIR"
+su -s /bin/bash -c "git clone '$REPO_SSH' '$APP_DIR'" "$APP_USER"
 chown -R "${APP_USER}:${APP_USER}" "$APP_DIR"
 ok "Repository cloned to ${APP_DIR}"
 
@@ -92,13 +92,13 @@ echo "========================================================"
 read -rp "Runner registration token: " RUNNER_TOKEN
 
 msg "Configuring GitHub Actions runner"
-sudo -u "$APP_USER" bash -c \
+su -s /bin/bash -c \
   "cd '${RUNNER_DIR}' && ./config.sh \
     --url '${REPO_HTTPS}' \
     --token '${RUNNER_TOKEN}' \
     --name 'proxmox-lxc' \
     --labels 'self-hosted,linux' \
-    --unattended"
+    --unattended" "$APP_USER"
 
 msg "Installing runner as systemd service"
 cd "$RUNNER_DIR"
@@ -120,21 +120,21 @@ EOF
     chown "${APP_USER}:${APP_USER}" "${APP_DIR}/.env"
 
     cd "$APP_DIR"
-    sudo -u "$APP_USER" docker compose up -d db
+    su -s /bin/bash -c "cd '${APP_DIR}' && docker compose up -d db" "$APP_USER"
 
     echo "    Waiting for database to be ready..."
     for _ in $(seq 1 30); do
-        if sudo -u "$APP_USER" docker compose exec -T db pg_isready -U wfm -q 2>/dev/null; then
+        if su -s /bin/bash -c "cd '${APP_DIR}' && docker compose exec -T db pg_isready -U wfm -q" "$APP_USER" 2>/dev/null; then
             break
         fi
         sleep 2
     done
 
-    sudo -u "$APP_USER" docker compose cp "$SEED_FILE" db:/tmp/seed.dump
-    sudo -u "$APP_USER" docker compose exec -T db \
-        pg_restore -U wfm -d wfmintel --no-owner --clean --if-exists /tmp/seed.dump
+    su -s /bin/bash -c "cd '${APP_DIR}' && docker compose cp '${SEED_FILE}' db:/tmp/seed.dump" "$APP_USER"
+    su -s /bin/bash -c "cd '${APP_DIR}' && docker compose exec -T db \
+        pg_restore -U wfm -d wfmintel --no-owner --clean --if-exists /tmp/seed.dump" "$APP_USER"
 
-    sudo -u "$APP_USER" docker compose down
+    su -s /bin/bash -c "cd '${APP_DIR}' && docker compose down" "$APP_USER"
     ok "Seed data restored — .env will be overwritten on first GitHub Actions deploy"
 else
     ok "No seed file found — stack will start with an empty database"
