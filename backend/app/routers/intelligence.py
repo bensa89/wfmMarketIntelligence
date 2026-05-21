@@ -359,6 +359,23 @@ def get_signals_feed(
     }
 
 
+@router.get("/signals/{signal_id}")
+def get_signal_feed_item(signal_id: str, db: Session = Depends(get_db)) -> dict:
+    signal = (
+        db.query(Signal)
+        .options(
+            selectinload(Signal.company),
+            selectinload(Signal.document),
+            selectinload(Signal.assessment),
+        )
+        .filter(Signal.id == signal_id)
+        .first()
+    )
+    if not signal:
+        raise HTTPException(status_code=404, detail="Signal not found")
+    return _signal_feed_item(signal, signal.assessment)
+
+
 @router.post("/signals/{signal_id}/assess")
 def trigger_assess_signal(signal_id: str, db: Session = Depends(get_db)) -> dict:
     signal = (

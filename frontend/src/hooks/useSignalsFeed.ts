@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { apiGet } from '../api/client';
-import type { SignalsFeedResponse, SignalsFeedFilters } from '../types/intelligence';
+import type { SignalsFeedResponse, SignalsFeedFilters, SignalFeedItem } from '../types/intelligence';
 
 export function useSignalsFeed(filters: SignalsFeedFilters = {}) {
   const params: Record<string, string> = {};
@@ -18,6 +18,15 @@ export function useSignalsFeed(filters: SignalsFeedFilters = {}) {
   return useQuery<SignalsFeedResponse>({
     queryKey: ['intelligence', 'signals-feed', params],
     queryFn: () => apiGet<SignalsFeedResponse>('/intelligence/signals/feed', params),
+    staleTime: 60 * 1000,
+  });
+}
+
+export function useSignalFeedItem(id: string | null) {
+  return useQuery<SignalFeedItem>({
+    queryKey: ['intelligence', 'signal', id],
+    queryFn: () => apiGet<SignalFeedItem>(`/intelligence/signals/${id}`),
+    enabled: !!id,
     staleTime: 60 * 1000,
   });
 }

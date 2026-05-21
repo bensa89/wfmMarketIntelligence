@@ -4,9 +4,10 @@ import { AlertTriangle } from 'lucide-react';
 interface Props {
   flags: ScorecardRiskFlag[] | null | undefined;
   loading?: boolean;
+  onSelect?: (signalId: string) => void;
 }
 
-export function RiskFlagsPanel({ flags, loading }: Props) {
+export function RiskFlagsPanel({ flags, loading, onSelect }: Props) {
   if (loading) {
     return (
       <div className="rounded-lg border border-gray-200 p-4">
@@ -29,7 +30,11 @@ export function RiskFlagsPanel({ flags, loading }: Props) {
       ) : (
         <ul className="space-y-2">
           {list.map((flag) => (
-            <li key={flag.assessment_id} className="p-2 bg-amber-50 border border-amber-200 rounded text-sm">
+            <li
+              key={flag.assessment_id}
+              onClick={() => onSelect?.(flag.signal_id)}
+              className={`p-2 bg-amber-50 border border-amber-200 rounded text-sm ${onSelect ? 'cursor-pointer hover:bg-amber-100' : ''}`}
+            >
               <p className="font-medium text-amber-900 truncate">{flag.title}</p>
               <p className="text-xs text-amber-700 mt-0.5 capitalize">
                 {flag.capability_key.replace(/_/g, ' ')} · {flag.movement_strength.replace(/_/g, ' ')}

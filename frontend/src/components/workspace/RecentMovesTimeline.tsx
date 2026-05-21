@@ -3,6 +3,23 @@ import MovementBadge from '../signals/MovementBadge';
 import { getCapabilityLabel } from '../../constants/capabilities';
 import { formatDistanceToNow } from '../../utils/dates';
 
+function ScoreBadge({ score }: { score: number }) {
+  const { bg, text, dot } = score >= 70
+    ? { bg: 'rgba(139,92,246,0.15)', text: '#a78bfa', dot: '#8b5cf6' }
+    : score >= 40
+    ? { bg: 'rgba(59,130,246,0.15)', text: '#60a5fa', dot: '#3b82f6' }
+    : { bg: 'rgba(100,116,139,0.15)', text: '#94a3b8', dot: '#64748b' };
+  return (
+    <span
+      className="inline-flex items-center gap-1 rounded-full font-medium px-2 py-0.5 text-[11px] flex-shrink-0"
+      style={{ background: bg, color: text }}
+    >
+      <span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: dot }} />
+      {score}
+    </span>
+  );
+}
+
 interface Props {
   assessments: SignalFeedItem[];
   onSelectSignal: (item: SignalFeedItem) => void;
@@ -43,7 +60,12 @@ export default function RecentMovesTimeline({ assessments, onSelectSignal }: Pro
                   </span>
                 </div>
               </div>
-              <MovementBadge strength={item.assessment?.movement_strength} size="sm" />
+              <div className="flex flex-col items-end gap-1">
+                <MovementBadge strength={item.assessment?.movement_strength} size="sm" />
+                {item.assessment?.movement_score != null && (
+                  <ScoreBadge score={item.assessment.movement_score} />
+                )}
+              </div>
             </div>
           </li>
         ))}

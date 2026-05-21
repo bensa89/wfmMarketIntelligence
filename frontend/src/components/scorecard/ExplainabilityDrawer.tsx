@@ -77,7 +77,18 @@ export function ExplainabilityDrawer({ open, onClose, explain, loading, error }:
                       </h3>
                       <div className="flex items-center gap-3 text-xs text-gray-500">
                         <span>Score: <strong className="text-gray-800">{dim.score != null ? Math.round(dim.score) : '—'}</strong></span>
-                        <span>Weight: <strong className="text-gray-800">{(dim.effective_weight * 100).toFixed(1)}%</strong></span>
+                        <span>
+                          Weight:{' '}
+                          <strong className="text-gray-800">
+                            {(dim.dimension_weight * 100).toFixed(0)}%
+                          </strong>
+                          {dim.score == null && (
+                            <span className="ml-1 text-gray-400">(excluded — no data)</span>
+                          )}
+                          {dim.score != null && dim.effective_weight !== dim.dimension_weight && (
+                            <span className="ml-1 text-gray-400">→ {(dim.effective_weight * 100).toFixed(1)}% effective</span>
+                          )}
+                        </span>
                         <span>Contribution: <strong className="text-gray-800">
                           {dim.weighted_contribution != null ? Math.round(dim.weighted_contribution * 10) / 10 : '—'}
                         </strong></span>

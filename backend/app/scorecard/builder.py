@@ -2,11 +2,12 @@ from __future__ import annotations
 import logging
 from datetime import date, datetime, timedelta, timezone
 from typing import Optional
-from collections import Counter, defaultdict
+from collections import Counter
 from sqlalchemy.orm import Session
 
 from app.models.competitor_scorecard import CompetitorScorecard
 from app.models.signal_assessment import SignalAssessment
+from app.models.capability_benchmark import CompetitorCapabilityBenchmark
 from app.assessor.capabilities import CAPABILITIES
 from app.scorecard.constants import (
     DIMENSION_WEIGHTS, PERIOD_DAYS, SCORECARD_VERSION, ROUTING_VERSION,
@@ -68,7 +69,7 @@ class ScorecardBuilder:
         top_moves = self._top_moves(assessments)
         risk_flags = self._risk_flags(assessments)
         watchpoints = self._watchpoints(assessments)
-        top_caps = self._top_capabilities(dim_scores)
+        top_caps = self._top_capabilities(company_id, period_type)
 
         # Flip previous current snapshots
         self.db.query(CompetitorScorecard).filter_by(
@@ -106,11 +107,13 @@ class ScorecardBuilder:
         return scorecard
 
     def _fetch(self, company_id: str, start: datetime, end: datetime) -> list[SignalAssessment]:
+        from sqlalchemy import func
+        effective_from = func.coalesce(SignalAssessment.valid_from, SignalAssessment.created_at)
         return (
             self.db.query(SignalAssessment)
             .filter(
                 SignalAssessment.company_id == company_id,
-                SignalAssessment.valid_from <= end,
+                effective_from <= end,
                 (SignalAssessment.valid_until == None) | (SignalAssessment.valid_until >= start),
             )
             .all()
@@ -175,12 +178,15 @@ class ScorecardBuilder:
             if a.signal_id in seen_signals:
                 continue
             seen_signals.add(a.signal_id)
+            sig = a.signal
+            published_at = (sig.published_at or sig.created_at) if sig else None
             result.append({
                 "assessment_id": a.id,
                 "signal_id": a.signal_id,
-                "title": a.signal.title if a.signal else "",
+                "title": sig.title if sig else "",
                 "movement_score": a.movement_score or 0,
                 "signal_class": (a.signal_class.value if hasattr(a.signal_class, "value") else a.signal_class) or "",
+                "published_at": published_at.isoformat() if published_at else None,
             })
             if len(result) >= n:
                 break
@@ -196,6 +202,7 @@ class ScorecardBuilder:
             if cap.get("strategic_weight", 0) >= RISK_FLAG_STRATEGIC_WEIGHT_THRESHOLD:
                 result.append({
                     "assessment_id": a.id,
+                    "signal_id": a.signal_id,
                     "capability_key": a.capability_primary,
                     "movement_strength": ms,
                     "title": a.signal.title if a.signal else "",
@@ -209,16 +216,18 @@ class ScorecardBuilder:
                 counter[item.strip()] += 1
         return [item for item, _ in counter.most_common()]
 
-    def _top_capabilities(self, dim_scores: dict) -> list[dict]:
-        cap_kpis = dim_scores.get("capability_strength", {}).get("kpis", {})
-        score_val = cap_kpis.get("cap_weighted_score", {})
-        if isinstance(score_val, dict):
-            score = score_val.get("value")
-        else:
-            score = getattr(score_val, "value", None)
-        if score is None:
-            return []
-        return [{"capability_key": "aggregate", "score": score}]
+    def _top_capabilities(self, company_id: str, period_type: str, n: int = 5) -> list[dict]:
+        rows = (
+            self.db.query(CompetitorCapabilityBenchmark)
+            .filter_by(company_id=company_id, period_type=period_type)
+            .order_by(CompetitorCapabilityBenchmark.relative_strength_score.desc())
+            .limit(n)
+            .all()
+        )
+        return [
+            {"capability_key": r.capability_key, "score": r.relative_strength_score}
+            for r in rows
+        ]
 
     def _benchmark_position(self, company_id: str, period_type: str, this_id: str) -> dict:
         rows = (

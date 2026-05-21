@@ -18,10 +18,12 @@ export interface ScorecardTopMove {
   title: string;
   movement_score: number;
   signal_class: string;
+  published_at: string | null;
 }
 
 export interface ScorecardRiskFlag {
   assessment_id: string;
+  signal_id: string;
   capability_key: string;
   movement_strength: string;
   title: string;

@@ -82,9 +82,27 @@ class SummaryLLMOutput(BaseModel):
     positioning_summary: Optional[str] = None
     top_capabilities: list[str] = Field(default_factory=list)
     capability_assessment: list[dict] = Field(default_factory=list)
-    top_risks: list[str] = Field(default_factory=list)
-    top_opportunities: list[str] = Field(default_factory=list)
-    watchpoints: list[str] = Field(default_factory=list)
+    top_risks: list[dict] = Field(default_factory=list)
+    top_opportunities: list[dict] = Field(default_factory=list)
+    watchpoints: list[dict] = Field(default_factory=list)
+
+    @staticmethod
+    def _normalize_items(v) -> list[dict]:
+        result = []
+        for item in v or []:
+            if isinstance(item, str):
+                result.append({"text": item, "signal_ids": []})
+            elif isinstance(item, dict):
+                result.append({
+                    "text": item.get("text", ""),
+                    "signal_ids": [s for s in item.get("signal_ids", []) if isinstance(s, str)],
+                })
+        return result
+
+    @field_validator("top_risks", "top_opportunities", "watchpoints", mode="before")
+    @classmethod
+    def normalize_cited_items(cls, v):
+        return cls._normalize_items(v)
 
 
 def _extract_json(raw: str) -> Optional[dict]:

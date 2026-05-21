@@ -52,6 +52,7 @@ def generate_competitor_summary(
 
     assessments_data = [
         {
+            "signal_id": a.signal_id,
             "capability_primary": a.capability_primary,
             "signal_class": a.signal_class.value if a.signal_class else None,
             "evidence_strength": a.evidence_strength,

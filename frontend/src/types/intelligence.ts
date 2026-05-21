@@ -96,6 +96,11 @@ export interface TimelineEntry {
   capability_primary: string | null;
 }
 
+export interface RiskItem {
+  text: string;
+  signal_ids?: string[];
+}
+
 export interface CompetitorSummary {
   id: string;
   company_id: string;
@@ -106,9 +111,9 @@ export interface CompetitorSummary {
   positioning_summary: string | null;
   top_capabilities: string[];
   capability_assessment: Array<{ key: string; label: string; activity_level: string; notes: string }>;
-  top_risks: string[];
-  top_opportunities: string[];
-  watchpoints: string[];
+  top_risks: (RiskItem | string)[];
+  top_opportunities: (RiskItem | string)[];
+  watchpoints: (RiskItem | string)[];
   avg_movement_score: number | null;
   signal_count: number;
   created_at: string;

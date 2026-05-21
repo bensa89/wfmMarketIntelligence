@@ -90,7 +90,15 @@ Return exactly this JSON object (no other text):
   "capability_assessment": [
     {{"key": "<capability_key>", "label": "<label>", "activity_level": "<low|medium|high>", "notes": "<one sentence>"}}
   ],
-  "top_risks": ["<risk for us, one sentence each>"],
-  "top_opportunities": ["<opportunity for us, one sentence each>"],
-  "watchpoints": ["<specific thing to monitor going forward>"]
-}}"""
+  "top_risks": [
+    {{"text": "<risk for us, one sentence>", "signal_ids": ["<signal_id from the list above>"]}}
+  ],
+  "top_opportunities": [
+    {{"text": "<opportunity for us, one sentence>", "signal_ids": ["<signal_id from the list above>"]}}
+  ],
+  "watchpoints": [
+    {{"text": "<specific thing to monitor>", "signal_ids": ["<signal_id from the list above>"]}}
+  ]
+}}
+
+Each item in top_risks, top_opportunities, and watchpoints must cite 1-3 signal_ids from the assessments list above (use the exact signal_id values). Only include signal_ids that directly support or evidence the stated point."""
