@@ -11,6 +11,7 @@ on:
 jobs:
   deploy:
     runs-on: self-hosted
+    environment: production
     steps:
       - name: Pull latest code
         run: git -C /opt/wfmintel pull origin ${{ github.event.inputs.branch }}
