@@ -107,3 +107,20 @@ class CapabilityLeaderboardResponse(BaseModel):
     leaderboard: list[LeaderboardEntry]
     strongest_competitor: Optional[LeaderboardEntry] = None
     fastest_riser: Optional[LeaderboardEntry] = None
+
+
+class CapabilityAssessmentItem(BaseModel):
+    assessment_id: str
+    signal_id: str
+    title: str
+    movement_score: int
+    signal_class: str
+    created_at: datetime
+
+
+class CapabilityAssessmentsResponse(BaseModel):
+    capability_key: str
+    label: str
+    period_type: str
+    assessments: list[CapabilityAssessmentItem]
+    total_count: int
