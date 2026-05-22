@@ -47,6 +47,13 @@ export default function StrategicPostureCard({ summary }: Props) {
         <p className="text-[13px] text-slate-700 leading-relaxed mb-3">{summary.positioning_summary}</p>
       )}
 
+      {summary.what_changed && (
+        <p className="text-[11px] text-slate-500 italic leading-snug mb-3 flex items-start gap-1">
+          <span className="flex-shrink-0">↺</span>
+          {summary.what_changed}
+        </p>
+      )}
+
       {summary.top_capabilities.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
           {summary.top_capabilities.slice(0, 4).map((key) => (

@@ -159,8 +159,16 @@ def get_overview(db: Session = Depends(get_db)) -> dict:
             .first()
         )
         if latest:
-            emerging_risks.extend(latest.top_risks or [])
-            emerging_opportunities.extend(latest.top_opportunities or [])
+            emerging_risks.extend(
+                item["text"] if isinstance(item, dict) else item
+                for item in (latest.top_risks or [])
+                if item
+            )
+            emerging_opportunities.extend(
+                item["text"] if isinstance(item, dict) else item
+                for item in (latest.top_opportunities or [])
+                if item
+            )
     emerging_risks = list(dict.fromkeys(emerging_risks))[:10]
     emerging_opportunities = list(dict.fromkeys(emerging_opportunities))[:10]
 
@@ -213,6 +221,7 @@ def get_competitor_workspace(slug: str, db: Session = Depends(get_db)) -> dict:
             "top_risks": s.top_risks or [],
             "top_opportunities": s.top_opportunities or [],
             "watchpoints": s.watchpoints or [],
+            "what_changed": s.what_changed,
             "avg_movement_score": s.avg_movement_score,
             "signal_count": s.signal_count,
             "created_at": s.created_at.isoformat() if s.created_at else None,

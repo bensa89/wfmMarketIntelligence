@@ -42,6 +42,26 @@ def generate_competitor_summary(
         logger.info("No assessments found for %s in period %s — skipping summary", company.name, period_type)
         return None
 
+    try:
+        period_type_enum = PeriodType(period_type)
+    except ValueError:
+        period_type_enum = PeriodType.thirty_days
+
+    previous = (
+        db.query(CompetitorSummary)
+        .filter_by(company_id=company.id, period_type=period_type_enum)
+        .order_by(CompetitorSummary.created_at.desc())
+        .first()
+    )
+    previous_summary_dict: dict | None = None
+    if previous:
+        previous_summary_dict = {
+            "positioning_summary": previous.positioning_summary,
+            "top_risks": previous.top_risks or [],
+            "top_opportunities": previous.top_opportunities or [],
+            "watchpoints": previous.watchpoints or [],
+        }
+
     ctx_record = db.query(InternalCompanyContext).first()
     context = {}
     if ctx_record:
@@ -69,6 +89,7 @@ def generate_competitor_summary(
         period_label=_PERIOD_LABELS.get(period_type, f"last {days} days"),
         assessments=assessments_data,
         context=context,
+        previous_summary=previous_summary_dict,
     )
 
     try:
@@ -86,11 +107,6 @@ def generate_competitor_summary(
     scores = [a.movement_score for a in assessments if a.movement_score is not None]
     avg_score = sum(scores) / len(scores) if scores else None
 
-    try:
-        period_type_enum = PeriodType(period_type)
-    except ValueError:
-        period_type_enum = PeriodType.thirty_days
-
     summary = CompetitorSummary(
         company_id=company.id,
         period_type=period_type_enum,
@@ -98,6 +114,7 @@ def generate_competitor_summary(
         period_end=now.date(),
         strategic_posture=parsed.strategic_posture,
         positioning_summary=parsed.positioning_summary,
+        what_changed=parsed.what_changed,
         top_capabilities=parsed.top_capabilities,
         capability_assessment=parsed.capability_assessment,
         top_risks=parsed.top_risks,

@@ -28,6 +28,7 @@ class CompetitorSummary(Base):
     top_risks = Column(JSON, nullable=True)
     top_opportunities = Column(JSON, nullable=True)
     watchpoints = Column(JSON, nullable=True)
+    what_changed = Column(Text, nullable=True)
     avg_movement_score = Column(Float, nullable=True)
     signal_count = Column(Integer, default=0)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))

@@ -71,8 +71,38 @@ def build_summary_prompt(
     period_label: str,
     assessments: list[dict[str, Any]],
     context: dict[str, Any],
+    previous_summary: dict[str, Any] | None = None,
 ) -> str:
     assessments_text = json.dumps(assessments, indent=2)
+
+    previous_block = ""
+    delta_instructions = ""
+    if previous_summary:
+        prev_risks = [
+            (item["text"] if isinstance(item, dict) else item)
+            for item in (previous_summary.get("top_risks") or [])
+        ]
+        prev_opps = [
+            (item["text"] if isinstance(item, dict) else item)
+            for item in (previous_summary.get("top_opportunities") or [])
+        ]
+        prev_watchpoints = [
+            (item["text"] if isinstance(item, dict) else item)
+            for item in (previous_summary.get("watchpoints") or [])
+        ]
+        previous_block = f"""
+Previous summary ({period_label} — prior run):
+- Positioning: {previous_summary.get("positioning_summary") or "n/a"}
+- Risks: {json.dumps(prev_risks)}
+- Opportunities: {json.dumps(prev_opps)}
+- Watchpoints: {json.dumps(prev_watchpoints)}
+"""
+        delta_instructions = """
+Delta instructions (only apply when a previous summary is provided above):
+- For each item in top_risks, top_opportunities, and watchpoints: add "is_new": true if this item has no clear semantic equivalent in the previous lists above, or "is_new": false if it is a continuation of an existing concern.
+- Add a top-level "what_changed" field: 1-2 concrete sentences on what materially shifted since last period (new themes, dropped concerns, intensity changes). Be specific, not generic. Example: "Their AI investment signals intensified significantly; the compliance-focused mid-market push is new this cycle."
+"""
+
     return f"""Synthesize these signal assessments for competitor "{company_name}" over the {period_label}.
 
 Assessments ({len(assessments)} signals):
@@ -81,24 +111,25 @@ Assessments ({len(assessments)} signals):
 Our internal context:
 - Core capabilities: {", ".join(context.get("core_capabilities", []))}
 - Strategic priorities: {", ".join(context.get("strategic_priorities", []))}
-
+{previous_block}
 Return exactly this JSON object (no other text):
 {{
   "strategic_posture": "<2-4 word label e.g. aggressive_expansion, defensive_consolidation, niche_deepening>",
   "positioning_summary": "<2-3 sentences on the competitor's overall strategic direction>",
+  "what_changed": "<1-2 sentences on what shifted since last period, or null if no previous summary>",
   "top_capabilities": ["<capability_key>"],
   "capability_assessment": [
     {{"key": "<capability_key>", "label": "<label>", "activity_level": "<low|medium|high>", "notes": "<one sentence>"}}
   ],
   "top_risks": [
-    {{"text": "<risk for us, one sentence>", "signal_ids": ["<signal_id from the list above>"]}}
+    {{"text": "<risk for us, one sentence>", "signal_ids": ["<signal_id from the list above>"], "is_new": true}}
   ],
   "top_opportunities": [
-    {{"text": "<opportunity for us, one sentence>", "signal_ids": ["<signal_id from the list above>"]}}
+    {{"text": "<opportunity for us, one sentence>", "signal_ids": ["<signal_id from the list above>"], "is_new": true}}
   ],
   "watchpoints": [
-    {{"text": "<specific thing to monitor>", "signal_ids": ["<signal_id from the list above>"]}}
+    {{"text": "<specific thing to monitor>", "signal_ids": ["<signal_id from the list above>"], "is_new": true}}
   ]
 }}
 
-Each item in top_risks, top_opportunities, and watchpoints must cite 1-3 signal_ids from the assessments list above (use the exact signal_id values). Only include signal_ids that directly support or evidence the stated point."""
+Each item in top_risks, top_opportunities, and watchpoints must cite 1-3 signal_ids from the assessments list above (use the exact signal_id values). Only include signal_ids that directly support or evidence the stated point.{delta_instructions}"""

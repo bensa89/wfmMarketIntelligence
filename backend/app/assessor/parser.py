@@ -80,6 +80,7 @@ class AssessmentLLMOutput(BaseModel):
 class SummaryLLMOutput(BaseModel):
     strategic_posture: Optional[str] = None
     positioning_summary: Optional[str] = None
+    what_changed: Optional[str] = None
     top_capabilities: list[str] = Field(default_factory=list)
     capability_assessment: list[dict] = Field(default_factory=list)
     top_risks: list[dict] = Field(default_factory=list)
@@ -93,10 +94,13 @@ class SummaryLLMOutput(BaseModel):
             if isinstance(item, str):
                 result.append({"text": item, "signal_ids": []})
             elif isinstance(item, dict):
-                result.append({
+                entry: dict = {
                     "text": item.get("text", ""),
                     "signal_ids": [s for s in item.get("signal_ids", []) if isinstance(s, str)],
-                })
+                }
+                if "is_new" in item and isinstance(item["is_new"], bool):
+                    entry["is_new"] = item["is_new"]
+                result.append(entry)
         return result
 
     @field_validator("top_risks", "top_opportunities", "watchpoints", mode="before")

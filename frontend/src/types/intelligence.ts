@@ -99,6 +99,7 @@ export interface TimelineEntry {
 export interface RiskItem {
   text: string;
   signal_ids?: string[];
+  is_new?: boolean;
 }
 
 export interface CompetitorSummary {
@@ -116,6 +117,7 @@ export interface CompetitorSummary {
   watchpoints: (RiskItem | string)[];
   avg_movement_score: number | null;
   signal_count: number;
+  what_changed?: string | null;
   created_at: string;
   updated_at: string;
 }
