@@ -624,8 +624,12 @@ def test_analyse_unanalysed_for_source_handles_errors(db_session, db_engine):
     assert result["analysed"] == 1
     db_session.refresh(source)
     assert source.analysis_status == AnalysisStatus.analysis_failed
-    db_session.refresh(doc2)
-    assert doc2.is_analysed is True
+
+    # Query fresh from database instead of relying on cached object
+    # This ensures we see committed changes from worker sessions
+    doc2_fresh = db_session.query(Document).filter(Document.id == doc2.id).first()
+    assert doc2_fresh is not None
+    assert doc2_fresh.is_analysed is True
 
 
 def test_analyse_unanalysed_for_source_skips_analysed_docs(db_session):

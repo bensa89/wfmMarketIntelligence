@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db, SessionLocal
 from app.models.source import Source
+from app.models.company import Company
 from app.models.crawl_run import (
     CrawlRun,
     CrawlRunStatus,
@@ -472,6 +473,31 @@ def start_crawl_background(db: Session = Depends(get_db)) -> Dict[str, Any]:
     active_sources = (
         db.query(Source)
         .filter(Source.is_active == True)  # noqa: E712
+        .order_by(Source.last_crawled_at.asc().nullsfirst())
+        .all()
+    )
+    if not active_sources:
+        return {"crawl_run_id": None, "status": "no_active_sources", "total_sources": 0}
+    source_ids = [s.id for s in active_sources]
+    crawl_run = _create_crawl_run(source_ids, db)
+    threading.Thread(
+        target=_run_crawl_background,
+        args=(crawl_run.id, source_ids),
+        daemon=True,
+    ).start()
+    return {"crawl_run_id": crawl_run.id, "status": "running", "total_sources": len(source_ids)}
+
+
+@router.post("/start/company/{company_slug}", status_code=202)
+def start_company_crawl_background(
+    company_slug: str, db: Session = Depends(get_db)
+) -> Dict[str, Any]:
+    company = db.query(Company).filter(Company.slug == company_slug).first()
+    if not company:
+        raise HTTPException(status_code=404, detail="Company not found")
+    active_sources = (
+        db.query(Source)
+        .filter(Source.company_id == company.id, Source.is_active == True)  # noqa: E712
         .order_by(Source.last_crawled_at.asc().nullsfirst())
         .all()
     )

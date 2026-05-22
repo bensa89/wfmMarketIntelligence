@@ -15,9 +15,10 @@ interface Props {
   explain: ScorecardExplain | null | undefined;
   loading?: boolean;
   error?: boolean;
+  onSelectSignal?: (signalId: string) => void;
 }
 
-export function ExplainabilityDrawer({ open, onClose, explain, loading, error }: Props) {
+export function ExplainabilityDrawer({ open, onClose, explain, loading, error, onSelectSignal }: Props) {
   if (!open) return null;
 
   return (
@@ -98,7 +99,11 @@ export function ExplainabilityDrawer({ open, onClose, explain, loading, error }:
                     {dim.top_contributing_assessments.length > 0 ? (
                       <ul className="space-y-1.5 mt-2">
                         {dim.top_contributing_assessments.map((a) => (
-                          <li key={a.assessment_id} className="flex items-center justify-between gap-2 text-xs">
+                          <li
+                            key={a.assessment_id}
+                            onClick={() => onSelectSignal?.(a.signal_id)}
+                            className={`flex items-center justify-between gap-2 text-xs -mx-1 px-1 py-1 rounded transition-colors ${onSelectSignal ? 'cursor-pointer hover:bg-indigo-50' : ''}`}
+                          >
                             <span className="text-gray-700 truncate">{a.title}</span>
                             <span className="flex-shrink-0 text-indigo-600 font-medium">{a.movement_score}</span>
                           </li>

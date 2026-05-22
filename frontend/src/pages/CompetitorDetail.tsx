@@ -8,8 +8,9 @@ import SignalCard from '../components/SignalCard';
 import FilterBar from '../components/FilterBar';
 import MarkdownViewer from '../components/MarkdownViewer';
 import type { DedupResult, SignalType } from '../types';
-import { ArrowLeft, Merge, X, CheckCircle2, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Merge, X, CheckCircle2, AlertCircle, RefreshCw as RefreshCwIcon } from 'lucide-react';
 import { useScorecard, useScorecardExplain, useRecomputeScorecard } from '../hooks/useScorecard';
+import { useCrawlStatus } from '../hooks/useCrawlStatus';
 import { DimensionScoreGrid } from '../components/scorecard/DimensionScoreGrid';
 import { CapabilityStrengthPanel } from '../components/scorecard/CapabilityStrengthPanel';
 import { TopMovesTimeline } from '../components/scorecard/TopMovesTimeline';
@@ -52,6 +53,7 @@ export default function CompetitorDetail() {
     isError: explainError,
   } = useScorecardExplain(slug!, scorecardPeriod, explainOpen);
   const recompute = useRecomputeScorecard(slug!);
+  const crawl = useCrawlStatus();
 
   function handleDeduplicate() {
     if (!company) return;
@@ -86,15 +88,26 @@ export default function CompetitorDetail() {
             {company.website && ` · ${company.website}`}
           </p>
         </div>
-        <button
-          onClick={handleDeduplicate}
-          disabled={deduplicate.isPending}
-          className="btn-secondary flex items-center gap-2"
-          title="Find and merge duplicate signals using AI"
-        >
-          <Merge size={16} />
-          {deduplicate.isPending ? 'Analyzing...' : 'Deduplicate'}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => crawl.startCompany(slug!)}
+            disabled={crawl.isRunning}
+            className="btn-secondary flex items-center gap-2 disabled:opacity-40"
+            title="Alle aktiven Sources crawlen"
+          >
+            <RefreshCwIcon size={16} className={crawl.isRunning ? 'animate-spin' : ''} />
+            {crawl.isRunning ? 'Crawling...' : 'Refresh Sources'}
+          </button>
+          <button
+            onClick={handleDeduplicate}
+            disabled={deduplicate.isPending}
+            className="btn-secondary flex items-center gap-2"
+            title="Find and merge duplicate signals using AI"
+          >
+            <Merge size={16} />
+            {deduplicate.isPending ? 'Analyzing...' : 'Deduplicate'}
+          </button>
+        </div>
       </div>
       {company.description && (
         <p className="text-sm text-ink-muted max-w-md mb-4">{company.description}</p>

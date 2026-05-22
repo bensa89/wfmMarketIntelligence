@@ -62,6 +62,21 @@ export function useCrawlStatus() {
     [qc],
   );
 
+  const startCompany = useCallback(
+    async (companySlug: string) => {
+      localStorage.removeItem(DISMISSED_KEY);
+      dismissedRef.current = false;
+      setDismissed(false);
+      try {
+        await apiPost(`/crawl/start/company/${companySlug}`);
+      } catch {
+        // error handled by caller or ignored
+      }
+      qc.invalidateQueries({ queryKey: ['crawlStatus'] });
+    },
+    [qc],
+  );
+
   const cancel = useCallback(async () => {
     try {
       await apiPost('/crawl/cancel');
@@ -93,5 +108,5 @@ export function useCrawlStatus() {
 
   const isRunning = run?.status === 'running';
 
-  return { run, queuedRun, phase, isRunning, start, cancel, dismiss };
+  return { run, queuedRun, phase, isRunning, start, startCompany, cancel, dismiss };
 }

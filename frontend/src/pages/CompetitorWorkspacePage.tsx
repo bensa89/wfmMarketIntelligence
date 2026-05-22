@@ -13,6 +13,7 @@ import RisksOpportunitiesCards from '../components/workspace/RisksOpportunitiesC
 import SignalDetailDrawer from '../components/signals/SignalDetailDrawer';
 import type { SignalFeedItem } from '../types/intelligence';
 import { useScorecard, useScorecardExplain, useRecomputeScorecard } from '../hooks/useScorecard';
+import { useCrawlStatus } from '../hooks/useCrawlStatus';
 import { DimensionScoreGrid } from '../components/scorecard/DimensionScoreGrid';
 import { ExplainabilityDrawer } from '../components/scorecard/ExplainabilityDrawer';
 import { ScorecardSignalDrawer } from '../components/scorecard/ScorecardSignalDrawer';
@@ -33,6 +34,7 @@ export default function CompetitorWorkspacePage() {
   const { data: scorecard, isLoading: scorecardLoading } = useScorecard(slug ?? '', activePeriod);
   const { data: explain, isLoading: explainLoading, isError: explainError } = useScorecardExplain(slug ?? '', activePeriod, explainOpen);
   const recompute = useRecomputeScorecard(slug ?? '');
+  const crawl = useCrawlStatus();
 
   if (isLoading) {
     return (
@@ -104,6 +106,16 @@ export default function CompetitorWorkspacePage() {
                 Updated {new Date(scorecard.generated_at).toLocaleDateString()}
               </span>
             )}
+
+            <button
+              onClick={() => crawl.startCompany(slug ?? '')}
+              disabled={crawl.isRunning}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-medium bg-white border border-slate-200 text-slate-600 hover:text-slate-900 transition-colors disabled:opacity-50"
+              title="Alle aktiven Sources crawlen"
+            >
+              <RefreshCw size={13} className={crawl.isRunning ? 'animate-spin' : ''} />
+              {crawl.isRunning ? 'Crawling…' : 'Crawl Sources'}
+            </button>
 
             <button
               onClick={() => { summarize.mutate(activePeriod); recompute.mutate(); }}

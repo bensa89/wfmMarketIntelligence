@@ -9,13 +9,6 @@ const DIM_LABELS: Record<string, string> = {
   momentum: 'Momentum',
 };
 
-const DIM_PRIMARY_KPI: Record<string, string> = {
-  capability_strength: 'cap_weighted_score',
-  activity: 'act_weighted_strength',
-  market_impact: 'mkt_weighted_visibility',
-  customer_proof: 'cp_validation_score',
-  momentum: 'mom_period_delta',
-};
 
 interface Props {
   dimensionKey: string;
@@ -38,8 +31,6 @@ export function DimensionScoreCard({ dimensionKey, dimension, loading }: Props) 
 
   const score = dimension?.score ?? null;
   const trend = dimension?.trend ?? null;
-  const primaryKpi = DIM_PRIMARY_KPI[dimensionKey];
-  const kpiValue = primaryKpi ? dimension?.kpis?.[primaryKpi]?.value : null;
 
   const trendIcon = trend === 'rising'
     ? <TrendingUp className="w-4 h-4 text-green-500" />
@@ -56,19 +47,14 @@ export function DimensionScoreCard({ dimensionKey, dimension, loading }: Props) 
     : 'text-red-600';
 
   return (
-    <div className="rounded-lg border border-gray-200 p-4 bg-white hover:border-indigo-200 transition-colors">
-      <div className="flex items-center justify-between mb-1">
+    <div className="rounded-lg border border-gray-200 p-4 bg-white hover:border-indigo-200 transition-colors flex flex-col items-center text-center h-full">
+      <div className="flex items-center justify-between w-full mb-1">
         <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">{label}</span>
         {trendIcon}
       </div>
       <p className={`text-2xl font-bold ${scoreColor}`}>
         {score != null ? Math.round(score) : '—'}
       </p>
-      {kpiValue != null && (
-        <p className="mt-1 text-xs text-gray-400">
-          {primaryKpi?.replace(/_/g, ' ')}: {typeof kpiValue === 'number' ? Math.round(kpiValue * 10) / 10 : kpiValue}
-        </p>
-      )}
       {score == null && (
         <p className="mt-1 text-xs text-gray-400 italic">No data this period</p>
       )}

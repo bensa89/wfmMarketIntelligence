@@ -7,7 +7,7 @@ import { CrawlProgressPanel } from '../components/CrawlProgressPanel';
 import { useDiscoveredPages, useToggleDiscoveredPage, useDeleteDiscoveredPage } from '../hooks/useDiscoveredPages';
 import { useSourceSearch } from '../hooks/useSourceSearch';
 import type { CompanyType, SourceType, Source, DiscoveredPage, Company, CrawlStatus, SourceSearchResult } from '../types';
-import { Plus, Play, Trash2, Edit2, X, ChevronDown, ChevronRight, Shield, ShieldOff, Search, Zap, Loader2 } from 'lucide-react';
+import { Plus, Play, Trash2, Edit2, X, ChevronDown, ChevronRight, Shield, ShieldOff, Search, Zap, Loader2, RefreshCw } from 'lucide-react';
 import { ApiError } from '../api/client';
 
 const sourceTypes: SourceType[] = ['news', 'blog', 'product', 'press', 'jobs'];
@@ -474,6 +474,7 @@ export default function SourcesAdmin() {
                         {company.website && <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-xs text-accent-blue hover:underline truncate max-w-xs">{company.website}</a>}
                       </div>
                       <div className="flex items-center gap-2">
+                        <button onClick={() => crawl.startCompany(company.slug)} disabled={crawl.isRunning} className="text-accent-blue hover:text-accent-blue/80 p-1 disabled:opacity-40" title="Alle aktiven Sources crawlen"><RefreshCw size={16} /></button>
                         <button onClick={() => openEditCompanyModal(company)} className="text-ink-muted hover:text-ink p-1" title="Edit company"><Edit2 size={16} /></button>
                         <button onClick={() => handleDeleteCompany(company.slug, company.name)} className="text-signal-low hover:text-red-400 p-1" title="Delete company"><Trash2 size={16} /></button>
                       </div>
@@ -588,6 +589,14 @@ export default function SourcesAdmin() {
                       {company.website && <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-xs text-accent-blue hover:underline truncate max-w-xs" onClick={(e) => e.stopPropagation()}>{company.website}</a>}
                     </button>
                    <div className="flex items-center gap-2">
+                     <button
+                       onClick={() => crawl.startCompany(company.slug)}
+                       disabled={crawl.isRunning}
+                       className="text-accent-blue hover:text-accent-blue/80 p-1 disabled:opacity-40"
+                       title="Alle aktiven Sources crawlen"
+                     >
+                       <RefreshCw size={16} />
+                     </button>
                      <button
                        onClick={() => openEditCompanyModal(company)}
                        className="text-ink-muted hover:text-ink p-1"
