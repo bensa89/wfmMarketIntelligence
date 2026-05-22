@@ -21,6 +21,7 @@ class ScorecardTopMove(BaseModel):
     title: str
     movement_score: int
     signal_class: str
+    assessed_at: Optional[datetime]
 
 
 class ScorecardRiskFlag(BaseModel):

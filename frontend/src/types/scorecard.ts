@@ -19,6 +19,7 @@ export interface ScorecardTopMove {
   movement_score: number;
   signal_class: string;
   published_at: string | null;
+  assessed_at: string | null;
 }
 
 export interface ScorecardRiskFlag {

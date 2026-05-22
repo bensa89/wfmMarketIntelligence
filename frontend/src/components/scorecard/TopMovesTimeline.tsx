@@ -67,10 +67,13 @@ export function TopMovesTimeline({ moves, loading, onSelect }: Props) {
                     <span className="text-[11px] text-slate-500">
                       {CLASS_LABELS[move.signal_class] ?? move.signal_class}
                     </span>
-                    {move.published_at && (
-                      <span className="text-[11px] text-slate-500">
-                        {formatDistanceToNow(move.published_at)}
-                      </span>
+                    {move.assessed_at && (
+                      <>
+                        <span className="text-[11px] text-slate-300">·</span>
+                        <span className="text-[11px] text-slate-400" title={new Date(move.assessed_at).toLocaleString('de-DE')}>
+                          bewertet {formatDistanceToNow(move.assessed_at)}
+                        </span>
+                      </>
                     )}
                   </div>
                 </div>

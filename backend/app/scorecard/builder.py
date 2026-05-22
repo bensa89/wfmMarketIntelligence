@@ -187,6 +187,7 @@ class ScorecardBuilder:
                 "movement_score": a.movement_score or 0,
                 "signal_class": (a.signal_class.value if hasattr(a.signal_class, "value") else a.signal_class) or "",
                 "published_at": published_at.isoformat() if published_at else None,
+                "assessed_at": a.created_at.isoformat() if a.created_at else None,
             })
             if len(result) >= n:
                 break
