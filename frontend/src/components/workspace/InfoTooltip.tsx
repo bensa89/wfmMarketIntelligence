@@ -3,10 +3,14 @@ import { Info } from 'lucide-react';
 
 interface Props {
   text: string;
+  placement?: 'top' | 'bottom';
 }
 
-export function InfoTooltip({ text }: Props) {
+export function InfoTooltip({ text, placement = 'top' }: Props) {
   const [visible, setVisible] = useState(false);
+  const positionClass = placement === 'bottom'
+    ? 'top-full mt-1.5'
+    : 'bottom-full mb-1.5';
   return (
     <span className="relative inline-flex items-center">
       <Info
@@ -15,7 +19,7 @@ export function InfoTooltip({ text }: Props) {
         onMouseLeave={() => setVisible(false)}
       />
       {visible && (
-        <span className="absolute z-50 bottom-full mb-1.5 left-1/2 -translate-x-1/2 w-60 bg-slate-900 text-white text-[11px] rounded-lg px-3 py-2 shadow-xl pointer-events-none leading-snug whitespace-normal">
+        <span className={`absolute z-50 ${positionClass} left-1/2 -translate-x-1/2 w-60 bg-slate-900 text-white text-[11px] rounded-lg px-3 py-2 shadow-xl pointer-events-none leading-snug whitespace-normal`}>
           {text}
         </span>
       )}

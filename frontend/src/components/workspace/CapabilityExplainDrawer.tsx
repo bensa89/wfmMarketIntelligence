@@ -68,7 +68,7 @@ function SubScoreBar({ label, value, weight, tooltip }: { label: string; value: 
     <div className="flex items-center gap-3">
       <div className="w-40 shrink-0 flex items-center gap-1.5">
         <span className="text-xs text-slate-700 truncate">{label}</span>
-        <InfoTooltip text={tooltip} />
+        <InfoTooltip text={tooltip} placement="bottom" />
         <span className="text-[10px] text-slate-400 ml-auto">{weight}</span>
       </div>
       <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
@@ -120,7 +120,7 @@ function PanelModeContent() {
         <div className="space-y-1.5">
           {SUB_SCORE_META.map(({ label, weight, tooltip }) => (
             <div key={label} className="flex items-center gap-2 text-xs text-slate-600">
-              <InfoTooltip text={tooltip} />
+              <InfoTooltip text={tooltip} placement="bottom" />
               <span className="flex-1">{label}</span>
               <span className="font-medium text-slate-800">{weight}</span>
             </div>
