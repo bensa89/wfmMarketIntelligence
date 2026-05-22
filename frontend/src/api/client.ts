@@ -120,6 +120,20 @@ export async function apiDelete(path: string): Promise<void> {
   }
 }
 
+export async function apiPostFormData<T>(path: string, formData: FormData): Promise<T> {
+  const res = await fetch(`${API_BASE}${path}`, {
+    method: 'POST',
+    headers: authHeader(), // no Content-Type — fetch sets multipart boundary automatically
+    body: formData,
+  });
+  if (res.status === 401) throw new ApiError(401, 'Authentication required');
+  if (!res.ok) {
+    const errBody = await res.json().catch(() => ({ detail: res.statusText }));
+    throw new ApiError(res.status, errBody.detail || res.statusText);
+  }
+  return res.json();
+}
+
 export function setCredentials(username: string, password: string): void {
   localStorage.setItem('wfm_credentials', JSON.stringify({ username, password }));
 }

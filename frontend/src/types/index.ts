@@ -7,6 +7,7 @@ export interface Company {
   type: CompanyType;
   description: string | null;
   website: string | null;
+  logo_path: string | null;
   created_at: string;
 }
 
