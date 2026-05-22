@@ -175,16 +175,18 @@ export default function CompetitorWorkspacePage() {
           </div>
         </div>
 
-        {/* Row 2: Relative capability strength */}
-        <RelativeCapabilityStrengthPanel
-          slug={slug ?? ''}
-          capabilityDistribution={activeSummary?.capability_distribution ?? []}
-          onInfoClick={() => setCapabilityExplainMode('panel')}
-          onCapabilityClick={(detail) => {
-            setSelectedCapabilityDetail(detail);
-            setCapabilityExplainMode('capability');
-          }}
-        />
+        {/* Row 2: Relative capability strength + Capability activity */}
+        <div className="grid grid-cols-2 gap-4">
+          <RelativeCapabilityStrengthPanel
+            slug={slug ?? ''}
+            capabilityDistribution={activeSummary?.capability_distribution ?? []}
+            onInfoClick={() => setCapabilityExplainMode('panel')}
+            onCapabilityClick={(detail) => {
+              setSelectedCapabilityDetail(detail);
+              setCapabilityExplainMode('capability');
+            }}
+          />
+        </div>
 
         {/* Row 3: Risks, Opportunities, Watchpoints */}
         <RisksOpportunitiesCards
