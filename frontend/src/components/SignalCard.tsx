@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import type { Signal } from '../types';
 import RelevanceBadge from './RelevanceBadge';
 import SignalTypeIcon from './SignalTypeIcon';
+import CompanyLogo from './CompanyLogo';
 import { formatPublishedAt } from '../utils/dates';
 
 interface SignalCardProps {
@@ -9,10 +10,12 @@ interface SignalCardProps {
   showCompany?: boolean;
   companyName?: string;
   companySlug?: string;
+  companyLogoPath?: string | null;
+  companyId?: string;
   onClick?: () => void;
 }
 
-export default function SignalCard({ signal, showCompany = false, companyName, companySlug, onClick }: SignalCardProps) {
+export default function SignalCard({ signal, showCompany = false, companyName, companySlug, companyLogoPath, companyId, onClick }: SignalCardProps) {
   const { label: dateLabel, isUnknown: dateUnknown } = formatPublishedAt(signal.published_at);
 
   const cardContent = (
@@ -56,8 +59,23 @@ export default function SignalCard({ signal, showCompany = false, companyName, c
         <span className={dateUnknown ? 'italic text-ink-muted/60' : ''}>
           {dateLabel}
         </span>
-        {showCompany && companyName && (
-          <span className="font-medium text-accent-blue">{companyName}</span>
+        {showCompany && companyName && companySlug && (
+          <div className="flex items-center gap-1.5 mt-1">
+            <CompanyLogo
+              name={companyName}
+              slug={companySlug}
+              logo_path={companyLogoPath}
+              size="sm"
+              companyId={companyId}
+            />
+            <Link
+              to={`/competitors/${companySlug}`}
+              className="text-[11px] text-slate-500 hover:text-slate-700 truncate"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {companyName}
+            </Link>
+          </div>
         )}
       </div>
     </>

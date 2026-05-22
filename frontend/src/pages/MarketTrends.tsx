@@ -61,6 +61,8 @@ export default function MarketTrends() {
                 showCompany
                 companyName={company?.name}
                 companySlug={company?.slug}
+                companyLogoPath={company?.logo_path}
+                companyId={company?.id}
               />
             );
           })}

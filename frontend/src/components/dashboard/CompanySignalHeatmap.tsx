@@ -1,12 +1,13 @@
-import type { CompanySignalTypeCount } from '../../types';
+import type { Company, CompanySignalTypeCount } from '../../types';
 import { labelMap } from '../SignalTypeIcon';
+import CompanyLogo from '../CompanyLogo';
 import { getCompanyColor } from './CompanyColorMap';
 
 const TYPE_KEYS = ['ai_announcement', 'product_update', 'partnership', 'hiring_signal', 'other'] as const;
 
 interface CompanySignalHeatmapProps {
   data: CompanySignalTypeCount[];
-  companies: { id: string; name: string }[];
+  companies: Company[];
 }
 
 function getCellBg(count: number, maxCount: number): React.CSSProperties {
@@ -37,9 +38,19 @@ export default function CompanySignalHeatmap({ data, companies }: CompanySignalH
           const company = companies.find((c) => c.id === cid);
           return (
             <div key={cid} className="grid grid-cols-[80px_repeat(5,1fr)] gap-1.5 text-center mt-1">
-              <div className="text-left text-slate-600 text-[11px] truncate flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full shrink-0" style={{ background: getCompanyColor(cid) }} />
-                {company?.name ?? '—'}
+              <div className="text-left truncate flex items-center gap-1.5">
+                {company ? (
+                  <CompanyLogo
+                    name={company.name}
+                    slug={company.slug}
+                    logo_path={company.logo_path}
+                    size="sm"
+                    companyId={company.id}
+                  />
+                ) : (
+                  <span className="w-2 h-2 rounded-full shrink-0" style={{ background: getCompanyColor(cid) }} />
+                )}
+                <span className="text-[11px] text-slate-700 font-medium truncate">{company?.name ?? '—'}</span>
               </div>
               {TYPE_KEYS.map((typeKey) => {
                 const entry = data.find((d) => d.company_id === cid && d.signal_type === typeKey);
