@@ -1,8 +1,10 @@
 import logging
+import pathlib
 
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 import secrets
 from app.config import settings
 
@@ -35,6 +37,11 @@ app = FastAPI(
     version="1.0.0",
     dependencies=[Depends(verify_credentials)],
 )
+
+UPLOAD_DIR = pathlib.Path("/uploads")
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+(UPLOAD_DIR / "logos").mkdir(exist_ok=True)
+app.mount("/static", StaticFiles(directory=str(UPLOAD_DIR)), name="static")
 
 app.add_middleware(
     CORSMiddleware,

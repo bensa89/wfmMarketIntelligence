@@ -22,6 +22,8 @@ services:
       - 1.1.1.1
     ports:
       - "8000:8000"
+    volumes:
+      - uploads_data:/uploads
     depends_on:
       db:
         condition: service_healthy
@@ -37,3 +39,4 @@ services:
 
 volumes:
   postgres_data:
+  uploads_data:
