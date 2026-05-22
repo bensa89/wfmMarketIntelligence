@@ -3,6 +3,7 @@ import type {
   BenchmarkOverviewResponse,
   CompetitorBenchmarkResponse,
   CapabilityLeaderboardResponse,
+  CapabilityAssessmentsResponse,
   BenchmarkPeriodType,
 } from '../types/benchmark';
 
@@ -26,5 +27,16 @@ export function recomputeCompanyBenchmark(companyId: string, _periodType: Benchm
   return apiPost<{ recomputed: number; company_id: string; period_type: string }>(
     `/benchmark/recompute/${companyId}`,
     null,
+  );
+}
+
+export function fetchCapabilityAssessments(
+  slug: string,
+  capKey: string,
+  periodType: BenchmarkPeriodType = '30d',
+) {
+  return apiGet<CapabilityAssessmentsResponse>(
+    `/benchmark/competitors/${slug}/capabilities/${capKey}/assessments`,
+    { period_type: periodType },
   );
 }

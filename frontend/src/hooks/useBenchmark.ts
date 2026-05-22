@@ -3,10 +3,11 @@ import {
   fetchBenchmarkOverview,
   fetchCompetitorBenchmark,
   fetchCapabilityLeaderboard,
+  fetchCapabilityAssessments,
   recomputeAllBenchmarks,
   recomputeCompanyBenchmark,
 } from '../api/benchmark';
-import type { BenchmarkPeriodType } from '../types/benchmark';
+import type { BenchmarkPeriodType, CapabilityAssessmentsResponse } from '../types/benchmark';
 
 export function useBenchmarkOverview(periodType: BenchmarkPeriodType = '30d') {
   return useQuery({
@@ -49,5 +50,19 @@ export function useRecomputeCompanyBenchmark() {
     onSuccess: (_data, { companyId: _companyId }) => {
       queryClient.invalidateQueries({ queryKey: ['benchmark'] });
     },
+  });
+}
+
+export function useCapabilityAssessments(
+  slug: string,
+  capKey: string | null,
+  periodType: BenchmarkPeriodType,
+  enabled: boolean,
+) {
+  return useQuery<CapabilityAssessmentsResponse>({
+    queryKey: ['benchmark', 'capability-assessments', slug, capKey, periodType],
+    queryFn: () => fetchCapabilityAssessments(slug, capKey!, periodType),
+    enabled: enabled && Boolean(slug) && Boolean(capKey),
+    staleTime: 5 * 60 * 1000,
   });
 }
