@@ -1,6 +1,7 @@
 import { ExternalLink, RefreshCw } from 'lucide-react';
 import { useSummarizeCompetitor } from '../../hooks/useSummarizeCompetitor';
 import type { WorkspaceResponse } from '../../types/intelligence';
+import CompanyLogo from '../CompanyLogo';
 
 interface Props {
   profile: WorkspaceResponse['competitor_profile'];
@@ -11,22 +12,31 @@ export default function CompetitorHeader({ profile }: Props) {
 
   return (
     <div className="flex items-start justify-between mb-6">
-      <div>
-        <h1 className="text-[15px] font-bold text-slate-900 tracking-tight">{profile.name}</h1>
-        {profile.description && (
-          <p className="text-[13px] text-slate-600 mt-0.5 max-w-2xl">{profile.description}</p>
-        )}
-        {profile.website && (
-          <a
-            href={profile.website}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1 text-[12px] text-blue-600 hover:text-blue-700 mt-1 transition-colors"
-          >
-            <ExternalLink size={11} />
-            {profile.website}
-          </a>
-        )}
+      <div className="flex items-center gap-3">
+        <CompanyLogo
+          name={profile.name}
+          slug={profile.slug ?? profile.id}
+          logo_path={profile.logo_path ?? null}
+          size="lg"
+          companyId={profile.id}
+        />
+        <div>
+          <h1 className="text-[15px] font-bold text-slate-900 tracking-tight">{profile.name}</h1>
+          {profile.description && (
+            <p className="text-[13px] text-slate-600 mt-0.5 max-w-2xl">{profile.description}</p>
+          )}
+          {profile.website && (
+            <a
+              href={profile.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-[12px] text-blue-600 hover:text-blue-700 mt-1 transition-colors"
+            >
+              <ExternalLink size={11} />
+              {profile.website}
+            </a>
+          )}
+        </div>
       </div>
       <button
         onClick={() => summarize.mutate('30d')}

@@ -7,6 +7,7 @@ import type { BenchmarkPeriodType } from '../types/benchmark';
 import { CapabilityStrengthMatrix } from '../components/benchmark/CapabilityStrengthMatrix';
 import { CapabilityLeaderboardDrawer } from '../components/benchmark/CapabilityLeaderboardDrawer';
 import { Users, BarChart3 } from 'lucide-react';
+import CompanyLogo from '../components/CompanyLogo';
 import { useBenchmarkScorecard } from '../hooks/useScorecard';
 import { ScorecardSummaryStrip } from '../components/scorecard/ScorecardSummaryStrip';
 import type { ScorecardPeriodType } from '../types/scorecard';
@@ -119,9 +120,18 @@ export default function CompetitorList() {
                 to={`/competitors/${c.slug}`}
                 className="card hover:border-accent-blue/40 transition-colors"
               >
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-semibold">{c.name}</h3>
-                  <span className="text-sm text-accent-blue">{c.slug}</span>
+                <div className="flex items-center gap-2 mb-2">
+                  <CompanyLogo
+                    name={c.name}
+                    slug={c.slug}
+                    logo_path={c.logo_path}
+                    size="md"
+                    companyId={c.id}
+                  />
+                  <div className="flex items-center justify-between flex-1 min-w-0">
+                    <h3 className="font-semibold truncate">{c.name}</h3>
+                    <span className="text-sm text-accent-blue ml-2 shrink-0">{c.slug}</span>
+                  </div>
                 </div>
                 {c.description && (
                   <p className="text-sm text-ink-muted line-clamp-2 mb-2">{c.description}</p>
@@ -151,9 +161,18 @@ export default function CompetitorList() {
                 to={`/competitors/${c.slug}`}
                 className="card hover:border-accent-blue/40 transition-colors"
               >
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-semibold">{c.name}</h3>
-                  <span className="text-sm text-accent-blue">{c.slug}</span>
+                <div className="flex items-center gap-2 mb-2">
+                  <CompanyLogo
+                    name={c.name}
+                    slug={c.slug}
+                    logo_path={c.logo_path}
+                    size="md"
+                    companyId={c.id}
+                  />
+                  <div className="flex items-center justify-between flex-1 min-w-0">
+                    <h3 className="font-semibold truncate">{c.name}</h3>
+                    <span className="text-sm text-accent-blue ml-2 shrink-0">{c.slug}</span>
+                  </div>
                 </div>
                 {c.description && (
                   <p className="text-sm text-ink-muted line-clamp-2 mb-2">{c.description}</p>

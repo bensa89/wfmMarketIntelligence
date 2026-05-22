@@ -130,6 +130,7 @@ export interface WorkspaceResponse {
     type: string;
     description: string | null;
     website: string | null;
+    logo_path: string | null;
     created_at: string;
   };
   summary_30d: CompetitorSummary | null;
