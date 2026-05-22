@@ -7,6 +7,7 @@ from app.schemas.benchmark import (
     BenchmarkOverviewResponse,
     CompetitorBenchmarkResponse,
     CapabilityLeaderboardResponse,
+    CapabilityAssessmentsResponse,
 )
 
 router = APIRouter(prefix="/api/benchmark", tags=["benchmark"])
@@ -28,6 +29,19 @@ def get_competitor_strengths(
 ):
     try:
         return BenchmarkQueryService(db).get_competitor_strengths(slug, period_type)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+
+@router.get("/competitors/{slug}/capabilities/{cap_key}/assessments", response_model=CapabilityAssessmentsResponse)
+def get_capability_assessments(
+    slug: str,
+    cap_key: str,
+    period_type: str = "30d",
+    db: Session = Depends(get_db),
+):
+    try:
+        return BenchmarkQueryService(db).get_capability_assessments(slug, cap_key, period_type)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
