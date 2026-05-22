@@ -175,7 +175,7 @@ export default function CompetitorWorkspacePage() {
           </div>
         </div>
 
-        {/* Row 2: Relative capability strength + Capability activity */}
+        {/* Row 2: Relative capability strength + Top moves */}
         <div className="grid grid-cols-2 gap-4">
           <RelativeCapabilityStrengthPanel
             slug={slug ?? ''}
@@ -186,6 +186,7 @@ export default function CompetitorWorkspacePage() {
               setCapabilityExplainMode('capability');
             }}
           />
+          <TopMovesTimeline moves={scorecard?.top_moves} loading={scorecardLoading} onSelect={handleSignalSelect} />
         </div>
 
         {/* Row 3: Risks, Opportunities, Watchpoints */}
@@ -194,9 +195,6 @@ export default function CompetitorWorkspacePage() {
           scorecardWatchpoints={scorecard?.watchpoints}
           onSelectSignal={handleSignalSelect}
         />
-
-        {/* Row 4: Top moves (scorecard) */}
-        <TopMovesTimeline moves={scorecard?.top_moves} loading={scorecardLoading} onSelect={handleSignalSelect} />
 
         {/* Row 5: Recent signal timeline */}
         <RecentMovesTimeline
