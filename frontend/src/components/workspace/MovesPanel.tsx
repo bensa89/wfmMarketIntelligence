@@ -81,7 +81,7 @@ export function MovesPanel({ recentAssessments, topMoves, loading, onSelectSigna
             <p className="text-slate-400 text-[12px]">No recent moves</p>
           ) : (
             <ul className="space-y-3">
-              {sortedRecent.slice(0, 15).map((item) => (
+              {sortedRecent.slice(0, 6).map((item) => (
                 <li
                   key={item.id}
                   className="cursor-pointer hover:bg-slate-50 -mx-2 px-2 py-1.5 rounded-lg transition-colors"
