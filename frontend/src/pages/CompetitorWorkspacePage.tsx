@@ -11,7 +11,7 @@ import type { CompetitorBenchmarkDetail } from '../types/benchmark';
 import { MovesPanel } from '../components/workspace/MovesPanel';
 import RisksOpportunitiesCards from '../components/workspace/RisksOpportunitiesCards';
 import SignalDetailDrawer from '../components/signals/SignalDetailDrawer';
-import type { SignalFeedItem } from '../types/intelligence';
+import type { SignalFeedItem, CapabilityCount } from '../types/intelligence';
 import { useScorecard, useScorecardExplain, useRecomputeScorecard } from '../hooks/useScorecard';
 import { useCrawlStatus } from '../hooks/useCrawlStatus';
 import { DimensionScoreGrid } from '../components/scorecard/DimensionScoreGrid';
@@ -190,7 +190,7 @@ export default function CompetitorWorkspacePage() {
         <div className="grid grid-cols-2 gap-4">
           <RelativeCapabilityStrengthPanel
             slug={slug ?? ''}
-            capabilityDistribution={activeSummary?.capability_distribution ?? []}
+            capabilityDistribution={data.capability_distribution ?? []}
             onInfoClick={() => setCapabilityExplainMode('panel')}
             onCapabilityClick={(detail) => {
               setSelectedCapabilityDetail(detail);
@@ -238,8 +238,8 @@ export default function CompetitorWorkspacePage() {
         periodType={activePeriod as any}
         avgMovementScore={
           selectedCapabilityDetail
-            ? (activeSummary?.capability_distribution ?? []).find(
-                d => d.capability_key === selectedCapabilityDetail.capability_key
+            ? (data.capability_distribution ?? []).find(
+                (d: CapabilityCount) => d.capability_key === selectedCapabilityDetail.capability_key
               )?.avg_movement_score
             : undefined
         }
