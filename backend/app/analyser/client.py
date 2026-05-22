@@ -21,7 +21,8 @@ def _get_opencode_client():
         _opencode_client = OpenAI(
             api_key=settings.opencode_api_key,
             base_url=settings.opencode_base_url,
-            timeout=120.0,
+            timeout=180.0,
+            max_retries=1,
         )
     return _opencode_client
 
