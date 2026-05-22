@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { ExternalLink, RefreshCw, HelpCircle } from 'lucide-react';
+import { ExternalLink, RefreshCw, HelpCircle, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { useCompetitorWorkspace } from '../hooks/useCompetitorWorkspace';
 import { useSummarizeCompetitor } from '../hooks/useSummarizeCompetitor';
 import { ApiError } from '../api/client';
 import StrategicPostureCard from '../components/workspace/StrategicPostureCard';
-import CapabilityRadar from '../components/workspace/CapabilityRadar';
 import { RelativeCapabilityStrengthPanel } from '../components/workspace/RelativeCapabilityStrengthPanel';
+import { CapabilityExplainDrawer } from '../components/workspace/CapabilityExplainDrawer';
+import type { CompetitorBenchmarkDetail } from '../types/benchmark';
 import RecentMovesTimeline from '../components/workspace/RecentMovesTimeline';
 import RisksOpportunitiesCards from '../components/workspace/RisksOpportunitiesCards';
 import SignalDetailDrawer from '../components/signals/SignalDetailDrawer';
@@ -26,6 +27,8 @@ export default function CompetitorWorkspacePage() {
   const [selectedSignal, setSelectedSignal] = useState<SignalFeedItem | null>(null);
   const [selectedScorecardSignalId, setSelectedScorecardSignalId] = useState<string | null>(null);
   const [explainOpen, setExplainOpen] = useState(false);
+  const [capabilityExplainMode, setCapabilityExplainMode] = useState<'panel' | 'capability' | null>(null);
+  const [selectedCapabilityDetail, setSelectedCapabilityDetail] = useState<CompetitorBenchmarkDetail | null>(null);
 
   const summarize = useSummarizeCompetitor(data?.competitor_profile.id ?? '');
   const { data: scorecard, isLoading: scorecardLoading } = useScorecard(slug ?? '', activePeriod);
@@ -139,15 +142,34 @@ export default function CompetitorWorkspacePage() {
             <DimensionScoreGrid
               dimensionScores={scorecard?.dimension_scores}
               loading={scorecardLoading}
+              slotFirst
               slot={
-                <button
-                  onClick={() => setExplainOpen(true)}
-                  disabled={!scorecard}
-                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium bg-white border border-slate-200 text-slate-600 hover:text-slate-900 transition-colors disabled:opacity-40 w-full justify-center"
-                >
-                  <HelpCircle size={12} />
-                  Why this score?
-                </button>
+                <div className="flex flex-col items-center text-center">
+                  <div className="flex items-center justify-between w-full mb-1">
+                    <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">Overall</span>
+                    <div className="flex items-center gap-1">
+                      {scorecard?.overall_trend === 'rising' && <TrendingUp className="w-4 h-4 text-green-500" />}
+                      {scorecard?.overall_trend === 'declining' && <TrendingDown className="w-4 h-4 text-red-500" />}
+                      {scorecard?.overall_trend === 'stable' && <Minus className="w-4 h-4 text-gray-400" />}
+                      <button
+                        onClick={() => setExplainOpen(true)}
+                        disabled={!scorecard}
+                        className="text-gray-400 hover:text-indigo-600 transition-colors disabled:opacity-40"
+                        title="Why this score?"
+                      >
+                        <HelpCircle size={14} />
+                      </button>
+                    </div>
+                  </div>
+                  <p className={`text-2xl font-bold ${
+                    scorecard?.overall_score == null ? 'text-gray-400'
+                    : scorecard.overall_score >= 70 ? 'text-green-700'
+                    : scorecard.overall_score >= 40 ? 'text-yellow-700'
+                    : 'text-red-600'
+                  }`}>
+                    {scorecard?.overall_score != null ? Math.round(scorecard.overall_score) : '—'}
+                  </p>
+                </div>
               }
             />
           </div>
@@ -155,8 +177,15 @@ export default function CompetitorWorkspacePage() {
 
         {/* Row 2: Relative capability strength + Capability activity */}
         <div className="grid grid-cols-2 gap-4">
-          <RelativeCapabilityStrengthPanel slug={slug ?? ''} />
-          <CapabilityRadar distribution={data.capability_distribution} />
+          <RelativeCapabilityStrengthPanel
+            slug={slug ?? ''}
+            capabilityDistribution={activeSummary?.capability_distribution ?? []}
+            onInfoClick={() => setCapabilityExplainMode('panel')}
+            onCapabilityClick={(detail) => {
+              setSelectedCapabilityDetail(detail);
+              setCapabilityExplainMode('capability');
+            }}
+          />
         </div>
 
         {/* Row 3: Risks, Opportunities, Watchpoints */}
@@ -184,10 +213,27 @@ export default function CompetitorWorkspacePage() {
         explain={explain}
         loading={explainLoading}
         error={explainError}
+        onSelectSignal={(signalId) => { setExplainOpen(false); setSelectedScorecardSignalId(signalId); }}
       />
       <ScorecardSignalDrawer
         signalId={selectedScorecardSignalId}
         onClose={() => setSelectedScorecardSignalId(null)}
+      />
+      <CapabilityExplainDrawer
+        open={capabilityExplainMode !== null}
+        onClose={() => { setCapabilityExplainMode(null); setSelectedCapabilityDetail(null); }}
+        mode={capabilityExplainMode ?? 'panel'}
+        slug={slug ?? ''}
+        detail={selectedCapabilityDetail ?? undefined}
+        periodType={activePeriod as any}
+        avgMovementScore={
+          selectedCapabilityDetail
+            ? (activeSummary?.capability_distribution ?? []).find(
+                d => d.capability_key === selectedCapabilityDetail.capability_key
+              )?.avg_movement_score
+            : undefined
+        }
+        onSelectSignal={setSelectedScorecardSignalId}
       />
       {selectedSignal && (
         <SignalDetailDrawer
