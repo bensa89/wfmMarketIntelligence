@@ -53,9 +53,9 @@ export function MovesPanel({ recentAssessments, topMoves, loading, onSelectSigna
   const newIds = new Set(sortedRecent.slice(0, 3).map((a) => a.id));
 
   return (
-    <div className="bg-white border border-slate-200 rounded-xl p-4 flex flex-col">
+    <div className="bg-white border border-slate-200 rounded-xl p-4 flex flex-col h-full">
       {/* Tab bar */}
-      <div className="flex border-b border-slate-100 mb-3 -mx-1">
+      <div className="flex border-b border-slate-100 mb-3 -mx-1 flex-shrink-0">
         {(['recent', 'top'] as const).map((tab) => (
           <button
             key={tab}
@@ -70,6 +70,9 @@ export function MovesPanel({ recentAssessments, topMoves, loading, onSelectSigna
           </button>
         ))}
       </div>
+
+      {/* Scrollable content — stays within sibling grid height */}
+      <div className="flex-1 overflow-y-auto min-h-0">
 
       {/* Recent Moves tab */}
       {activeTab === 'recent' && (
@@ -170,6 +173,8 @@ export function MovesPanel({ recentAssessments, topMoves, loading, onSelectSigna
           )}
         </>
       )}
+
+      </div>
     </div>
   );
 }
