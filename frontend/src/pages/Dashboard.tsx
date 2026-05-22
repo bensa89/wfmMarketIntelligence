@@ -157,7 +157,7 @@ export default function Dashboard() {
             onMinRelevanceChange={setMinRelevance}
             companyId={companyId}
             onCompanyChange={setCompanyId}
-            companies={companies?.map((c) => ({ id: c.id, name: c.name, type: c.type }))}
+            companies={companies}
             onlyNew={onlyNew}
             onOnlyNewChange={setOnlyNew}
             lastMonth={lastMonth}

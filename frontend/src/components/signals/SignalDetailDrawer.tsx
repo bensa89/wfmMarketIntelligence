@@ -8,6 +8,8 @@ import { useAssessSignal } from '../../hooks/useAssessSignal';
 import DateWithTooltip from '../DateWithTooltip';
 import InfoTooltip from '../InfoTooltip';
 import SignalTypeIcon from '../SignalTypeIcon';
+import CompanyLogo from '../CompanyLogo';
+import { useCompanies } from '../../hooks/useCompanies';
 
 interface Props {
   item: SignalFeedItem;
@@ -23,6 +25,8 @@ const VISIBILITY_LABELS: Record<VisibilityImpact, { label: string; color: string
 
 export default function SignalDetailDrawer({ item, onClose }: Props) {
   const assess = useAssessSignal();
+  const { data: companies } = useCompanies();
+  const company = companies?.find((c) => c.id === item.company_id);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
@@ -46,19 +50,30 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
       >
         {/* Header */}
         <div className="flex items-start justify-between p-5 border-b border-slate-200 flex-shrink-0">
-          <div className="flex-1 pr-4">
-            <div id="signal-modal-title" className="text-[16px] font-semibold text-slate-900 leading-snug">{item.title}</div>
-            {item.source_url && (
-              <a
-                href={item.source_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1 mt-1 text-[11px] text-blue-600 hover:text-blue-700 transition-colors"
-              >
-                <ExternalLink size={11} className="flex-shrink-0" />
-                {item.document_title || item.source_url}
-              </a>
+          <div className="flex items-start gap-3 flex-1 pr-4">
+            {company && (
+              <CompanyLogo
+                name={company.name}
+                slug={company.slug}
+                logo_path={company.logo_path}
+                size="sm"
+                companyId={company.id}
+              />
             )}
+            <div className="flex-1 min-w-0">
+              <div id="signal-modal-title" className="text-[16px] font-semibold text-slate-900 leading-snug">{item.title}</div>
+              {item.source_url && (
+                <a
+                  href={item.source_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 mt-1 text-[11px] text-blue-600 hover:text-blue-700 transition-colors"
+                >
+                  <ExternalLink size={11} className="flex-shrink-0" />
+                  {item.document_title || item.source_url}
+                </a>
+              )}
+            </div>
           </div>
           <button onClick={onClose} aria-label="Schließen" className="text-slate-400 hover:text-slate-700 transition-colors flex-shrink-0">
             <X size={16} />

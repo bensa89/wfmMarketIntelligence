@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import type { SignalType, CompanyType } from '../types';
+import type { SignalType, Company } from '../types';
 
 interface FilterBarProps {
   signalType: SignalType | '';
@@ -8,7 +8,7 @@ interface FilterBarProps {
   onMinRelevanceChange: (v: number) => void;
   companyId?: string;
   onCompanyChange?: (v: string) => void;
-  companies?: { id: string; name: string; type: CompanyType }[];
+  companies?: Company[];
   onlyNew?: boolean;
   onOnlyNewChange?: (v: boolean) => void;
   lastMonth?: boolean;
