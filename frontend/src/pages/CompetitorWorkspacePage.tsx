@@ -8,13 +8,12 @@ import StrategicPostureCard from '../components/workspace/StrategicPostureCard';
 import { RelativeCapabilityStrengthPanel } from '../components/workspace/RelativeCapabilityStrengthPanel';
 import { CapabilityExplainDrawer } from '../components/workspace/CapabilityExplainDrawer';
 import type { CompetitorBenchmarkDetail } from '../types/benchmark';
-import RecentMovesTimeline from '../components/workspace/RecentMovesTimeline';
+import { MovesPanel } from '../components/workspace/MovesPanel';
 import RisksOpportunitiesCards from '../components/workspace/RisksOpportunitiesCards';
 import SignalDetailDrawer from '../components/signals/SignalDetailDrawer';
 import type { SignalFeedItem } from '../types/intelligence';
 import { useScorecard, useScorecardExplain, useRecomputeScorecard } from '../hooks/useScorecard';
 import { DimensionScoreGrid } from '../components/scorecard/DimensionScoreGrid';
-import { TopMovesTimeline } from '../components/scorecard/TopMovesTimeline';
 import { ExplainabilityDrawer } from '../components/scorecard/ExplainabilityDrawer';
 import { ScorecardSignalDrawer } from '../components/scorecard/ScorecardSignalDrawer';
 
@@ -186,7 +185,13 @@ export default function CompetitorWorkspacePage() {
               setCapabilityExplainMode('capability');
             }}
           />
-          <TopMovesTimeline moves={scorecard?.top_moves} loading={scorecardLoading} onSelect={handleSignalSelect} />
+          <MovesPanel
+            recentAssessments={data.recent_assessments}
+            topMoves={scorecard?.top_moves}
+            loading={scorecardLoading}
+            onSelectSignal={handleSignalSelect}
+            onSelectRecentSignal={setSelectedSignal}
+          />
         </div>
 
         {/* Row 3: Risks, Opportunities, Watchpoints */}
@@ -196,11 +201,6 @@ export default function CompetitorWorkspacePage() {
           onSelectSignal={handleSignalSelect}
         />
 
-        {/* Row 5: Recent signal timeline */}
-        <RecentMovesTimeline
-          assessments={data.recent_assessments}
-          onSelectSignal={setSelectedSignal}
-        />
 
       </div>
 
