@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiGet, apiPost, apiPut, apiDelete } from '../api/client';
+import { apiGet, apiPost, apiPut, apiDelete, apiPostFormData } from '../api/client';
 import type { Company, CompanyCreate, CompanyUpdate } from '../types';
 
 export function useCompanies() {
@@ -60,5 +60,20 @@ export function useDeleteCompany() {
   return useMutation({
     mutationFn: (slug: string) => apiDelete(`/companies/${slug}`),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['companies'] }),
+  });
+}
+
+export function useUploadCompanyLogo() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ slug, file }: { slug: string; file: File }) => {
+      const formData = new FormData();
+      formData.append('file', file);
+      return apiPostFormData<Company>(`/companies/${slug}/logo`, formData);
+    },
+    onSuccess: (_, variables) => {
+      qc.invalidateQueries({ queryKey: ['companies'] });
+      qc.invalidateQueries({ queryKey: ['companies', variables.slug] });
+    },
   });
 }

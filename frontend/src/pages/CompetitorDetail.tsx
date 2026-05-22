@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { useCompany } from '../hooks/useCompanies';
+import { useCompany, useUploadCompanyLogo } from '../hooks/useCompanies';
+import CompanyLogo from '../components/CompanyLogo';
 import { useSignals } from '../hooks/useSignals';
 import { useDocument } from '../hooks/useDocuments';
 import { useDeduplicate } from '../hooks/useDeduplicate';
@@ -54,6 +55,19 @@ export default function CompetitorDetail() {
   } = useScorecardExplain(slug!, scorecardPeriod, explainOpen);
   const recompute = useRecomputeScorecard(slug!);
   const crawl = useCrawlStatus();
+  const uploadLogo = useUploadCompanyLogo();
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
+  function handleLogoChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !company) return;
+    setUploadError(null);
+    uploadLogo.mutate(
+      { slug: company.slug, file },
+      { onError: (err) => setUploadError(err instanceof Error ? err.message : 'Upload fehlgeschlagen') },
+    );
+    e.target.value = '';
+  }
 
   function handleDeduplicate() {
     if (!company) return;
@@ -81,12 +95,42 @@ export default function CompetitorDetail() {
         <ArrowLeft size={14} /> Back to list
       </Link>
       <div className="flex items-center justify-between mb-4">
-        <div>
-          <h1 className="text-2xl font-bold">{company.name}</h1>
-          <p className="text-sm text-ink-muted">
-            {company.type === 'competitor' ? 'Competitor' : 'Market Source'}
-            {company.website && ` · ${company.website}`}
-          </p>
+        <div className="flex items-center gap-3 mb-4">
+          <CompanyLogo
+            name={company.name}
+            slug={company.slug}
+            logo_path={company.logo_path}
+            size="lg"
+            companyId={company.id}
+          />
+          <div>
+            <h1 className="text-xl font-bold text-slate-900">{company.name}</h1>
+            {company.website && (
+              <a
+                href={company.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[12px] text-blue-600 hover:text-blue-700"
+              >
+                {company.website}
+              </a>
+            )}
+            <div className="mt-1 flex items-center gap-2">
+              <label className="cursor-pointer text-[11px] px-2 py-1 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors font-medium">
+                {uploadLogo.isPending ? 'Wird hochgeladen…' : 'Logo hochladen'}
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/svg+xml"
+                  className="hidden"
+                  onChange={handleLogoChange}
+                  disabled={uploadLogo.isPending}
+                />
+              </label>
+              {uploadError && (
+                <span className="text-[11px] text-red-600">{uploadError}</span>
+              )}
+            </div>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <button
