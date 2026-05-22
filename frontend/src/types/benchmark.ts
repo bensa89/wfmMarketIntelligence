@@ -76,3 +76,20 @@ export interface CapabilityLeaderboardResponse {
   strongest_competitor: LeaderboardEntry | null;
   fastest_riser: LeaderboardEntry | null;
 }
+
+export interface CapabilityAssessmentItem {
+  assessment_id: string;
+  signal_id: string;
+  title: string;
+  movement_score: number;
+  signal_class: string;
+  created_at: string;
+}
+
+export interface CapabilityAssessmentsResponse {
+  capability_key: string;
+  label: string;
+  period_type: string;
+  assessments: CapabilityAssessmentItem[];
+  total_count: number;
+}
