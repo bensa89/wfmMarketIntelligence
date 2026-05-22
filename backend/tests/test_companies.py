@@ -54,3 +54,15 @@ def test_update_company(client):
     )
     assert response.status_code == 200
     assert response.json()["description"] == "WFM vendor"
+
+
+def test_company_read_includes_logo_path(client):
+    client.post(
+        "/api/companies",
+        json={"name": "ATOSS", "slug": "atoss-logo", "type": "competitor"},
+    )
+    response = client.get("/api/companies/atoss-logo")
+    assert response.status_code == 200
+    data = response.json()
+    assert "logo_path" in data
+    assert data["logo_path"] is None

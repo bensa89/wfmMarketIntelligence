@@ -27,4 +27,5 @@ class CompanyRead(BaseModel):
     type: CompanyType
     description: Optional[str]
     website: Optional[str]
+    logo_path: Optional[str] = None
     created_at: datetime

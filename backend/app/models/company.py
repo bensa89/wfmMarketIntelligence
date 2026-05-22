@@ -20,6 +20,7 @@ class Company(Base):
     type = Column(SAEnum(CompanyType), nullable=False)
     description = Column(Text, nullable=True)
     website = Column(String(500), nullable=True)
+    logo_path = Column(String(500), nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     sources = relationship(
