@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { getCompanyColor } from './dashboard/CompanyColorMap';
 
 interface CompanyLogoProps {
@@ -21,6 +22,7 @@ const FONT_SIZE: Record<'sm' | 'md' | 'lg', string> = {
 };
 
 export default function CompanyLogo({ name, slug, logo_path, size, companyId }: CompanyLogoProps) {
+  const [imgError, setImgError] = useState(false);
   const px = SIZE_PX[size];
   const initials = name.slice(0, 2).toUpperCase();
   const bgColor = getCompanyColor(companyId ?? slug);
@@ -37,7 +39,7 @@ export default function CompanyLogo({ name, slug, logo_path, size, companyId }: 
     flexShrink: 0,
   };
 
-  if (logo_path) {
+  if (logo_path && !imgError) {
     return (
       <div
         style={{
@@ -51,9 +53,7 @@ export default function CompanyLogo({ name, slug, logo_path, size, companyId }: 
           src={`/static/${logo_path}`}
           alt={name}
           style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-          onError={(e) => {
-            (e.target as HTMLImageElement).style.display = 'none';
-          }}
+          onError={() => setImgError(true)}
         />
       </div>
     );
