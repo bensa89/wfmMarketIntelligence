@@ -11,6 +11,7 @@ import {
   BarChart2,
   Zap,
   BookOpen,
+  Clock,
 } from 'lucide-react';
 import { hasCredentials, clearCredentials } from '../api/client';
 import { useNavigate } from 'react-router-dom';
@@ -42,6 +43,7 @@ const navSections = [
     label: 'Admin',
     items: [
       { to: '/admin/sources', label: 'Quellen', icon: Settings },
+      { to: '/admin/schedule', label: 'Automation', icon: Clock },
       { to: '/context', label: 'Kontext', icon: Globe },
       { to: '/how-it-works', label: "Wie funktioniert's?", icon: BookOpen },
     ],
