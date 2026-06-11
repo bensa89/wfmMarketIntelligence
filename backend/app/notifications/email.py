@@ -78,7 +78,7 @@ def send_digest_email(
         f"{week_start.day:02d}. – "
         f"{week_end.day:02d}. {_MONTHS_DE[week_end.month - 1]} {week_end.year}"
     )
-    digest_url = f"{app_base_url}/digests"
+    digest_url = f"{app_base_url}/digest"
     signals_url = (
         f"{app_base_url}/signals"
         f"?created_from={week_start.isoformat()}"

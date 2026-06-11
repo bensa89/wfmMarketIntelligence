@@ -207,8 +207,8 @@ def test_send_digest_email_html_contains_tool_and_source_links():
             if part.get_content_type() == "text/html":
                 html_body = part.get_payload(decode=True).decode()
                 break
-        assert "https://wfm.saure.me/digests" in html_body
-        assert "https://wfm.saure.me/digests/test-digest-abc" not in html_body
+        assert "https://wfm.saure.me/digest" in html_body
+        assert "https://wfm.saure.me/digest/test-digest-abc" not in html_body
         assert "https://techcrunch.com/workday-ai" in html_body
 
 
