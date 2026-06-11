@@ -103,3 +103,83 @@ def test_test_email_returns_400_when_no_recipients(client):
 
     response = client.post("/api/schedule/test-email")
     assert response.status_code == 400
+
+
+# --- POST /schedule/test-digest-email ---
+
+def _configure_email(client):
+    payload = {
+        **FULL_PAYLOAD,
+        "email_enabled": True,
+        "email_recipients": ["test@example.com"],
+        "smtp_host": "smtp.example.com",
+        "smtp_from": "from@example.com",
+    }
+    with patch("app.routers.schedule.apply_schedule"):
+        client.put("/api/schedule", json=payload)
+
+
+def _create_digest(db_session):
+    from datetime import date
+    from app.models.digest import WeeklyDigest
+    digest = WeeklyDigest(
+        id="digest-test-id",
+        week_start=date(2026, 6, 9),
+        week_end=date(2026, 6, 15),
+        summary="Test summary",
+        sections=[
+            {
+                "key": "competitors",
+                "title": "Wettbewerber",
+                "items": [
+                    {
+                        "signal_id": "s1",
+                        "company": "Acme",
+                        "title": "Acme expands",
+                        "narrative": "Narrative text",
+                        "implication_for_us": "Watch out",
+                        "movement_strength": "moderate",
+                        "source_url": "https://example.com/acme",
+                        "source_domain": "example.com",
+                        "source_title": "Example – Acme",
+                    }
+                ],
+            }
+        ],
+    )
+    db_session.add(digest)
+    db_session.commit()
+    return digest
+
+
+def test_test_digest_email_returns_400_when_no_digest(client):
+    _configure_email(client)
+    response = client.post("/api/schedule/test-digest-email")
+    assert response.status_code == 400
+    assert "Digest" in response.json()["detail"]
+
+
+def test_test_digest_email_returns_400_when_no_recipients(client):
+    response = client.post("/api/schedule/test-digest-email")
+    assert response.status_code == 400
+
+
+def test_test_digest_email_returns_200_on_success(client, db_session):
+    _configure_email(client)
+    _create_digest(db_session)
+    with patch("app.notifications.email.send_digest_email"):
+        response = client.post("/api/schedule/test-digest-email")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "sent"
+    assert data["digest_id"] == "digest-test-id"
+    assert "test@example.com" in data["recipients"]
+
+
+def test_test_digest_email_returns_400_on_smtp_failure(client, db_session):
+    _configure_email(client)
+    _create_digest(db_session)
+    with patch("app.notifications.email.send_digest_email", side_effect=Exception("SMTP failed")):
+        response = client.post("/api/schedule/test-digest-email")
+    assert response.status_code == 400
+    assert "SMTP failed" in response.json()["detail"]

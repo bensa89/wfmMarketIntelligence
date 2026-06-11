@@ -1,6 +1,36 @@
 import pytest
+from datetime import date
 from unittest.mock import patch, MagicMock
-from app.notifications.email import send_crawl_report
+from app.notifications.email import send_crawl_report, send_digest_email
+from app.models.digest import WeeklyDigest
+
+
+def make_test_digest() -> WeeklyDigest:
+    return WeeklyDigest(
+        id="test-digest-abc",
+        week_start=date(2026, 6, 9),
+        week_end=date(2026, 6, 15),
+        summary="KI dominiert den WFM-Markt diese Woche.",
+        sections=[
+            {
+                "key": "competitors",
+                "title": "Wettbewerber",
+                "items": [
+                    {
+                        "signal_id": "sig-1",
+                        "company": "Workday",
+                        "title": "Workday startet KI-Planungsassistent",
+                        "narrative": "Workday präsentierte ein neues KI-Tool.",
+                        "implication_for_us": "Wir müssen schnell reagieren.",
+                        "movement_strength": "strong",
+                        "source_url": "https://techcrunch.com/workday-ai",
+                        "source_domain": "techcrunch.com",
+                        "source_title": "TechCrunch – Workday AI",
+                    }
+                ],
+            }
+        ],
+    )
 
 
 STATS = {
@@ -109,4 +139,89 @@ def test_send_crawl_report_raises_on_smtp_failure():
                 smtp_from="from@example.com",
                 recipients=["to@example.com"],
                 crawl_stats=STATS,
+            )
+
+
+# --- send_digest_email ---
+
+def _call_send_digest_email(mock_server):
+    digest = make_test_digest()
+    send_digest_email(
+        smtp_host="smtp.example.com",
+        smtp_port=587,
+        smtp_user="user",
+        smtp_password="pass",
+        smtp_from="from@example.com",
+        recipients=["to@example.com"],
+        digest=digest,
+        app_base_url="https://wfm.saure.me",
+    )
+
+
+def test_send_digest_email_calls_smtp():
+    with patch("smtplib.SMTP") as mock_smtp_cls:
+        mock_server = MagicMock()
+        mock_smtp_cls.return_value.__enter__.return_value = mock_server
+        _call_send_digest_email(mock_server)
+        mock_smtp_cls.assert_called_once_with("smtp.example.com", 587)
+        mock_server.starttls.assert_called_once()
+        mock_server.login.assert_called_once_with("user", "pass")
+        mock_server.send_message.assert_called_once()
+
+
+def test_send_digest_email_subject_contains_week_range():
+    with patch("smtplib.SMTP") as mock_smtp_cls:
+        mock_server = MagicMock()
+        mock_smtp_cls.return_value.__enter__.return_value = mock_server
+        _call_send_digest_email(mock_server)
+        msg = mock_server.send_message.call_args[0][0]
+        assert "[WFM Intel] Weekly Digest" in msg["Subject"]
+
+
+def test_send_digest_email_html_contains_digest_content():
+    with patch("smtplib.SMTP") as mock_smtp_cls:
+        mock_server = MagicMock()
+        mock_smtp_cls.return_value.__enter__.return_value = mock_server
+        _call_send_digest_email(mock_server)
+        msg = mock_server.send_message.call_args[0][0]
+        # multipart: iterate payloads to find HTML part
+        html_body = ""
+        for part in msg.walk():
+            if part.get_content_type() == "text/html":
+                html_body = part.get_payload(decode=True).decode()
+                break
+        assert "Workday" in html_body
+        assert "Wettbewerber" in html_body
+        assert "KI dominiert" in html_body
+        assert "techcrunch.com" in html_body
+
+
+def test_send_digest_email_html_contains_tool_and_source_links():
+    with patch("smtplib.SMTP") as mock_smtp_cls:
+        mock_server = MagicMock()
+        mock_smtp_cls.return_value.__enter__.return_value = mock_server
+        _call_send_digest_email(mock_server)
+        msg = mock_server.send_message.call_args[0][0]
+        html_body = ""
+        for part in msg.walk():
+            if part.get_content_type() == "text/html":
+                html_body = part.get_payload(decode=True).decode()
+                break
+        assert "https://wfm.saure.me/digests/test-digest-abc" in html_body
+        assert "https://techcrunch.com/workday-ai" in html_body
+
+
+def test_send_digest_email_raises_on_smtp_failure():
+    with patch("smtplib.SMTP") as mock_smtp_cls:
+        mock_smtp_cls.side_effect = ConnectionRefusedError("refused")
+        with pytest.raises(ConnectionRefusedError):
+            send_digest_email(
+                smtp_host="bad-host",
+                smtp_port=587,
+                smtp_user="",
+                smtp_password="",
+                smtp_from="from@example.com",
+                recipients=["to@example.com"],
+                digest=make_test_digest(),
+                app_base_url="https://wfm.saure.me",
             )

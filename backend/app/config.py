@@ -24,6 +24,7 @@ class Settings(BaseSettings):
     crawl_concurrency: int = 4
     discovery_concurrency: int = 3
     analysis_concurrency: int = 3
+    app_base_url: str = "https://wfm.saure.me"
 
 
 settings = Settings()

@@ -118,11 +118,12 @@ def scheduled_crawl_job() -> None:
 
     # Generate digest if configured
     digest_generated = False
+    post_crawl_digest = None
     if config and config.digest_after_crawl:
         try:
             from app.digester.pipeline import generate_digest
             with SessionLocal() as digest_db:
-                generate_digest(digest_db)
+                post_crawl_digest = generate_digest(digest_db)
                 digest_generated = True
             logger.info("Post-crawl digest generated")
         except Exception as exc:
@@ -153,15 +154,55 @@ def scheduled_crawl_job() -> None:
         except Exception as exc:
             logger.warning("Failed to send crawl report email: %s", exc)
 
+        if post_crawl_digest:
+            try:
+                from app.notifications.email import send_digest_email
+                from app.config import settings
+                send_digest_email(
+                    smtp_host=config.smtp_host,
+                    smtp_port=config.smtp_port,
+                    smtp_user=config.smtp_user,
+                    smtp_password=config.smtp_password,
+                    smtp_from=config.smtp_from,
+                    recipients=config.email_recipients,
+                    digest=post_crawl_digest,
+                    app_base_url=settings.app_base_url,
+                )
+                logger.info("Post-crawl digest email sent to %d recipients", len(config.email_recipients))
+            except Exception as exc:
+                logger.warning("Failed to send post-crawl digest email: %s", exc)
+
 
 def scheduled_digest_job() -> None:
     from app.database import SessionLocal
     from app.digester.pipeline import generate_digest
+    from app.models.schedule import ScheduleConfig
 
     logger.info("Scheduled digest job started")
+    digest = None
+    config = None
     with SessionLocal() as db:
-        generate_digest(db)
+        digest = generate_digest(db)
+        config = db.query(ScheduleConfig).filter(ScheduleConfig.id == 1).first()
     logger.info("Scheduled digest job finished")
+
+    if config and config.email_enabled and config.email_recipients and digest:
+        try:
+            from app.notifications.email import send_digest_email
+            from app.config import settings
+            send_digest_email(
+                smtp_host=config.smtp_host,
+                smtp_port=config.smtp_port,
+                smtp_user=config.smtp_user,
+                smtp_password=config.smtp_password,
+                smtp_from=config.smtp_from,
+                recipients=config.email_recipients,
+                digest=digest,
+                app_base_url=settings.app_base_url,
+            )
+            logger.info("Digest email sent to %d recipients", len(config.email_recipients))
+        except Exception as exc:
+            logger.warning("Failed to send digest email: %s", exc)
 
 
 def _build_crawl_stats(crawl_run) -> dict:

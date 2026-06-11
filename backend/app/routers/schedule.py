@@ -75,3 +75,35 @@ def test_email(db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail=str(exc))
 
     return {"status": "sent", "recipients": config.email_recipients}
+
+
+@router.post("/test-digest-email")
+def test_digest_email(db: Session = Depends(get_db)):
+    from app.notifications.email import send_digest_email
+    from app.models.digest import WeeklyDigest
+    from app.config import settings
+
+    config = _get_or_create_config(db)
+
+    if not config.email_recipients:
+        raise HTTPException(status_code=400, detail="Keine Empfänger konfiguriert")
+
+    digest = db.query(WeeklyDigest).order_by(WeeklyDigest.generated_at.desc()).first()
+    if digest is None:
+        raise HTTPException(status_code=400, detail="Kein Digest vorhanden")
+
+    try:
+        send_digest_email(
+            smtp_host=config.smtp_host,
+            smtp_port=config.smtp_port,
+            smtp_user=config.smtp_user,
+            smtp_password=config.smtp_password,
+            smtp_from=config.smtp_from,
+            recipients=config.email_recipients,
+            digest=digest,
+            app_base_url=settings.app_base_url,
+        )
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+    return {"status": "sent", "digest_id": digest.id, "recipients": config.email_recipients}

@@ -124,6 +124,7 @@ export default function ScheduleAdmin() {
   const queryClient = useQueryClient();
   const [toast, setToast] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
   const [testEmailLoading, setTestEmailLoading] = useState(false);
+  const [testDigestEmailLoading, setTestDigestEmailLoading] = useState(false);
 
   const { data: status, isLoading } = useQuery<ScheduleStatus>({
     queryKey: ['schedule'],
@@ -164,6 +165,19 @@ export default function ScheduleAdmin() {
       showToast('error', message);
     } finally {
       setTestEmailLoading(false);
+    }
+  }
+
+  async function handleTestDigestEmail() {
+    setTestDigestEmailLoading(true);
+    try {
+      await apiPost('/schedule/test-digest-email');
+      showToast('success', 'Test Digest-E-Mail gesendet');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Fehler beim Senden';
+      showToast('error', message);
+    } finally {
+      setTestDigestEmailLoading(false);
     }
   }
 
@@ -341,14 +355,24 @@ export default function ScheduleAdmin() {
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={handleTestEmail}
-              disabled={testEmailLoading}
-              className="text-sm text-blue-600 hover:text-blue-700 font-medium disabled:opacity-50"
-            >
-              {testEmailLoading ? 'Sende…' : 'Test-E-Mail senden'}
-            </button>
+            <div className="flex gap-4">
+              <button
+                type="button"
+                onClick={handleTestEmail}
+                disabled={testEmailLoading}
+                className="text-sm text-blue-600 hover:text-blue-700 font-medium disabled:opacity-50"
+              >
+                {testEmailLoading ? 'Sende…' : 'Test-Crawl-Mail senden'}
+              </button>
+              <button
+                type="button"
+                onClick={handleTestDigestEmail}
+                disabled={testDigestEmailLoading}
+                className="text-sm text-blue-600 hover:text-blue-700 font-medium disabled:opacity-50"
+              >
+                {testDigestEmailLoading ? 'Sende…' : 'Test Digest-Mail senden'}
+              </button>
+            </div>
           </div>
         )}
       </SectionCard>
