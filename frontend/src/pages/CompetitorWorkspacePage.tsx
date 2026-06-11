@@ -4,11 +4,13 @@ import { ExternalLink, RefreshCw, HelpCircle, TrendingUp, TrendingDown, Minus } 
 import { useCompetitorWorkspace } from '../hooks/useCompetitorWorkspace';
 import { useSummarizeCompetitor } from '../hooks/useSummarizeCompetitor';
 import { ApiError } from '../api/client';
+import CompanyLogo from '../components/CompanyLogo';
 import StrategicPostureCard from '../components/workspace/StrategicPostureCard';
 import { RelativeCapabilityStrengthPanel } from '../components/workspace/RelativeCapabilityStrengthPanel';
 import { CapabilityExplainDrawer } from '../components/workspace/CapabilityExplainDrawer';
 import type { CompetitorBenchmarkDetail } from '../types/benchmark';
 import { MovesPanel } from '../components/workspace/MovesPanel';
+import { CapabilityStrengthVsMovement } from '../components/benchmark/CapabilityStrengthVsMovement';
 import RisksOpportunitiesCards from '../components/workspace/RisksOpportunitiesCards';
 import SignalDetailDrawer from '../components/signals/SignalDetailDrawer';
 import type { SignalFeedItem, CapabilityCount } from '../types/intelligence';
@@ -63,22 +65,31 @@ export default function CompetitorWorkspacePage() {
       {/* Header */}
       <div className="bg-white border-b border-slate-200 px-6 py-4 flex-shrink-0">
         <div className="flex items-start justify-between gap-4">
-          <div className="min-w-0">
-            <h1 className="text-[15px] font-bold text-slate-900 tracking-tight">{data.competitor_profile.name}</h1>
-            {data.competitor_profile.description && (
-              <p className="text-[12px] text-slate-500 mt-0.5">{data.competitor_profile.description}</p>
-            )}
-            {data.competitor_profile.website && (
-              <a
-                href={data.competitor_profile.website}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1 text-[11px] text-blue-600 hover:text-blue-700 mt-1 transition-colors"
-              >
-                <ExternalLink size={10} />
-                {data.competitor_profile.website}
-              </a>
-            )}
+          <div className="flex items-center gap-3 min-w-0">
+            <CompanyLogo
+              name={data.competitor_profile.name}
+              slug={data.competitor_profile.slug ?? slug ?? ''}
+              logo_path={data.competitor_profile.logo_path ?? null}
+              size="lg"
+              companyId={data.competitor_profile.id}
+            />
+            <div className="min-w-0">
+              <h1 className="text-[15px] font-bold text-slate-900 tracking-tight">{data.competitor_profile.name}</h1>
+              {data.competitor_profile.description && (
+                <p className="text-[12px] text-slate-500 mt-0.5">{data.competitor_profile.description}</p>
+              )}
+              {data.competitor_profile.website && (
+                <a
+                  href={data.competitor_profile.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 text-[11px] text-blue-600 hover:text-blue-700 mt-1 transition-colors"
+                >
+                  <ExternalLink size={10} />
+                  {data.competitor_profile.website}
+                </a>
+              )}
+            </div>
           </div>
 
           <div className="flex items-center gap-2 flex-shrink-0 flex-wrap justify-end">
@@ -206,7 +217,16 @@ export default function CompetitorWorkspacePage() {
           />
         </div>
 
-        {/* Row 3: Risks, Opportunities, Watchpoints */}
+        {/* Row 3: Capability Strength vs. Movement scatter */}
+        <CapabilityStrengthVsMovement
+          slug={slug ?? ''}
+          onCapabilityClick={(detail) => {
+            setSelectedCapabilityDetail(detail);
+            setCapabilityExplainMode('capability');
+          }}
+        />
+
+        {/* Row 4: Risks, Opportunities, Watchpoints */}
         <RisksOpportunitiesCards
           summary={activeSummary}
           scorecardWatchpoints={scorecard?.watchpoints}

@@ -70,7 +70,7 @@ class BenchmarkQueryService:
             period_start=period_start,
             period_end=period_end,
             capabilities=cap_keys,
-            competitors=[CompetitorBrief(id=c.id, name=c.name, slug=c.slug) for c in competitors],
+            competitors=[CompetitorBrief(id=c.id, name=c.name, slug=c.slug, logo_path=c.logo_path) for c in competitors],
             matrix=matrix,
         )
 
@@ -97,6 +97,8 @@ class BenchmarkQueryService:
                     relative_strength_score=b.relative_strength_score,
                     prev_period_strength_score=b.prev_period_strength_score,
                     strength_delta=b.strength_delta,
+                    prev_period_momentum_score=b.prev_period_momentum_score,
+                    momentum_delta=b.momentum_delta,
                     tier=b.tier,
                     peer_rank=b.peer_rank,
                     peer_percentile=b.peer_percentile,

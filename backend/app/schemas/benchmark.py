@@ -45,6 +45,7 @@ class CompetitorBrief(BaseModel):
     id: str
     name: str
     slug: str
+    logo_path: str | None = None
 
 
 class BenchmarkMatrixCell(BaseModel):
@@ -70,6 +71,8 @@ class CompetitorBenchmarkDetail(BaseModel):
     relative_strength_score: int
     prev_period_strength_score: Optional[int] = None
     strength_delta: Optional[int] = None
+    prev_period_momentum_score: Optional[int] = None
+    momentum_delta: Optional[int] = None
     tier: str
     peer_rank: Optional[int] = None
     peer_percentile: Optional[float] = None

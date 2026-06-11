@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import * as LucideIcons from 'lucide-react';
 import { HelpCircle } from 'lucide-react';
 import { useCompetitorBenchmark } from '../../hooks/useBenchmark';
 import type { BenchmarkPeriodType, CompetitorBenchmarkDetail } from '../../types/benchmark';
@@ -7,6 +8,7 @@ import { TierBadge } from '../benchmark/TierBadge';
 import { ConfidenceIndicator } from '../benchmark/ConfidenceIndicator';
 import { StrengthDeltaIndicator } from '../benchmark/StrengthDeltaIndicator';
 import { InfoTooltip } from './InfoTooltip';
+import { CAPABILITIES } from '../../constants/capabilities';
 
 interface RelativeCapabilityStrengthPanelProps {
   slug: string;
@@ -32,6 +34,12 @@ const COLUMN_TOOLTIPS = {
 
 const MOMENTUM_BAR_TOOLTIP =
   'Balkenfarbe = durchschnittlicher Movement Score aller Assessments:\n🟠 ≥80 sehr hoch · 🟣 ≥60 hoch · 🔵 ≥30 mittel · ⚫ <30 gering';
+
+function renderIcon(iconName: string) {
+  const IconComponent = (LucideIcons as Record<string, any>)[iconName];
+  if (!IconComponent) return null;
+  return <IconComponent className="w-4 h-4" />;
+}
 
 function getMomentumColor(score?: number): string {
   if (score === undefined) return '#3b82f6';
@@ -94,13 +102,22 @@ function CapabilityRow({
   momentumColor: string;
   onClick: () => void;
 }) {
+  const capabilityMeta = CAPABILITIES[detail.capability_key];
+
   return (
     <div
       onClick={onClick}
       className="flex items-center gap-3 py-2 border-b border-slate-50 last:border-0 cursor-pointer hover:bg-slate-50 rounded -mx-1 px-1 transition-colors"
     >
       <div className="w-32 shrink-0">
-        <span className="text-xs text-slate-700 font-medium truncate block">{detail.label}</span>
+        <div className="flex items-center gap-1.5">
+          {capabilityMeta?.icon && (
+            <div className="text-slate-500 flex-shrink-0">
+              {renderIcon(capabilityMeta.icon)}
+            </div>
+          )}
+          <span className="text-xs text-slate-700 font-medium truncate">{detail.label}</span>
+        </div>
       </div>
       <StrengthBar score={detail.relative_strength_score} momentumColor={momentumColor} />
       <span className="w-8 text-right text-xs font-mono text-slate-600 shrink-0">

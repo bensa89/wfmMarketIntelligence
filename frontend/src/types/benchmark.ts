@@ -13,6 +13,7 @@ export interface CompetitorBrief {
   id: string;
   name: string;
   slug: string;
+  logo_path: string | null;
 }
 
 export interface BenchmarkMatrixCell {
@@ -38,6 +39,8 @@ export interface CompetitorBenchmarkDetail {
   relative_strength_score: number;
   prev_period_strength_score: number | null;
   strength_delta: number | null;
+  prev_period_momentum_score: number | null;
+  momentum_delta: number | null;
   tier: BenchmarkTier;
   peer_rank: number | null;
   peer_percentile: number | null;

@@ -36,6 +36,8 @@ class CompetitorCapabilityBenchmark(Base):
     relative_strength_score = Column(Integer, nullable=False, default=0)
     prev_period_strength_score = Column(Integer, nullable=True)
     strength_delta = Column(Integer, nullable=True)
+    prev_period_momentum_score = Column(SmallInteger, nullable=True)
+    momentum_delta = Column(Integer, nullable=True)
     peer_rank = Column(Integer, nullable=True)
     peer_percentile = Column(Float, nullable=True)
     tier = Column(String(20), nullable=False, default="weakly_evidenced")

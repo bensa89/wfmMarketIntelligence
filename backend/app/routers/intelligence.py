@@ -267,6 +267,7 @@ def get_competitor_workspace(slug: str, db: Session = Depends(get_db)) -> dict:
             "type": company.type.value,
             "description": company.description,
             "website": company.website,
+            "logo_path": company.logo_path,
             "created_at": company.created_at.isoformat() if company.created_at else None,
         },
         "summary_30d": _summary_to_dict(_latest_summary(PeriodType.thirty_days)),

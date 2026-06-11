@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import * as LucideIcons from 'lucide-react';
 import type { BenchmarkOverviewResponse, BenchmarkMatrixCell, BenchmarkTier } from '../../types/benchmark';
 import { CAPABILITIES } from '../../constants/capabilities';
 import { TierBadge } from './TierBadge';
 import { ConfidenceIndicator } from './ConfidenceIndicator';
+import CompanyLogo from '../CompanyLogo';
 
 const TIER_BG: Record<BenchmarkTier, string> = {
   leader: 'bg-emerald-600',
@@ -17,6 +19,12 @@ const TIER_TEXT: Record<BenchmarkTier, string> = {
   emerging: 'text-slate-900',
   weakly_evidenced: 'text-slate-400',
 };
+
+function renderIcon(iconName: string) {
+  const IconComponent = (LucideIcons as Record<string, any>)[iconName];
+  if (!IconComponent) return null;
+  return <IconComponent className="w-4 h-4" />;
+}
 
 interface MatrixCellProps {
   cell: BenchmarkMatrixCell;
@@ -78,10 +86,15 @@ export function CapabilityStrengthMatrix({ data, onCapabilityClick, onCompetitor
               <th key={capKey} className="w-12">
                 <button
                   onClick={() => onCapabilityClick?.(capKey)}
-                  className="text-xs text-slate-600 font-medium hover:text-slate-900 truncate block max-w-[48px] leading-tight text-center"
+                  className="flex flex-col items-center gap-0.5 text-xs text-slate-600 font-medium hover:text-slate-900 transition-colors"
                   title={CAPABILITIES[capKey]?.label ?? capKey}
                 >
-                  {(CAPABILITIES[capKey]?.label ?? capKey).split(' ')[0]}
+                  <div className="text-slate-600 hover:text-slate-900">
+                    {renderIcon(CAPABILITIES[capKey]?.icon)}
+                  </div>
+                  <div className="truncate max-w-[48px] leading-tight text-center">
+                    {(CAPABILITIES[capKey]?.label ?? capKey).split(' ')[0]}
+                  </div>
                 </button>
               </th>
             ))}
@@ -93,8 +106,9 @@ export function CapabilityStrengthMatrix({ data, onCapabilityClick, onCompetitor
               <td className="text-xs text-slate-700 font-medium pr-3 whitespace-nowrap">
                 <button
                   onClick={() => onCompetitorClick?.(comp.slug)}
-                  className="hover:underline text-left"
+                  className="flex items-center gap-1.5 hover:underline text-left"
                 >
+                  <CompanyLogo name={comp.name} slug={comp.slug} logo_path={comp.logo_path} size="sm" companyId={comp.id} />
                   {comp.name}
                 </button>
               </td>

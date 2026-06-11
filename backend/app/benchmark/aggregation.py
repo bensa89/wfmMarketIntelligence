@@ -57,8 +57,9 @@ class BenchmarkAggregationService:
             strength_score = compute_relative_strength(scores)
             tier = determine_tier(strength_score, confidence, scores.evidence_coverage)
 
-            prev_score = self._get_previous_score(company_id, cap_key, period_type)
+            prev_score, prev_momentum = self._get_previous_scores(company_id, cap_key, period_type)
             delta = (strength_score - prev_score) if prev_score is not None else None
+            momentum_delta = (scores.execution_momentum - prev_momentum) if prev_momentum is not None else None
 
             benchmark = self._upsert(
                 company_id=company_id,
@@ -70,6 +71,8 @@ class BenchmarkAggregationService:
                 strength_score=strength_score,
                 prev_score=prev_score,
                 delta=delta,
+                prev_momentum=prev_momentum,
+                momentum_delta=momentum_delta,
                 tier=tier,
                 confidence=confidence,
                 signal_count=len(cap_assessments),
@@ -79,19 +82,22 @@ class BenchmarkAggregationService:
         self.db.commit()
         return benchmarks
 
-    def _get_previous_score(
+    def _get_previous_scores(
         self, company_id: str, cap_key: str, period_type: str
-    ) -> int | None:
+    ) -> tuple[int | None, int | None]:
         existing = (
             self.db.query(CompetitorCapabilityBenchmark)
             .filter_by(company_id=company_id, capability_key=cap_key, period_type=period_type)
             .first()
         )
-        return existing.relative_strength_score if existing else None
+        if existing is None:
+            return None, None
+        return existing.relative_strength_score, existing.execution_momentum_score
 
     def _upsert(
         self, *, company_id, capability_key, period_type, period_start, period_end,
-        scores, strength_score, prev_score, delta, tier, confidence, signal_count,
+        scores, strength_score, prev_score, delta, prev_momentum, momentum_delta,
+        tier, confidence, signal_count,
     ) -> CompetitorCapabilityBenchmark:
         existing = (
             self.db.query(CompetitorCapabilityBenchmark)
@@ -116,6 +122,8 @@ class BenchmarkAggregationService:
         existing.relative_strength_score = strength_score
         existing.prev_period_strength_score = prev_score
         existing.strength_delta = delta
+        existing.prev_period_momentum_score = prev_momentum
+        existing.momentum_delta = momentum_delta
         existing.tier = tier
         existing.confidence = confidence
         existing.source_signal_count = signal_count

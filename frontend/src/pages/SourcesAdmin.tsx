@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { useCompanies, useCreateCompany, useUpdateCompanyDynamic, useDeleteCompany } from '../hooks/useCompanies';
+import { useCompanies, useCreateCompany, useUpdateCompanyDynamic, useDeleteCompany, useUploadCompanyLogo } from '../hooks/useCompanies';
+import CompanyLogo from '../components/CompanyLogo';
 import { useSources, useCreateSource, useUpdateSource, useDeleteSource } from '../hooks/useSources';
 import { useCrawlStatus } from '../hooks/useCrawlStatus';
 import { useAnalyseSource } from '../hooks/useCrawl';
@@ -233,6 +234,9 @@ export default function SourcesAdmin() {
   const [editCompanyWebsite, setEditCompanyWebsite] = useState('');
   const [editCompanyDescription, setEditCompanyDescription] = useState('');
 
+  const uploadLogo = useUploadCompanyLogo();
+  const [logoUploadError, setLogoUploadError] = useState<string | null>(null);
+
   const [expandedSourceId, setExpandedSourceId] = useState<string | null>(null);
   const [expandedCompanyIds, setExpandedCompanyIds] = useState<Set<string>>(() => new Set());
   const [sourceError, setSourceError] = useState<string | null>(null);
@@ -345,6 +349,7 @@ export default function SourcesAdmin() {
     setEditCompanyType('competitor');
     setEditCompanyWebsite('');
     setEditCompanyDescription('');
+    setLogoUploadError(null);
   }
 
   function handleSaveCompanyEdit(e: React.FormEvent) {
@@ -581,6 +586,7 @@ export default function SourcesAdmin() {
                      className="flex items-center gap-3 flex-1 text-left"
                    >
                      {isExpanded ? <ChevronDown size={18} className="text-ink-muted flex-shrink-0" /> : <ChevronRight size={18} className="text-ink-muted flex-shrink-0" />}
+                     <CompanyLogo name={company.name} slug={company.slug} logo_path={company.logo_path} size="sm" companyId={company.id} />
                      <h2 className="text-lg font-semibold">{company.name}</h2>
                      <span className={`text-xs px-2 py-0.5 rounded ${company.type === 'competitor' ? 'bg-type-product_update/20 text-type-product_update' : 'bg-type-ai_announcement/20 text-type-ai_announcement'}`}>
                        {company.type === 'competitor' ? 'Competitor' : 'Market Source'}
@@ -862,6 +868,33 @@ export default function SourcesAdmin() {
               <button onClick={closeEditCompanyModal} className="text-ink-muted hover:text-ink">
                 <X size={20} />
               </button>
+            </div>
+            {/* Logo upload */}
+            <div className="flex items-center gap-3 mb-4 pb-4 border-b border-app-border">
+              <CompanyLogo name={editingCompany.name} slug={editingCompany.slug} logo_path={editingCompany.logo_path} size="lg" companyId={editingCompany.id} />
+              <div>
+                <label className="cursor-pointer text-sm px-3 py-1.5 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors font-medium">
+                  {uploadLogo.isPending ? 'Wird hochgeladen…' : 'Logo hochladen'}
+                  <input
+                    type="file"
+                    accept="image/png,image/jpeg,image/svg+xml"
+                    className="hidden"
+                    disabled={uploadLogo.isPending}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      setLogoUploadError(null);
+                      uploadLogo.mutate(
+                        { slug: editingCompany.slug, file },
+                        { onError: (err) => setLogoUploadError(err instanceof Error ? err.message : 'Upload fehlgeschlagen') },
+                      );
+                      e.target.value = '';
+                    }}
+                  />
+                </label>
+                <p className="text-xs text-ink-muted mt-1">PNG, JPG oder SVG · max. 2 MB</p>
+                {logoUploadError && <p className="text-xs text-red-600 mt-1">{logoUploadError}</p>}
+              </div>
             </div>
             <form onSubmit={handleSaveCompanyEdit} className="space-y-4">
               <div>
