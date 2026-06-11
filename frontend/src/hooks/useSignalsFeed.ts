@@ -11,6 +11,8 @@ export function useSignalsFeed(filters: SignalsFeedFilters = {}) {
   if (filters.min_confidence !== undefined) params.min_confidence = String(filters.min_confidence);
   if (filters.from_date) params.from_date = filters.from_date;
   if (filters.to_date) params.to_date = filters.to_date;
+  if (filters.created_from) params.created_from = filters.created_from;
+  if (filters.created_to) params.created_to = filters.created_to;
   if (filters.sort_by) params.sort_by = filters.sort_by;
   if (filters.page) params.page = String(filters.page);
   if (filters.page_size) params.page_size = String(filters.page_size);

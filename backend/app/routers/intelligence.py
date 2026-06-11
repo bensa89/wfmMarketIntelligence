@@ -308,6 +308,8 @@ def get_signals_feed(
     min_confidence: Optional[float] = None,
     from_date: Optional[str] = None,
     to_date: Optional[str] = None,
+    created_from: Optional[str] = None,
+    created_to: Optional[str] = None,
     sort_by: str = Query(default="published_at", pattern="^(published_at|movement_score|confidence)$"),
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=25, ge=1, le=100),
@@ -334,6 +336,16 @@ def get_signals_feed(
     if to_date:
         try:
             query = query.filter(Signal.published_at <= datetime.fromisoformat(to_date))
+        except ValueError:
+            pass
+    if created_from:
+        try:
+            query = query.filter(Signal.created_at >= datetime.fromisoformat(created_from))
+        except ValueError:
+            pass
+    if created_to:
+        try:
+            query = query.filter(Signal.created_at <= datetime.fromisoformat(created_to).replace(hour=23, minute=59, second=59))
         except ValueError:
             pass
 

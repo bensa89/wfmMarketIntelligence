@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useSignalsFeed } from '../hooks/useSignalsFeed';
 import { useCompanies } from '../hooks/useCompanies';
 import SignalFeedFilters from '../components/signals/SignalFeedFilters';
@@ -13,7 +14,12 @@ const DEFAULT_FILTERS: SignalsFeedFilters = {
 };
 
 export default function SignalsFeedPage() {
-  const [filters, setFilters] = useState<SignalsFeedFilters>(DEFAULT_FILTERS);
+  const [searchParams] = useSearchParams();
+  const [filters, setFilters] = useState<SignalsFeedFilters>(() => ({
+    ...DEFAULT_FILTERS,
+    ...(searchParams.get('created_from') ? { created_from: searchParams.get('created_from')! } : {}),
+    ...(searchParams.get('created_to') ? { created_to: searchParams.get('created_to')! } : {}),
+  }));
   const [selectedItem, setSelectedItem] = useState<SignalFeedItem | null>(null);
 
   const { data, isLoading } = useSignalsFeed(filters);

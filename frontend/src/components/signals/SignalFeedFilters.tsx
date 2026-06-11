@@ -25,7 +25,8 @@ const SORT_OPTIONS = [
 export default function SignalFeedFilters({ filters, companies, onChange, onReset }: Props) {
   const hasActiveFilters = !!(
     filters.company_id || filters.capability || filters.signal_type ||
-    filters.movement_strength || filters.min_confidence
+    filters.movement_strength || filters.min_confidence ||
+    filters.created_from || filters.created_to
   );
 
   return (
@@ -83,6 +84,23 @@ export default function SignalFeedFilters({ filters, companies, onChange, onRese
       >
         {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>Sort: {o.label}</option>)}
       </select>
+
+      {/* Created date range */}
+      <input
+        type="date"
+        value={filters.created_from ?? ''}
+        onChange={(e) => onChange({ created_from: e.target.value || undefined, page: 1 })}
+        className="bg-slate-50 border border-slate-200 text-slate-700 rounded-lg text-[12px] px-2.5 py-1.5 focus:outline-none"
+        title="Erstellt ab"
+      />
+      <span className="text-slate-400 text-[12px]">–</span>
+      <input
+        type="date"
+        value={filters.created_to ?? ''}
+        onChange={(e) => onChange({ created_to: e.target.value || undefined, page: 1 })}
+        className="bg-slate-50 border border-slate-200 text-slate-700 rounded-lg text-[12px] px-2.5 py-1.5 focus:outline-none"
+        title="Erstellt bis"
+      />
 
       {hasActiveFilters && (
         <button

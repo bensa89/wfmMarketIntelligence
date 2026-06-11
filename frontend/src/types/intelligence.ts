@@ -155,6 +155,8 @@ export interface SignalsFeedFilters {
   min_confidence?: number;
   from_date?: string;
   to_date?: string;
+  created_from?: string;
+  created_to?: string;
   sort_by?: 'published_at' | 'movement_score' | 'confidence';
   page?: number;
   page_size?: number;
