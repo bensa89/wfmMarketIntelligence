@@ -17,7 +17,7 @@ def send_crawl_report(
 ) -> None:
     msg = EmailMessage()
     msg["Subject"] = f"[WFM Intel] Crawl abgeschlossen – {crawl_stats['date']}"
-    msg["From"] = smtp_from
+    msg["From"] = f"WFM Intelligence Hub <{smtp_from}>"
     msg["To"] = ", ".join(recipients)
 
     lines = [
