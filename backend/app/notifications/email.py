@@ -79,25 +79,27 @@ def send_digest_email(
     )
     digest_url = f"{app_base_url}/digests"
     sections = digest.sections or []
+    signal_count = sum(len(s.get("items", [])) for s in sections)
 
     msg = EmailMessage()
     msg["Subject"] = f"[WFM Intel] Weekly Digest – {date_range}"
     msg["From"] = f"WFM Intelligence Hub <{smtp_from}>"
     msg["To"] = ", ".join(recipients)
 
-    msg.set_content(_build_plain_text(digest, date_range, digest_url, sections))
+    msg.set_content(_build_plain_text(digest, date_range, digest_url, sections, signal_count))
     msg.add_alternative(
-        _build_html(digest, date_range, digest_url, sections, app_base_url, company_logos or {}),
+        _build_html(digest, date_range, digest_url, sections, app_base_url, company_logos or {}, signal_count),
         subtype="html",
     )
 
     _smtp_send(smtp_host, smtp_port, smtp_user, smtp_password, msg)
 
 
-def _build_plain_text(digest, date_range: str, digest_url: str, sections: list) -> str:
+def _build_plain_text(digest, date_range: str, digest_url: str, sections: list, signal_count: int) -> str:
+    signal_label = "1 Signal" if signal_count == 1 else f"{signal_count} Signale"
     lines = [
         "WFM Market Intelligence Hub – Weekly Digest",
-        f"Zeitraum: {date_range}",
+        f"Zeitraum: {date_range}  |  {signal_label}",
         "",
     ]
     if digest.summary:
@@ -213,11 +215,13 @@ def _build_html(
     sections: list,
     app_base_url: str,
     company_logos: dict,
+    signal_count: int = 0,
 ) -> str:
     summary = html.escape(digest.summary or "")
     sections_html = _render_sections(sections, company_logos)
     digest_url_escaped = html.escape(digest_url)
     app_url_escaped = html.escape(app_base_url)
+    signal_label = "1 Signal" if signal_count == 1 else f"{signal_count} Signale"
 
     return f"""<!DOCTYPE html>
 <html lang="de">
@@ -247,6 +251,7 @@ def _build_html(
       <tr>
         <td style="background:#1e293b;padding:20px 40px 24px;">
           <p style="margin:0;color:#cbd5e1;font-size:14px;line-height:1.65;">{summary}</p>
+          <p style="margin:12px 0 0;color:#475569;font-size:12px;">{signal_label} diese Woche</p>
         </td>
       </tr>
 

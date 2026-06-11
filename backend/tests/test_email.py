@@ -237,6 +237,21 @@ def test_send_digest_email_html_contains_logo_when_provided():
         assert "https://wfm.saure.me/static/logos/workday.png" in html_body
 
 
+def test_send_digest_email_html_contains_signal_count():
+    with patch("smtplib.SMTP") as mock_smtp_cls:
+        mock_server = MagicMock()
+        mock_smtp_cls.return_value.__enter__.return_value = mock_server
+        _call_send_digest_email(mock_server)
+        msg = mock_server.send_message.call_args[0][0]
+        html_body = ""
+        for part in msg.walk():
+            if part.get_content_type() == "text/html":
+                html_body = part.get_payload(decode=True).decode()
+                break
+        # make_test_digest has 1 section with 1 item → "1 Signal"
+        assert "1 Signal" in html_body
+
+
 def test_send_digest_email_raises_on_smtp_failure():
     with patch("smtplib.SMTP") as mock_smtp_cls:
         mock_smtp_cls.side_effect = ConnectionRefusedError("refused")
