@@ -158,13 +158,7 @@ def scheduled_crawl_job() -> None:
             try:
                 from app.notifications.email import send_digest_email
                 from app.config import settings
-                from app.models.company import Company
-                with SessionLocal() as logo_db:
-                    companies = logo_db.query(Company).filter(Company.logo_path.isnot(None)).all()
-                    company_logos = {
-                        c.name: f"{settings.app_base_url}/static/{c.logo_path}"
-                        for c in companies if c.logo_path
-                    }
+                extras = _build_digest_email_extras(post_crawl_digest, settings.app_base_url)
                 send_digest_email(
                     smtp_host=config.smtp_host,
                     smtp_port=config.smtp_port,
@@ -174,7 +168,7 @@ def scheduled_crawl_job() -> None:
                     recipients=config.email_recipients,
                     digest=post_crawl_digest,
                     app_base_url=settings.app_base_url,
-                    company_logos=company_logos,
+                    **extras,
                 )
                 logger.info("Post-crawl digest email sent to %d recipients", len(config.email_recipients))
             except Exception as exc:
@@ -198,13 +192,7 @@ def scheduled_digest_job() -> None:
         try:
             from app.notifications.email import send_digest_email
             from app.config import settings
-            from app.models.company import Company
-            with SessionLocal() as logo_db:
-                companies = logo_db.query(Company).filter(Company.logo_path.isnot(None)).all()
-                company_logos = {
-                    c.name: f"{settings.app_base_url}/static/{c.logo_path}"
-                    for c in companies if c.logo_path
-                }
+            extras = _build_digest_email_extras(digest, settings.app_base_url)
             send_digest_email(
                 smtp_host=config.smtp_host,
                 smtp_port=config.smtp_port,
@@ -214,11 +202,28 @@ def scheduled_digest_job() -> None:
                 recipients=config.email_recipients,
                 digest=digest,
                 app_base_url=settings.app_base_url,
-                company_logos=company_logos,
+                **extras,
             )
             logger.info("Digest email sent to %d recipients", len(config.email_recipients))
         except Exception as exc:
             logger.warning("Failed to send digest email: %s", exc)
+
+
+def _build_digest_email_extras(digest, app_base_url: str) -> dict:
+    from datetime import datetime, time as dt_time
+    from app.models.company import Company
+    from app.models.signal import Signal
+    with SessionLocal() as db:
+        companies = db.query(Company).filter(Company.logo_path.isnot(None)).all()
+        company_logos = {
+            c.name: f"{app_base_url}/static/{c.logo_path}"
+            for c in companies if c.logo_path
+        }
+        new_signals_count = db.query(Signal).filter(
+            Signal.created_at >= datetime.combine(digest.week_start, dt_time.min),
+            Signal.created_at <= datetime.combine(digest.week_end, dt_time.max),
+        ).count()
+    return {"company_logos": company_logos, "new_signals_count": new_signals_count}
 
 
 def _build_crawl_stats(crawl_run) -> dict:

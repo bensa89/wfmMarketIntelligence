@@ -70,6 +70,7 @@ def send_digest_email(
     digest: "WeeklyDigest",
     app_base_url: str,
     company_logos: Optional[Dict[str, str]] = None,
+    new_signals_count: int = 0,
 ) -> None:
     week_start = digest.week_start
     week_end = digest.week_end
@@ -79,16 +80,15 @@ def send_digest_email(
     )
     digest_url = f"{app_base_url}/digests"
     sections = digest.sections or []
-    signal_count = sum(len(s.get("items", [])) for s in sections)
 
     msg = EmailMessage()
     msg["Subject"] = f"[WFM Intel] Weekly Digest – {date_range}"
     msg["From"] = f"WFM Intelligence Hub <{smtp_from}>"
     msg["To"] = ", ".join(recipients)
 
-    msg.set_content(_build_plain_text(digest, date_range, digest_url, sections, signal_count))
+    msg.set_content(_build_plain_text(digest, date_range, digest_url, sections, new_signals_count))
     msg.add_alternative(
-        _build_html(digest, date_range, digest_url, sections, app_base_url, company_logos or {}, signal_count),
+        _build_html(digest, date_range, digest_url, sections, app_base_url, company_logos or {}, new_signals_count),
         subtype="html",
     )
 

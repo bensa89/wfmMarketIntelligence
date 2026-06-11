@@ -93,12 +93,18 @@ def test_digest_email(db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Kein Digest vorhanden")
 
     from app.models.company import Company
+    from app.models.signal import Signal
+    from datetime import datetime, time as dt_time
     companies = db.query(Company).filter(Company.logo_path.isnot(None)).all()
     company_logos = {
         c.name: f"{settings.app_base_url}/static/{c.logo_path}"
         for c in companies
         if c.logo_path
     }
+    new_signals_count = db.query(Signal).filter(
+        Signal.created_at >= datetime.combine(digest.week_start, dt_time.min),
+        Signal.created_at <= datetime.combine(digest.week_end, dt_time.max),
+    ).count()
 
     try:
         send_digest_email(
@@ -111,6 +117,7 @@ def test_digest_email(db: Session = Depends(get_db)):
             digest=digest,
             app_base_url=settings.app_base_url,
             company_logos=company_logos,
+            new_signals_count=new_signals_count,
         )
     except Exception as exc:
         raise HTTPException(status_code=400, detail=str(exc))
