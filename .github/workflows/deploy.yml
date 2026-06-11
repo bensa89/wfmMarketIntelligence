@@ -1,6 +1,9 @@
 name: Deploy
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
     inputs:
       branch:
@@ -14,7 +17,7 @@ jobs:
     environment: production
     steps:
       - name: Pull latest code
-        run: git -C /opt/wfmintel pull origin ${{ github.event.inputs.branch }}
+        run: git -C /opt/wfmintel pull origin ${{ github.event.inputs.branch || github.ref_name }}
 
       - name: Write .env
         env:
