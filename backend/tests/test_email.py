@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import patch, MagicMock, call
+from unittest.mock import patch, MagicMock
 from app.notifications.email import send_crawl_report
 
 
