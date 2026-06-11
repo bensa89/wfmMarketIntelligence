@@ -2,7 +2,7 @@ import html
 import smtplib
 import logging
 from email.message import EmailMessage
-from typing import List, TYPE_CHECKING
+from typing import Dict, List, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from app.models.digest import WeeklyDigest
@@ -19,14 +19,6 @@ _MOVEMENT_LABELS = {
     "moderate": ("⬆ Mäßige Bewegung",  "#fefce8", "#854d0e"),
     "weak":     ("➡ Schwache Bewegung", "#f8fafc", "#64748b"),
 }
-
-_SECTION_COLORS = [
-    ("#eff6ff", "#2563eb"),
-    ("#f0fdf4", "#16a34a"),
-    ("#f5f3ff", "#6d28d9"),
-    ("#fff7ed", "#ea580c"),
-    ("#ecfeff", "#0891b2"),
-]
 
 
 def _smtp_send(smtp_host, smtp_port, smtp_user, smtp_password, msg):
@@ -77,6 +69,7 @@ def send_digest_email(
     recipients: List[str],
     digest: "WeeklyDigest",
     app_base_url: str,
+    company_logos: Optional[Dict[str, str]] = None,
 ) -> None:
     week_start = digest.week_start
     week_end = digest.week_end
@@ -84,7 +77,7 @@ def send_digest_email(
         f"{week_start.day:02d}. – "
         f"{week_end.day:02d}. {_MONTHS_DE[week_end.month - 1]} {week_end.year}"
     )
-    digest_url = f"{app_base_url}/digests/{digest.id}"
+    digest_url = f"{app_base_url}/digests"
     sections = digest.sections or []
 
     msg = EmailMessage()
@@ -93,14 +86,17 @@ def send_digest_email(
     msg["To"] = ", ".join(recipients)
 
     msg.set_content(_build_plain_text(digest, date_range, digest_url, sections))
-    msg.add_alternative(_build_html(digest, date_range, digest_url, sections, app_base_url), subtype="html")
+    msg.add_alternative(
+        _build_html(digest, date_range, digest_url, sections, app_base_url, company_logos or {}),
+        subtype="html",
+    )
 
     _smtp_send(smtp_host, smtp_port, smtp_user, smtp_password, msg)
 
 
 def _build_plain_text(digest, date_range: str, digest_url: str, sections: list) -> str:
     lines = [
-        f"WFM Market Intelligence Hub – Weekly Digest",
+        "WFM Market Intelligence Hub – Weekly Digest",
         f"Zeitraum: {date_range}",
         "",
     ]
@@ -122,10 +118,10 @@ def _build_plain_text(digest, date_range: str, digest_url: str, sections: list) 
     return "\n".join(lines)
 
 
-def _render_items(items: list) -> str:
+def _render_items(items: list, company_logos: dict) -> str:
     parts = []
     for i, item in enumerate(items):
-        border = "border-bottom:1px solid #f8fafc;" if i < len(items) - 1 else ""
+        border = "border-bottom:1px solid #f1f5f9;" if i < len(items) - 1 else ""
         company = html.escape(item.get("company", ""))
         title = html.escape(item.get("title", ""))
         narrative = html.escape(item.get("narrative", ""))
@@ -133,6 +129,15 @@ def _render_items(items: list) -> str:
         source_url = item.get("source_url") or ""
         source_title = html.escape(item.get("source_title") or item.get("source_domain") or source_url)
         strength = item.get("movement_strength")
+
+        logo_img = ""
+        logo_url = company_logos.get(item.get("company", ""))
+        if logo_url:
+            logo_img = (
+                f'<img src="{html.escape(logo_url)}" width="18" height="18" '
+                f'style="border-radius:3px;object-fit:contain;vertical-align:middle;'
+                f'margin-right:6px;display:inline-block;" alt="{company}">'
+            )
 
         strength_badge = ""
         if strength and strength in _MOVEMENT_LABELS:
@@ -167,10 +172,9 @@ def _render_items(items: list) -> str:
           <td style="padding-top:20px;padding-bottom:20px;{border}">
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr><td>
-                <table cellpadding="0" cellspacing="0" style="margin-bottom:8px;">
+                <table cellpadding="0" cellspacing="0" style="margin-bottom:10px;">
                   <tr>
-                    <td style="background:#fef3c7;color:#92400e;font-size:10px;font-weight:700;
-                        padding:3px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:0.04em;">{company}</td>
+                    <td style="font-size:12px;font-weight:700;color:#374151;white-space:nowrap;">{logo_img}{company}</td>
                     {strength_badge}
                   </tr>
                 </table>
@@ -185,19 +189,16 @@ def _render_items(items: list) -> str:
     return "\n".join(parts)
 
 
-def _render_sections(sections: list) -> str:
+def _render_sections(sections: list, company_logos: dict) -> str:
     parts = []
-    for idx, section in enumerate(sections):
-        bg, color = _SECTION_COLORS[idx % len(_SECTION_COLORS)]
+    for section in sections:
         title = html.escape(section.get("title", ""))
-        items_html = _render_items(section.get("items", []))
+        items_html = _render_items(section.get("items", []), company_logos)
         parts.append(f"""
         <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:32px;">
           <tr>
-            <td style="padding-bottom:16px;border-bottom:2px solid #f1f5f9;">
-              <span style="display:inline-block;background:{bg};color:{color};font-size:10px;
-                  font-weight:700;letter-spacing:0.06em;text-transform:uppercase;
-                  padding:4px 10px;border-radius:4px;">{title}</span>
+            <td style="padding-bottom:14px;border-bottom:2px solid #f1f5f9;">
+              <h2 style="margin:0;color:#0f172a;font-size:13px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;">{title}</h2>
             </td>
           </tr>
           {items_html}
@@ -205,9 +206,16 @@ def _render_sections(sections: list) -> str:
     return "\n".join(parts)
 
 
-def _build_html(digest, date_range: str, digest_url: str, sections: list, app_base_url: str) -> str:
+def _build_html(
+    digest,
+    date_range: str,
+    digest_url: str,
+    sections: list,
+    app_base_url: str,
+    company_logos: dict,
+) -> str:
     summary = html.escape(digest.summary or "")
-    sections_html = _render_sections(sections)
+    sections_html = _render_sections(sections, company_logos)
     digest_url_escaped = html.escape(digest_url)
     app_url_escaped = html.escape(app_base_url)
 
@@ -250,7 +258,7 @@ def _build_html(digest, date_range: str, digest_url: str, sections: list, app_ba
 
           <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
             <tr><td align="center">
-              <a href="{digest_url_escaped}" style="display:inline-block;background:#2563eb;color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;padding:12px 28px;border-radius:8px;letter-spacing:-0.01em;">Vollständigen Digest öffnen →</a>
+              <a href="{digest_url_escaped}" style="display:inline-block;background:#2563eb;color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;padding:12px 28px;border-radius:8px;letter-spacing:-0.01em;">Digest öffnen →</a>
             </td></tr>
           </table>
 

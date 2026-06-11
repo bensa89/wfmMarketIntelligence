@@ -92,6 +92,14 @@ def test_digest_email(db: Session = Depends(get_db)):
     if digest is None:
         raise HTTPException(status_code=400, detail="Kein Digest vorhanden")
 
+    from app.models.company import Company
+    companies = db.query(Company).filter(Company.logo_path.isnot(None)).all()
+    company_logos = {
+        c.name: f"{settings.app_base_url}/static/{c.logo_path}"
+        for c in companies
+        if c.logo_path
+    }
+
     try:
         send_digest_email(
             smtp_host=config.smtp_host,
@@ -102,6 +110,7 @@ def test_digest_email(db: Session = Depends(get_db)):
             recipients=config.email_recipients,
             digest=digest,
             app_base_url=settings.app_base_url,
+            company_logos=company_logos,
         )
     except Exception as exc:
         raise HTTPException(status_code=400, detail=str(exc))

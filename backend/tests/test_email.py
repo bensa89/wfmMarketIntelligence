@@ -207,8 +207,34 @@ def test_send_digest_email_html_contains_tool_and_source_links():
             if part.get_content_type() == "text/html":
                 html_body = part.get_payload(decode=True).decode()
                 break
-        assert "https://wfm.saure.me/digests/test-digest-abc" in html_body
+        assert "https://wfm.saure.me/digests" in html_body
+        assert "https://wfm.saure.me/digests/test-digest-abc" not in html_body
         assert "https://techcrunch.com/workday-ai" in html_body
+
+
+def test_send_digest_email_html_contains_logo_when_provided():
+    with patch("smtplib.SMTP") as mock_smtp_cls:
+        mock_server = MagicMock()
+        mock_smtp_cls.return_value.__enter__.return_value = mock_server
+        digest = make_test_digest()
+        send_digest_email(
+            smtp_host="smtp.example.com",
+            smtp_port=587,
+            smtp_user="",
+            smtp_password="",
+            smtp_from="from@example.com",
+            recipients=["to@example.com"],
+            digest=digest,
+            app_base_url="https://wfm.saure.me",
+            company_logos={"Workday": "https://wfm.saure.me/static/logos/workday.png"},
+        )
+        msg = mock_server.send_message.call_args[0][0]
+        html_body = ""
+        for part in msg.walk():
+            if part.get_content_type() == "text/html":
+                html_body = part.get_payload(decode=True).decode()
+                break
+        assert "https://wfm.saure.me/static/logos/workday.png" in html_body
 
 
 def test_send_digest_email_raises_on_smtp_failure():
