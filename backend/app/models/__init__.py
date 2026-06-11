@@ -27,6 +27,7 @@ from app.models.competitor_summary import CompetitorSummary, PeriodType
 from app.models.intelligence_briefing import IntelligenceBriefing
 from app.models.capability_benchmark import CompetitorCapabilityBenchmark  # noqa: F401
 from app.models.competitor_scorecard import CompetitorScorecard  # noqa: F401
+from app.models.schedule import ScheduleConfig  # noqa: F401
 
 __all__ = [
     "Company",
@@ -61,4 +62,5 @@ __all__ = [
     "PeriodType",
     "IntelligenceBriefing",
     "CompetitorCapabilityBenchmark",
+    "ScheduleConfig",
 ]
