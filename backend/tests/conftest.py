@@ -6,6 +6,7 @@ os.environ["AUTH_PASSWORD"] = "testpass"
 os.environ["DATABASE_URL"] = "sqlite:///./test_app.db"
 
 import pytest
+from unittest.mock import patch
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from fastapi.testclient import TestClient
@@ -48,7 +49,10 @@ def client(db_session):
 
     app.dependency_overrides[get_db] = override_get_db
 
-    with TestClient(app, headers=AUTH_HEADER) as c:
-        yield c
+    with patch("app.scheduler.startup_scheduler", lambda engine: None), \
+         patch("app.scheduler.shutdown_scheduler", lambda: None), \
+         patch("app.scheduler.apply_schedule", lambda config: None):
+        with TestClient(app, headers=AUTH_HEADER) as c:
+            yield c
 
     app.dependency_overrides.clear()

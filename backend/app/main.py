@@ -1,5 +1,6 @@
 import logging
 import pathlib
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
@@ -12,6 +13,8 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(levelname)s:%(name)s:%(message)s",
 )
+
+logger = logging.getLogger(__name__)
 
 security = HTTPBasic()
 
@@ -32,10 +35,41 @@ def verify_credentials(credentials: HTTPBasicCredentials = Depends(security)):
     return credentials.username
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    from app.database import engine, SessionLocal
+    from app.models.schedule import ScheduleConfig
+    from app import scheduler as sched_module
+
+    try:
+        sched_module.startup_scheduler(engine)
+
+        db = SessionLocal()
+        config = None
+        try:
+            config = db.query(ScheduleConfig).filter(ScheduleConfig.id == 1).first()
+            if config is None:
+                config = ScheduleConfig()
+                db.add(config)
+                db.commit()
+                db.refresh(config)
+        finally:
+            db.close()
+
+        sched_module.apply_schedule(config)
+    except Exception as exc:
+        logger.warning("Scheduler startup failed (likely test environment): %s", exc)
+
+    yield
+
+    sched_module.shutdown_scheduler()
+
+
 app = FastAPI(
     title="WFM Market Intelligence Hub",
     version="1.0.0",
     dependencies=[Depends(verify_credentials)],
+    lifespan=lifespan,
 )
 
 UPLOAD_DIR = pathlib.Path("/uploads")
@@ -68,6 +102,7 @@ from app.routers import (
     intelligence_briefing,
     benchmark,
     scorecards,
+    schedule,
 )  # noqa: E402
 
 app.include_router(companies.router, prefix="/api/companies", tags=["companies"])
@@ -93,6 +128,7 @@ app.include_router(intelligence.router, prefix="/api/intelligence", tags=["intel
 app.include_router(intelligence_briefing.router, prefix="/api/intelligence/briefing", tags=["intelligence-briefing"])
 app.include_router(benchmark.router)
 app.include_router(scorecards.router)
+app.include_router(schedule.router, prefix="/api/schedule", tags=["schedule"])
 
 
 @app.get("/api/health")
