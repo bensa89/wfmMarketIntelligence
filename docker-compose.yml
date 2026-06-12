@@ -30,7 +30,11 @@ services:
     restart: unless-stopped
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        - VITE_GIT_COMMIT
+        - VITE_BUILD_TIME
     ports:
       - "80:80"
     depends_on:

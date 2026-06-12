@@ -54,6 +54,9 @@ jobs:
           } > /opt/wfmintel/.env
 
       - name: Deploy stack
+        env:
+          VITE_GIT_COMMIT: ${{ github.sha }}
+          VITE_BUILD_TIME: ${{ github.event.head_commit.timestamp || github.event.repository.updated_at }}
         run: |
           cd /opt/wfmintel
           docker compose up -d --build

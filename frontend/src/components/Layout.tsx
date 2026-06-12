@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import {
   LayoutDashboard, Users, TrendingUp, FileText, Settings, Search,
-  Globe, LogOut, BarChart2, Zap, BookOpen, Clock, Terminal, Menu, X,
+  Globe, LogOut, BarChart2, Zap, BookOpen, Clock, Terminal, Menu, X, GitCommit,
 } from 'lucide-react';
 import { hasCredentials, clearCredentials } from '../api/client';
 import { useNavigate } from 'react-router-dom';
@@ -103,6 +103,30 @@ function NavItems({ onNavClick }: { onNavClick?: () => void }) {
   );
 }
 
+function VersionBadge() {
+  const commit = (import.meta.env.VITE_GIT_COMMIT as string | undefined) ?? 'dev';
+  const buildTime = import.meta.env.VITE_BUILD_TIME as string | undefined;
+  const shortHash = commit === 'dev' ? 'dev' : commit.slice(0, 7);
+
+  let dateStr = '';
+  if (buildTime) {
+    const d = new Date(buildTime);
+    dateStr = d.toLocaleDateString('de-DE', { day: '2-digit', month: 'short', year: 'numeric' })
+      + ' · '
+      + d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  return (
+    <div className="px-4 pb-3" style={{ color: 'rgba(248,250,252,0.2)' }}>
+      <div className="flex items-center gap-1 text-[10px]">
+        <GitCommit size={10} className="flex-shrink-0" />
+        <span>{shortHash}</span>
+      </div>
+      {dateStr && <div className="text-[10px] mt-0.5 pl-[14px]">{dateStr}</div>}
+    </div>
+  );
+}
+
 function LogoutButton({ onLogout }: { onLogout: () => void }) {
   return (
     <div className="px-2 py-3" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
@@ -142,6 +166,7 @@ export default function Layout() {
         <SidebarLogo />
         <NavItems />
         <LogoutButton onLogout={handleLogout} />
+        <VersionBadge />
       </nav>
 
       {/* ── Mobile Header ── */}
@@ -210,6 +235,7 @@ export default function Layout() {
         </div>
         <NavItems onNavClick={() => setDrawerOpen(false)} />
         <LogoutButton onLogout={handleLogout} />
+        <VersionBadge />
       </nav>
 
       {/* ── Main content ── */}
