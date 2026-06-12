@@ -125,9 +125,9 @@ def scheduled_crawl_job() -> None:
             with SessionLocal() as digest_db:
                 post_crawl_digest = generate_digest(digest_db)
                 digest_generated = True
-            logger.info("Post-crawl digest generated")
+            logger.info("Post-crawl digest generated: id=%s", post_crawl_digest.id)
         except Exception as exc:
-            logger.warning("Post-crawl digest failed: %s", exc)
+            logger.exception("Post-crawl digest failed: %s", exc)
 
     # Send email report
     if config and config.email_enabled and config.email_recipients:
@@ -152,9 +152,11 @@ def scheduled_crawl_job() -> None:
             )
             logger.info("Crawl report email sent to %d recipients", len(config.email_recipients))
         except Exception as exc:
-            logger.warning("Failed to send crawl report email: %s", exc)
+            logger.exception("Failed to send crawl report email: %s", exc)
 
         if post_crawl_digest:
+            logger.info("Sending post-crawl digest email: digest_id=%s to %d recipients",
+                        post_crawl_digest.id, len(config.email_recipients))
             try:
                 from app.notifications.email import send_digest_email
                 from app.config import settings
@@ -172,7 +174,9 @@ def scheduled_crawl_job() -> None:
                 )
                 logger.info("Post-crawl digest email sent to %d recipients", len(config.email_recipients))
             except Exception as exc:
-                logger.warning("Failed to send post-crawl digest email: %s", exc)
+                logger.exception("Failed to send post-crawl digest email: %s", exc)
+        elif digest_generated is False and config.digest_after_crawl:
+            logger.warning("digest_after_crawl enabled but post_crawl_digest is None — digest generation likely failed")
 
 
 def scheduled_digest_job() -> None:
@@ -189,6 +193,8 @@ def scheduled_digest_job() -> None:
     logger.info("Scheduled digest job finished")
 
     if config and config.email_enabled and config.email_recipients and digest:
+        logger.info("Sending scheduled digest email: digest_id=%s to %d recipients",
+                    digest.id, len(config.email_recipients))
         try:
             from app.notifications.email import send_digest_email
             from app.config import settings
@@ -206,7 +212,7 @@ def scheduled_digest_job() -> None:
             )
             logger.info("Digest email sent to %d recipients", len(config.email_recipients))
         except Exception as exc:
-            logger.warning("Failed to send digest email: %s", exc)
+            logger.exception("Failed to send digest email: %s", exc)
 
 
 def _build_digest_email_extras(digest, app_base_url: str) -> dict:

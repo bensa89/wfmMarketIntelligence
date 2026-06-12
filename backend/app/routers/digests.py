@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session, selectinload
 from typing import List
@@ -6,6 +8,7 @@ from app.models.digest import WeeklyDigest
 from app.models.signal import Signal
 from app.schemas.digest import DigestRead, DigestSignalRead, DigestSection
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
@@ -75,5 +78,7 @@ def get_digest(digest_id: str, db: Session = Depends(get_db)):
 def generate_digest(db: Session = Depends(get_db)):
     from app.digester.pipeline import generate_digest as run_pipeline
 
+    logger.info("Digest generation triggered via API")
     digest = run_pipeline(db)
+    logger.info("Digest generated: id=%s week=%s–%s", digest.id, digest.week_start, digest.week_end)
     return _to_digest_read(digest, db)

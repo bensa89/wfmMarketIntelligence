@@ -40,6 +40,7 @@ def send_crawl_report(
     recipients: List[str],
     crawl_stats: dict,
 ) -> None:
+    logger.info("Sending crawl report to %d recipients via %s:%s", len(recipients), smtp_host, smtp_port)
     msg = EmailMessage()
     msg["Subject"] = f"[WFM Intel] Crawl abgeschlossen – {crawl_stats['date']}"
     msg["From"] = f"WFM Intelligence Hub <{smtp_from}>"
@@ -58,6 +59,7 @@ def send_crawl_report(
     msg.set_content("\n".join(lines))
 
     _smtp_send(smtp_host, smtp_port, smtp_user, smtp_password, msg)
+    logger.info("Crawl report email sent successfully")
 
 
 def send_digest_email(
@@ -72,6 +74,7 @@ def send_digest_email(
     company_logos: Optional[Dict[str, str]] = None,
     new_signals_count: int = 0,
 ) -> None:
+    logger.info("Sending digest email to %d recipients via %s:%s", len(recipients), smtp_host, smtp_port)
     week_start = digest.week_start
     week_end = digest.week_end
     date_range = (
@@ -98,6 +101,7 @@ def send_digest_email(
     )
 
     _smtp_send(smtp_host, smtp_port, smtp_user, smtp_password, msg)
+    logger.info("Digest email sent successfully")
 
 
 def _build_plain_text(digest, date_range: str, digest_url: str, signals_url: str, sections: list, signal_count: int) -> str:

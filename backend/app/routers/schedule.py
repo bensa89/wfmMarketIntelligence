@@ -38,6 +38,8 @@ def update_schedule(payload: ScheduleConfigUpdate, db: Session = Depends(get_db)
     db.commit()
     db.refresh(config)
     apply_schedule(config)
+    logger.info("Schedule config updated: crawl_enabled=%s digest_after_crawl=%s email_enabled=%s",
+                config.crawl_enabled, config.digest_after_crawl, config.email_enabled)
     return ScheduleStatusRead(
         config=ScheduleConfigRead.model_validate(config, from_attributes=True),
         next_crawl=get_next_run("job_crawl"),
@@ -54,6 +56,7 @@ def test_email(db: Session = Depends(get_db)):
     if not config.email_recipients:
         raise HTTPException(status_code=400, detail="Keine Empfänger konfiguriert")
 
+    logger.info("Test email requested to %d recipients", len(config.email_recipients))
     try:
         send_crawl_report(
             smtp_host=config.smtp_host,
@@ -72,8 +75,10 @@ def test_email(db: Session = Depends(get_db)):
             },
         )
     except Exception as exc:
+        logger.exception("Test email failed")
         raise HTTPException(status_code=400, detail=str(exc))
 
+    logger.info("Test email sent to %s", config.email_recipients)
     return {"status": "sent", "recipients": config.email_recipients}
 
 
@@ -106,6 +111,7 @@ def test_digest_email(db: Session = Depends(get_db)):
         Signal.created_at <= datetime.combine(digest.week_end, dt_time.max),
     ).count()
 
+    logger.info("Test digest email requested: digest_id=%s to %d recipients", digest.id, len(config.email_recipients))
     try:
         send_digest_email(
             smtp_host=config.smtp_host,
@@ -120,6 +126,8 @@ def test_digest_email(db: Session = Depends(get_db)):
             new_signals_count=new_signals_count,
         )
     except Exception as exc:
+        logger.exception("Test digest email failed")
         raise HTTPException(status_code=400, detail=str(exc))
 
+    logger.info("Test digest email sent: digest_id=%s to %s", digest.id, config.email_recipients)
     return {"status": "sent", "digest_id": digest.id, "recipients": config.email_recipients}
