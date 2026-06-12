@@ -83,7 +83,7 @@ function MatrixCell({ cell, onClick }: MatrixCellProps) {
           <div className="text-xs text-slate-600 mb-1">Score: <span className="font-medium text-slate-900">{cell.score}</span></div>
           {cell.strength_delta !== null && cell.strength_delta !== undefined && (
             <div className="text-xs text-slate-600 mb-1">
-              Veränderung:{' '}
+              Δ seit letztem Recompute:{' '}
               <span className={`font-medium ${cell.strength_delta > 0 ? 'text-emerald-600' : cell.strength_delta < 0 ? 'text-red-500' : 'text-slate-500'}`}>
                 {cell.strength_delta > 0 ? '+' : ''}{cell.strength_delta}
               </span>

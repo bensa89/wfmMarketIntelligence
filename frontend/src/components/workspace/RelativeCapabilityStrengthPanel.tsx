@@ -27,7 +27,7 @@ const COLUMN_TOOLTIPS = {
   score: 'Score 0–100. Gewichteter Durchschnitt aus 5 Sub-Scores: Capability Depth (35%), Execution Momentum (25%), Market Proof (20%), Strategic Focus (10%), Evidence Coverage (10%).',
   tier: 'Leader (≥75), Strong (≥55), Emerging (≥30), Weakly Evidenced (<30 oder zu wenig Belege). Wird bei niedriger Confidence um eine Stufe reduziert.',
   rank: 'Position im Vergleich zu allen Wettbewerbern für diese Capability im gewählten Zeitraum.',
-  delta: 'Veränderung des Scores zur Vorperiode (positiv = gestärkt, negativ = geschwächt).',
+  delta: 'Δ seit letztem Recompute: Differenz zwischen aktuellem Score und dem Score des vorherigen Recompute-Laufs (positiv = verbessert, negativ = verschlechtert).',
   conf: 'Confidence-Score 0–1: basiert auf Anzahl der Assessments, Evidence Coverage und durchschnittlichem Konfidenzwert.',
   signals: 'Anzahl der Assessments, die in diesem Zeitraum dieser Capability zugeordnet wurden.',
 };

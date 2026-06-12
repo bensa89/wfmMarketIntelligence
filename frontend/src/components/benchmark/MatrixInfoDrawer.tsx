@@ -64,25 +64,25 @@ export function MatrixInfoDrawer({ open, onClose }: MatrixInfoDrawerProps) {
 
           {/* Delta indicators */}
           <div>
-            <h3 className="font-semibold text-slate-800 mb-2">Veränderungs-Indikatoren (▲ / ▼)</h3>
+            <h3 className="font-semibold text-slate-800 mb-2">Δ seit letztem Recompute (▲ / ▼)</h3>
             <p className="text-xs text-slate-600 leading-relaxed mb-2">
-              Das kleine Symbol oben rechts in der Zelle zeigt die Veränderung des Scores gegenüber dem letzten Recompute:
+              Das kleine Symbol oben rechts zeigt die Differenz zwischen dem <strong>aktuellen Score</strong> und dem <strong>Score des vorherigen Recompute-Laufs</strong> — kein fixer Zeitvergleich, sondern der Unterschied zwischen zwei aufeinanderfolgenden Berechnungen.
             </p>
-            <div className="space-y-1.5 text-xs">
+            <div className="space-y-1.5 text-xs mb-2">
               <div className="flex items-center gap-2">
                 <span className="text-emerald-400 font-bold text-base">▲</span>
-                <span className="text-slate-600">Score hat sich verbessert (positiver Delta)</span>
+                <span className="text-slate-600">Score gestiegen seit letztem Recompute</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-red-400 font-bold text-base">▼</span>
-                <span className="text-slate-600">Score hat sich verschlechtert (negativer Delta)</span>
+                <span className="text-slate-600">Score gefallen seit letztem Recompute</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-slate-300 font-bold text-base">—</span>
-                <span className="text-slate-600">Kein Delta (erster Recompute oder keine Veränderung)</span>
+                <span className="text-slate-600">Kein Delta (erster Recompute oder keine Änderung)</span>
               </div>
             </div>
-            <p className="text-[11px] text-slate-400 mt-2">Hover über die Zelle zeigt den genauen Delta-Wert.</p>
+            <p className="text-[11px] text-slate-400">Hover über die Zelle zeigt den genauen Delta-Wert. Ein Delta von 0 trotz neuer Signale entsteht, wenn Decay und neue Daten sich gegenseitig ausgleichen.</p>
           </div>
 
           {/* Score formula */}
