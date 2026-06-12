@@ -128,7 +128,8 @@ function DiscoveredPagesSection({
     return <p className="text-xs text-ink-muted py-2 px-4">No pages discovered yet.</p>;
 
   return (
-    <table className="w-full text-xs mt-1">
+    <div className="overflow-x-auto">
+    <table className="w-full text-xs mt-1 min-w-[700px]">
       <thead>
         <tr className="border-b border-app-border/30">
           <th className="text-left py-1 px-4 text-ink-muted font-medium">Discovered URL</th>
@@ -190,6 +191,7 @@ function DiscoveredPagesSection({
         ))}
       </tbody>
     </table>
+    </div>
   );
 }
 
@@ -375,10 +377,10 @@ export default function SourcesAdmin() {
   const isLoading = companiesLoading || sourcesLoading;
 
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
+    <div className="p-4 md:p-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
         <h1 className="text-2xl font-bold">Sources Admin</h1>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <button onClick={() => crawl.start()} disabled={crawl.isRunning} className="btn-primary flex items-center gap-2">
             <Play size={16} /> {crawl.phase === 'analysing' ? 'Analysiere...' : crawl.phase === 'crawling' ? 'Crawling...' : 'Run Full Crawl'}
           </button>
@@ -414,7 +416,7 @@ export default function SourcesAdmin() {
 
       <div className="card mb-4">
         <h2 className="text-lg font-semibold mb-4">Add Source</h2>
-        <form onSubmit={handleCreateSource} className="flex items-end gap-3">
+        <form onSubmit={handleCreateSource} className="flex flex-col sm:flex-row items-stretch sm:items-end gap-3">
           <div className="flex-1">
             <label className="block text-sm text-ink-muted mb-1">Company</label>
             <select value={newSourceCompanyId} onChange={(e) => setNewSourceCompanyId(e.target.value)} className="input-field w-full" required>
@@ -485,7 +487,8 @@ export default function SourcesAdmin() {
                       </div>
                     </div>
                     {company.description && <p className="text-sm text-ink-muted mt-1 ml-9">{company.description}</p>}
-                    <table className="w-full text-sm mt-3">
+                    <div className="overflow-x-auto mt-3">
+                    <table className="w-full text-sm min-w-[640px]">
                       <thead>
                         <tr className="border-b border-app-border">
                           <th className="w-8 py-2"></th>
@@ -565,6 +568,7 @@ export default function SourcesAdmin() {
                         ); })}
                       </tbody>
                     </table>
+                    </div>
                   </div>
                 );
               });
@@ -621,7 +625,8 @@ export default function SourcesAdmin() {
                   </div>
                   {company.description && <p className="text-sm text-ink-muted mt-1 ml-9">{company.description}</p>}
                  {isExpanded && (
-                 <table className="w-full text-sm mt-3">
+                 <div className="overflow-x-auto mt-3">
+                 <table className="w-full text-sm min-w-[640px]">
                     <thead>
                       <tr className="border-b border-app-border">
                        <th className="w-8 py-2"></th>
@@ -718,6 +723,7 @@ export default function SourcesAdmin() {
                      )}
                    </tbody>
                  </table>
+                 </div>
                  )}
                </div>
              );
