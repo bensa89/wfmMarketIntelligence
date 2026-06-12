@@ -32,8 +32,13 @@ def _get_context_summary(db: Session) -> str:
     return " | ".join(parts) or "WFM software company"
 
 
-def _get_prev_sections(db: Session) -> list[dict]:
-    prev = db.query(WeeklyDigest).order_by(WeeklyDigest.week_start.desc()).first()
+def _get_prev_sections(db: Session, current_week_start: date) -> list[dict]:
+    prev = (
+        db.query(WeeklyDigest)
+        .filter(WeeklyDigest.week_start < current_week_start)
+        .order_by(WeeklyDigest.week_start.desc())
+        .first()
+    )
     if prev and prev.sections:
         return prev.sections
     return []
@@ -42,7 +47,7 @@ def _get_prev_sections(db: Session) -> list[dict]:
 def generate_digest(db: Session) -> WeeklyDigest:
     week_start, week_end = _get_week_range()
     context_summary = _get_context_summary(db)
-    prev_sections = _get_prev_sections(db)
+    prev_sections = _get_prev_sections(db, week_start)
     prev_index = get_prev_signal_index(prev_sections)
 
     selected_signal_ids: set[str] = set()

@@ -8,6 +8,7 @@ class SectionDef:
     signal_types: list[str]
     assessment_classes: list[str]
     use_source_type_filter: bool = False
+    competitor_only: bool = False
 
 
 SECTIONS: list[SectionDef] = [
@@ -24,17 +25,12 @@ SECTIONS: list[SectionDef] = [
         assessment_classes=["product_capability_move", "weak_signal"],
     ),
     SectionDef(
-        key="competitor_activities",
-        title="Wettbewerber-Aktivitäten",
+        key="competitors",
+        title="Wettbewerber",
         signal_types=["product_update", "partnership", "hiring_signal"],
         assessment_classes=["product_capability_move", "ecosystem_move", "hiring_signal"],
-    ),
-    SectionDef(
-        key="competitor_news",
-        title="Wettbewerber-News",
-        signal_types=[],
-        assessment_classes=[],
         use_source_type_filter=True,
+        competitor_only=True,
     ),
     SectionDef(
         key="events",

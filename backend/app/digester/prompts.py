@@ -35,6 +35,7 @@ Antworte AUSSCHLIESSLICH auf Deutsch und als valides JSON, ohne Prosa, ohne Mark
   "selected_items": [
     {{
       "signal_id": "<exakte signal_id aus den Kandidaten>",
+      "title": "<prägnanter deutscher Titel, max. 10 Wörter>",
       "narrative": "<2–3 Sätze: Erkenntnis klar und prägnant formuliert>",
       "implication_for_us": "<1–2 Sätze: Was bedeutet das für unser Produkt oder unsere Strategie?>"
     }}

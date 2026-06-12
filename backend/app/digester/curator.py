@@ -38,7 +38,7 @@ def curate_section(
             {
                 "signal_id": sid,
                 "company": base["company"],
-                "title": base["title"],
+                "title": item.get("title") or base["title"],
                 "narrative": item.get("narrative", ""),
                 "implication_for_us": item.get("implication_for_us")
                 or base.get("implication_for_us")

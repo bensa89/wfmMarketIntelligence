@@ -1,12 +1,14 @@
 from datetime import date, datetime, time
 from urllib.parse import urlparse
 
+from sqlalchemy import or_
 from sqlalchemy.orm import Session, selectinload
 
 from app.models.signal import Signal
 from app.models.signal_assessment import SignalAssessment
 from app.models.document import Document
 from app.models.source import Source, SourceType
+from app.models.company import Company, CompanyType
 from app.digester.sections import SectionDef
 
 
@@ -33,7 +35,17 @@ def query_candidates(
         )
     )
 
-    if section.use_source_type_filter:
+    if section.competitor_only:
+        q = q.join(Signal.company).filter(Company.type == CompanyType.competitor)
+
+    if section.use_source_type_filter and section.signal_types:
+        q = q.filter(
+            or_(
+                Signal.signal_type.in_(section.signal_types),
+                Source.source_type.in_([SourceType.news, SourceType.press]),
+            )
+        )
+    elif section.use_source_type_filter:
         q = q.filter(Source.source_type.in_([SourceType.news, SourceType.press]))
     elif section.signal_types:
         q = q.filter(Signal.signal_type.in_(section.signal_types))
