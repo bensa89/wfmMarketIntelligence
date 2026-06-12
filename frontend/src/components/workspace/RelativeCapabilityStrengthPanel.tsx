@@ -17,10 +17,10 @@ interface RelativeCapabilityStrengthPanelProps {
   onInfoClick?: () => void;
 }
 
-const PERIOD_OPTIONS: { value: BenchmarkPeriodType; label: string }[] = [
-  { value: '30d', label: '30d' },
-  { value: '90d', label: '90d' },
-  { value: '180d', label: '180d' },
+const PERIOD_OPTIONS: { value: BenchmarkPeriodType; label: string; title: string }[] = [
+  { value: '30d', label: '30d', title: 'Recency Focus: letzte 30 Tage gewichtet stärker' },
+  { value: '90d', label: '90d', title: 'Recency Focus: letzte 90 Tage gewichtet stärker' },
+  { value: '180d', label: 'All', title: 'Historical View: alle Assessments mit sanftem Decay' },
 ];
 
 const COLUMN_TOOLTIPS = {
@@ -144,7 +144,7 @@ export function RelativeCapabilityStrengthPanel({
   onCapabilityClick,
   onInfoClick,
 }: RelativeCapabilityStrengthPanelProps) {
-  const [period, setPeriod] = useState<BenchmarkPeriodType>('30d');
+  const [period, setPeriod] = useState<BenchmarkPeriodType>('180d');
   const { data, isLoading } = useCompetitorBenchmark(slug, period);
 
   const distLookup = new Map(
@@ -172,6 +172,7 @@ export function RelativeCapabilityStrengthPanel({
             <button
               key={opt.value}
               onClick={() => setPeriod(opt.value)}
+              title={opt.title}
               className={`px-2.5 py-1 text-xs rounded-md font-medium transition-colors ${
                 period === opt.value
                   ? 'bg-slate-900 text-white'

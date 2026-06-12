@@ -22,6 +22,7 @@ export interface BenchmarkMatrixCell {
   confidence: number;
   rank: number | null;
   momentum_score: number;
+  strength_delta: number | null;
 }
 
 export interface BenchmarkOverviewResponse {

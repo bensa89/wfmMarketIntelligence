@@ -36,94 +36,108 @@ def compute_sub_scores(
     period_start: date,
     period_end: date,
     cap_key: str,
+    weights: list[float] | None = None,
+    all_weights: list[float] | None = None,
 ) -> SubScores:
     if not cap_assessments:
         return SubScores()
 
-    count = len(cap_assessments)
+    # Use uniform weights=1.0 when not provided (backward compat)
+    w = weights if weights is not None else [1.0] * len(cap_assessments)
+    aw = all_weights if all_weights is not None else [1.0] * len(all_assessments)
+
+    total_weight = sum(w)
+    if total_weight == 0:
+        return SubScores()
 
     # 1. Capability Depth
     raw_depth = 0.0
-    for a in cap_assessments:
+    for a, wi in zip(cap_assessments, w):
         sc = a.signal_class or ""
+        val = 0.0
         if sc == "product_capability_move":
-            raw_depth += 2.0
+            val += 2.0
         elif sc in ("positioning_move", "ecosystem_move"):
-            raw_depth += 1.0
+            val += 1.0
         elif sc in ("thought_leadership_signal", "hiring_signal", "weak_signal", "market_expansion_move"):
-            raw_depth += 0.5
+            val += 0.5
         ev = a.evidence_strength or 0
-        raw_depth += (ev / 5) * 0.5
+        val += (ev / 5) * 0.5
         ms = a.movement_strength or ""
         if ms in ("market_shaping", "strong"):
-            raw_depth += 0.5
-    avg_depth = raw_depth / count
+            val += 0.5
+        raw_depth += val * wi
+    avg_depth = raw_depth / total_weight
     depth_score = _bin(avg_depth, [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4), (5, 5)])
     depth_score = min(5, depth_score)
 
     # 2. Execution Momentum
-    signal_density = _bin(count, [(0, 0), (1, 1), (3, 2), (6, 3), (10, 4), (float("inf"), 5)])
-    movements = [a.movement_score or 0 for a in cap_assessments]
-    avg_momentum = (sum(movements) / count) / 20  # 0-100 → 0-5
-    strong_count = sum(
-        1 for a in cap_assessments
+    signal_density = _bin(total_weight, [(0, 0), (1, 1), (3, 2), (6, 3), (10, 4), (float("inf"), 5)])
+    weighted_momentum = sum((a.movement_score or 0) * wi for a, wi in zip(cap_assessments, w))
+    avg_momentum = (weighted_momentum / total_weight) / 20  # 0-100 → 0-5
+    strong_weight = sum(
+        wi for a, wi in zip(cap_assessments, w)
         if (a.movement_strength or "") in ("strong", "market_shaping")
     )
-    strong_ratio = (strong_count / count) * 5
+    strong_ratio = (strong_weight / total_weight) * 5
     exec_momentum = round((signal_density + avg_momentum + strong_ratio) / 3)
     exec_momentum = min(5, max(0, exec_momentum))
 
     # 3. Market Proof
     raw_proof = 0.0
-    for a in cap_assessments:
+    for a, wi in zip(cap_assessments, w):
         sc = a.signal_class or ""
         vi = a.visibility_impact or ""
+        val = 0.0
         if sc == "ecosystem_move":
-            raw_proof += 1.5
+            val += 1.5
         elif sc == "product_capability_move" and _has_external_evidence(a):
-            raw_proof += 1.0
+            val += 1.0
         else:
-            raw_proof += 0.5
+            val += 0.5
         if vi == "high":
-            raw_proof += 1.0
+            val += 1.0
         elif vi == "medium":
-            raw_proof += 0.5
+            val += 0.5
         tags = a.gameplay_tags or []
         if _EXTERNAL_KEYWORDS.intersection(t.lower() for t in tags):
-            raw_proof += 0.5
-    avg_proof = raw_proof / count
+            val += 0.5
+        raw_proof += val * wi
+    avg_proof = raw_proof / total_weight
     proof_score = _bin(avg_proof, [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4), (5, 5)])
     proof_score = min(5, proof_score)
 
     # 4. Strategic Focus
-    total = len(all_assessments)
-    share = count / total if total > 0 else 0
+    all_total_weight = sum(aw)
+    share = total_weight / all_total_weight if all_total_weight > 0 else 0
     base_focus = _bin(
         share,
         [(0.05, 0), (0.10, 1), (0.15, 2), (0.20, 3), (0.30, 4), (1.0, 5)],
     )
-    positioning_count = sum(
-        1 for a in cap_assessments if (a.signal_class or "") == "positioning_move"
+    weighted_positioning = sum(
+        wi for a, wi in zip(cap_assessments, w)
+        if (a.signal_class or "") == "positioning_move"
     )
-    messaging_bonus = min(1, positioning_count / 3)
+    messaging_bonus = min(1, weighted_positioning / (3 * (total_weight / max(len(cap_assessments), 1))))
     focus_score = min(5, int(base_focus + messaging_bonus))
 
     # 5. Evidence Coverage
     distinct_docs = len({getattr(a, "signal_id", i) for i, a in enumerate(cap_assessments)})
     source_diversity = _bin(distinct_docs, [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4), (float("inf"), 5)])
 
-    confidences = [a.confidence or 0.0 for a in cap_assessments]
-    avg_conf_score = round((sum(confidences) / count) * 5)
+    weighted_conf = sum((a.confidence or 0.0) * wi for a, wi in zip(cap_assessments, w))
+    avg_conf_score = round((weighted_conf / total_weight) * 5)
 
-    fresh_cutoff = period_end - timedelta(days=30)
-    fresh_count = 0
-    for a in cap_assessments:
+    # Freshness: weighted share of assessments from last 30 days
+    fresh_cutoff = date.today() - timedelta(days=30)
+    fresh_weight = 0.0
+    for a, wi in zip(cap_assessments, w):
         created = a.created_at
         if hasattr(created, "date"):
             created = created.date()
         if created >= fresh_cutoff:
-            fresh_count += 1
-    freshness_ratio = fresh_count / count
+            fresh_weight += wi
+    freshness_ratio = fresh_weight / total_weight
     freshness = _bin(freshness_ratio, [(0, 0), (0.25, 1), (0.50, 2), (0.75, 3), (0.90, 4), (1.0, 5)])
 
     evidence_coverage = min(source_diversity, avg_conf_score, freshness)
@@ -169,13 +183,18 @@ def determine_tier(score: int, confidence: float, evidence_coverage: int) -> str
     return tier
 
 
-def compute_confidence(cap_assessments: list, evidence_coverage: int) -> float:
+def compute_confidence(cap_assessments: list, evidence_coverage: int, weights: list[float] | None = None) -> float:
     count = len(cap_assessments)
     if count == 0:
         return 0.0
-    avg_confidence = sum(a.confidence or 0.0 for a in cap_assessments) / count
-    raw = (count / 8) * 0.5 + (evidence_coverage / 5) * 0.3 + avg_confidence * 0.2
+    w = weights if weights is not None else [1.0] * count
+    total_weight = sum(w)
+    weighted_conf = sum((a.confidence or 0.0) * wi for a, wi in zip(cap_assessments, w))
+    avg_confidence = weighted_conf / total_weight if total_weight > 0 else 0.0
+    # Use effective count (total_weight) for count-based penalty
+    effective_count = total_weight
+    raw = (effective_count / 8) * 0.5 + (evidence_coverage / 5) * 0.3 + avg_confidence * 0.2
     confidence = min(1.0, raw)
-    if count < 3:
+    if effective_count < 3:
         confidence = min(confidence, 0.3)
     return round(confidence, 2)

@@ -6,23 +6,25 @@ import { useBenchmarkOverview, useRecomputeBenchmarks } from '../hooks/useBenchm
 import type { BenchmarkPeriodType } from '../types/benchmark';
 import { CapabilityStrengthMatrix } from '../components/benchmark/CapabilityStrengthMatrix';
 import { CapabilityLeaderboardDrawer } from '../components/benchmark/CapabilityLeaderboardDrawer';
-import { Users, BarChart3 } from 'lucide-react';
+import { Users, BarChart3, HelpCircle } from 'lucide-react';
 import CompanyLogo from '../components/CompanyLogo';
 import { useBenchmarkScorecard } from '../hooks/useScorecard';
 import { ScorecardSummaryStrip } from '../components/scorecard/ScorecardSummaryStrip';
 import type { ScorecardPeriodType } from '../types/scorecard';
+import { MatrixInfoDrawer } from '../components/benchmark/MatrixInfoDrawer';
 
 export default function CompetitorList() {
   const { data: companies, isLoading } = useCompanies();
   const { data: allSignals } = useSignals();
 
-  const [benchmarkPeriod, setBenchmarkPeriod] = useState<BenchmarkPeriodType>('30d');
+  const [benchmarkPeriod, setBenchmarkPeriod] = useState<BenchmarkPeriodType>('180d');
   const [drawerCapKey, setDrawerCapKey] = useState<string | null>(null);
+  const [matrixInfoOpen, setMatrixInfoOpen] = useState(false);
   const navigate = useNavigate();
   const { data: benchmarkData, isLoading: benchmarkLoading } = useBenchmarkOverview(benchmarkPeriod);
   const recompute = useRecomputeBenchmarks();
 
-  const [scorecardPeriod, setScorecardPeriod] = useState<ScorecardPeriodType>('30d');
+  const [scorecardPeriod, setScorecardPeriod] = useState<ScorecardPeriodType>('180d');
   const { data: scorecardBenchmark, isLoading: scorecardLoading } = useBenchmarkScorecard(scorecardPeriod);
   const scorecardByCompanyId = Object.fromEntries(
     (scorecardBenchmark?.items ?? []).map((item) => [item.company_id, item])
@@ -41,20 +43,34 @@ export default function CompetitorList() {
 
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-base font-semibold text-slate-900">Capability Strength Matrix</h2>
+          <div className="flex items-center gap-1.5">
+            <h2 className="text-base font-semibold text-slate-900">Capability Strength Matrix</h2>
+            <button
+              onClick={() => setMatrixInfoOpen(true)}
+              className="p-0.5 rounded hover:bg-slate-100 transition-colors"
+              title="Legende & Erklärung"
+            >
+              <HelpCircle className="w-4 h-4 text-slate-400" />
+            </button>
+          </div>
           <div className="flex items-center gap-3">
             <div className="flex gap-1">
-              {(['30d', '90d', '180d'] as BenchmarkPeriodType[]).map(p => (
+              {([
+                { value: '30d', label: '30d', title: 'Recency Focus: letzte 30 Tage gewichtet stärker' },
+                { value: '90d', label: '90d', title: 'Recency Focus: letzte 90 Tage gewichtet stärker' },
+                { value: '180d', label: 'All', title: 'Historical View: alle Assessments mit sanftem Decay' },
+              ] as { value: BenchmarkPeriodType; label: string; title: string }[]).map(opt => (
                 <button
-                  key={p}
-                  onClick={() => setBenchmarkPeriod(p)}
+                  key={opt.value}
+                  onClick={() => setBenchmarkPeriod(opt.value)}
+                  title={opt.title}
                   className={`px-2.5 py-1 text-xs rounded-md font-medium transition-colors ${
-                    benchmarkPeriod === p
+                    benchmarkPeriod === opt.value
                       ? 'bg-slate-900 text-white'
                       : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                   }`}
                 >
-                  {p}
+                  {opt.label}
                 </button>
               ))}
             </div>
@@ -67,18 +83,23 @@ export default function CompetitorList() {
             </button>
             {/* Scorecard period selector */}
             <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-500">Scorecard period:</span>
-              {(['30d', '90d', '180d'] as ScorecardPeriodType[]).map((p) => (
+              <span className="text-xs text-gray-500">Scorecard:</span>
+              {([
+                { value: '30d', label: '30d', title: 'Recency Focus 30d' },
+                { value: '90d', label: '90d', title: 'Recency Focus 90d' },
+                { value: '180d', label: 'All', title: 'Historical View' },
+              ] as { value: ScorecardPeriodType; label: string; title: string }[]).map((opt) => (
                 <button
-                  key={p}
-                  onClick={() => setScorecardPeriod(p)}
+                  key={opt.value}
+                  onClick={() => setScorecardPeriod(opt.value)}
+                  title={opt.title}
                   className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
-                    scorecardPeriod === p
+                    scorecardPeriod === opt.value
                       ? 'bg-indigo-600 text-white'
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
                 >
-                  {p}
+                  {opt.label}
                 </button>
               ))}
             </div>
@@ -100,6 +121,7 @@ export default function CompetitorList() {
         )}
       </div>
 
+      <MatrixInfoDrawer open={matrixInfoOpen} onClose={() => setMatrixInfoOpen(false)} />
       <CapabilityLeaderboardDrawer
         capKey={drawerCapKey}
         periodType={benchmarkPeriod}

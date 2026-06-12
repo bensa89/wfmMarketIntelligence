@@ -18,10 +18,10 @@ const TIER_LABELS: Record<string, string> = {
   weakly_evidenced: 'Weakly Evidenced',
 };
 
-const PERIOD_OPTIONS: { value: BenchmarkPeriodType; label: string }[] = [
-  { value: '30d', label: '30d' },
-  { value: '90d', label: '90d' },
-  { value: '180d', label: '180d' },
+const PERIOD_OPTIONS: { value: BenchmarkPeriodType; label: string; title: string }[] = [
+  { value: '30d', label: '30d', title: 'Recency Focus: letzte 30 Tage gewichtet stärker' },
+  { value: '90d', label: '90d', title: 'Recency Focus: letzte 90 Tage gewichtet stärker' },
+  { value: '180d', label: 'All', title: 'Historical View: alle Assessments mit sanftem Decay' },
 ];
 
 const PLOT_W = 620;
@@ -63,7 +63,7 @@ function arrowVec(mDelta: number | null, sDelta: number | null) {
 }
 
 export function CapabilityStrengthVsMovement({ slug, onCapabilityClick }: Props) {
-  const [period, setPeriod] = useState<BenchmarkPeriodType>('30d');
+  const [period, setPeriod] = useState<BenchmarkPeriodType>('180d');
   const [hovered, setHovered] = useState<string | null>(null);
   const [showInfo, setShowInfo] = useState(false);
   const { data, isLoading } = useCompetitorBenchmark(slug, period);
@@ -97,6 +97,7 @@ export function CapabilityStrengthVsMovement({ slug, onCapabilityClick }: Props)
             <button
               key={opt.value}
               onClick={() => setPeriod(opt.value)}
+              title={opt.title}
               className={`px-3 py-1 rounded text-xs font-medium transition-colors border ${
                 period === opt.value
                   ? 'bg-blue-50 text-blue-700 border-blue-200'

@@ -9,14 +9,14 @@ import {
 } from '../api/benchmark';
 import type { BenchmarkPeriodType, CapabilityAssessmentsResponse } from '../types/benchmark';
 
-export function useBenchmarkOverview(periodType: BenchmarkPeriodType = '30d') {
+export function useBenchmarkOverview(periodType: BenchmarkPeriodType = '180d') {
   return useQuery({
     queryKey: ['benchmark', 'overview', periodType],
     queryFn: () => fetchBenchmarkOverview(periodType),
   });
 }
 
-export function useCompetitorBenchmark(slug: string, periodType: BenchmarkPeriodType = '30d') {
+export function useCompetitorBenchmark(slug: string, periodType: BenchmarkPeriodType = '180d') {
   return useQuery({
     queryKey: ['benchmark', 'competitor', slug, periodType],
     queryFn: () => fetchCompetitorBenchmark(slug, periodType),
@@ -24,7 +24,7 @@ export function useCompetitorBenchmark(slug: string, periodType: BenchmarkPeriod
   });
 }
 
-export function useCapabilityLeaderboard(capKey: string | null, periodType: BenchmarkPeriodType = '30d') {
+export function useCapabilityLeaderboard(capKey: string | null, periodType: BenchmarkPeriodType = '180d') {
   return useQuery({
     queryKey: ['benchmark', 'leaderboard', capKey, periodType],
     queryFn: () => fetchCapabilityLeaderboard(capKey!, periodType),
@@ -35,7 +35,7 @@ export function useCapabilityLeaderboard(capKey: string | null, periodType: Benc
 export function useRecomputeBenchmarks() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (periodType: BenchmarkPeriodType = '30d') => recomputeAllBenchmarks(periodType),
+    mutationFn: (periodType: BenchmarkPeriodType = '180d') => recomputeAllBenchmarks(periodType),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['benchmark'] });
     },
@@ -45,7 +45,7 @@ export function useRecomputeBenchmarks() {
 export function useRecomputeCompanyBenchmark() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ companyId, periodType = '30d' }: { companyId: string; periodType?: BenchmarkPeriodType }) =>
+    mutationFn: ({ companyId, periodType = '180d' }: { companyId: string; periodType?: BenchmarkPeriodType }) =>
       recomputeCompanyBenchmark(companyId, periodType),
     onSuccess: (_data, { companyId: _companyId }) => {
       queryClient.invalidateQueries({ queryKey: ['benchmark'] });

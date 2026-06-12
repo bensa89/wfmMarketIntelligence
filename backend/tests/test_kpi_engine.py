@@ -15,8 +15,7 @@ def _inp(
     capability_secondary=None,
     assessment_weight=1.0,
     dimension_modifier=1.0,
-    age_days=0,
-    period_days=30,
+    decay_weight=1.0,
 ):
     from app.scorecard.kpi_engine import AssessmentKPIInput
     return AssessmentKPIInput(
@@ -31,30 +30,25 @@ def _inp(
         capability_secondary=capability_secondary or [],
         assessment_weight=assessment_weight,
         dimension_modifier=dimension_modifier,
-        age_days=age_days,
-        period_days=period_days,
+        decay_weight=decay_weight,
     )
 
 
 # --- effective_weight ---
 
 def test_effective_weight_no_decay():
-    a = _inp(assessment_weight=1.0, dimension_modifier=1.0, age_days=0, period_days=30)
+    a = _inp(assessment_weight=1.0, dimension_modifier=1.0, decay_weight=1.0)
     assert a.effective_weight == pytest.approx(1.0)
 
 
-def test_effective_weight_full_decay_floor():
-    from app.scorecard.constants import RECENCY_DECAY_MAX
-    a = _inp(assessment_weight=1.0, dimension_modifier=1.0, age_days=30, period_days=30)
-    expected = 1.0 * 1.0 * (1.0 - RECENCY_DECAY_MAX)
-    assert a.effective_weight == pytest.approx(expected)
+def test_effective_weight_half_decay():
+    a = _inp(assessment_weight=1.0, dimension_modifier=1.0, decay_weight=0.5)
+    assert a.effective_weight == pytest.approx(0.5)
 
 
 def test_effective_weight_combines_all_three():
-    from app.scorecard.constants import RECENCY_DECAY_MAX
-    a = _inp(assessment_weight=2.0, dimension_modifier=0.7, age_days=15, period_days=30)
-    recency = 1.0 - (15 / 30) * RECENCY_DECAY_MAX
-    assert a.effective_weight == pytest.approx(2.0 * 0.7 * recency)
+    a = _inp(assessment_weight=2.0, dimension_modifier=0.7, decay_weight=0.8)
+    assert a.effective_weight == pytest.approx(2.0 * 0.7 * 0.8)
 
 
 # --- capability_strength KPIs ---

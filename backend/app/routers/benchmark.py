@@ -15,7 +15,7 @@ router = APIRouter(prefix="/api/benchmark", tags=["benchmark"])
 
 @router.get("/overview", response_model=BenchmarkOverviewResponse)
 def get_overview(
-    period_type: str = "30d",
+    period_type: str = "180d",
     db: Session = Depends(get_db),
 ):
     return BenchmarkQueryService(db).get_overview(period_type)
@@ -24,7 +24,7 @@ def get_overview(
 @router.get("/competitors/{slug}", response_model=CompetitorBenchmarkResponse)
 def get_competitor_strengths(
     slug: str,
-    period_type: str = "30d",
+    period_type: str = "180d",
     db: Session = Depends(get_db),
 ):
     try:
@@ -37,7 +37,7 @@ def get_competitor_strengths(
 def get_capability_assessments(
     slug: str,
     cap_key: str,
-    period_type: str = "30d",
+    period_type: str = "180d",
     db: Session = Depends(get_db),
 ):
     try:
@@ -49,7 +49,7 @@ def get_capability_assessments(
 @router.get("/capabilities/{key}", response_model=CapabilityLeaderboardResponse)
 def get_capability_leaderboard(
     key: str,
-    period_type: str = "30d",
+    period_type: str = "180d",
     db: Session = Depends(get_db),
 ):
     return BenchmarkQueryService(db).get_capability_leaderboard(key, period_type)
@@ -57,7 +57,7 @@ def get_capability_leaderboard(
 
 @router.post("/recompute")
 def recompute_all(
-    period_type: str = "30d",
+    period_type: str = "180d",
     db: Session = Depends(get_db),
 ):
     results = BenchmarkAggregationService(db).recompute_all(period_type)
@@ -67,7 +67,7 @@ def recompute_all(
 @router.post("/recompute/{company_id}")
 def recompute_company(
     company_id: str,
-    period_type: str = "30d",
+    period_type: str = "180d",
     db: Session = Depends(get_db),
 ):
     results = BenchmarkAggregationService(db).recompute_company(company_id, period_type)

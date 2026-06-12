@@ -55,6 +55,7 @@ class BenchmarkQueryService:
                         confidence=b.confidence,
                         rank=b.peer_rank,
                         momentum_score=b.execution_momentum_score,
+                        strength_delta=b.strength_delta,
                     )
                 else:
                     matrix[cap_key][c.id] = BenchmarkMatrixCell(
@@ -63,6 +64,7 @@ class BenchmarkQueryService:
                         confidence=0.0,
                         rank=None,
                         momentum_score=0,
+                        strength_delta=None,
                     )
 
         return BenchmarkOverviewResponse(

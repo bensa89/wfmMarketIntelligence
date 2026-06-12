@@ -278,9 +278,9 @@ interface CapabilityExplainDrawerProps {
 }
 
 const PERIOD_LABELS: Record<string, string> = {
-  '30d': 'Letzten 30 Tage',
-  '90d': 'Letzten 90 Tage',
-  '180d': 'Letzten 180 Tage',
+  '30d': 'Recency Focus 30d',
+  '90d': 'Recency Focus 90d',
+  '180d': 'Historical View',
 };
 
 export function CapabilityExplainDrawer({
@@ -289,7 +289,7 @@ export function CapabilityExplainDrawer({
   mode,
   slug,
   detail,
-  periodType = '30d',
+  periodType = '180d',
   avgMovementScore,
   onSelectSignal,
 }: CapabilityExplainDrawerProps) {

@@ -1,11 +1,11 @@
 from __future__ import annotations
-from datetime import datetime, timezone, timedelta
+import math
+from datetime import date, datetime, timezone
 from sqlalchemy.orm import Session
 from app.models.company import Company
 from app.models.signal_assessment import SignalAssessment
 from app.models.capability_benchmark import CompetitorCapabilityBenchmark
 from app.assessor.capabilities import CAPABILITY_KEYS
-from app.benchmark.period import get_period_bounds
 from app.benchmark.scoring import (
     compute_sub_scores,
     compute_relative_strength,
@@ -13,12 +13,27 @@ from app.benchmark.scoring import (
     compute_confidence,
 )
 
+# Half-life per period: 30d → strong recency emphasis, 180d → near-flat (historical view)
+_DECAY_LAMBDA = {
+    "30d": math.log(2) / 30,
+    "90d": math.log(2) / 90,
+    "180d": math.log(2) / 180,
+}
+
+
+def _assessment_weight(assessment, lambda_val: float, today: date) -> float:
+    created = assessment.created_at
+    if hasattr(created, "date"):
+        created = created.date()
+    age_days = max(0, (today - created).days)
+    return math.exp(-lambda_val * age_days)
+
 
 class BenchmarkAggregationService:
     def __init__(self, db: Session):
         self.db = db
 
-    def recompute_all(self, period_type: str = "30d") -> list[CompetitorCapabilityBenchmark]:
+    def recompute_all(self, period_type: str = "180d") -> list[CompetitorCapabilityBenchmark]:
         competitors = (
             self.db.query(Company).filter(Company.type == "competitor").all()
         )
@@ -29,31 +44,33 @@ class BenchmarkAggregationService:
         return results
 
     def recompute_company(
-        self, company_id: str, period_type: str = "30d"
+        self, company_id: str, period_type: str = "180d"
     ) -> list[CompetitorCapabilityBenchmark]:
-        period_start, period_end = get_period_bounds(period_type)
-        # Convert date bounds to datetime for correct comparison against DateTime column
-        dt_start = datetime(period_start.year, period_start.month, period_start.day, 0, 0, 0)
-        dt_end = datetime(period_end.year, period_end.month, period_end.day, 23, 59, 59)
+        today = date.today()
+        lambda_val = _DECAY_LAMBDA.get(period_type, _DECAY_LAMBDA["180d"])
+
+        # Fetch ALL assessments — no hard time cutoff, decay weights handle recency
         all_assessments = (
             self.db.query(SignalAssessment)
-            .filter(
-                SignalAssessment.company_id == company_id,
-                SignalAssessment.created_at >= dt_start,
-                SignalAssessment.created_at <= dt_end,
-            )
+            .filter(SignalAssessment.company_id == company_id)
             .all()
         )
+        all_weights = [_assessment_weight(a, lambda_val, today) for a in all_assessments]
 
         benchmarks: list[CompetitorCapabilityBenchmark] = []
         for cap_key in CAPABILITY_KEYS:
-            cap_assessments = [
-                a for a in all_assessments if a.capability_primary == cap_key
-            ]
+            indices = [i for i, a in enumerate(all_assessments) if a.capability_primary == cap_key]
+            cap_assessments = [all_assessments[i] for i in indices]
+            cap_weights = [all_weights[i] for i in indices]
+
             scores = compute_sub_scores(
-                cap_assessments, all_assessments, period_start, period_end, cap_key
+                cap_assessments, all_assessments,
+                period_start=today, period_end=today,
+                cap_key=cap_key,
+                weights=cap_weights,
+                all_weights=all_weights,
             )
-            confidence = compute_confidence(cap_assessments, scores.evidence_coverage)
+            confidence = compute_confidence(cap_assessments, scores.evidence_coverage, cap_weights)
             strength_score = compute_relative_strength(scores)
             tier = determine_tier(strength_score, confidence, scores.evidence_coverage)
 
@@ -65,8 +82,8 @@ class BenchmarkAggregationService:
                 company_id=company_id,
                 capability_key=cap_key,
                 period_type=period_type,
-                period_start=period_start,
-                period_end=period_end,
+                period_start=today,
+                period_end=today,
                 scores=scores,
                 strength_score=strength_score,
                 prev_score=prev_score,

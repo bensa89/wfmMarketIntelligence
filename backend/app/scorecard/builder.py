@@ -1,6 +1,7 @@
 from __future__ import annotations
 import logging
-from datetime import date, datetime, timedelta, timezone
+import math
+from datetime import datetime, timezone
 from typing import Optional
 from collections import Counter
 from sqlalchemy.orm import Session
@@ -10,8 +11,8 @@ from app.models.signal_assessment import SignalAssessment
 from app.models.capability_benchmark import CompetitorCapabilityBenchmark
 from app.assessor.capabilities import CAPABILITIES
 from app.scorecard.constants import (
-    DIMENSION_WEIGHTS, PERIOD_DAYS, SCORECARD_VERSION, ROUTING_VERSION,
-    RISK_FLAG_STRATEGIC_WEIGHT_THRESHOLD,
+    DIMENSION_WEIGHTS, DECAY_LAMBDA, MOMENTUM_WINDOW_DAYS, SCORECARD_VERSION,
+    ROUTING_VERSION, RISK_FLAG_STRATEGIC_WEIGHT_THRESHOLD,
 )
 from app.scorecard.kpi_engine import (
     AssessmentKPIInput, compute_capability_strength_kpis, compute_activity_kpis,
@@ -34,26 +35,28 @@ class ScorecardBuilder:
         self.db = db
 
     def build(self, company_id: str, period_type: str) -> CompetitorScorecard:
-        period_days = PERIOD_DAYS[period_type]
+        lambda_val = DECAY_LAMBDA[period_type]
         now = datetime.now(timezone.utc)
-        period_end = now
-        period_start = now - timedelta(days=period_days)
-        prev_end = period_start
-        prev_start = prev_end - timedelta(days=period_days)
 
-        assessments = self._fetch(company_id, period_start, period_end)
-        prior = self._fetch(company_id, prev_start, prev_end)
+        # Fetch ALL assessments — no hard date cutoff
+        assessments = self._fetch_all(company_id)
+
+        # Two decay weight sets: T=0 (now) and T=-N (prior reference for momentum)
+        weights_now = self._decay_weights(assessments, lambda_val, now, shift_days=0)
+        weights_prior = self._decay_weights(assessments, lambda_val, now, shift_days=MOMENTUM_WINDOW_DAYS)
 
         dim_scores: dict[str, dict] = {}
         all_ids = [a.id for a in assessments]
 
         for dim_key in DIMENSION_WEIGHTS:
-            inputs = self._to_kpi_inputs(assessments, dim_key, period_days, now)
+            inputs_now = self._to_kpi_inputs(assessments, dim_key, weights_now)
             if dim_key == "momentum":
-                prior_inputs = self._to_kpi_inputs(prior, dim_key, period_days, prev_end)
-                kpis = compute_momentum_kpis(inputs, prior_inputs)
+                # Prior inputs: only assessments that existed MOMENTUM_WINDOW_DAYS ago
+                inputs_prior = self._to_kpi_inputs(assessments, dim_key, weights_prior)
+                inputs_prior = [i for i in inputs_prior if i.decay_weight > 0]
+                kpis = compute_momentum_kpis(inputs_now, inputs_prior)
             else:
-                kpis = _KPI_COMPUTERS[dim_key](inputs)
+                kpis = _KPI_COMPUTERS[dim_key](inputs_now)
 
             score = compute_dimension_score(dim_key, {k: v for k, v in kpis.items()}) if kpis else None
             trend_kpi = kpis.get("mom_trend")
@@ -71,17 +74,17 @@ class ScorecardBuilder:
         watchpoints = self._watchpoints(assessments)
         top_caps = self._top_capabilities(company_id, period_type)
 
-        # Flip previous current snapshots
         self.db.query(CompetitorScorecard).filter_by(
             company_id=company_id, period_type=period_type, is_current=True
         ).update({"is_current": False})
         self.db.flush()
 
+        today = now.date()
         scorecard = CompetitorScorecard(
             company_id=company_id,
             period_type=period_type,
-            period_start=period_start.date(),
-            period_end=period_end.date(),
+            period_start=today,
+            period_end=today,
             generated_at=now,
             overall_score=overall,
             overall_trend=overall_trend,
@@ -99,35 +102,54 @@ class ScorecardBuilder:
         self.db.add(scorecard)
         self.db.commit()
 
-        # Compute benchmark position after insert (uses full snapshot set)
         position = self._benchmark_position(company_id, period_type, scorecard.id)
         scorecard.benchmark_position = position
         self.db.commit()
 
         return scorecard
 
-    def _fetch(self, company_id: str, start: datetime, end: datetime) -> list[SignalAssessment]:
-        from sqlalchemy import func
-        effective_from = func.coalesce(SignalAssessment.valid_from, SignalAssessment.created_at)
+    def _fetch_all(self, company_id: str) -> list[SignalAssessment]:
         return (
             self.db.query(SignalAssessment)
-            .filter(
-                SignalAssessment.company_id == company_id,
-                effective_from <= end,
-                (SignalAssessment.valid_until == None) | (SignalAssessment.valid_until >= start),
-            )
+            .filter(SignalAssessment.company_id == company_id)
             .all()
         )
+
+    def _decay_weights(
+        self,
+        assessments: list[SignalAssessment],
+        lambda_val: float,
+        now: datetime,
+        shift_days: int,
+    ) -> list[float]:
+        """
+        Compute e^(-λ * effective_age) for each assessment.
+        shift_days > 0 simulates standing 'shift_days' days in the past:
+          - assessments newer than shift_days have weight 0 (didn't exist yet)
+          - older assessments use (age - shift_days) as their effective age
+        """
+        weights = []
+        for a in assessments:
+            ref = a.valid_from or a.created_at
+            age_days = max(0, (now.replace(tzinfo=None) - ref.replace(tzinfo=None)).days)
+            if shift_days > 0:
+                if age_days < shift_days:
+                    weights.append(0.0)
+                    continue
+                effective_age = age_days - shift_days
+            else:
+                effective_age = age_days
+            weights.append(math.exp(-lambda_val * effective_age))
+        return weights
 
     def _to_kpi_inputs(
         self,
         assessments: list[SignalAssessment],
         dim_key: str,
-        period_days: int,
-        ref_time: datetime,
+        weights: list[float],
     ) -> list[AssessmentKPIInput]:
         result = []
-        for a in assessments:
+        for a, decay_weight in zip(assessments, weights):
             dim_targets = a.dimension_targets or {}
             if isinstance(dim_targets, list):
                 modifier = 1.0 if dim_key in dim_targets else 0.0
@@ -135,8 +157,6 @@ class ScorecardBuilder:
                 modifier = dim_targets.get(dim_key, 0.0)
             if modifier == 0.0:
                 continue
-            valid_from = a.valid_from or a.created_at
-            age_days = max(0, (ref_time.replace(tzinfo=None) - valid_from.replace(tzinfo=None)).days)
             result.append(AssessmentKPIInput(
                 id=a.id,
                 movement_score=a.movement_score or 0,
@@ -149,8 +169,7 @@ class ScorecardBuilder:
                 capability_secondary=a.capability_secondary or [],
                 assessment_weight=a.assessment_weight or 1.0,
                 dimension_modifier=modifier,
-                age_days=age_days,
-                period_days=period_days,
+                decay_weight=decay_weight,
             ))
         return result
 

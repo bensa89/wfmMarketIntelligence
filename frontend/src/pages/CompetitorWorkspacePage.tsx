@@ -15,17 +15,19 @@ import RisksOpportunitiesCards from '../components/workspace/RisksOpportunitiesC
 import SignalDetailDrawer from '../components/signals/SignalDetailDrawer';
 import type { SignalFeedItem, CapabilityCount } from '../types/intelligence';
 import { useScorecard, useScorecardExplain, useRecomputeScorecard } from '../hooks/useScorecard';
+import type { ScorecardPeriodType } from '../types/scorecard';
 import { useCrawlStatus } from '../hooks/useCrawlStatus';
 import { DimensionScoreGrid } from '../components/scorecard/DimensionScoreGrid';
 import { ExplainabilityDrawer } from '../components/scorecard/ExplainabilityDrawer';
 import { ScorecardSignalDrawer } from '../components/scorecard/ScorecardSignalDrawer';
 
-type Period = '30d' | '90d';
+type SummaryPeriod = '30d' | '90d';
 
 export default function CompetitorWorkspacePage() {
   const { slug } = useParams<{ slug: string }>();
   const { data, isLoading, error } = useCompetitorWorkspace(slug ?? '');
-  const [activePeriod, setActivePeriod] = useState<Period>('30d');
+  const [activePeriod, setActivePeriod] = useState<SummaryPeriod>('30d');
+  const [scorecardPeriod, setScorecardPeriod] = useState<ScorecardPeriodType>('180d');
   const [selectedSignal, setSelectedSignal] = useState<SignalFeedItem | null>(null);
   const [selectedScorecardSignalId, setSelectedScorecardSignalId] = useState<string | null>(null);
   const [explainOpen, setExplainOpen] = useState(false);
@@ -33,8 +35,8 @@ export default function CompetitorWorkspacePage() {
   const [selectedCapabilityDetail, setSelectedCapabilityDetail] = useState<CompetitorBenchmarkDetail | null>(null);
 
   const summarize = useSummarizeCompetitor(data?.competitor_profile.id ?? '');
-  const { data: scorecard, isLoading: scorecardLoading } = useScorecard(slug ?? '', activePeriod);
-  const { data: explain, isLoading: explainLoading, isError: explainError } = useScorecardExplain(slug ?? '', activePeriod, explainOpen);
+  const { data: scorecard, isLoading: scorecardLoading } = useScorecard(slug ?? '', scorecardPeriod);
+  const { data: explain, isLoading: explainLoading, isError: explainError } = useScorecardExplain(slug ?? '', scorecardPeriod, explainOpen);
   const recompute = useRecomputeScorecard(slug ?? '');
   const crawl = useCrawlStatus();
 
@@ -93,8 +95,8 @@ export default function CompetitorWorkspacePage() {
           </div>
 
           <div className="flex items-center gap-2 flex-shrink-0 flex-wrap justify-end">
-            {/* Period selector */}
-            {(['30d', '90d'] as Period[]).map((p) => (
+            {/* Summary period selector */}
+            {(['30d', '90d'] as SummaryPeriod[]).map((p) => (
               <button
                 key={p}
                 onClick={() => setActivePeriod(p)}
@@ -107,6 +109,28 @@ export default function CompetitorWorkspacePage() {
                 {p === '30d' ? '30 Days' : '90 Days'}
                 {p === '30d' && !data.summary_30d && <span className="text-[10px] text-slate-400 ml-1">(no data)</span>}
                 {p === '90d' && !data.summary_90d && <span className="text-[10px] text-slate-400 ml-1">(no data)</span>}
+              </button>
+            ))}
+
+            <div className="w-px h-5 bg-slate-200" />
+
+            {/* Scorecard period selector */}
+            {([
+              { value: '30d', label: '30d', title: 'Recency Focus 30d' },
+              { value: '90d', label: '90d', title: 'Recency Focus 90d' },
+              { value: '180d', label: 'All', title: 'Historical View (alle Assessments)' },
+            ] as { value: ScorecardPeriodType; label: string; title: string }[]).map(opt => (
+              <button
+                key={opt.value}
+                onClick={() => setScorecardPeriod(opt.value)}
+                title={opt.title}
+                className={`px-2.5 py-1 text-xs rounded-md font-medium transition-colors ${
+                  scorecardPeriod === opt.value
+                    ? 'bg-slate-900 text-white'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                {opt.label}
               </button>
             ))}
 
@@ -255,7 +279,7 @@ export default function CompetitorWorkspacePage() {
         mode={capabilityExplainMode ?? 'panel'}
         slug={slug ?? ''}
         detail={selectedCapabilityDetail ?? undefined}
-        periodType={activePeriod as any}
+        periodType={scorecardPeriod}
         avgMovementScore={
           selectedCapabilityDetail
             ? (data.capability_distribution ?? []).find(

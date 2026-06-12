@@ -31,6 +31,20 @@ interface MatrixCellProps {
   onClick?: () => void;
 }
 
+function DeltaBadge({ delta }: { delta: number | null }) {
+  if (delta === null || delta === 0) return null;
+  const positive = delta > 0;
+  return (
+    <span
+      className={`absolute top-0.5 right-0.5 text-[9px] font-bold leading-none ${
+        positive ? 'text-emerald-300' : 'text-red-300'
+      }`}
+    >
+      {positive ? '▲' : '▼'}
+    </span>
+  );
+}
+
 function MatrixCell({ cell, onClick }: MatrixCellProps) {
   const [hovered, setHovered] = useState(false);
   const tier = cell.tier as BenchmarkTier;
@@ -42,10 +56,11 @@ function MatrixCell({ cell, onClick }: MatrixCellProps) {
         onClick={onClick}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        className={`w-full h-12 rounded flex items-center justify-center font-semibold text-sm transition-all
+        className={`relative w-full h-12 rounded flex items-center justify-center font-semibold text-sm transition-all
           ${TIER_BG[tier]} ${TIER_TEXT[tier]} ${opacity} hover:ring-2 hover:ring-slate-400`}
       >
         {cell.score}
+        <DeltaBadge delta={cell.strength_delta ?? null} />
       </button>
       {hovered && (
         <div className="absolute z-50 bottom-full mb-2 left-1/2 -translate-x-1/2 w-52 bg-white border border-slate-200 rounded-lg shadow-lg p-3 text-left pointer-events-none">
@@ -54,6 +69,14 @@ function MatrixCell({ cell, onClick }: MatrixCellProps) {
             {cell.rank && <span className="text-xs text-slate-500">#{cell.rank}</span>}
           </div>
           <div className="text-xs text-slate-600 mb-1">Score: <span className="font-medium text-slate-900">{cell.score}</span></div>
+          {cell.strength_delta !== null && cell.strength_delta !== undefined && (
+            <div className="text-xs text-slate-600 mb-1">
+              Veränderung:{' '}
+              <span className={`font-medium ${cell.strength_delta > 0 ? 'text-emerald-600' : cell.strength_delta < 0 ? 'text-red-500' : 'text-slate-500'}`}>
+                {cell.strength_delta > 0 ? '+' : ''}{cell.strength_delta}
+              </span>
+            </div>
+          )}
           <div className="text-xs text-slate-600 mb-1">Momentum: <span className="font-medium text-slate-900">{cell.momentum_score}/5</span></div>
           <div className="flex items-center gap-1 text-xs text-slate-600">
             Confidence: <ConfidenceIndicator confidence={cell.confidence} showLabel />

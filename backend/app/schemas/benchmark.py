@@ -54,6 +54,7 @@ class BenchmarkMatrixCell(BaseModel):
     confidence: float
     rank: Optional[int] = None
     momentum_score: int
+    strength_delta: Optional[int] = None
 
 
 class BenchmarkOverviewResponse(BaseModel):
