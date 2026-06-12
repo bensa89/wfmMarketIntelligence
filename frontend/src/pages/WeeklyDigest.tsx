@@ -114,15 +114,15 @@ export default function WeeklyDigest() {
   };
 
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
+    <div className="p-4 md:p-6">
+      <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
         <h1 className="text-2xl font-bold flex items-center gap-2">
           <Calendar size={24} /> Weekly Digest
         </h1>
         <button
           onClick={() => generateDigest.mutate()}
           disabled={generateDigest.isPending}
-          className="btn-primary flex items-center gap-2"
+          className="btn-primary flex items-center gap-2 flex-shrink-0"
         >
           <RefreshCw size={16} className={generateDigest.isPending ? 'animate-spin' : ''} />
           {generateDigest.isPending ? 'Generating...' : 'Generate New Digest'}
@@ -143,8 +143,22 @@ export default function WeeklyDigest() {
           <p className="text-ink-muted">No digests yet. Generate one to get started.</p>
         </div>
       ) : (
+        {/* Mobile: dropdown to pick a digest */}
+        <select
+          className="md:hidden w-full mb-4 input-field"
+          value={selectedDigest?.id ?? ''}
+          onChange={(e) => setSelectedDigestId(e.target.value)}
+        >
+          {digests?.map((digest: Digest) => (
+            <option key={digest.id} value={digest.id}>
+              KW {getISOWeek(digest.week_start)}: {digest.week_start} — {digest.week_end}
+            </option>
+          ))}
+        </select>
+
         <div className="flex gap-6">
-          <div className="w-64 shrink-0 space-y-2">
+          {/* Desktop: sidebar button list */}
+          <div className="hidden md:block w-64 shrink-0 space-y-2">
             {digests?.map((digest: Digest) => (
               <button
                 key={digest.id}
@@ -168,7 +182,7 @@ export default function WeeklyDigest() {
           {selectedDigest && (
             <div className="flex-1 min-w-0">
               <div className="card">
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
                   <div>
                     <h2 className="text-lg font-semibold text-gray-900">
                       KW {getISOWeek(selectedDigest.week_start)}: {formatDateDE(selectedDigest.week_start)} – {formatDateDE(selectedDigest.week_end)}
@@ -180,7 +194,7 @@ export default function WeeklyDigest() {
                   <button
                     onClick={() => handleCopyEmail(selectedDigest)}
                     disabled={!selectedDigest.sections?.length}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
                   >
                     {copied ? '✓ Kopiert' : 'Als E-Mail kopieren'}
                   </button>
