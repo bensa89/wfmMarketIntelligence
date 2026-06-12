@@ -122,25 +122,15 @@ def compute_sub_scores(
     focus_score = min(5, int(base_focus + messaging_bonus))
 
     # 5. Evidence Coverage
+    # Freshness is intentionally excluded: exponential decay already penalises old
+    # assessments in every weighted computation above.
     distinct_docs = len({getattr(a, "signal_id", i) for i, a in enumerate(cap_assessments)})
     source_diversity = _bin(distinct_docs, [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4), (float("inf"), 5)])
 
     weighted_conf = sum((a.confidence or 0.0) * wi for a, wi in zip(cap_assessments, w))
     avg_conf_score = round((weighted_conf / total_weight) * 5)
 
-    # Freshness: weighted share of assessments from last 30 days
-    fresh_cutoff = date.today() - timedelta(days=30)
-    fresh_weight = 0.0
-    for a, wi in zip(cap_assessments, w):
-        created = a.created_at
-        if hasattr(created, "date"):
-            created = created.date()
-        if created >= fresh_cutoff:
-            fresh_weight += wi
-    freshness_ratio = fresh_weight / total_weight
-    freshness = _bin(freshness_ratio, [(0, 0), (0.25, 1), (0.50, 2), (0.75, 3), (0.90, 4), (1.0, 5)])
-
-    evidence_coverage = min(source_diversity, avg_conf_score, freshness)
+    evidence_coverage = round((source_diversity + avg_conf_score) / 2)
 
     return SubScores(
         capability_depth=depth_score,
@@ -191,10 +181,10 @@ def compute_confidence(cap_assessments: list, evidence_coverage: int, weights: l
     total_weight = sum(w)
     weighted_conf = sum((a.confidence or 0.0) * wi for a, wi in zip(cap_assessments, w))
     avg_confidence = weighted_conf / total_weight if total_weight > 0 else 0.0
-    # Use effective count (total_weight) for count-based penalty
-    effective_count = total_weight
-    raw = (effective_count / 8) * 0.5 + (evidence_coverage / 5) * 0.3 + avg_confidence * 0.2
+    # Use raw count (not weighted sum) for the low-signal penalty so that old but
+    # numerous assessments are not incorrectly capped.
+    raw = (min(count, 8) / 8) * 0.5 + (evidence_coverage / 5) * 0.3 + avg_confidence * 0.2
     confidence = min(1.0, raw)
-    if effective_count < 3:
+    if count < 3:
         confidence = min(confidence, 0.3)
     return round(confidence, 2)
