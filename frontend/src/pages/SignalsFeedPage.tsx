@@ -35,11 +35,11 @@ export default function SignalsFeedPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="bg-white border-b border-slate-200 px-6 py-4 flex-shrink-0">
+      <div className="bg-white border-b border-slate-200 px-4 md:px-6 py-4 flex-shrink-0">
         <h1 className="text-[15px] font-bold text-slate-900 tracking-tight">Signals Feed</h1>
         <p className="text-[12px] text-slate-500 mt-0.5">Operative intelligence with assessment context</p>
       </div>
-      <div className="flex-1 overflow-auto px-6 py-5">
+      <div className="flex-1 overflow-auto px-4 md:px-6 py-5">
       <SignalFeedFilters
         filters={filters}
         companies={companies.filter((c) => c.type === 'competitor')}
