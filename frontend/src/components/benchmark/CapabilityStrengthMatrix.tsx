@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import * as LucideIcons from 'lucide-react';
 import type { BenchmarkOverviewResponse, BenchmarkMatrixCell, BenchmarkTier } from '../../types/benchmark';
 import { CAPABILITIES } from '../../constants/capabilities';
@@ -46,24 +47,35 @@ function DeltaBadge({ delta }: { delta: number | null }) {
 }
 
 function MatrixCell({ cell, onClick }: MatrixCellProps) {
-  const [hovered, setHovered] = useState(false);
+  const [tooltipPos, setTooltipPos] = useState<{ top: number; left: number } | null>(null);
+  const btnRef = useRef<HTMLButtonElement>(null);
   const tier = cell.tier as BenchmarkTier;
   const opacity = cell.confidence < 0.5 ? 'opacity-60' : 'opacity-100';
+
+  function handleMouseEnter() {
+    if (!btnRef.current) return;
+    const r = btnRef.current.getBoundingClientRect();
+    setTooltipPos({ top: r.bottom + 6, left: r.left + r.width / 2 });
+  }
 
   return (
     <div className="relative">
       <button
+        ref={btnRef}
         onClick={onClick}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={() => setTooltipPos(null)}
         className={`relative w-full h-12 rounded flex items-center justify-center font-semibold text-sm transition-all
           ${TIER_BG[tier]} ${TIER_TEXT[tier]} ${opacity} hover:ring-2 hover:ring-slate-400`}
       >
         {cell.score}
         <DeltaBadge delta={cell.strength_delta ?? null} />
       </button>
-      {hovered && (
-        <div className="absolute z-50 bottom-full mb-2 left-1/2 -translate-x-1/2 w-52 bg-white border border-slate-200 rounded-lg shadow-lg p-3 text-left pointer-events-none">
+      {tooltipPos && createPortal(
+        <div
+          style={{ position: 'fixed', top: tooltipPos.top, left: tooltipPos.left, transform: 'translateX(-50%)' }}
+          className="z-[9999] w-52 bg-white border border-slate-200 rounded-lg shadow-lg p-3 text-left pointer-events-none"
+        >
           <div className="flex items-center justify-between mb-2">
             <TierBadge tier={tier} size="sm" />
             {cell.rank && <span className="text-xs text-slate-500">#{cell.rank}</span>}
@@ -82,9 +94,10 @@ function MatrixCell({ cell, onClick }: MatrixCellProps) {
             Confidence: <ConfidenceIndicator confidence={cell.confidence} showLabel />
           </div>
           {tier === 'weakly_evidenced' && (
-            <p className="mt-2 text-xs text-slate-400 italic">Kaum Belege — keine Schwache-Aussage</p>
+            <p className="mt-2 text-xs text-slate-400 italic">Kaum Belege — keine verlässliche Aussage</p>
           )}
-        </div>
+        </div>,
+        document.body,
       )}
     </div>
   );
