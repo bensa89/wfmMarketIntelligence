@@ -31,7 +31,7 @@ export default function SignalFeedFilters({ filters, companies, onChange, onRese
 
   return (
     <div
-      className="sticky top-12 md:top-0 z-10 flex flex-wrap items-center gap-2 px-4 md:px-6 py-3 -mx-4 md:-mx-6 mb-4"
+      className="md:sticky md:top-0 z-10 flex flex-wrap items-center gap-2 px-4 md:px-6 py-3 -mx-4 md:-mx-6 mb-4"
       style={{ background: '#ffffff', borderBottom: '1px solid #e2e8f0' }}
     >
       {/* Company */}
