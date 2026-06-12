@@ -1,18 +1,8 @@
+import { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import {
-  LayoutDashboard,
-  Users,
-  TrendingUp,
-  FileText,
-  Settings,
-  Search,
-  Globe,
-  LogOut,
-  BarChart2,
-  Zap,
-  BookOpen,
-  Clock,
-  Terminal,
+  LayoutDashboard, Users, TrendingUp, FileText, Settings, Search,
+  Globe, LogOut, BarChart2, Zap, BookOpen, Clock, Terminal, Menu, X,
 } from 'lucide-react';
 import { hasCredentials, clearCredentials } from '../api/client';
 import { useNavigate } from 'react-router-dom';
@@ -52,8 +42,85 @@ const navSections = [
   },
 ];
 
+function SidebarLogo() {
+  return (
+    <div
+      className="flex items-center gap-2.5 px-4 py-[18px]"
+      style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+    >
+      <div
+        className="w-7 h-7 rounded-[7px] flex items-center justify-center text-[11px] font-extrabold text-white flex-shrink-0"
+        style={{ background: 'linear-gradient(135deg, #2563eb, #7c3aed)' }}
+      >
+        W
+      </div>
+      <div>
+        <div className="text-[13px] font-semibold leading-none text-slate-50">WFM Intel</div>
+        <div className="text-[9px] mt-0.5" style={{ color: 'rgba(248,250,252,0.3)' }}>
+          Market Intelligence
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function NavItems({ onNavClick }: { onNavClick?: () => void }) {
+  return (
+    <div className="flex-1 overflow-y-auto">
+      {navSections.map((section) => (
+        <div key={section.label} className="pt-3.5 pb-1 px-2">
+          <p
+            className="text-[9px] font-semibold uppercase px-2 mb-1 tracking-widest"
+            style={{ color: 'rgba(248,250,252,0.20)' }}
+          >
+            {section.label}
+          </p>
+          {section.items.map(({ to, label, icon: Icon }) => (
+            <NavLink
+              key={to}
+              to={to}
+              end={to === '/'}
+              onClick={onNavClick}
+              className={({ isActive }) =>
+                `flex items-center gap-2 px-2 py-[7px] rounded-[7px] text-[13px] font-medium mb-px transition-colors ${
+                  isActive
+                    ? 'text-[#93c5fd]'
+                    : 'hover:bg-white/5 hover:text-slate-200'
+                }`
+              }
+              style={({ isActive }) => ({
+                background: isActive ? 'rgba(37,99,235,0.18)' : undefined,
+                color: isActive ? '#93c5fd' : 'rgba(248,250,252,0.45)',
+              })}
+            >
+              <Icon size={15} className="flex-shrink-0" />
+              {label}
+            </NavLink>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function LogoutButton({ onLogout }: { onLogout: () => void }) {
+  return (
+    <div className="px-2 py-3" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+      <button
+        onClick={onLogout}
+        className="flex items-center gap-2 w-full px-2 py-[7px] rounded-[7px] text-[12px] font-medium transition-colors hover:bg-white/5"
+        style={{ color: 'rgba(248,250,252,0.35)' }}
+      >
+        <LogOut size={14} />
+        Logout
+      </button>
+    </div>
+  );
+}
+
 export default function Layout() {
   const navigate = useNavigate();
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   function handleLogout() {
     clearCredentials();
@@ -67,83 +134,86 @@ export default function Layout() {
 
   return (
     <div className="flex h-screen bg-app-bg">
-      {/* ── Sidebar ── */}
+      {/* ── Desktop Sidebar ── */}
       <nav
-        className="w-56 flex flex-col flex-shrink-0"
+        className="hidden md:flex w-56 flex-col flex-shrink-0"
         style={{ background: '#0f172a' }}
       >
-        {/* Logo */}
-        <div
-          className="flex items-center gap-2.5 px-4 py-[18px]"
-          style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+        <SidebarLogo />
+        <NavItems />
+        <LogoutButton onLogout={handleLogout} />
+      </nav>
+
+      {/* ── Mobile Header ── */}
+      <header
+        className="md:hidden fixed top-0 left-0 right-0 h-12 z-40 flex items-center px-4 gap-3"
+        style={{ background: '#0f172a', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+      >
+        <button
+          onClick={() => setDrawerOpen(true)}
+          className="text-slate-400 hover:text-slate-200 p-1"
+          aria-label="Navigation öffnen"
         >
+          <Menu size={20} />
+        </button>
+        <div className="flex items-center gap-2">
           <div
-            className="w-7 h-7 rounded-[7px] flex items-center justify-center text-[11px] font-extrabold text-white flex-shrink-0"
+            className="w-6 h-6 rounded-[6px] flex items-center justify-center text-[10px] font-extrabold text-white flex-shrink-0"
             style={{ background: 'linear-gradient(135deg, #2563eb, #7c3aed)' }}
           >
             W
           </div>
-          <div>
-            <div className="text-[13px] font-semibold leading-none text-slate-50">WFM Intel</div>
-            <div className="text-[9px] mt-0.5" style={{ color: 'rgba(248,250,252,0.3)' }}>
-              Market Intelligence
+          <span className="text-[13px] font-semibold text-slate-50">WFM Intel</span>
+        </div>
+      </header>
+
+      {/* ── Mobile Drawer Backdrop ── */}
+      {drawerOpen && (
+        <div
+          className="md:hidden fixed inset-0 bg-black/60 z-40"
+          onClick={() => setDrawerOpen(false)}
+        />
+      )}
+
+      {/* ── Mobile Drawer ── */}
+      <nav
+        className={`md:hidden fixed inset-y-0 left-0 w-72 z-50 flex flex-col transition-transform duration-200 ${
+          drawerOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+        style={{ background: '#0f172a' }}
+      >
+        <div
+          className="flex items-center justify-between px-4 py-[18px]"
+          style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+        >
+          <div className="flex items-center gap-2.5">
+            <div
+              className="w-7 h-7 rounded-[7px] flex items-center justify-center text-[11px] font-extrabold text-white flex-shrink-0"
+              style={{ background: 'linear-gradient(135deg, #2563eb, #7c3aed)' }}
+            >
+              W
+            </div>
+            <div>
+              <div className="text-[13px] font-semibold leading-none text-slate-50">WFM Intel</div>
+              <div className="text-[9px] mt-0.5" style={{ color: 'rgba(248,250,252,0.3)' }}>
+                Market Intelligence
+              </div>
             </div>
           </div>
-        </div>
-
-        {/* Nav sections */}
-        <div className="flex-1 overflow-y-auto">
-          {navSections.map((section) => (
-            <div key={section.label} className="pt-3.5 pb-1 px-2">
-              <p
-                className="text-[9px] font-semibold uppercase px-2 mb-1 tracking-widest"
-                style={{ color: 'rgba(248,250,252,0.20)' }}
-              >
-                {section.label}
-              </p>
-              {section.items.map(({ to, label, icon: Icon }) => (
-                <NavLink
-                  key={to}
-                  to={to}
-                  end={to === '/'}
-                  className={({ isActive }) =>
-                    `flex items-center gap-2 px-2 py-[7px] rounded-[7px] text-[13px] font-medium mb-px transition-colors ${
-                      isActive
-                        ? 'text-[#93c5fd]'
-                        : 'hover:bg-white/5 hover:text-slate-200'
-                    }`
-                  }
-                  style={({ isActive }) => ({
-                    background: isActive ? 'rgba(37,99,235,0.18)' : undefined,
-                    color: isActive ? '#93c5fd' : 'rgba(248,250,252,0.45)',
-                  })}
-                >
-                  <Icon size={15} className="flex-shrink-0" />
-                  {label}
-                </NavLink>
-              ))}
-            </div>
-          ))}
-        </div>
-
-        {/* User footer */}
-        <div
-          className="px-2 py-3"
-          style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}
-        >
           <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 w-full px-2 py-[7px] rounded-[7px] text-[12px] font-medium transition-colors hover:bg-white/5"
-            style={{ color: 'rgba(248,250,252,0.35)' }}
+            onClick={() => setDrawerOpen(false)}
+            className="text-slate-400 hover:text-slate-200 p-1"
+            aria-label="Navigation schließen"
           >
-            <LogOut size={14} />
-            Logout
+            <X size={18} />
           </button>
         </div>
+        <NavItems onNavClick={() => setDrawerOpen(false)} />
+        <LogoutButton onLogout={handleLogout} />
       </nav>
 
       {/* ── Main content ── */}
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 overflow-auto pt-12 md:pt-0">
         <Outlet />
       </main>
     </div>
