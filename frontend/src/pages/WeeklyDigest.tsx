@@ -143,6 +143,7 @@ export default function WeeklyDigest() {
           <p className="text-ink-muted">No digests yet. Generate one to get started.</p>
         </div>
       ) : (
+        <>
         {/* Mobile: dropdown to pick a digest */}
         <select
           className="md:hidden w-full mb-4 input-field"
@@ -231,6 +232,7 @@ export default function WeeklyDigest() {
             </div>
           )}
         </div>
+        </>
       )}
     </div>
   );
