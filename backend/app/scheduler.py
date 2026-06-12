@@ -217,6 +217,7 @@ def scheduled_digest_job() -> None:
 
 def _build_digest_email_extras(digest, app_base_url: str) -> dict:
     from datetime import datetime, time as dt_time
+    from app.database import SessionLocal
     from app.models.company import Company
     from app.models.signal import Signal
     with SessionLocal() as db:
