@@ -40,6 +40,9 @@ async def lifespan(app: FastAPI):
     from app.database import engine, SessionLocal
     from app.models.schedule import ScheduleConfig
     from app import scheduler as sched_module
+    from app import log_stream
+
+    log_stream.install()
 
     try:
         sched_module.startup_scheduler(engine)
@@ -103,6 +106,7 @@ from app.routers import (
     benchmark,
     scorecards,
     schedule,
+    logs,
 )  # noqa: E402
 
 app.include_router(companies.router, prefix="/api/companies", tags=["companies"])
@@ -129,6 +133,7 @@ app.include_router(intelligence_briefing.router, prefix="/api/intelligence/brief
 app.include_router(benchmark.router)
 app.include_router(scorecards.router)
 app.include_router(schedule.router, prefix="/api/schedule", tags=["schedule"])
+app.include_router(logs.router, prefix="/api/logs", tags=["logs"])
 
 
 @app.get("/api/health")

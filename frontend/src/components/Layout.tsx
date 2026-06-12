@@ -12,6 +12,7 @@ import {
   Zap,
   BookOpen,
   Clock,
+  Terminal,
 } from 'lucide-react';
 import { hasCredentials, clearCredentials } from '../api/client';
 import { useNavigate } from 'react-router-dom';
@@ -44,6 +45,7 @@ const navSections = [
     items: [
       { to: '/admin/sources', label: 'Quellen', icon: Settings },
       { to: '/admin/schedule', label: 'Automation', icon: Clock },
+      { to: '/admin/logs', label: 'Logs', icon: Terminal },
       { to: '/context', label: 'Kontext', icon: Globe },
       { to: '/how-it-works', label: "Wie funktioniert's?", icon: BookOpen },
     ],

@@ -16,6 +16,7 @@ import SearchPage from './pages/SearchPage';
 import HowItWorksPage from './pages/HowItWorksPage';
 import CrawlRunDetailPage from './pages/CrawlRunDetailPage';
 import ScheduleAdmin from './pages/ScheduleAdmin';
+import LogsAdmin from './pages/LogsAdmin';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -53,6 +54,7 @@ export default function App() {
             <Route path="context" element={<CompanyContext />} />
             <Route path="how-it-works" element={<HowItWorksPage />} />
             <Route path="admin/schedule" element={<ScheduleAdmin />} />
+            <Route path="admin/logs" element={<LogsAdmin />} />
           </Route>
         </Routes>
       </BrowserRouter>
