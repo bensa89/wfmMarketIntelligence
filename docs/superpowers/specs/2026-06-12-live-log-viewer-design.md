@@ -41,8 +41,8 @@ data: {"timestamp": "2026-06-12T14:23:01.123Z", "level": "INFO", "name": "app.cr
 ### Frontend
 
 **`frontend/src/hooks/useLogStream.ts`** — custom hook encapsulating stream logic:
-- Reads stored credentials from `localStorage` (same mechanism as `AuthGate`)
-- Opens a `fetch()` with `Authorization: Basic <b64>` header
+- Calls `getAuthHeaders()` from `api/client.ts` (reads `localStorage('wfm_credentials')`, returns `Authorization: Basic <b64>`)
+- Opens a `fetch()` with that header
 - Reads `response.body` as a `ReadableStream`, decodes SSE lines, parses JSON
 - Maintains local buffer of up to 1000 log entries (drops oldest on overflow)
 - Exposes: `{ logs, status, pause, resume, clear, reconnect }`

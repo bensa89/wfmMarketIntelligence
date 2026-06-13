@@ -3,6 +3,9 @@ import { useParams } from 'react-router-dom';
 import { ExternalLink, RefreshCw, HelpCircle, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { useCompetitorWorkspace } from '../hooks/useCompetitorWorkspace';
 import { useSummarizeCompetitor } from '../hooks/useSummarizeCompetitor';
+import { useSignalsFeed } from '../hooks/useSignalsFeed';
+import SignalFeedTable from '../components/signals/SignalFeedTable';
+import SignalFeedFilters from '../components/signals/SignalFeedFilters';
 import { ApiError } from '../api/client';
 import CompanyLogo from '../components/CompanyLogo';
 import StrategicPostureCard from '../components/workspace/StrategicPostureCard';
@@ -13,7 +16,7 @@ import { MovesPanel } from '../components/workspace/MovesPanel';
 import { CapabilityStrengthVsMovement } from '../components/benchmark/CapabilityStrengthVsMovement';
 import RisksOpportunitiesCards from '../components/workspace/RisksOpportunitiesCards';
 import SignalDetailDrawer from '../components/signals/SignalDetailDrawer';
-import type { SignalFeedItem, CapabilityCount } from '../types/intelligence';
+import type { SignalFeedItem, CapabilityCount, SignalsFeedFilters } from '../types/intelligence';
 import { useScorecard, useScorecardExplain, useRecomputeScorecard } from '../hooks/useScorecard';
 import type { ScorecardPeriodType } from '../types/scorecard';
 import { useCrawlStatus } from '../hooks/useCrawlStatus';
@@ -31,10 +34,20 @@ export default function CompetitorWorkspacePage() {
   const [selectedSignal, setSelectedSignal] = useState<SignalFeedItem | null>(null);
   const [selectedScorecardSignalId, setSelectedScorecardSignalId] = useState<string | null>(null);
   const [explainOpen, setExplainOpen] = useState(false);
+  const [signalsFilters, setSignalsFilters] = useState<SignalsFeedFilters>({
+    sort_by: 'published_at',
+    page: 1,
+    page_size: 25,
+  });
   const [capabilityExplainMode, setCapabilityExplainMode] = useState<'panel' | 'capability' | null>(null);
   const [selectedCapabilityDetail, setSelectedCapabilityDetail] = useState<CompetitorBenchmarkDetail | null>(null);
 
   const summarize = useSummarizeCompetitor(data?.competitor_profile.id ?? '');
+  const { data: signalsFeed } = useSignalsFeed({
+    ...signalsFilters,
+    company_id: data?.competitor_profile.id,
+    enabled: !!data?.competitor_profile.id,
+  });
   const { data: scorecard, isLoading: scorecardLoading } = useScorecard(slug ?? '', scorecardPeriod);
   const { data: explain, isLoading: explainLoading, isError: explainError } = useScorecardExplain(slug ?? '', scorecardPeriod, explainOpen);
   const recompute = useRecomputeScorecard(slug ?? '');
@@ -257,6 +270,34 @@ export default function CompetitorWorkspacePage() {
           onSelectSignal={handleSignalSelect}
         />
 
+        {/* Row 5: All signals for this competitor */}
+        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+          <div className="px-4 pt-4 pb-0">
+            <h2 className="text-[13px] font-semibold text-slate-800">
+              Signals
+              {signalsFeed && (
+                <span className="ml-2 text-[11px] font-normal text-slate-400">({signalsFeed.total} total)</span>
+              )}
+            </h2>
+          </div>
+          <div className="px-4">
+            <SignalFeedFilters
+              filters={signalsFilters}
+              companies={[]}
+              hideCompany
+              onChange={(partial) => setSignalsFilters((prev) => ({ ...prev, ...partial }))}
+              onReset={() => setSignalsFilters({ sort_by: 'published_at', page: 1, page_size: 25 })}
+            />
+            <SignalFeedTable
+              items={signalsFeed?.items ?? []}
+              total={signalsFeed?.total ?? 0}
+              page={signalsFilters.page ?? 1}
+              pageSize={signalsFilters.page_size ?? 25}
+              onPageChange={(p) => setSignalsFilters((prev) => ({ ...prev, page: p }))}
+              onSelectItem={setSelectedSignal}
+            />
+          </div>
+        </div>
 
       </div>
 

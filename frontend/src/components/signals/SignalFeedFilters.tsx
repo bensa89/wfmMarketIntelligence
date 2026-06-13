@@ -7,6 +7,7 @@ interface Props {
   companies: Array<{ id: string; name: string }>;
   onChange: (f: Partial<SignalsFeedFilters>) => void;
   onReset: () => void;
+  hideCompany?: boolean;
 }
 
 const SIGNAL_TYPES: SignalType[] = [
@@ -22,9 +23,9 @@ const SORT_OPTIONS = [
   { value: 'confidence', label: 'Confidence' },
 ] as const;
 
-export default function SignalFeedFilters({ filters, companies, onChange, onReset }: Props) {
+export default function SignalFeedFilters({ filters, companies, onChange, onReset, hideCompany }: Props) {
   const hasActiveFilters = !!(
-    filters.company_id || filters.capability || filters.signal_type ||
+    (!hideCompany && filters.company_id) || filters.capability || filters.signal_type ||
     filters.movement_strength || filters.min_confidence ||
     filters.created_from || filters.created_to
   );
@@ -35,14 +36,16 @@ export default function SignalFeedFilters({ filters, companies, onChange, onRese
       style={{ background: '#ffffff', borderBottom: '1px solid #e2e8f0' }}
     >
       {/* Company */}
-      <select
-        value={filters.company_id ?? ''}
-        onChange={(e) => onChange({ company_id: e.target.value || undefined, page: 1 })}
-        className="bg-slate-50 border border-slate-200 text-slate-700 rounded-lg text-[12px] px-2.5 py-1.5 focus:outline-none"
-      >
-        <option value="">All Competitors</option>
-        {companies.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-      </select>
+      {!hideCompany && (
+        <select
+          value={filters.company_id ?? ''}
+          onChange={(e) => onChange({ company_id: e.target.value || undefined, page: 1 })}
+          className="bg-slate-50 border border-slate-200 text-slate-700 rounded-lg text-[12px] px-2.5 py-1.5 focus:outline-none"
+        >
+          <option value="">All Competitors</option>
+          {companies.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+        </select>
+      )}
 
       {/* Capability */}
       <select

@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { apiGet } from '../api/client';
 import type { SignalsFeedResponse, SignalsFeedFilters, SignalFeedItem } from '../types/intelligence';
 
-export function useSignalsFeed(filters: SignalsFeedFilters = {}) {
+export function useSignalsFeed(filters: SignalsFeedFilters & { enabled?: boolean } = {}) {
   const params: Record<string, string> = {};
   if (filters.company_id) params.company_id = filters.company_id;
   if (filters.capability) params.capability = filters.capability;
@@ -21,6 +21,7 @@ export function useSignalsFeed(filters: SignalsFeedFilters = {}) {
     queryKey: ['intelligence', 'signals-feed', params],
     queryFn: () => apiGet<SignalsFeedResponse>('/intelligence/signals/feed', params),
     staleTime: 60 * 1000,
+    enabled: filters.enabled !== false,
   });
 }
 
