@@ -16,6 +16,8 @@ class SignalData:
     relevance_score: float
     confidence_score: float
     published_at: Optional[datetime] = None
+    event_date: Optional[datetime] = None
+    event_location: Optional[str] = None
 
 
 _DATE_FORMATS = [
@@ -66,15 +68,20 @@ def parse_llm_response(raw: str) -> Optional[SignalData]:
         except ValueError:
             signal_type = SignalType.other
 
-        published_at = None
-        pub_str = data.get("published_at")
-        if pub_str and isinstance(pub_str, str):
+        def _parse_date(key: str) -> Optional[datetime]:
+            date_str = data.get(key)
+            if not date_str or not isinstance(date_str, str):
+                return None
             for fmt, length in _DATE_FORMATS:
                 try:
-                    published_at = datetime.strptime(pub_str[:length], fmt)
-                    break
+                    return datetime.strptime(date_str[:length], fmt)
                 except ValueError:
                     continue
+            return None
+
+        event_location = data.get("event_location")
+        if event_location and not isinstance(event_location, str):
+            event_location = None
 
         return SignalData(
             title=title,
@@ -84,7 +91,9 @@ def parse_llm_response(raw: str) -> Optional[SignalData]:
             why_it_matters=data.get("why_it_matters"),
             relevance_score=float(data.get("relevance_score", 0.5)),
             confidence_score=float(data.get("confidence_score", 0.5)),
-            published_at=published_at,
+            published_at=_parse_date("published_at"),
+            event_date=_parse_date("event_date"),
+            event_location=event_location,
         )
     except Exception:
         return None

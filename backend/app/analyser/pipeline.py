@@ -134,6 +134,8 @@ def analyse_document(
         relevance_score=signal_data.relevance_score,
         confidence_score=signal_data.confidence_score,
         published_at=signal_data.published_at or doc.published_at or doc.crawled_at,
+        event_date=signal_data.event_date,
+        event_location=signal_data.event_location,
     )
     db.add(signal)
 

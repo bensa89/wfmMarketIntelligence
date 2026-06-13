@@ -7,6 +7,7 @@ import MarketShapingFeed from '../components/overview/MarketShapingFeed';
 import RisksOpportunitiesPanel from '../components/overview/RisksOpportunitiesPanel';
 import SignalDetailDrawer from '../components/signals/SignalDetailDrawer';
 import IntelligenceBriefingPanel from '../components/overview/IntelligenceBriefingPanel';
+import EventTimelinePanel from '../components/overview/EventTimelinePanel';
 import type { SignalFeedItem } from '../types/intelligence';
 
 export default function OverviewPage() {
@@ -58,6 +59,10 @@ export default function OverviewPage() {
           risks={data.emerging_risks}
           opportunities={data.emerging_opportunities}
         />
+      </div>
+
+      <div className="mb-4">
+        <EventTimelinePanel />
       </div>
       </div>
       {selectedSignal && (

@@ -53,6 +53,8 @@ class Signal(Base):
     relevance_score = Column(Float, nullable=True)
     confidence_score = Column(Float, nullable=True)
     published_at = Column(DateTime, nullable=True)
+    event_date = Column(DateTime, nullable=True)
+    event_location = Column(String(255), nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     search_vector = Column(TSVectorType, nullable=True)
 

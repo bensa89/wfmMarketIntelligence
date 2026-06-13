@@ -63,6 +63,58 @@ def _signal_feed_item(signal: Signal, assessment: Optional[SignalAssessment]) ->
     }
 
 
+@router.get("/events")
+def get_events(db: Session = Depends(get_db)) -> dict:
+    now = datetime.now(timezone.utc).replace(tzinfo=None)
+    cutoff_30d = now - timedelta(days=30)
+
+    signals = (
+        db.query(Signal)
+        .options(selectinload(Signal.company))
+        .filter(
+            Signal.signal_type == "event_or_thought_leadership",
+            Signal.event_date.isnot(None),
+            Signal.event_date >= cutoff_30d,
+        )
+        .order_by(Signal.event_date.asc())
+        .all()
+    )
+
+    upcoming: list[dict] = []
+    past: list[dict] = []
+
+    event_map: dict[str, dict] = {}
+    for signal in signals:
+        if not signal.event_date or not signal.company:
+            continue
+        key = f"{signal.event_date.date()}||{signal.title.strip().lower()}"
+        if key not in event_map:
+            event_map[key] = {
+                "event_date": signal.event_date.date().isoformat(),
+                "event_location": signal.event_location,
+                "title": signal.title,
+                "attendees": [],
+            }
+        event_map[key]["attendees"].append({
+            "company_id": signal.company_id,
+            "company_name": signal.company.name,
+            "signal_id": signal.id,
+            "relevance_score": signal.relevance_score,
+        })
+
+    for entry in event_map.values():
+        entry["attendees"].sort(key=lambda a: a["relevance_score"] or 0, reverse=True)
+        if entry["event_date"] >= now.date().isoformat():
+            upcoming.append(entry)
+        else:
+            past.append(entry)
+
+    upcoming.sort(key=lambda e: e["event_date"])
+    past.sort(key=lambda e: e["event_date"], reverse=True)
+
+    return {"upcoming": upcoming, "past": past}
+
+
 @router.get("/overview")
 def get_overview(db: Session = Depends(get_db)) -> dict:
     now = datetime.now(timezone.utc)

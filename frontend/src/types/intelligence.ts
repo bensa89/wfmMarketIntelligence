@@ -169,3 +169,22 @@ export interface IntelligenceBriefing {
   assessment_count: number;
   generated_at: string;
 }
+
+export interface EventAttendee {
+  company_id: string;
+  company_name: string;
+  signal_id: string;
+  relevance_score: number | null;
+}
+
+export interface CalendarEvent {
+  event_date: string;
+  event_location: string | null;
+  title: string;
+  attendees: EventAttendee[];
+}
+
+export interface EventCalendarResponse {
+  upcoming: CalendarEvent[];
+  past: CalendarEvent[];
+}
