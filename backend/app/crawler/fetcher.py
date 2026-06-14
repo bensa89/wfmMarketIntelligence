@@ -15,6 +15,7 @@ class FetchResult:
     html: str
     final_url: str
     status_code: int
+    events: list = None  # populated by js_fetcher when API interception finds structured events
 
 
 def fetch_url(url: str, timeout: int = 15) -> Optional[FetchResult]:

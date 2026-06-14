@@ -12,7 +12,7 @@ from app.analyser.parser import parse_llm_response
 
 logger = logging.getLogger(__name__)
 
-_MIN_CONTENT_WORDS = 50
+_MIN_CONTENT_WORDS = 20
 _MAX_AGE_DAYS = 365
 
 
@@ -98,6 +98,12 @@ def analyse_document(
         ctx_record = db.query(InternalCompanyContext).first()
         context = _build_context_dict(ctx_record)
 
+    logger.info(
+        "Analysing doc %s — title=%r words=%d",
+        doc.id,
+        (doc.title or "")[:60],
+        word_count,
+    )
     prompt = build_analysis_prompt(doc.content_markdown, context)
     raw_response = call_llm(prompt)
     signal_data = parse_llm_response(raw_response)
@@ -143,11 +149,20 @@ def analyse_document(
     db.commit()
     db.refresh(signal)
 
+    logger.info(
+        "Signal created — type=%s title=%r relevance=%.2f event_date=%s",
+        signal_data.signal_type,
+        signal_data.title[:60],
+        signal_data.relevance_score or 0.0,
+        signal_data.event_date or "none",
+    )
+
     # Trigger assessment if signal meets threshold
     try:
         from app.config import settings
         if (signal.relevance_score or 0.0) >= settings.assessment_threshold:
             from app.assessor.pipeline import assess_signal
+            logger.info("Triggering assessment for signal %s (relevance=%.2f)", signal.id, signal.relevance_score)
             assess_signal(signal, db)
     except Exception as e:
         logger.warning("Assessment hook failed for signal %s: %s", signal.id, e)

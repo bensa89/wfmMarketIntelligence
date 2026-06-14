@@ -23,7 +23,122 @@ from app.analyser.pipeline import _build_context_dict
 logger = logging.getLogger(__name__)
 
 _JS_RENDER_LINK_THRESHOLD = 5
-_MIN_CONTENT_WORDS = 50
+_MIN_CONTENT_WORDS = 20
+
+# Date field names used across event platforms (lowercase)
+_EVENT_DATE_KEYS = frozenset({
+    "startdate", "start_date", "date", "starttime", "start",
+    "eventdate", "event_date", "begindate", "begin_date",
+    "startdateutc", "enddateutc", "startdatetime", "enddatetime",
+    "start_date_utc", "end_date_utc",
+})
+_EVENT_TITLE_KEYS = frozenset({"title", "name", "subject", "eventtitle", "event_title"})
+
+
+def _parse_event_date(ev: dict) -> Optional[datetime]:
+    for k in ev:
+        if k.lower() in _EVENT_DATE_KEYS and ev[k]:
+            try:
+                val = str(ev[k]).replace("Z", "+00:00")
+                dt = datetime.fromisoformat(val)
+                if dt.tzinfo:
+                    dt = dt.astimezone(timezone.utc).replace(tzinfo=None)
+                return dt
+            except Exception:
+                pass
+    return None
+
+
+def _event_to_html(ev: dict) -> str:
+    import html as html_module
+    title = next(
+        (str(ev[k]) for k in ev if k.lower() in _EVENT_TITLE_KEYS and ev[k]),
+        "Event",
+    )
+    parts = [f"<html><body><main><h1>{html_module.escape(title)}</h1><ul>"]
+    for k, v in ev.items():
+        if k.lower() in _EVENT_TITLE_KEYS:
+            continue
+        if isinstance(v, (str, int, float)) and v != "" and v is not False:
+            parts.append(f"<li><strong>{html_module.escape(k)}:</strong> {html_module.escape(str(v))}</li>")
+        elif isinstance(v, dict):
+            label = v.get("name") or v.get("city") or v.get("value")
+            if label:
+                parts.append(f"<li><strong>{html_module.escape(k)}:</strong> {html_module.escape(str(label))}</li>")
+    parts.append("</ul></main></body></html>")
+    return "".join(parts)
+
+
+def _save_event_documents(source: Source, fetch_result, db: Session) -> int:
+    """Create or update one Document per intercepted event. Returns count of new/changed docs."""
+    new = 0
+    changed = 0
+    now = datetime.now(timezone.utc)
+
+    for i, ev in enumerate(fetch_result.events):
+        event_id = ev.get("id") or str(i)
+        event_url = f"{fetch_result.final_url}#event-{event_id}"
+        event_html = _event_to_html(ev)
+        extraction = extract_content(event_html, url=event_url)
+
+        if len(extraction.markdown.split()) < _MIN_CONTENT_WORDS:
+            logger.debug("Skipping event %s: too short (%d words)", event_id, len(extraction.markdown.split()))
+            continue
+
+        published_at = _parse_event_date(ev)
+        title = next(
+            (str(ev[k]) for k in ev if k.lower() in _EVENT_TITLE_KEYS and ev[k]),
+            extraction.title or "Event",
+        )
+
+        try:
+            existing = db.query(Document).filter(Document.url == event_url).first()
+            if existing:
+                if existing.content_hash == extraction.content_hash:
+                    logger.debug("Event unchanged: %s", title)
+                    continue
+                existing.title = title
+                existing.content_markdown = extraction.markdown
+                existing.content_raw_html = event_html
+                existing.content_hash = extraction.content_hash
+                existing.crawled_at = now
+                existing.is_analysed = False
+                if published_at and not existing.published_at:
+                    existing.published_at = published_at
+                db.commit()
+                changed += 1
+                logger.info("Updated event document: %s", title)
+            else:
+                doc = Document(
+                    source_id=source.id,
+                    url=event_url,
+                    title=title,
+                    content_markdown=extraction.markdown,
+                    content_raw_html=event_html,
+                    content_hash=extraction.content_hash,
+                    crawled_at=now,
+                    published_at=published_at,
+                )
+                db.add(doc)
+                db.commit()
+                new += 1
+                logger.info(
+                    "New event document: %s (date=%s)",
+                    title,
+                    published_at.date() if published_at else "unknown",
+                )
+        except Exception:
+            db.rollback()
+            logger.exception("Failed to save event document for %s", event_url)
+
+    logger.info(
+        "Event documents for %s: %d new, %d changed, %d total events",
+        source.url,
+        new,
+        changed,
+        len(fetch_result.events),
+    )
+    return new + changed
 
 
 def _looks_like_js_app(html: str) -> bool:
@@ -136,54 +251,65 @@ def run_crawl_source(
         }
     )
 
-    word_count = len(extraction.markdown.split())
-    if word_count < _MIN_CONTENT_WORDS:
-        logger.info(
-            "Skipping document for %s: only %d words after extraction",
-            fetch_result.final_url,
-            word_count,
-        )
-        result["skipped"] += 1
+    if fetch_result.events:
+        # Event page: create one document per intercepted event so each signal gets its own event_date
+        n = _save_event_documents(source, fetch_result, db)
+        result["new_documents"] += n
+        if n > 0:
+            source.crawl_status = CrawlStatus.new
+            source.analysis_status = AnalysisStatus.pending
+        else:
+            source.crawl_status = CrawlStatus.known
+        db.commit()
     else:
-        existing_by_url = (
-            db.query(Document).filter(Document.url == fetch_result.final_url).first()
-        )
-        if existing_by_url:
-            if existing_by_url.content_hash == extraction.content_hash:
-                source.crawl_status = CrawlStatus.known
-                result["skipped"] += 1
+        word_count = len(extraction.markdown.split())
+        if word_count < _MIN_CONTENT_WORDS:
+            logger.info(
+                "Skipping document for %s: only %d words after extraction",
+                fetch_result.final_url,
+                word_count,
+            )
+            result["skipped"] += 1
+        else:
+            existing_by_url = (
+                db.query(Document).filter(Document.url == fetch_result.final_url).first()
+            )
+            if existing_by_url:
+                if existing_by_url.content_hash == extraction.content_hash:
+                    source.crawl_status = CrawlStatus.known
+                    result["skipped"] += 1
+                else:
+                    existing_by_url.title = extraction.title
+                    existing_by_url.content_markdown = extraction.markdown
+                    existing_by_url.content_raw_html = fetch_result.html.replace("\x00", "")
+                    existing_by_url.content_hash = extraction.content_hash
+                    existing_by_url.crawled_at = datetime.now(timezone.utc)
+                    existing_by_url.is_analysed = False
+                    if extraction.published_at and not existing_by_url.published_at:
+                        existing_by_url.published_at = extraction.published_at
+                    source.crawl_status = CrawlStatus.changed
+                    source.content_hash = extraction.content_hash
+                    source.last_changed_at = datetime.now(timezone.utc)
+                    source.analysis_status = AnalysisStatus.pending
+                    db.commit()
+                    result["new_documents"] += 1
             else:
-                existing_by_url.title = extraction.title
-                existing_by_url.content_markdown = extraction.markdown
-                existing_by_url.content_raw_html = fetch_result.html.replace("\x00", "")
-                existing_by_url.content_hash = extraction.content_hash
-                existing_by_url.crawled_at = datetime.now(timezone.utc)
-                existing_by_url.is_analysed = False
-                if extraction.published_at and not existing_by_url.published_at:
-                    existing_by_url.published_at = extraction.published_at
-                source.crawl_status = CrawlStatus.changed
+                doc = Document(
+                    source_id=source.id,
+                    url=fetch_result.final_url,
+                    title=extraction.title,
+                    content_markdown=extraction.markdown,
+                    content_raw_html=fetch_result.html.replace("\x00", ""),
+                    content_hash=extraction.content_hash,
+                    crawled_at=datetime.now(timezone.utc),
+                    published_at=extraction.published_at,
+                )
+                db.add(doc)
+                source.crawl_status = CrawlStatus.new
                 source.content_hash = extraction.content_hash
-                source.last_changed_at = datetime.now(timezone.utc)
                 source.analysis_status = AnalysisStatus.pending
                 db.commit()
                 result["new_documents"] += 1
-        else:
-            doc = Document(
-                source_id=source.id,
-                url=fetch_result.final_url,
-                title=extraction.title,
-                content_markdown=extraction.markdown,
-                content_raw_html=fetch_result.html.replace("\x00", ""),
-                content_hash=extraction.content_hash,
-                crawled_at=datetime.now(timezone.utc),
-                published_at=extraction.published_at,
-            )
-            db.add(doc)
-            source.crawl_status = CrawlStatus.new
-            source.content_hash = extraction.content_hash
-            source.analysis_status = AnalysisStatus.pending
-            db.commit()
-            result["new_documents"] += 1
 
     emit({"type": "step", "source_id": source.id, "step": "discovering"})
     t0 = time.monotonic()
