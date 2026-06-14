@@ -181,4 +181,30 @@ def split_event_sections(html: str, base_url: str) -> list:
         if len(qualifying) >= 2:
             return qualifying
 
+    # Fallback: divs — but only leaf nodes (no child divs that also contain dates)
+    qualifying = []
+    for c in main.find_all("div"):
+        text = c.get_text(" ", strip=True)
+        if len(text.split()) < 10:
+            continue
+        if not _DATE_RE.search(text):
+            continue
+        heading = c.find(["h1", "h2", "h3", "h4"])
+        if not heading:
+            continue
+        # Skip wrapper divs: any child div that also has a date means this is not a leaf
+        if any(_DATE_RE.search(ch.get_text()) for ch in c.find_all("div")):
+            continue
+        title = heading.get_text(" ", strip=True)
+        date_match = _DATE_RE.search(text)
+        date_str = date_match.group(0) if date_match else None
+        qualifying.append({
+            "html": f"<html><body><main>{c}</main></body></html>",
+            "title": title,
+            "date_str": date_str,
+            "parsed_date": _parse_date_from_text(text),
+        })
+    if len(qualifying) >= 2:
+        return qualifying
+
     return []
