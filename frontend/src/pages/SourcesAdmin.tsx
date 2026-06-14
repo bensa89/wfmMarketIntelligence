@@ -11,7 +11,7 @@ import type { CompanyType, SourceType, Source, DiscoveredPage, Company, CrawlSta
 import { Plus, Play, Trash2, Edit2, X, ChevronDown, ChevronRight, Shield, ShieldOff, Search, Zap, Loader2, RefreshCw } from 'lucide-react';
 import { ApiError } from '../api/client';
 
-const sourceTypes: SourceType[] = ['news', 'blog', 'product', 'press', 'jobs'];
+const sourceTypes: SourceType[] = ['news', 'blog', 'product', 'press', 'jobs', 'events'];
 
 function crawlStatusBadge(status: CrawlStatus) {
   const styles: Record<CrawlStatus, string> = {

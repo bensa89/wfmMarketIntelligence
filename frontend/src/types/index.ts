@@ -25,7 +25,7 @@ export interface CompanyUpdate {
   website?: string | null;
 }
 
-export type SourceType = 'news' | 'blog' | 'product' | 'press' | 'jobs';
+export type SourceType = 'news' | 'blog' | 'product' | 'press' | 'jobs' | 'events';
 export type CrawlStatus = 'new' | 'known' | 'changed';
 
 export interface Source {
