@@ -457,6 +457,93 @@ export default function ScheduleAdmin() {
         )}
       </SectionCard>
 
+      <SectionCard title="Re-Analyse">
+        <p className="text-xs text-slate-500">
+          Bestehende Signals löschen und Dokumente der letzten X Tage erneut durch den LLM analysieren lassen.
+        </p>
+
+        <div className="grid grid-cols-3 gap-3">
+          <div>
+            <label className="block text-xs font-medium text-slate-500 mb-1">Letzte X Tage</label>
+            <input
+              type="number"
+              min={1}
+              max={365}
+              value={reanalysisForm.days}
+              onChange={(e) => setReanalysisForm((f) => ({ ...f, days: parseInt(e.target.value) || 30 }))}
+              disabled={reanalysisJob?.status === 'running'}
+              className="w-full border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-40"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-500 mb-1">Competitor</label>
+            <select
+              value={reanalysisForm.company_id}
+              onChange={(e) => setReanalysisForm((f) => ({ ...f, company_id: e.target.value }))}
+              disabled={reanalysisJob?.status === 'running'}
+              className="w-full border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-40"
+            >
+              <option value="">Alle</option>
+              {competitors.map((c) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-500 mb-1">Signal-Typ</label>
+            <select
+              value={reanalysisForm.signal_type}
+              onChange={(e) => setReanalysisForm((f) => ({ ...f, signal_type: e.target.value }))}
+              disabled={reanalysisJob?.status === 'running'}
+              className="w-full border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-40"
+            >
+              <option value="">Alle</option>
+              {SIGNAL_TYPES.map((t) => (
+                <option key={t.value} value={t.value}>{t.label}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {reanalysisJob && (
+          <div className={`rounded-lg px-4 py-3 text-sm ${
+            reanalysisJob.status === 'running' ? 'bg-blue-50 text-blue-700' :
+            reanalysisJob.status === 'completed' ? 'bg-green-50 text-green-700' :
+            'bg-red-50 text-red-700'
+          }`}>
+            {reanalysisJob.status === 'running' && (
+              <span>Läuft… {reanalysisJob.done} / {reanalysisJob.queued} Dokumente analysiert</span>
+            )}
+            {reanalysisJob.status === 'completed' && (
+              <span>Abgeschlossen — {reanalysisJob.done} analysiert{reanalysisJob.errors > 0 ? `, ${reanalysisJob.errors} Fehler` : ', 0 Fehler'}</span>
+            )}
+            {reanalysisJob.status === 'failed' && (
+              <span>Fehlgeschlagen</span>
+            )}
+          </div>
+        )}
+
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={handleStartReanalysis}
+            disabled={reanalysisLoading || reanalysisJob?.status === 'running'}
+            className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
+          >
+            {reanalysisLoading ? 'Starte…' : 'Re-Analyse starten'}
+          </button>
+          {reanalysisJob && reanalysisJob.status !== 'running' && (
+            <button
+              type="button"
+              onClick={handleResetReanalysis}
+              className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium rounded-lg transition-colors"
+            >
+              Zurücksetzen
+            </button>
+          )}
+        </div>
+      </SectionCard>
+
       <div className="flex items-center justify-between">
         <div>
           {form.updated_at && (
