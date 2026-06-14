@@ -761,3 +761,8 @@ def test_analyse_unanalysed_for_source_emits_progress(db_session):
     assert progress_events[0]["source_id"] == source.id
     assert progress_events[0]["current"] == 1
     assert progress_events[0]["total"] == 1
+
+
+def test_source_type_events_exists():
+    from app.models.source import SourceType
+    assert SourceType.events == "events"

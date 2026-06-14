@@ -12,6 +12,7 @@ class SourceType(str, enum.Enum):
     product = "product"
     press = "press"
     jobs = "jobs"
+    events = "events"
 
 
 class CrawlStatus(str, enum.Enum):
