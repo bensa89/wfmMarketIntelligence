@@ -6,10 +6,8 @@ import { useCrawlStatus } from '../hooks/useCrawlStatus';
 import { useLastCompletedCrawl } from '../hooks/useCrawlRuns';
 import { useActiveCrawlRun } from '../hooks/useActiveCrawlRun';
 import { useSignalsOverTime, useSignalDistribution } from '../hooks/useSignalStats';
-import { useSourceCandidates } from '../hooks/useSourceCandidates';
-import { useDiscoveredPagesStats } from '../hooks/useDiscoveredPages';
 import { useDocument } from '../hooks/useDocuments';
-import DeltaKpiCard from '../components/dashboard/DeltaKpiCard';
+import { useOverview } from '../hooks/useOverview';
 
 import TopSignalsPanel from '../components/dashboard/TopSignalsPanel';
 import SignalsOverTimeChart from '../components/dashboard/SignalsOverTimeChart';
@@ -18,9 +16,19 @@ import CompanySignalHeatmap from '../components/dashboard/CompanySignalHeatmap';
 import SignalFeedTable from '../components/dashboard/SignalFeedTable';
 import FilterBar from '../components/FilterBar';
 import MarkdownViewer from '../components/MarkdownViewer';
-import BriefingPanel from '../components/dashboard/BriefingPanel';
+
+import IntelligenceBriefingPanel from '../components/overview/IntelligenceBriefingPanel';
+import OverviewKPIBar from '../components/overview/OverviewKPIBar';
+import TopMoversList from '../components/overview/TopMoversList';
+import CapabilityHeatmapV2 from '../components/overview/CapabilityHeatmapV2';
+import MarketShapingFeed from '../components/overview/MarketShapingFeed';
+import RisksOpportunitiesPanel from '../components/overview/RisksOpportunitiesPanel';
+import EventTimelinePanel from '../components/overview/EventTimelinePanel';
+import SignalDetailDrawer from '../components/signals/SignalDetailDrawer';
+
 import { Play, Loader2 } from 'lucide-react';
 import type { SignalType, Signal } from '../types';
+import type { SignalFeedItem } from '../types/intelligence';
 import { formatPublishedAt } from '../utils/dates';
 
 export default function Dashboard() {
@@ -32,6 +40,7 @@ export default function Dashboard() {
   const [lastMonth, setLastMonth] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSignal, setSelectedSignal] = useState<Signal | null>(null);
+  const [selectedOverviewSignal, setSelectedOverviewSignal] = useState<SignalFeedItem | null>(null);
   const { start: startCrawl, isRunning: isCrawlRunning, run: crawlRun, phase: crawlPhase } = useCrawlStatus();
   const { activeRun } = useActiveCrawlRun();
   const { lastCrawl } = useLastCompletedCrawl();
@@ -45,23 +54,9 @@ export default function Dashboard() {
   });
   const { data: overTimeData } = useSignalsOverTime(14);
   const { data: distribution } = useSignalDistribution(companyId || undefined);
-  const { data: candidates } = useSourceCandidates('candidate');
-  const { data: discoveredStats } = useDiscoveredPagesStats();
+  const { data: overviewData } = useOverview();
 
-  const competitorCount = companies?.filter((c) => c.type === 'competitor').length ?? 0;
   const lastCrawlTime = lastCrawl?.started_at ? new Date(lastCrawl.started_at) : null;
-
-  const newSignalsCount = lastCrawlTime
-    ? allSignals?.filter((s) => new Date(s.created_at) >= lastCrawlTime!).length ?? 0
-    : 0;
-  const highRelevanceCount = allSignals?.filter((s) => (s.relevance_score ?? 0) >= 0.7).length ?? 0;
-  const newHighRelevanceCount = lastCrawlTime
-    ? allSignals?.filter((s) => new Date(s.created_at) >= lastCrawlTime! && (s.relevance_score ?? 0) >= 0.7).length ?? 0
-    : 0;
-  const candidateCount = candidates?.length ?? 0;
-  const unreviewedCount = candidates?.filter((c) => c.status === 'candidate').length ?? 0;
-  const discoveredNew = discoveredStats?.new ?? 0;
-  const discoveredTotal = discoveredStats?.total ?? 0;
 
   const filteredSignals = onlyNew && lastCrawlTime
     ? signals?.filter((s) => new Date(s.created_at) >= lastCrawlTime!) ?? []
@@ -116,40 +111,62 @@ export default function Dashboard() {
           </div>
         )}
 
-        <div className="grid grid-cols-4 lg:grid-cols-8 gap-3 mb-6">
-          <DeltaKpiCard label="Signale gesamt" value={allSignals?.length ?? '–'} delta={newSignalsCount > 0 ? `↑ +${newSignalsCount} seit letztem Crawl` : undefined} color="blue" trend={newSignalsCount > 0 ? 'up' : 'neutral'} />
-          <DeltaKpiCard label="Hohe Relevanz" value={highRelevanceCount} delta={newHighRelevanceCount > 0 ? `↑ +${newHighRelevanceCount} neu` : undefined} color="green" trend={newHighRelevanceCount > 0 ? 'up' : 'neutral'} />
-          <DeltaKpiCard label="Wettbewerber" value={competitorCount} color="amber" trend="neutral" />
-          <DeltaKpiCard label="Neue Signale" value={newSignalsCount} delta={lastCrawlTime ? 'seit letztem Crawl' : undefined} color="purple" trend={newSignalsCount > 0 ? 'up' : 'neutral'} />
-          <DeltaKpiCard label="Neue Dokumente" value={lastCrawl?.total_new ?? '–'} delta={lastCrawlTime ? 'seit letztem Crawl' : undefined} color="cyan" trend="neutral" />
-          <DeltaKpiCard label="Source Candidates" value={candidateCount} delta={unreviewedCount > 0 ? `${unreviewedCount} ungeprüft` : undefined} color="pink" trend="neutral" />
-          <DeltaKpiCard label="Discovered Pages" value={discoveredTotal} delta={discoveredNew > 0 ? `${discoveredNew} neu` : undefined} color="orange" trend={discoveredNew > 0 ? 'up' : 'neutral'} />
-          <DeltaKpiCard label="Fehler letzter Crawl" value={lastCrawl?.total_errors ?? '–'} delta={(!lastCrawl?.total_errors || lastCrawl.total_errors === 0) ? '✓ Alle erfolgreich' : `${lastCrawl?.total_errors} Fehler`} color="red" trend={lastCrawl?.total_errors ? 'down' : 'neutral'} />
+        {/* Zone 1: Übersicht */}
+        <IntelligenceBriefingPanel />
+        {overviewData && <OverviewKPIBar data={overviewData} />}
+
+        {overviewData && (
+          <div className="grid grid-cols-3 gap-4 mb-4">
+            <div className="col-span-1">
+              <TopMoversList movers7d={overviewData.top_movers_7d} movers30d={overviewData.top_movers_30d} />
+            </div>
+            <div className="col-span-2">
+              <CapabilityHeatmapV2 rows={overviewData.capability_heatmap} />
+            </div>
+          </div>
+        )}
+
+        {overviewData && (
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <MarketShapingFeed signals={overviewData.recent_market_shaping} onSelect={setSelectedOverviewSignal} />
+            <RisksOpportunitiesPanel risks={overviewData.emerging_risks} opportunities={overviewData.emerging_opportunities} />
+          </div>
+        )}
+
+        <div className="mb-4">
+          <EventTimelinePanel />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-          <div className="lg:col-span-3 space-y-4">
-            <BriefingPanel />
-          </div>
+        {/* Divider */}
+        <div className="flex items-center gap-3 my-6">
+          <div className="flex-1 border-t-2 border-dashed border-slate-200" />
+          <span className="text-[11px] font-semibold uppercase tracking-widest text-slate-400">Signal Details & Analyse</span>
+          <div className="flex-1 border-t-2 border-dashed border-slate-200" />
+        </div>
 
-          <div className="lg:col-span-2 space-y-4">
-            <TopSignalsPanel
-              signals={allSignals ?? []}
-              lastCrawl={lastCrawl ?? null}
-              maxItems={5}
-              onSignalClick={setSelectedSignal}
-            />
+        {/* Zone 2: Signal Details */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+          <TopSignalsPanel
+            signals={allSignals ?? []}
+            lastCrawl={lastCrawl ?? null}
+            maxItems={5}
+            onSignalClick={setSelectedSignal}
+          />
+          <div className="space-y-4">
             {overTimeData && overTimeData.length > 0 && (
               <SignalsOverTimeChart data={overTimeData} />
             )}
             {distribution && <SignalTypeDistribution byType={distribution.by_type} />}
-            {distribution && companies && (
-              <CompanySignalHeatmap data={distribution.by_company_and_type} companies={companies} />
-            )}
           </div>
         </div>
 
-<div className="mt-6">
+        {distribution && companies && (
+          <div className="mb-4">
+            <CompanySignalHeatmap data={distribution.by_company_and_type} companies={companies} />
+          </div>
+        )}
+
+        <div className="mt-2">
           <FilterBar
             signalType={signalType}
             onSignalTypeChange={setSignalType}
@@ -180,6 +197,9 @@ export default function Dashboard() {
           )}
         </div>
 
+        {selectedOverviewSignal && (
+          <SignalDetailDrawer item={selectedOverviewSignal} onClose={() => setSelectedOverviewSignal(null)} />
+        )}
         {selectedSignal && (
           <SignalDocumentModal signal={selectedSignal} onClose={() => setSelectedSignal(null)} />
         )}
