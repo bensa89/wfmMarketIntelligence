@@ -1,15 +1,20 @@
+import threading
+import uuid
 from datetime import datetime, timezone, timedelta
+from typing import Dict, Any, List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import func
 from sqlalchemy.orm import Session, selectinload
-from typing import List, Optional
-from app.database import get_db
+
+from app.database import get_db, SessionLocal
 from app.models.signal import Signal, SignalType
 from app.schemas.signal import SignalRead, DedupResult
 from app.analyser.dedup import deduplicate_signals
 
 router = APIRouter()
+
+_reanalysis_jobs: Dict[str, Dict[str, Any]] = {}
 
 
 def _to_signal_read(signal: Signal) -> SignalRead:
@@ -29,6 +34,35 @@ def _to_signal_read(signal: Signal) -> SignalRead:
         created_at=signal.created_at,
         from_search=signal.document.from_search if signal.document else False,
     )
+
+
+def _run_reanalysis(
+    job_id: str,
+    doc_ids: List[str],
+    company_id_by_doc: Dict[str, str],
+) -> None:
+    from app.models.document import Document
+    from app.analyser.pipeline import analyse_document
+
+    db = SessionLocal()
+    try:
+        done = 0
+        errors = 0
+        for doc_id in doc_ids:
+            try:
+                doc = db.query(Document).filter(Document.id == doc_id).first()
+                if doc:
+                    analyse_document(doc, company_id_by_doc[doc_id], db)
+                done += 1
+            except Exception:
+                errors += 1
+            _reanalysis_jobs[job_id]["done"] = done
+            _reanalysis_jobs[job_id]["errors"] = errors
+        _reanalysis_jobs[job_id]["status"] = "completed"
+    except Exception:
+        _reanalysis_jobs[job_id]["status"] = "failed"
+    finally:
+        db.close()
 
 
 @router.delete("/purge")
@@ -90,6 +124,61 @@ def list_signals(
         query = query.order_by(Signal.created_at.desc())
     signals = query.all()
     return [_to_signal_read(s) for s in signals]
+
+
+@router.post("/reanalyse", status_code=202)
+def start_reanalysis(
+    days: int = 30,
+    company_id: Optional[str] = None,
+    signal_type: Optional[SignalType] = None,
+    db: Session = Depends(get_db),
+) -> Dict[str, Any]:
+    from app.models.document import Document
+
+    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+    query = db.query(Signal).filter(Signal.created_at >= cutoff)
+    if company_id:
+        query = query.filter(Signal.company_id == company_id)
+    if signal_type:
+        query = query.filter(Signal.signal_type == signal_type)
+
+    signals = query.all()
+    doc_ids = [s.document_id for s in signals]
+    company_id_by_doc = {s.document_id: s.company_id for s in signals}
+
+    for signal in signals:
+        db.delete(signal)
+    db.flush()
+
+    for doc_id in doc_ids:
+        doc = db.query(Document).filter(Document.id == doc_id).first()
+        if doc:
+            doc.is_analysed = False
+    db.commit()
+
+    job_id = str(uuid.uuid4())
+    _reanalysis_jobs[job_id] = {
+        "status": "running",
+        "queued": len(doc_ids),
+        "done": 0,
+        "errors": 0,
+    }
+
+    threading.Thread(
+        target=_run_reanalysis,
+        args=(job_id, doc_ids, company_id_by_doc),
+        daemon=True,
+    ).start()
+
+    return {"job_id": job_id, "documents_queued": len(doc_ids)}
+
+
+@router.get("/reanalyse/{job_id}")
+def get_reanalysis_status(job_id: str) -> Dict[str, Any]:
+    job = _reanalysis_jobs.get(job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+    return {"job_id": job_id, **job}
 
 
 @router.get("/{signal_id}", response_model=SignalRead)

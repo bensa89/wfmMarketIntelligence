@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { HelpCircle } from 'lucide-react';
 import { useCompetitorBenchmark } from '../../hooks/useBenchmark';
 import type { BenchmarkPeriodType, CompetitorBenchmarkDetail } from '../../types/benchmark';
@@ -24,7 +24,6 @@ const PERIOD_OPTIONS: { value: BenchmarkPeriodType; label: string; title: string
   { value: '180d', label: 'All', title: 'Historical View: alle Assessments mit sanftem Decay' },
 ];
 
-const PLOT_W = 620;
 const PLOT_H = 360;
 const PAD_T = 28;
 const PAD_R = 24;
@@ -42,8 +41,8 @@ function dotRadius(score: number) {
   return 8 + (score / 100) * 13;
 }
 
-function toX(momentum: number) {
-  return PAD_L + (momentum / 5) * PLOT_W;
+function toX(momentum: number, plotW: number) {
+  return PAD_L + (momentum / 5) * plotW;
 }
 
 function toY(strength: number) {
@@ -67,8 +66,21 @@ export function CapabilityStrengthVsMovement({ slug, onCapabilityClick }: Props)
   const [hovered, setHovered] = useState<string | null>(null);
   const [showInfo, setShowInfo] = useState(false);
   const { data, isLoading } = useCompetitorBenchmark(slug, period);
+  const chartRef = useRef<HTMLDivElement>(null);
+  const [plotW, setPlotW] = useState(620);
 
-  const svgW = PLOT_W + PAD_L + PAD_R;
+  useEffect(() => {
+    const el = chartRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(entries => {
+      const w = entries[0].contentRect.width;
+      setPlotW(Math.max(300, w - PAD_L - PAD_R));
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [data]);
+
+  const svgW = plotW + PAD_L + PAD_R;
   const svgH = PLOT_H + PAD_T + PAD_B;
 
   if (isLoading || !data) {
@@ -127,25 +139,25 @@ export function CapabilityStrengthVsMovement({ slug, onCapabilityClick }: Props)
         </div>
 
         {/* Chart */}
-        <div className="flex-1 overflow-x-auto">
-          <svg width={svgW} height={svgH} className="block" style={{ minWidth: svgW }}>
+        <div ref={chartRef} className="flex-1 min-w-0">
+          <svg width="100%" height={svgH} className="block">
             {/* Plot background */}
-            <rect x={PAD_L} y={PAD_T} width={PLOT_W} height={PLOT_H} fill="#f8fafc" rx="6" />
+            <rect x={PAD_L} y={PAD_T} width={plotW} height={PLOT_H} fill="#f8fafc" rx="6" />
 
             {/* Quadrant dividers */}
-            <line x1={toX(2.5)} y1={PAD_T} x2={toX(2.5)} y2={PAD_T + PLOT_H} stroke="#e2e8f0" strokeWidth="1" strokeDasharray="4 3" />
-            <line x1={PAD_L} y1={toY(50)} x2={PAD_L + PLOT_W} y2={toY(50)} stroke="#e2e8f0" strokeWidth="1" strokeDasharray="4 3" />
+            <line x1={toX(2.5, plotW)} y1={PAD_T} x2={toX(2.5, plotW)} y2={PAD_T + PLOT_H} stroke="#e2e8f0" strokeWidth="1" strokeDasharray="4 3" />
+            <line x1={PAD_L} y1={toY(50)} x2={PAD_L + plotW} y2={toY(50)} stroke="#e2e8f0" strokeWidth="1" strokeDasharray="4 3" />
 
             {/* Quadrant labels */}
             <text x={PAD_L + 10} y={PAD_T + 16} fontSize="9.5" fontWeight="600" fill="#94a3b8" letterSpacing="0.3">Established but Quiet</text>
-            <text x={toX(2.5) + 10} y={PAD_T + 16} fontSize="9.5" fontWeight="600" fill="#94a3b8" letterSpacing="0.3">Accelerating Strongholds</text>
+            <text x={toX(2.5, plotW) + 10} y={PAD_T + 16} fontSize="9.5" fontWeight="600" fill="#94a3b8" letterSpacing="0.3">Accelerating Strongholds</text>
             <text x={PAD_L + 10} y={PAD_T + PLOT_H - 8} fontSize="9.5" fontWeight="600" fill="#94a3b8" letterSpacing="0.3">Low Relevance</text>
-            <text x={toX(2.5) + 10} y={PAD_T + PLOT_H - 8} fontSize="9.5" fontWeight="600" fill="#94a3b8" letterSpacing="0.3">Emerging Bets</text>
+            <text x={toX(2.5, plotW) + 10} y={PAD_T + PLOT_H - 8} fontSize="9.5" fontWeight="600" fill="#94a3b8" letterSpacing="0.3">Emerging Bets</text>
 
             {/* Data points */}
             {data.capabilities.map(cap => {
               const momentum = cap.sub_scores.execution_momentum;
-              const cx = toX(momentum);
+              const cx = toX(momentum, plotW);
               const cy = toY(cap.relative_strength_score);
               const r = dotRadius(cap.relative_strength_score);
               const color = TIER_COLORS[cap.tier] ?? '#94a3b8';

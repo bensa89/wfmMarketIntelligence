@@ -1,6 +1,28 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiGet, apiPut, apiPost } from '../api/client';
+import { useCompanies } from '../hooks/useCompanies';
+
+const SIGNAL_TYPES = [
+  { value: 'product_update', label: 'Produkt-Update' },
+  { value: 'ai_announcement', label: 'KI-Ankündigung' },
+  { value: 'partnership', label: 'Partnership' },
+  { value: 'positioning_change', label: 'Positioning-Änderung' },
+  { value: 'target_market_change', label: 'Zielmarkt-Änderung' },
+  { value: 'event_or_thought_leadership', label: 'Event / Thought Leadership' },
+  { value: 'hiring_signal', label: 'Hiring-Signal' },
+  { value: 'other', label: 'Sonstige' },
+];
+
+const REANALYSIS_JOB_KEY = 'reanalysis_job_id';
+
+interface ReanalysisJob {
+  job_id: string;
+  status: 'running' | 'completed' | 'failed';
+  queued: number;
+  done: number;
+  errors: number;
+}
 
 const DAYS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
 
@@ -125,6 +147,64 @@ export default function ScheduleAdmin() {
   const [toast, setToast] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
   const [testEmailLoading, setTestEmailLoading] = useState(false);
   const [testDigestEmailLoading, setTestDigestEmailLoading] = useState(false);
+
+  const { data: companies = [] } = useCompanies();
+  const competitors = companies.filter((c) => c.type === 'competitor');
+
+  const [reanalysisForm, setReanalysisForm] = useState({ days: 30, company_id: '', signal_type: '' });
+  const [reanalysisLoading, setReanalysisLoading] = useState(false);
+  const [reanalysisJob, setReanalysisJob] = useState<ReanalysisJob | null>(null);
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    const storedJobId = localStorage.getItem(REANALYSIS_JOB_KEY);
+    if (storedJobId) {
+      startPolling(storedJobId);
+    }
+    return () => { if (pollRef.current) clearInterval(pollRef.current); };
+  }, []);
+
+  function startPolling(jobId: string) {
+    if (pollRef.current) clearInterval(pollRef.current);
+    pollRef.current = setInterval(async () => {
+      try {
+        const job = await apiGet<ReanalysisJob>(`/signals/reanalyse/${jobId}`);
+        setReanalysisJob(job);
+        if (job.status === 'completed' || job.status === 'failed') {
+          clearInterval(pollRef.current!);
+          pollRef.current = null;
+        }
+      } catch {
+        clearInterval(pollRef.current!);
+        pollRef.current = null;
+        localStorage.removeItem(REANALYSIS_JOB_KEY);
+      }
+    }, 2000);
+  }
+
+  async function handleStartReanalysis() {
+    setReanalysisLoading(true);
+    try {
+      const params = new URLSearchParams({ days: String(reanalysisForm.days) });
+      if (reanalysisForm.company_id) params.set('company_id', reanalysisForm.company_id);
+      if (reanalysisForm.signal_type) params.set('signal_type', reanalysisForm.signal_type);
+      const result = await apiPost<{ job_id: string; documents_queued: number }>(`/signals/reanalyse?${params}`);
+      localStorage.setItem(REANALYSIS_JOB_KEY, result.job_id);
+      setReanalysisJob({ job_id: result.job_id, status: 'running', queued: result.documents_queued, done: 0, errors: 0 });
+      startPolling(result.job_id);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Fehler beim Starten';
+      showToast('error', message);
+    } finally {
+      setReanalysisLoading(false);
+    }
+  }
+
+  function handleResetReanalysis() {
+    localStorage.removeItem(REANALYSIS_JOB_KEY);
+    setReanalysisJob(null);
+    if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; }
+  }
 
   const { data: status, isLoading } = useQuery<ScheduleStatus>({
     queryKey: ['schedule'],
