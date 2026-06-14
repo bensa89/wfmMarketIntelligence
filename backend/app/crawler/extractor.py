@@ -1,8 +1,9 @@
 import hashlib
 import json
+import re
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Optional
+from typing import List, Optional
 from bs4 import BeautifulSoup
 from markdownify import markdownify
 
@@ -98,3 +99,86 @@ def extract_content(html: str, url: str = "") -> ExtractionResult:
         content_hash=content_hash,
         published_at=published_at,
     )
+
+
+_DATE_RE = re.compile(
+    r"\b\d{1,2}\.\s*(?:januar|februar|märz|april|mai|juni|juli|august|"
+    r"september|oktober|november|dezember|january|february|march|"
+    r"april|may|june|july|august|september|october|november|december)"
+    r"\s+\d{4}\b"
+    r"|\b\d{1,2}\.\d{1,2}\.\d{4}\b"
+    r"|\b\d{4}-\d{2}-\d{2}\b",
+    re.IGNORECASE,
+)
+
+_MONTH_MAP = {
+    "januar": "01", "februar": "02", "märz": "03", "april": "04",
+    "mai": "05", "juni": "06", "juli": "07", "august": "08",
+    "september": "09", "oktober": "10", "november": "11", "dezember": "12",
+    "january": "01", "february": "02", "march": "03",
+    "may": "05", "june": "06", "july": "07",
+    "october": "10",
+}
+
+
+def _parse_date_from_text(text: str) -> Optional[datetime]:
+    m = _DATE_RE.search(text)
+    if not m:
+        return None
+    raw = m.group(0).strip()
+    for fmt in ("%Y-%m-%d", "%d.%m.%Y"):
+        try:
+            return datetime.strptime(raw, fmt)
+        except ValueError:
+            pass
+    parts = re.split(r"[\.\s]+", raw.lower())
+    parts = [p for p in parts if p]
+    if len(parts) == 3:
+        day, month_name, year = parts
+        month_num = _MONTH_MAP.get(month_name)
+        if month_num:
+            try:
+                return datetime.strptime(f"{day}.{month_num}.{year}", "%d.%m.%Y")
+            except ValueError:
+                pass
+    return None
+
+
+def split_event_sections(html: str, base_url: str) -> list:
+    """
+    Parse an HTML events listing page and return one dict per event section.
+    Each dict has: html (str), title (str), date_str (str|None), parsed_date (datetime|None).
+    Returns [] if fewer than 2 qualifying sections are found.
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    for tag in soup(["script", "style", "nav", "footer", "header", "aside"]):
+        tag.decompose()
+
+    main = soup.find("main") or soup.find("body") or soup
+
+    for tag_name in ("article", "section", "li"):
+        containers = main.find_all(tag_name)
+        qualifying = []
+        for c in containers:
+            text = c.get_text(" ", strip=True)
+            if len(text.split()) < 10:
+                continue
+            if not _DATE_RE.search(text):
+                continue
+            heading = c.find(["h1", "h2", "h3", "h4"])
+            if not heading:
+                continue
+            title = heading.get_text(" ", strip=True)
+            date_match = _DATE_RE.search(text)
+            date_str = date_match.group(0) if date_match else None
+            parsed_date = _parse_date_from_text(text)
+            qualifying.append({
+                "html": f"<html><body><main>{c}</main></body></html>",
+                "title": title,
+                "date_str": date_str,
+                "parsed_date": parsed_date,
+            })
+        if len(qualifying) >= 2:
+            return qualifying
+
+    return []

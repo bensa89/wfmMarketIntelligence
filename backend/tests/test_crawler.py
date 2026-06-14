@@ -766,3 +766,43 @@ def test_analyse_unanalysed_for_source_emits_progress(db_session):
 def test_source_type_events_exists():
     from app.models.source import SourceType
     assert SourceType.events == "events"
+
+
+def test_split_event_sections_finds_articles_with_dates():
+    from app.crawler.extractor import split_event_sections
+    html = """
+    <html><body><main>
+      <article>
+        <h2>Brain Snacks</h2>
+        <p>22. Januar 2026 – Workshop im TOPGOLF Oberhausen zum Thema Workforce Management.</p>
+      </article>
+      <article>
+        <h2>HR Summit Berlin</h2>
+        <p>15. März 2026 – Jahreskonferenz für HR-Entscheider in Berlin. Drei Tracks, 20 Speaker.</p>
+      </article>
+    </main></body></html>
+    """
+    sections = split_event_sections(html, "https://example.com/events/")
+    assert len(sections) == 2
+    assert sections[0]["title"] == "Brain Snacks"
+    assert sections[0]["date_str"] is not None
+    assert sections[1]["title"] == "HR Summit Berlin"
+
+
+def test_split_event_sections_returns_empty_when_no_dates():
+    from app.crawler.extractor import split_event_sections
+    html = """
+    <html><body><main>
+      <article><h2>About us</h2><p>We are a software company.</p></article>
+      <article><h2>Contact</h2><p>Reach us at info@example.com.</p></article>
+    </main></body></html>
+    """
+    sections = split_event_sections(html, "https://example.com/")
+    assert sections == []
+
+
+def test_split_event_sections_falls_back_when_no_containers():
+    from app.crawler.extractor import split_event_sections
+    html = "<html><body><p>22. Januar 2026 – Just one paragraph with a date.</p></body></html>"
+    sections = split_event_sections(html, "https://example.com/events/")
+    assert sections == []
