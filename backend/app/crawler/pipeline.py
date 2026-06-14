@@ -5,7 +5,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Callable, Dict, Optional
 from datetime import datetime, timezone
 from sqlalchemy.orm import Session
-from app.models.source import Source, CrawlStatus, AnalysisStatus
+from app.models.source import Source, CrawlStatus, AnalysisStatus, SourceType
 from app.models.document import Document
 from app.crawler.fetcher import fetch_url
 from app.crawler.js_fetcher import fetch_url_js
@@ -141,6 +141,70 @@ def _save_event_documents(source: Source, fetch_result, db: Session) -> int:
     return new + changed
 
 
+def _save_html_event_sections(source: Source, fetch_result, sections: list, db: Session) -> int:
+    """Create or update one Document per HTML event section. Returns count of new/changed docs."""
+    new = 0
+    changed = 0
+    now = datetime.now(timezone.utc)
+
+    for i, section in enumerate(sections):
+        section_url = f"{fetch_result.final_url}#section-{i}"
+        extraction = extract_content(section["html"], url=section_url)
+
+        if len(extraction.markdown.split()) < _MIN_CONTENT_WORDS:
+            logger.debug("Skipping HTML event section %d: too short", i)
+            continue
+
+        title = section["title"] or extraction.title or "Event"
+        published_at = section.get("parsed_date")
+
+        try:
+            existing = db.query(Document).filter(Document.url == section_url).first()
+            if existing:
+                if existing.content_hash == extraction.content_hash:
+                    logger.debug("HTML event section unchanged: %s", title)
+                    continue
+                existing.title = title
+                existing.content_markdown = extraction.markdown
+                existing.content_raw_html = section["html"]
+                existing.content_hash = extraction.content_hash
+                existing.crawled_at = now
+                existing.is_analysed = False
+                if published_at and not existing.published_at:
+                    existing.published_at = published_at
+                db.commit()
+                changed += 1
+                logger.info("Updated HTML event section: %s", title)
+            else:
+                doc = Document(
+                    source_id=source.id,
+                    url=section_url,
+                    title=title,
+                    content_markdown=extraction.markdown,
+                    content_raw_html=section["html"],
+                    content_hash=extraction.content_hash,
+                    crawled_at=now,
+                    published_at=published_at,
+                )
+                db.add(doc)
+                db.commit()
+                new += 1
+                logger.info(
+                    "New HTML event section: %s (date=%s)",
+                    title,
+                    published_at.date() if published_at else "unknown",
+                )
+        except Exception:
+            db.rollback()
+            logger.exception("Failed to save HTML event section %d for %s", i, section_url)
+
+    logger.info(
+        "HTML event sections for %s: %d new, %d changed out of %d sections",
+        source.url, new, changed, len(sections),
+    )
+    return new + changed
+
+
 def _looks_like_js_app(html: str) -> bool:
     js_indicators = [
         '<div id="root"',
@@ -261,6 +325,72 @@ def run_crawl_source(
         else:
             source.crawl_status = CrawlStatus.known
         db.commit()
+    elif source.source_type == SourceType.events:
+        from app.crawler.extractor import split_event_sections
+        sections = split_event_sections(fetch_result.html, fetch_result.final_url)
+        if sections:
+            logger.info(
+                "Events source %s: found %d HTML sections — creating per-section documents",
+                source.url, len(sections),
+            )
+            n = _save_html_event_sections(source, fetch_result, sections, db)
+            result["new_documents"] += n
+            if n > 0:
+                source.crawl_status = CrawlStatus.new
+                source.analysis_status = AnalysisStatus.pending
+            else:
+                source.crawl_status = CrawlStatus.known
+            db.commit()
+        else:
+            logger.info(
+                "Events source %s: no splittable sections found — falling back to single document",
+                source.url,
+            )
+            word_count = len(extraction.markdown.split())
+            if word_count < _MIN_CONTENT_WORDS:
+                logger.info(
+                    "Skipping document for %s: only %d words after extraction",
+                    fetch_result.final_url, word_count,
+                )
+                result["skipped"] += 1
+            else:
+                existing_by_url = db.query(Document).filter(Document.url == fetch_result.final_url).first()
+                if existing_by_url:
+                    if existing_by_url.content_hash == extraction.content_hash:
+                        source.crawl_status = CrawlStatus.known
+                        result["skipped"] += 1
+                    else:
+                        existing_by_url.title = extraction.title
+                        existing_by_url.content_markdown = extraction.markdown
+                        existing_by_url.content_raw_html = fetch_result.html.replace("\x00", "")
+                        existing_by_url.content_hash = extraction.content_hash
+                        existing_by_url.crawled_at = datetime.now(timezone.utc)
+                        existing_by_url.is_analysed = False
+                        if extraction.published_at and not existing_by_url.published_at:
+                            existing_by_url.published_at = extraction.published_at
+                        source.crawl_status = CrawlStatus.changed
+                        source.content_hash = extraction.content_hash
+                        source.last_changed_at = datetime.now(timezone.utc)
+                        source.analysis_status = AnalysisStatus.pending
+                        db.commit()
+                        result["new_documents"] += 1
+                else:
+                    doc = Document(
+                        source_id=source.id,
+                        url=fetch_result.final_url,
+                        title=extraction.title,
+                        content_markdown=extraction.markdown,
+                        content_raw_html=fetch_result.html.replace("\x00", ""),
+                        content_hash=extraction.content_hash,
+                        crawled_at=datetime.now(timezone.utc),
+                        published_at=extraction.published_at,
+                    )
+                    db.add(doc)
+                    source.crawl_status = CrawlStatus.new
+                    source.content_hash = extraction.content_hash
+                    source.analysis_status = AnalysisStatus.pending
+                    db.commit()
+                    result["new_documents"] += 1
     else:
         word_count = len(extraction.markdown.split())
         if word_count < _MIN_CONTENT_WORDS:
