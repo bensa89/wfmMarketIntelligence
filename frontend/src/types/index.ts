@@ -101,6 +101,8 @@ export interface Signal {
   published_at: string | null;
   created_at: string;
   from_search: boolean;
+  event_name: string | null;
+  event_type: string | null;
 }
 
 export interface DigestSignal {

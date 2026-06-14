@@ -59,6 +59,10 @@ def _signal_feed_item(signal: Signal, assessment: Optional[SignalAssessment]) ->
         "source_url": doc.url if doc else None,
         "document_id": signal.document_id,
         "document_title": doc.title if doc else None,
+        "event_date": signal.event_date.date().isoformat() if signal.event_date else None,
+        "event_name": signal.event_name,
+        "event_type": signal.event_type,
+        "event_location": signal.event_location,
         "assessment": _assessment_to_dict(assessment) if assessment else None,
     }
 
@@ -91,13 +95,23 @@ def get_events(db: Session = Depends(get_db)) -> dict:
         if key not in event_map:
             event_map[key] = {
                 "event_date": signal.event_date.date().isoformat(),
+                "event_name": signal.event_name,
+                "event_type": signal.event_type,
                 "event_location": signal.event_location,
                 "title": signal.title,
+                "newest_signal_at": signal.created_at.isoformat() if signal.created_at else None,
                 "attendees": [],
             }
+        else:
+            if signal.created_at and (
+                event_map[key]["newest_signal_at"] is None
+                or signal.created_at.isoformat() > event_map[key]["newest_signal_at"]
+            ):
+                event_map[key]["newest_signal_at"] = signal.created_at.isoformat()
         event_map[key]["attendees"].append({
             "company_id": signal.company_id,
             "company_name": signal.company.name,
+            "company_slug": signal.company.slug,
             "signal_id": signal.id,
             "relevance_score": signal.relevance_score,
         })

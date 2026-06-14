@@ -52,6 +52,10 @@ export interface SignalFeedItem {
   source_url: string | null;
   document_id: string;
   document_title: string | null;
+  event_date: string | null;
+  event_name: string | null;
+  event_type: string | null;
+  event_location: string | null;
   assessment: SignalAssessment | null;
 }
 
@@ -173,14 +177,18 @@ export interface IntelligenceBriefing {
 export interface EventAttendee {
   company_id: string;
   company_name: string;
+  company_slug: string;
   signal_id: string;
   relevance_score: number | null;
 }
 
 export interface CalendarEvent {
   event_date: string;
+  event_name: string | null;
+  event_type: string | null;
   event_location: string | null;
   title: string;
+  newest_signal_at: string | null;
   attendees: EventAttendee[];
 }
 

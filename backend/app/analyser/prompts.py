@@ -36,6 +36,8 @@ Respond ONLY with a valid JSON object matching this exact schema:
   "confidence_score": float between 0.0 (uncertain) and 1.0 (very confident in analysis),
   "published_at": "ISO-8601 date string of when the content was originally published, or null if unknown",
   "event_date": "ISO-8601 date string of when the event itself takes place (only for event_or_thought_leadership signals describing a specific event), or null",
+  "event_name": "Official name of the event (e.g. 'Dreamforce', 'CeBIT', 'AWS re:Invent') — only for event_or_thought_leadership signals, or null",
+  "event_type": "Type of event in German, one of: Messe | Konferenz | Webinar | Summit | Workshop | Roundtable | Pressemitteilung | Sonstiges — only for event_or_thought_leadership signals, or null",
   "event_location": "City or venue where the event takes place (only for event_or_thought_leadership signals describing a specific event), or null"
 }}
 

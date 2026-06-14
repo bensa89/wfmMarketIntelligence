@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { X, ExternalLink } from 'lucide-react';
+import { X, ExternalLink, CalendarDays, MapPin } from 'lucide-react';
 import type { SignalFeedItem, VisibilityImpact } from '../../types/intelligence';
 import MovementBadge from './MovementBadge';
 import ConfidenceBar from './ConfidenceBar';
@@ -88,6 +88,35 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
             <div className="col-span-2 p-5 space-y-5 border-r border-slate-100">
               {item.topic && (
                 <div className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">{item.topic}</div>
+              )}
+
+              {item.signal_type === 'event_or_thought_leadership' && (
+                <div className="flex items-start gap-2.5 rounded-lg bg-violet-50 border border-violet-200 px-3.5 py-2.5">
+                  <CalendarDays size={14} className="text-violet-500 flex-shrink-0 mt-0.5" />
+                  <div className="space-y-0.5 flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <div className="text-[12px] font-semibold text-violet-800">
+                        {item.event_name || 'Event'}
+                      </div>
+                      {item.event_type && (
+                        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-violet-100 text-violet-600">
+                          {item.event_type}
+                        </span>
+                      )}
+                    </div>
+                    {item.event_date && (
+                      <div className="text-[11px] text-violet-600">
+                        {new Date(item.event_date).toLocaleDateString('de-DE', { day: 'numeric', month: 'long', year: 'numeric' })}
+                      </div>
+                    )}
+                    {item.event_location && (
+                      <div className="flex items-center gap-1 text-[11px] text-violet-600">
+                        <MapPin size={10} className="flex-shrink-0" />
+                        {item.event_location}
+                      </div>
+                    )}
+                  </div>
+                </div>
               )}
 
               {item.summary && (
@@ -265,6 +294,12 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
               <section>
                 <h4 className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Datum</h4>
                 <div className="space-y-1">
+                  {item.event_date && (
+                    <div className="text-[12px] text-violet-600 font-medium flex items-center gap-1">
+                      <CalendarDays size={11} className="flex-shrink-0" />
+                      Event: <DateWithTooltip date={item.event_date} />
+                    </div>
+                  )}
                   {item.published_at && (
                     <div className="text-[12px] text-slate-500">Artikel: <DateWithTooltip date={item.published_at} /></div>
                   )}

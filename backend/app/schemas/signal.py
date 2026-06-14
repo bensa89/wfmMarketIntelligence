@@ -21,6 +21,8 @@ class SignalRead(BaseModel):
     published_at: Optional[datetime]
     created_at: datetime
     from_search: bool = False
+    event_name: Optional[str] = None
+    event_type: Optional[str] = None
 
 
 class DedupResult(BaseModel):

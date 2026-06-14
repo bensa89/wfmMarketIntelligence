@@ -1,30 +1,21 @@
 import { useEventCalendar } from '../../hooks/useEventCalendar';
 import { useState } from 'react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import SignalDetailDrawer from '../signals/SignalDetailDrawer';
+import CompanyLogo from '../CompanyLogo';
 import type { CalendarEvent } from '../../types/intelligence';
 import type { SignalFeedItem } from '../../types/intelligence';
 import { apiGet } from '../../api/client';
+import { useCompanies } from '../../hooks/useCompanies';
 
-const COMPANY_COLORS = [
-  'bg-blue-100 text-blue-700',
-  'bg-green-100 text-green-700',
-  'bg-purple-100 text-purple-700',
-  'bg-orange-100 text-orange-700',
-  'bg-pink-100 text-pink-700',
-  'bg-yellow-100 text-yellow-800',
-  'bg-teal-100 text-teal-700',
-  'bg-red-100 text-red-700',
-];
+type LogoMap = Record<string, { slug: string; logo_path: string | null }>;
 
-const companyColorCache: Record<string, string> = {};
-let colorIndex = 0;
+const NEW_SIGNAL_HOURS = 7 * 24;
 
-function getCompanyColor(companyId: string): string {
-  if (!companyColorCache[companyId]) {
-    companyColorCache[companyId] = COMPANY_COLORS[colorIndex % COMPANY_COLORS.length];
-    colorIndex++;
-  }
-  return companyColorCache[companyId];
+function isNewEvent(newestSignalAt: string | null): boolean {
+  if (!newestSignalAt) return false;
+  const diffMs = Date.now() - new Date(newestSignalAt).getTime();
+  return diffMs < NEW_SIGNAL_HOURS * 60 * 60 * 1000;
 }
 
 function formatEventDate(isoDate: string): string {
@@ -43,9 +34,11 @@ interface EventRowProps {
   event: CalendarEvent;
   isPast: boolean;
   onSelect: (signalId: string) => void;
+  logoMap: LogoMap;
 }
 
-function EventRow({ event, isPast, onSelect }: EventRowProps) {
+function EventRow({ event, isPast, onSelect, logoMap }: EventRowProps) {
+  const isNew = !isPast && isNewEvent(event.newest_signal_at);
   const days = daysFromNow(event.event_date);
   const daysLabel = isPast
     ? `vor ${Math.abs(days)} Tagen`
@@ -86,34 +79,58 @@ function EventRow({ event, isPast, onSelect }: EventRowProps) {
       <div
         className={`flex-1 min-w-0 pb-4 border-b border-slate-100 group-last:border-0 group-hover:bg-slate-50 rounded-lg px-2 -mx-2 transition-colors`}
       >
-        <div className={`text-[12px] font-semibold truncate ${isPast ? 'text-slate-400' : 'text-slate-800'}`}>
-          {event.title}
+        <div className={`flex items-center gap-1.5 flex-wrap ${isPast ? 'opacity-60' : ''}`}>
+          {event.attendees.map((a, i) => {
+            const logo = logoMap[a.company_id];
+            return (
+              <div key={a.company_id} className="flex items-center gap-1 flex-shrink-0">
+                {i > 0 && <span className={`text-[11px] ${isPast ? 'text-slate-300' : 'text-slate-400'}`}>,</span>}
+                <CompanyLogo
+                  name={a.company_name}
+                  slug={logo?.slug ?? a.company_slug}
+                  logo_path={logo?.logo_path ?? null}
+                  size="sm"
+                  companyId={a.company_id}
+                />
+                <span className={`text-[11px] font-medium ${isPast ? 'text-slate-400' : 'text-slate-600'}`}>
+                  {a.company_name}
+                </span>
+              </div>
+            );
+          })}
+          <div className={`text-[12px] font-semibold truncate ${isPast ? 'text-slate-400' : 'text-slate-800'}`}>
+            {event.event_name || event.title}
+          </div>
+          {isNew && (
+            <span className="flex items-center gap-0.5 text-[10px] font-semibold text-emerald-600 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded-full flex-shrink-0">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+              Neu
+            </span>
+          )}
+          {event.event_type && (
+            <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full flex-shrink-0 ${isPast ? 'bg-slate-100 text-slate-400' : 'bg-violet-100 text-violet-600'}`}>
+              {event.event_type}
+            </span>
+          )}
         </div>
         {event.event_location && (
-          <div className={`text-[11px] mb-1.5 ${isPast ? 'text-slate-300' : 'text-slate-500'}`}>
+          <div className={`text-[11px] mt-0.5 ${isPast ? 'text-slate-300' : 'text-slate-500'}`}>
             {event.event_location}
           </div>
         )}
-        <div className="flex flex-wrap gap-1.5">
-          {event.attendees.map((a) => (
-            <span
-              key={a.company_id}
-              className={`inline-flex items-center text-[10px] font-medium px-1.5 py-0.5 rounded ${
-                isPast ? 'bg-slate-100 text-slate-400' : getCompanyColor(a.company_id)
-              }`}
-            >
-              {a.company_name}
-            </span>
-          ))}
-        </div>
       </div>
     </div>
   );
 }
 
+const PAST_COLLAPSED_LIMIT = 2;
+const UPCOMING_NEAR_DAYS = 90;
+
 export default function EventTimelinePanel() {
   const { data, isLoading } = useEventCalendar();
   const [selectedSignal, setSelectedSignal] = useState<SignalFeedItem | null>(null);
+  const [pastExpanded, setPastExpanded] = useState(false);
+  const [upcomingExpanded, setUpcomingExpanded] = useState(false);
 
   async function handleSelectSignal(signalId: string) {
     try {
@@ -124,9 +141,17 @@ export default function EventTimelinePanel() {
     }
   }
 
+  const { data: companies } = useCompanies();
+  const logoMap: LogoMap = Object.fromEntries(
+    (companies ?? []).map((c) => [c.id, { slug: c.slug, logo_path: c.logo_path }])
+  );
+
   const upcoming = data?.upcoming ?? [];
   const past = data?.past ?? [];
   const hasEvents = upcoming.length > 0 || past.length > 0;
+  const visiblePast = pastExpanded ? past : past.slice(0, PAST_COLLAPSED_LIMIT);
+  const upcomingNear = upcoming.filter((e) => daysFromNow(e.event_date) <= UPCOMING_NEAR_DAYS);
+  const upcomingLater = upcoming.filter((e) => daysFromNow(e.event_date) > UPCOMING_NEAR_DAYS);
 
   return (
     <>
@@ -160,62 +185,93 @@ export default function EventTimelinePanel() {
               <div className="absolute left-[95px] top-0 bottom-0 w-px bg-slate-100" />
 
               <div className="space-y-0 pl-[95px]">
-                {upcoming.length > 0 && (
-                  <>
-                    {/* TODAY marker */}
-                    <div className="flex items-center gap-3 mb-3 -ml-[95px]">
-                      <div className="w-[88px] text-right">
-                        <span className="text-[10px] font-bold text-red-500 uppercase tracking-wide">Heute</span>
-                      </div>
-                      <div className="w-2.5 h-2.5 rounded-full bg-red-500 border-2 border-white shadow flex-shrink-0" />
-                      <div className="text-[10px] text-red-400">
-                        {new Date().toLocaleDateString('de-DE', { day: 'numeric', month: 'short', year: 'numeric' })}
-                      </div>
-                    </div>
 
+                {/* Past events — above Heute */}
+                {past.length > 0 && (
+                  <div className="mb-3">
+                    <div className="flex items-center justify-between -ml-[95px] pl-[103px] mb-2">
+                      <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide">
+                        Letzte 30 Tage
+                      </div>
+                      {past.length > PAST_COLLAPSED_LIMIT && (
+                        <button
+                          onClick={() => setPastExpanded((v) => !v)}
+                          className="flex items-center gap-0.5 text-[10px] text-slate-400 hover:text-slate-600 transition-colors"
+                        >
+                          {pastExpanded ? (
+                            <><ChevronUp size={11} /> Weniger</>
+                          ) : (
+                            <><ChevronDown size={11} /> +{past.length - PAST_COLLAPSED_LIMIT} weitere</>
+                          )}
+                        </button>
+                      )}
+                    </div>
                     <div className="space-y-2">
-                      {upcoming.map((event) => (
+                      {visiblePast.map((event) => (
                         <EventRow
                           key={`${event.event_date}-${event.title}`}
                           event={event}
-                          isPast={false}
+                          isPast={true}
                           onSelect={handleSelectSignal}
+                          logoMap={logoMap}
                         />
                       ))}
                     </div>
-                  </>
+                  </div>
                 )}
 
-                {past.length > 0 && (
-                  <>
-                    {upcoming.length === 0 && (
-                      <div className="flex items-center gap-3 mb-3 -ml-[95px]">
-                        <div className="w-[88px] text-right">
-                          <span className="text-[10px] font-bold text-red-500 uppercase tracking-wide">Heute</span>
-                        </div>
-                        <div className="w-2.5 h-2.5 rounded-full bg-red-500 border-2 border-white shadow flex-shrink-0" />
-                        <div className="text-[10px] text-red-400">
-                          {new Date().toLocaleDateString('de-DE', { day: 'numeric', month: 'short', year: 'numeric' })}
-                        </div>
-                      </div>
-                    )}
-                    <div className="mt-4 pt-3 border-t border-slate-100">
-                      <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-3 -ml-[95px] pl-[103px]">
-                        Letzte 30 Tage
-                      </div>
-                      <div className="space-y-2">
-                        {past.map((event) => (
+                {/* TODAY marker */}
+                <div className="flex items-center gap-3 my-3 -ml-[95px]">
+                  <div className="w-[88px] text-right">
+                    <span className="text-[10px] font-bold text-red-500 uppercase tracking-wide">Heute</span>
+                  </div>
+                  <div className="w-2.5 h-2.5 rounded-full bg-red-500 border-2 border-white shadow flex-shrink-0" />
+                  <div className="text-[10px] text-red-400">
+                    {new Date().toLocaleDateString('de-DE', { day: 'numeric', month: 'short', year: 'numeric' })}
+                  </div>
+                </div>
+
+                {/* Upcoming events — below Heute */}
+                {upcoming.length === 0 ? (
+                  <div className="text-[11px] text-slate-300 italic pl-2 pb-2">Keine bevorstehenden Events</div>
+                ) : (
+                  <div className="space-y-2">
+                    {upcomingNear.map((event) => (
+                      <EventRow
+                        key={`${event.event_date}-${event.title}`}
+                        event={event}
+                        isPast={false}
+                        onSelect={handleSelectSignal}
+                        logoMap={logoMap}
+                      />
+                    ))}
+
+                    {upcomingLater.length > 0 && (
+                      <>
+                        {upcomingExpanded && upcomingLater.map((event) => (
                           <EventRow
                             key={`${event.event_date}-${event.title}`}
                             event={event}
-                            isPast={true}
+                            isPast={false}
                             onSelect={handleSelectSignal}
+                            logoMap={logoMap}
                           />
                         ))}
-                      </div>
-                    </div>
-                  </>
+                        <button
+                          onClick={() => setUpcomingExpanded((v) => !v)}
+                          className="flex items-center gap-0.5 text-[10px] text-slate-400 hover:text-slate-600 transition-colors mt-1 pl-2"
+                        >
+                          {upcomingExpanded ? (
+                            <><ChevronUp size={11} /> Weniger anzeigen</>
+                          ) : (
+                            <><ChevronDown size={11} /> +{upcomingLater.length} weitere (über 90 Tage)</>
+                          )}
+                        </button>
+                      </>
+                    )}
+                  </div>
                 )}
+
               </div>
             </div>
           )}

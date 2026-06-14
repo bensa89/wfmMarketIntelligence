@@ -17,6 +17,8 @@ class SignalData:
     confidence_score: float
     published_at: Optional[datetime] = None
     event_date: Optional[datetime] = None
+    event_name: Optional[str] = None
+    event_type: Optional[str] = None
     event_location: Optional[str] = None
 
 
@@ -83,6 +85,14 @@ def parse_llm_response(raw: str) -> Optional[SignalData]:
         if event_location and not isinstance(event_location, str):
             event_location = None
 
+        event_name = data.get("event_name")
+        if event_name and not isinstance(event_name, str):
+            event_name = None
+
+        event_type = data.get("event_type")
+        if event_type and not isinstance(event_type, str):
+            event_type = None
+
         return SignalData(
             title=title,
             signal_type=signal_type,
@@ -93,6 +103,8 @@ def parse_llm_response(raw: str) -> Optional[SignalData]:
             confidence_score=float(data.get("confidence_score", 0.5)),
             published_at=_parse_date("published_at"),
             event_date=_parse_date("event_date"),
+            event_name=event_name,
+            event_type=event_type,
             event_location=event_location,
         )
     except Exception:
