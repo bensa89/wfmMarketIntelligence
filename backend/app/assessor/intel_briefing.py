@@ -154,7 +154,11 @@ def curate_risks_opportunities_watchpoints(db: Session) -> tuple[list, list, lis
     if not any([all_risks, all_opportunities, all_watchpoints]):
         return [], [], []
 
-    all_items = {"risks": all_risks, "opportunities": all_opportunities, "watchpoints": all_watchpoints}
+    all_items = {
+        "risks": all_risks[:15],
+        "opportunities": all_opportunities[:15],
+        "watchpoints": all_watchpoints[:15],
+    }
     ctx_record = db.query(InternalCompanyContext).first()
     context = {}
     if ctx_record:
@@ -165,7 +169,7 @@ def curate_risks_opportunities_watchpoints(db: Session) -> tuple[list, list, lis
 
     prompt = _build_curation_prompt(all_items, context)
     try:
-        raw = call_llm(prompt, max_tokens=2048, caller="assessor:intel-briefing:curation")
+        raw = call_llm(prompt, max_tokens=4096, caller="assessor:intel-briefing:curation")
         import re
         raw = re.sub(r"^```(?:json)?\s*", "", raw.strip(), flags=re.IGNORECASE)
         raw = re.sub(r"\s*```$", "", raw)
