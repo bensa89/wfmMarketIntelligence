@@ -106,6 +106,36 @@ def _build_curation_prompt(all_items: list[dict], context: dict) -> str:
     return "\n".join(lines)
 
 
+def _cap_with_coverage(items: list[dict], limit: int = 15) -> list[dict]:
+    """Select up to `limit` items while guaranteeing at least one per competitor.
+    Prefers is_new=True items for the guaranteed slot, then fills remaining
+    capacity in original order."""
+    by_company: dict[str, list[dict]] = {}
+    for item in items:
+        cid = item.get("company_id", "")
+        by_company.setdefault(cid, []).append(item)
+
+    # First pass: one item per competitor (prefer is_new)
+    selected: list[dict] = []
+    remainder: list[dict] = []
+    for cid, group in by_company.items():
+        new_items = [i for i in group if i.get("is_new")]
+        best = (new_items or group)[0]
+        selected.append(best)
+        remainder.extend(i for i in group if i is not best)
+
+    # Second pass: fill remaining slots in original order
+    remaining_slots = limit - len(selected)
+    if remaining_slots > 0:
+        seen_ids = {id(i) for i in selected}
+        for item in items:
+            if id(item) not in seen_ids and remaining_slots > 0:
+                selected.append(item)
+                remaining_slots -= 1
+
+    return selected
+
+
 def curate_risks_opportunities_watchpoints(db: Session) -> tuple[list, list, list]:
     """Returns (curated_risks, curated_opportunities, curated_watchpoints) as lists of RiskItem dicts."""
     company_ids = (
@@ -155,9 +185,9 @@ def curate_risks_opportunities_watchpoints(db: Session) -> tuple[list, list, lis
         return [], [], []
 
     all_items = {
-        "risks": all_risks[:15],
-        "opportunities": all_opportunities[:15],
-        "watchpoints": all_watchpoints[:15],
+        "risks": _cap_with_coverage(all_risks, limit=15),
+        "opportunities": _cap_with_coverage(all_opportunities, limit=15),
+        "watchpoints": _cap_with_coverage(all_watchpoints, limit=15),
     }
     ctx_record = db.query(InternalCompanyContext).first()
     context = {}
