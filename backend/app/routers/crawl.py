@@ -304,31 +304,42 @@ def _run_crawl_background(
                             .distinct()
                             .all()
                         )
+                        logger.info(
+                            "Post-crawl: generating competitor summaries for %d companies [run=%s]",
+                            len(company_ids_with_new_signals),
+                            crawl_run_id,
+                        )
                         for (cid,) in company_ids_with_new_signals:
                             company = thread_db.query(Company).filter(Company.id == cid).first()
                             if company:
                                 for period in ("7d", "30d"):
                                     try:
                                         generate_competitor_summary(company, period, thread_db)
+                                        logger.info(
+                                            "Post-crawl: competitor summary generated [company=%s period=%s]",
+                                            company.name,
+                                            period,
+                                        )
                                     except Exception as period_exc:
                                         logger.warning(
-                                            "Summary gen failed for %s/%s: %s",
+                                            "Post-crawl: competitor summary failed [company=%s period=%s]: %s",
                                             company.name,
                                             period,
                                             period_exc,
                                         )
                     elif crawl_run:
                         logger.warning(
-                            "Skipping post-crawl summary: crawl_run.started_at is None for run %s",
+                            "Post-crawl: skipping competitor summaries — crawl_run.started_at is None [run=%s]",
                             crawl_run_id,
                         )
                 except Exception as e:
-                    logger.warning("Post-crawl summary trigger failed: %s", e)
+                    logger.warning("Post-crawl: competitor summary step failed [run=%s]: %s", crawl_run_id, e)
 
                 try:
                     from app.assessor.intel_briefing import generate_intelligence_briefing, curate_risks_opportunities_watchpoints
                     from app.models.intelligence_briefing import IntelligenceBriefing
 
+                    logger.info("Post-crawl: generating intelligence briefing [run=%s]", crawl_run_id)
                     content, signal_count, assessment_count = generate_intelligence_briefing(thread_db)
                     curated_risks, curated_opportunities, curated_watchpoints = curate_risks_opportunities_watchpoints(thread_db)
                     intel_briefing = IntelligenceBriefing(
@@ -342,8 +353,14 @@ def _run_crawl_background(
                     )
                     thread_db.add(intel_briefing)
                     thread_db.commit()
+                    logger.info(
+                        "Post-crawl: intelligence briefing generated [signals=%d assessments=%d run=%s]",
+                        signal_count,
+                        assessment_count,
+                        crawl_run_id,
+                    )
                 except Exception as e:
-                    logger.warning("Auto-intelligence-briefing generation failed: %s", e)
+                    logger.warning("Post-crawl: intelligence briefing failed [run=%s]: %s", crawl_run_id, e)
 
             # Auto-start queued run if one exists
             queued_run = (
