@@ -36,12 +36,18 @@ def _get_opencode_client():
 
 
 def call_llm(prompt: str, max_tokens: int = 1024, caller: str = "") -> str:
-    logger.info("LLM call [caller=%s provider=%s max_tokens=%d]", caller or "unknown", settings.llm_provider, max_tokens)
+    label = caller or "unknown"
+    logger.info("LLM call start [caller=%s provider=%s max_tokens=%d]", label, settings.llm_provider, max_tokens)
+    t0 = time.monotonic()
     if settings.llm_provider == "ollama":
-        return _call_ollama(prompt, max_tokens=max_tokens)
-    if settings.llm_provider == "opencode":
-        return _call_opencode(prompt, max_tokens=max_tokens)
-    return _call_claude(prompt, max_tokens=max_tokens)
+        result = _call_ollama(prompt, max_tokens=max_tokens)
+    elif settings.llm_provider == "opencode":
+        result = _call_opencode(prompt, max_tokens=max_tokens)
+    else:
+        result = _call_claude(prompt, max_tokens=max_tokens)
+    elapsed = time.monotonic() - t0
+    logger.info("LLM call done [caller=%s duration=%.1fs chars=%d]", label, elapsed, len(result))
+    return result
 
 
 def _call_claude(prompt: str, max_tokens: int = 1024) -> str:
