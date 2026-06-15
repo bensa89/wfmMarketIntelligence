@@ -124,6 +124,21 @@ def _build_plain_text(digest, date_range: str, digest_url: str, signals_url: str
     ]
     if digest.summary:
         lines += [digest.summary, ""]
+    risks = digest.risks or []
+    opportunities = digest.opportunities or []
+    if risks or opportunities:
+        if risks:
+            lines += ["── EMERGING RISKS ──", ""]
+            for item in risks:
+                company = f" ({item.get('company_name')})" if item.get('company_name') else ""
+                lines.append(f"▸ {item.get('text', '')}{company}")
+            lines.append("")
+        if opportunities:
+            lines += ["── EMERGING OPPORTUNITIES ──", ""]
+            for item in opportunities:
+                company = f" ({item.get('company_name')})" if item.get('company_name') else ""
+                lines.append(f"▸ {item.get('text', '')}{company}")
+            lines.append("")
     for section in sections:
         lines += [f"== {section['title']} ==", ""]
         if section.get("key") == "events_calendar":
@@ -331,6 +346,47 @@ def _render_event_calendar_section(section: dict) -> str:
         </table>"""
 
 
+def _render_risks_opportunities(risks: list, opportunities: list) -> str:
+    if not risks and not opportunities:
+        return ""
+
+    def render_items(items: list, color: str) -> str:
+        rows = ""
+        for item in items:
+            text = html.escape(item.get("text", ""))
+            company = html.escape(item.get("company_name", "") or "")
+            rows += f"""
+            <tr>
+              <td style="padding:6px 0;border-bottom:1px solid rgba(0,0,0,0.05);">
+                <span style="color:{color};margin-right:6px;">▸</span>
+                <span style="color:#1e293b;font-size:13px;line-height:1.5;">{text}</span>
+                {f'<span style="color:#94a3b8;font-size:11px;margin-left:6px;">· {company}</span>' if company else ''}
+              </td>
+            </tr>"""
+        return rows
+
+    cols = ""
+    if risks:
+        cols += f"""
+        <td width="48%" valign="top" style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:16px 18px;">
+          <p style="margin:0 0 10px;color:#dc2626;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">Emerging Risks</p>
+          <table width="100%" cellpadding="0" cellspacing="0">{render_items(risks, '#ef4444')}</table>
+        </td>"""
+    if risks and opportunities:
+        cols += '<td width="4%"></td>'
+    if opportunities:
+        cols += f"""
+        <td width="48%" valign="top" style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:16px 18px;">
+          <p style="margin:0 0 10px;color:#16a34a;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">Emerging Opportunities</p>
+          <table width="100%" cellpadding="0" cellspacing="0">{render_items(opportunities, '#22c55e')}</table>
+        </td>"""
+
+    return f"""
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
+      <tr>{cols}</tr>
+    </table>"""
+
+
 def _render_sections(sections: list, company_logos: dict) -> str:
     parts = []
     for section in sections:
@@ -362,6 +418,7 @@ def _build_html(
     signal_count: int = 0,
 ) -> str:
     summary = html.escape(digest.summary or "")
+    risks_opps_html = _render_risks_opportunities(digest.risks or [], digest.opportunities or [])
     sections_html = _render_sections(sections, company_logos)
     digest_url_escaped = html.escape(digest_url)
     signals_url_escaped = html.escape(signals_url)
@@ -406,6 +463,7 @@ def _build_html(
 
       <tr>
         <td style="background:#ffffff;padding:32px 40px;border-radius:0 0 12px 12px;">
+          {risks_opps_html}
           {sections_html}
 
           <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
