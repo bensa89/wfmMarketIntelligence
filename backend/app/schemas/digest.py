@@ -61,6 +61,8 @@ class DigestRead(BaseModel):
     summary: Optional[str] = None
     key_signals: list[DigestSignalRead] = []
     sections: list[DigestSection] = []
+    risks: list[dict] = []
+    opportunities: list[dict] = []
     generated_at: datetime
     is_published: bool
 

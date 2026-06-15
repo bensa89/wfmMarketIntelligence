@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useDigests, useGenerateDigest } from '../hooks/useDigests';
 import { Calendar, RefreshCw } from 'lucide-react';
+import type { RiskItem } from '../types/intelligence';
 import type { Digest, DigestSectionItem, EventCalendarItem } from '../types';
 
 const MOVEMENT_COLOURS: Record<string, string> = {
@@ -97,6 +98,50 @@ function EventsCalendarSection({ upcoming, newly_discovered }: {
   );
 }
 
+function DigestRisksOpportunities({ risks, opportunities }: { risks: RiskItem[]; opportunities: RiskItem[] }) {
+  if (!risks.length && !opportunities.length) return null;
+  return (
+    <div className="grid grid-cols-2 gap-3 mb-6">
+      {risks.length > 0 && (
+        <div className="bg-red-50 border border-red-100 rounded-xl p-3">
+          <p className="text-[11px] font-semibold text-red-600 uppercase tracking-wide mb-2">Emerging Risks</p>
+          <ul className="space-y-1.5">
+            {risks.map((item, i) => (
+              <li key={i} className="flex gap-1.5">
+                <span className="text-red-400 flex-shrink-0 mt-0.5">▸</span>
+                <div>
+                  <span className="text-[12px] text-slate-700 leading-snug">{item.text}</span>
+                  {item.company_name && (
+                    <span className="ml-1 text-[10px] text-slate-400">· {item.company_name}</span>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {opportunities.length > 0 && (
+        <div className="bg-green-50 border border-green-100 rounded-xl p-3">
+          <p className="text-[11px] font-semibold text-green-600 uppercase tracking-wide mb-2">Emerging Opportunities</p>
+          <ul className="space-y-1.5">
+            {opportunities.map((item, i) => (
+              <li key={i} className="flex gap-1.5">
+                <span className="text-green-400 flex-shrink-0 mt-0.5">▸</span>
+                <div>
+                  <span className="text-[12px] text-slate-700 leading-snug">{item.text}</span>
+                  {item.company_name && (
+                    <span className="ml-1 text-[10px] text-slate-400">· {item.company_name}</span>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function SectionItems({ items }: { items: DigestSectionItem[] }) {
   return (
     <div className="space-y-5">
@@ -155,6 +200,23 @@ export default function WeeklyDigest() {
       text += `\n${digest.summary}\n`;
     }
     text += '\n';
+
+    if (digest.risks?.length || digest.opportunities?.length) {
+      if (digest.risks?.length) {
+        text += `Emerging Risks\n${'─'.repeat(25)}\n`;
+        for (const item of digest.risks) {
+          text += `▸ ${item.text}${item.company_name ? ` (${item.company_name})` : ''}\n`;
+        }
+        text += '\n';
+      }
+      if (digest.opportunities?.length) {
+        text += `Emerging Opportunities\n${'─'.repeat(25)}\n`;
+        for (const item of digest.opportunities) {
+          text += `▸ ${item.text}${item.company_name ? ` (${item.company_name})` : ''}\n`;
+        }
+        text += '\n';
+      }
+    }
 
     for (const section of digest.sections ?? []) {
       text += `${section.title}\n${'─'.repeat(25)}\n`;
@@ -290,6 +352,11 @@ export default function WeeklyDigest() {
                     {copied ? '✓ Kopiert' : 'Als E-Mail kopieren'}
                   </button>
                 </div>
+
+                <DigestRisksOpportunities
+                  risks={selectedDigest.risks ?? []}
+                  opportunities={selectedDigest.opportunities ?? []}
+                />
 
                 {selectedDigest.sections && selectedDigest.sections.length > 0 ? (
                   <div className="space-y-8">

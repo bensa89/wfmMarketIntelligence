@@ -155,6 +155,8 @@ export interface Digest {
   summary: string | null;
   key_signals: DigestSignal[];
   sections: DigestSection[];
+  risks: import('./intelligence').RiskItem[];
+  opportunities: import('./intelligence').RiskItem[];
   generated_at: string;
   is_published: boolean;
 }
