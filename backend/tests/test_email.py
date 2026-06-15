@@ -262,6 +262,103 @@ def test_send_digest_email_html_contains_signal_count():
         assert "42 Signale" in html_body
 
 
+def make_digest_with_events() -> WeeklyDigest:
+    return WeeklyDigest(
+        id="test-digest-events",
+        week_start=date(2026, 6, 9),
+        week_end=date(2026, 6, 15),
+        summary="Events-Woche.",
+        sections=[
+            {
+                "key": "events_calendar",
+                "title": "Events",
+                "items": [],
+                "upcoming": [
+                    {
+                        "signal_id": "sig-ev-1",
+                        "event_name": "WFM Summit Berlin",
+                        "event_date": "2026-06-20",
+                        "event_location": "Berlin",
+                        "event_type": "conference",
+                        "company": "Acme Corp",
+                        "source_url": "https://wfmsummit.de",
+                        "is_new": True,
+                    }
+                ],
+                "newly_discovered": [
+                    {
+                        "signal_id": "sig-ev-2",
+                        "event_name": "HR Tech Europe",
+                        "event_date": "2026-07-15",
+                        "event_location": "Amsterdam",
+                        "event_type": "trade_show",
+                        "company": "Rival Inc",
+                        "source_url": "https://hrtecheurope.com",
+                        "is_new": False,
+                    }
+                ],
+            }
+        ],
+    )
+
+
+def test_send_digest_email_html_contains_events_calendar():
+    with patch("smtplib.SMTP") as mock_smtp_cls:
+        mock_server = MagicMock()
+        mock_smtp_cls.return_value.__enter__.return_value = mock_server
+        digest = make_digest_with_events()
+        send_digest_email(
+            smtp_host="smtp.example.com",
+            smtp_port=587,
+            smtp_user="",
+            smtp_password="",
+            smtp_from="from@example.com",
+            recipients=["to@example.com"],
+            digest=digest,
+            app_base_url="https://wfm.saure.me",
+        )
+        msg = mock_server.send_message.call_args[0][0]
+        html_body = ""
+        for part in msg.walk():
+            if part.get_content_type() == "text/html":
+                html_body = part.get_payload(decode=True).decode()
+                break
+        assert "WFM Summit Berlin" in html_body
+        assert "HR Tech Europe" in html_body
+        assert "NEU" in html_body
+        assert "Nächste 14 Tage" in html_body
+        assert "Neu entdeckt" in html_body
+        assert "Acme Corp" in html_body
+        assert "Berlin" in html_body
+
+
+def test_send_digest_email_plain_text_contains_events():
+    with patch("smtplib.SMTP") as mock_smtp_cls:
+        mock_server = MagicMock()
+        mock_smtp_cls.return_value.__enter__.return_value = mock_server
+        digest = make_digest_with_events()
+        send_digest_email(
+            smtp_host="smtp.example.com",
+            smtp_port=587,
+            smtp_user="",
+            smtp_password="",
+            smtp_from="from@example.com",
+            recipients=["to@example.com"],
+            digest=digest,
+            app_base_url="https://wfm.saure.me",
+        )
+        msg = mock_server.send_message.call_args[0][0]
+        plain_body = ""
+        for part in msg.walk():
+            if part.get_content_type() == "text/plain":
+                plain_body = part.get_payload(decode=True).decode()
+                break
+        assert "WFM Summit Berlin" in plain_body
+        assert "HR Tech Europe" in plain_body
+        assert "[NEU]" in plain_body
+        assert "Berlin" in plain_body
+
+
 def test_send_digest_email_raises_on_smtp_failure():
     with patch("smtplib.SMTP") as mock_smtp_cls:
         mock_smtp_cls.side_effect = ConnectionRefusedError("refused")

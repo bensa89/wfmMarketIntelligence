@@ -129,10 +129,23 @@ export interface DigestSectionItem {
   source_title: string | null;
 }
 
+export interface EventCalendarItem {
+  signal_id: string;
+  event_name: string | null;
+  event_date: string | null;
+  event_location: string | null;
+  event_type: string | null;
+  company: string;
+  source_url: string | null;
+  is_new: boolean;
+}
+
 export interface DigestSection {
   key: string;
   title: string;
   items: DigestSectionItem[];
+  upcoming?: EventCalendarItem[];
+  newly_discovered?: EventCalendarItem[];
 }
 
 export interface Digest {

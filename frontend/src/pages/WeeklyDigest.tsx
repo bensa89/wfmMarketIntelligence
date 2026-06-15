@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useDigests, useGenerateDigest } from '../hooks/useDigests';
 import { Calendar, RefreshCw } from 'lucide-react';
-import type { Digest, DigestSectionItem } from '../types';
+import type { Digest, DigestSectionItem, EventCalendarItem } from '../types';
 
 const MOVEMENT_COLOURS: Record<string, string> = {
   weak: 'bg-gray-100 text-gray-600',
@@ -30,6 +30,71 @@ function getISOWeek(dateStr: string): number {
 
 function formatDateDE(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString('de-DE', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+function formatEventDate(dateStr: string | null): string {
+  if (!dateStr) return '';
+  return new Date(dateStr).toLocaleDateString('de-DE', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+function EventItem({ item }: { item: EventCalendarItem }) {
+  return (
+    <div className="flex gap-3">
+      <div className="flex-shrink-0 text-right w-24">
+        <span className="text-xs font-medium text-gray-500">{formatEventDate(item.event_date)}</span>
+      </div>
+      <div className="flex-1 min-w-0 space-y-0.5">
+        <div className="flex items-center gap-2 flex-wrap">
+          {item.source_url ? (
+            <a href={item.source_url} target="_blank" rel="noopener noreferrer"
+              className="font-medium text-gray-900 hover:underline text-sm">
+              {item.event_name}
+            </a>
+          ) : (
+            <span className="font-medium text-gray-900 text-sm">{item.event_name}</span>
+          )}
+          {item.is_new && (
+            <span className="inline-block px-1.5 py-0.5 rounded text-xs font-medium bg-green-100 text-green-700">Neu</span>
+          )}
+        </div>
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded">{item.company}</span>
+          {item.event_location && (
+            <span className="text-xs text-gray-400">{item.event_location}</span>
+          )}
+          {item.event_type && (
+            <span className="text-xs text-gray-400 italic">{item.event_type}</span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function EventsCalendarSection({ upcoming, newly_discovered }: {
+  upcoming: EventCalendarItem[];
+  newly_discovered: EventCalendarItem[];
+}) {
+  return (
+    <div className="space-y-6">
+      {upcoming.length > 0 && (
+        <div>
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Nächste 14 Tage</p>
+          <div className="space-y-3">
+            {upcoming.map((item) => <EventItem key={item.signal_id} item={item} />)}
+          </div>
+        </div>
+      )}
+      {newly_discovered.length > 0 && (
+        <div>
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Neu entdeckt</p>
+          <div className="space-y-3">
+            {newly_discovered.map((item) => <EventItem key={item.signal_id} item={item} />)}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 function SectionItems({ items }: { items: DigestSectionItem[] }) {
@@ -93,15 +158,40 @@ export default function WeeklyDigest() {
 
     for (const section of digest.sections ?? []) {
       text += `${section.title}\n${'─'.repeat(25)}\n`;
-      for (const item of section.items) {
-        text += `▸ ${item.title} (${item.company})\n`;
-        text += `  ${item.narrative}`;
-        if (item.implication_for_us) text += ` ${item.implication_for_us}`;
-        text += '\n';
-        const source = [item.source_domain, item.source_title].filter(Boolean).join(' — ');
-        if (source) text += `  Quelle: ${source}\n`;
-        if (item.source_url) text += `  ${item.source_url}\n`;
-        text += '\n';
+      if (section.key === 'events_calendar') {
+        if (section.upcoming?.length) {
+          text += `Nächste 14 Tage:\n`;
+          for (const item of section.upcoming) {
+            text += `▸ ${item.event_name} (${item.company})${item.is_new ? ' ★ Neu' : ''}\n`;
+            text += `  ${formatEventDate(item.event_date)}`;
+            if (item.event_location) text += ` — ${item.event_location}`;
+            text += '\n';
+            if (item.source_url) text += `  ${item.source_url}\n`;
+            text += '\n';
+          }
+        }
+        if (section.newly_discovered?.length) {
+          text += `Neu entdeckt:\n`;
+          for (const item of section.newly_discovered) {
+            text += `▸ ${item.event_name} (${item.company})\n`;
+            text += `  ${formatEventDate(item.event_date)}`;
+            if (item.event_location) text += ` — ${item.event_location}`;
+            text += '\n';
+            if (item.source_url) text += `  ${item.source_url}\n`;
+            text += '\n';
+          }
+        }
+      } else {
+        for (const item of section.items) {
+          text += `▸ ${item.title} (${item.company})\n`;
+          text += `  ${item.narrative}`;
+          if (item.implication_for_us) text += ` ${item.implication_for_us}`;
+          text += '\n';
+          const source = [item.source_domain, item.source_title].filter(Boolean).join(' — ');
+          if (source) text += `  Quelle: ${source}\n`;
+          if (item.source_url) text += `  ${item.source_url}\n`;
+          text += '\n';
+        }
       }
       text += '\n';
     }
@@ -208,7 +298,14 @@ export default function WeeklyDigest() {
                         <h3 className="text-base font-semibold text-gray-900 mb-3 pb-2 border-b border-gray-200">
                           {section.title}
                         </h3>
-                        <SectionItems items={section.items} />
+                        {section.key === 'events_calendar' ? (
+                          <EventsCalendarSection
+                            upcoming={section.upcoming ?? []}
+                            newly_discovered={section.newly_discovered ?? []}
+                          />
+                        ) : (
+                          <SectionItems items={section.items} />
+                        )}
                       </div>
                     ))}
                   </div>

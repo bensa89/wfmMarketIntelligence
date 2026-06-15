@@ -9,6 +9,7 @@ from app.digester.sections import SECTIONS
 from app.digester.candidates import query_candidates, build_candidate_dict
 from app.digester.dedup import get_prev_signal_index, should_include
 from app.digester.curator import curate_section, generate_intro_summary
+from app.digester.events import build_event_calendar_section
 
 
 def _get_week_range() -> tuple[date, date]:
@@ -89,6 +90,10 @@ def generate_digest(db: Session) -> WeeklyDigest:
                 }
             )
             selected_signal_ids.update(item["signal_id"] for item in items)
+
+    event_section = build_event_calendar_section(db, week_start)
+    if event_section:
+        built_sections.append(event_section)
 
     summary = generate_intro_summary(built_sections) if built_sections else ""
 

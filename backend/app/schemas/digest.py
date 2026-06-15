@@ -31,10 +31,25 @@ class DigestSectionItem(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class EventCalendarItem(BaseModel):
+    signal_id: str
+    event_name: Optional[str] = None
+    event_date: Optional[str] = None
+    event_location: Optional[str] = None
+    event_type: Optional[str] = None
+    company: str
+    source_url: Optional[str] = None
+    is_new: bool = False
+
+    model_config = {"from_attributes": True}
+
+
 class DigestSection(BaseModel):
     key: str
     title: str
     items: list[DigestSectionItem] = []
+    upcoming: list[EventCalendarItem] = []
+    newly_discovered: list[EventCalendarItem] = []
 
     model_config = {"from_attributes": True}
 

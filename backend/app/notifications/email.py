@@ -104,6 +104,17 @@ def send_digest_email(
     logger.info("Digest email sent successfully")
 
 
+def _format_event_date_plain(date_str: str | None) -> str:
+    if not date_str:
+        return ""
+    try:
+        from datetime import date as _date
+        d = _date.fromisoformat(date_str)
+        return f"{d.day:02d}. {_MONTHS_DE[d.month - 1]} {d.year}"
+    except (ValueError, IndexError):
+        return date_str
+
+
 def _build_plain_text(digest, date_range: str, digest_url: str, signals_url: str, sections: list, signal_count: int) -> str:
     signal_label = "1 Signal" if signal_count == 1 else f"{signal_count} Signale"
     lines = [
@@ -115,16 +126,41 @@ def _build_plain_text(digest, date_range: str, digest_url: str, signals_url: str
         lines += [digest.summary, ""]
     for section in sections:
         lines += [f"== {section['title']} ==", ""]
-        for item in section.get("items", []):
-            lines += [
-                f"[{item['company']}] {item['title']}",
-                item.get("narrative", ""),
-            ]
-            if item.get("implication_for_us"):
-                lines += [f"Implikation: {item['implication_for_us']}"]
-            if item.get("source_url"):
-                lines += [f"Quelle: {item['source_url']}"]
-            lines += [""]
+        if section.get("key") == "events_calendar":
+            upcoming = section.get("upcoming", [])
+            newly = section.get("newly_discovered", [])
+            if upcoming:
+                lines += ["-- Nächste 14 Tage --", ""]
+                for item in upcoming:
+                    marker = " [NEU]" if item.get("is_new") else ""
+                    lines.append(f"▸ {item.get('event_name', '')} ({item.get('company', '')}){marker}")
+                    date_str = _format_event_date_plain(item.get("event_date"))
+                    loc = item.get("event_location")
+                    lines.append(f"  {date_str}{(' — ' + loc) if loc else ''}")
+                    if item.get("source_url"):
+                        lines.append(f"  {item['source_url']}")
+                    lines.append("")
+            if newly:
+                lines += ["-- Neu entdeckt --", ""]
+                for item in newly:
+                    lines.append(f"▸ {item.get('event_name', '')} ({item.get('company', '')})")
+                    date_str = _format_event_date_plain(item.get("event_date"))
+                    loc = item.get("event_location")
+                    lines.append(f"  {date_str}{(' — ' + loc) if loc else ''}")
+                    if item.get("source_url"):
+                        lines.append(f"  {item['source_url']}")
+                    lines.append("")
+        else:
+            for item in section.get("items", []):
+                lines += [
+                    f"[{item['company']}] {item['title']}",
+                    item.get("narrative", ""),
+                ]
+                if item.get("implication_for_us"):
+                    lines += [f"Implikation: {item['implication_for_us']}"]
+                if item.get("source_url"):
+                    lines += [f"Quelle: {item['source_url']}"]
+                lines += [""]
     lines += [f"Alle Signals dieser Woche: {signals_url}", f"Digest öffnen: {digest_url}"]
     return "\n".join(lines)
 
@@ -200,12 +236,110 @@ def _render_items(items: list, company_logos: dict) -> str:
     return "\n".join(parts)
 
 
+def _format_event_date_html(date_str: str | None) -> str:
+    if not date_str:
+        return ""
+    try:
+        from datetime import date as _date
+        d = _date.fromisoformat(date_str)
+        return f"{d.day:02d}. {_MONTHS_DE[d.month - 1]} {d.year}"
+    except (ValueError, IndexError):
+        return html.escape(date_str)
+
+
+def _render_event_items(items: list, show_new_badge: bool) -> str:
+    parts = []
+    for i, item in enumerate(items):
+        border = "border-bottom:1px solid #f1f5f9;" if i < len(items) - 1 else ""
+        event_name = html.escape(item.get("event_name") or "")
+        company = html.escape(item.get("company") or "")
+        location = html.escape(item.get("event_location") or "")
+        event_type = html.escape(item.get("event_type") or "")
+        date_label = _format_event_date_html(item.get("event_date"))
+        source_url = item.get("source_url") or ""
+        is_new = show_new_badge and item.get("is_new", False)
+
+        new_badge = ""
+        if is_new:
+            new_badge = '<span style="background:#dcfce7;color:#166534;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;margin-left:8px;">NEU</span>'
+
+        title_cell = (
+            f'<a href="{html.escape(source_url)}" style="color:#0f172a;text-decoration:none;font-weight:600;font-size:14px;">{event_name}</a>'
+            if source_url else
+            f'<span style="font-weight:600;font-size:14px;color:#0f172a;">{event_name}</span>'
+        )
+
+        meta_parts = [p for p in [date_label, location, event_type] if p]
+        meta = " · ".join(meta_parts)
+
+        parts.append(f"""
+        <tr>
+          <td style="padding:14px 0;{border}">
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="width:110px;vertical-align:top;padding-right:16px;">
+                  <span style="color:#64748b;font-size:12px;">{date_label}</span>
+                </td>
+                <td style="vertical-align:top;">
+                  <div>{title_cell}{new_badge}</div>
+                  <div style="margin-top:4px;">
+                    <span style="background:#f1f5f9;color:#475569;font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;">{company}</span>
+                    {f'<span style="color:#94a3b8;font-size:11px;margin-left:8px;">{" · ".join(p for p in [location, event_type] if p)}</span>' if location or event_type else ''}
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>""")
+    return "\n".join(parts)
+
+
+def _render_event_calendar_section(section: dict) -> str:
+    title = html.escape(section.get("title", "Events"))
+    upcoming = section.get("upcoming", [])
+    newly = section.get("newly_discovered", [])
+
+    blocks = ""
+    if upcoming:
+        rows = _render_event_items(upcoming, show_new_badge=True)
+        blocks += f"""
+        <tr>
+          <td style="padding:12px 0 4px;">
+            <p style="margin:0;color:#94a3b8;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">Nächste 14 Tage</p>
+          </td>
+        </tr>
+        {rows}"""
+
+    if newly:
+        rows = _render_event_items(newly, show_new_badge=False)
+        blocks += f"""
+        <tr>
+          <td style="padding:16px 0 4px;">
+            <p style="margin:0;color:#94a3b8;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">Neu entdeckt</p>
+          </td>
+        </tr>
+        {rows}"""
+
+    return f"""
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:32px;">
+          <tr>
+            <td style="padding-bottom:14px;border-bottom:2px solid #f1f5f9;">
+              <h2 style="margin:0;color:#0f172a;font-size:13px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;">{title}</h2>
+            </td>
+          </tr>
+          {blocks}
+        </table>"""
+
+
 def _render_sections(sections: list, company_logos: dict) -> str:
     parts = []
     for section in sections:
-        title = html.escape(section.get("title", ""))
-        items_html = _render_items(section.get("items", []), company_logos)
-        parts.append(f"""
+        if section.get("key") == "events_calendar":
+            parts.append(_render_event_calendar_section(section))
+        else:
+            title = html.escape(section.get("title", ""))
+            items_html = _render_items(section.get("items", []), company_logos)
+            parts.append(f"""
         <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:32px;">
           <tr>
             <td style="padding-bottom:14px;border-bottom:2px solid #f1f5f9;">
