@@ -256,7 +256,7 @@ For each new event return a JSON object with exactly these keys:
 Return ONLY a valid JSON array. If no new inline events are found, return [].
 """
     try:
-        raw = call_llm(prompt, max_tokens=1500)
+        raw = call_llm(prompt, max_tokens=1500, caller="crawler:event-extraction")
         match = re.search(r"\[.*\]", raw, re.DOTALL)
         if not match:
             return []

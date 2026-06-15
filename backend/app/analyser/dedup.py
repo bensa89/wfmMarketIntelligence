@@ -137,7 +137,7 @@ def _llm_dedup_batched(
             continue
         valid_ids = {s.id for s in batch}
         prompt = build_dedup_prompt(batch)
-        raw_response = call_llm(prompt)
+        raw_response = call_llm(prompt, caller="analyser:dedup")
         merge_groups = _parse_merge_groups(raw_response, valid_ids)
         for group_ids in merge_groups:
             group_signals = [s for s in batch if s.id in group_ids]

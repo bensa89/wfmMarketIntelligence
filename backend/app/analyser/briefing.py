@@ -119,4 +119,4 @@ def generate_briefing_content(db: Session, crawl_run_id: Optional[str] = None) -
     }
 
     prompt = _build_briefing_prompt(ctx)
-    return call_llm(prompt, max_tokens=2048)
+    return call_llm(prompt, max_tokens=2048, caller="analyser:crawl-briefing")

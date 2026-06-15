@@ -164,7 +164,7 @@ def curate_risks_opportunities_watchpoints(db: Session) -> tuple[list, list, lis
 
     prompt = _build_curation_prompt(all_items, context)
     try:
-        raw = call_llm(prompt, max_tokens=2048)
+        raw = call_llm(prompt, max_tokens=2048, caller="assessor:intel-briefing:curation")
         import re
         raw = re.sub(r"^```(?:json)?\s*", "", raw.strip(), flags=re.IGNORECASE)
         raw = re.sub(r"\s*```$", "", raw)
@@ -223,5 +223,5 @@ def generate_intelligence_briefing(db: Session) -> tuple[str, int, int]:
         }
 
     prompt = _build_prompt(signals_data, assessments_data, context)
-    content = call_llm(prompt, max_tokens=2048)
+    content = call_llm(prompt, max_tokens=2048, caller="assessor:intel-briefing:generate")
     return content, len(signals_data), len(assessments_data)

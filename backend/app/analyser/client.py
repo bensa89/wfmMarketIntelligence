@@ -35,7 +35,8 @@ def _get_opencode_client():
     return _opencode_client
 
 
-def call_llm(prompt: str, max_tokens: int = 1024) -> str:
+def call_llm(prompt: str, max_tokens: int = 1024, caller: str = "") -> str:
+    logger.info("LLM call [caller=%s provider=%s max_tokens=%d]", caller or "unknown", settings.llm_provider, max_tokens)
     if settings.llm_provider == "ollama":
         return _call_ollama(prompt, max_tokens=max_tokens)
     if settings.llm_provider == "opencode":

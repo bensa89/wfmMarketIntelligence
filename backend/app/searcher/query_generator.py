@@ -60,7 +60,7 @@ Respond ONLY with a JSON array:
 
 No markdown fences, no extra text."""
 
-    raw = call_llm(prompt)
+    raw = call_llm(prompt, caller="searcher:competitive-queries")
     return _parse_query_list(raw)
 
 
@@ -80,5 +80,5 @@ Respond ONLY with a JSON array:
 
 No markdown fences, no extra text."""
 
-    raw = call_llm(prompt)
+    raw = call_llm(prompt, caller="searcher:trend-queries")
     return _parse_query_list(raw)

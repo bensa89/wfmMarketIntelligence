@@ -43,7 +43,7 @@ def assess_signal(signal: Signal, db: Session) -> SignalAssessment | None:
     parsed = None
     for attempt in range(MAX_RETRIES + 1):
         try:
-            raw = call_llm(prompt)
+            raw = call_llm(prompt, caller="assessor:signal-assessment")
         except Exception as exc:
             logger.warning("call_llm raised on attempt %d/%d for signal %s: %s", attempt + 1, MAX_RETRIES + 1, signal.id, exc)
             continue

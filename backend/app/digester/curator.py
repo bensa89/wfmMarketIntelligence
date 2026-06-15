@@ -19,7 +19,7 @@ def curate_section(
     prompt = build_section_curation_prompt(
         section_title, candidates, prev_section_items, context_summary
     )
-    response = call_llm(prompt, max_tokens=2048)
+    response = call_llm(prompt, max_tokens=2048, caller="digester:section-curation")
 
     try:
         data = json.loads(response)
@@ -54,7 +54,7 @@ def curate_section(
 
 def generate_intro_summary(sections: list[dict]) -> str:
     prompt = build_intro_summary_prompt(sections)
-    response = call_llm(prompt, max_tokens=256)
+    response = call_llm(prompt, max_tokens=256, caller="digester:intro-summary")
     try:
         data = json.loads(response)
         return data.get("summary", "")

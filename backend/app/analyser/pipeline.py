@@ -105,7 +105,7 @@ def analyse_document(
         word_count,
     )
     prompt = build_analysis_prompt(doc.content_markdown, context)
-    raw_response = call_llm(prompt)
+    raw_response = call_llm(prompt, caller="analyser:signal-extraction")
     signal_data = parse_llm_response(raw_response)
 
     if signal_data is None:
