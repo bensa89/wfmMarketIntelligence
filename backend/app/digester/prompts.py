@@ -49,6 +49,27 @@ Regeln:
 """
 
 
+def build_risks_opportunities_prompt(sections: list[dict], context_summary: str) -> str:
+    items_text = "\n".join(
+        f"- [{section['title']}] {item.get('company', '')} — {item.get('title', '')}\n"
+        f"  Narrative: {item.get('narrative', '')}\n"
+        f"  Implication: {item.get('implication_for_us', '')}"
+        for section in sections
+        for item in section.get("items", [])
+        if section.get("key") != "events_calendar"
+    )
+    return (
+        "Du bist ein strategischer Competitive-Intelligence-Analyst für ein WFM-Softwareunternehmen.\n"
+        f"Unser Kontext: {context_summary}\n\n"
+        "Basierend auf den kuratierten Signalen dieser Woche: identifiziere die 2 wichtigsten Risks "
+        "und die 2 wichtigsten Opportunities für unser Unternehmen.\n\n"
+        f"Kuratierte Signale:\n{items_text}\n\n"
+        "Antworte AUSSCHLIESSLICH als valides JSON, auf Deutsch, ohne Prosa:\n"
+        '{"risks": [{"text": "<1 klarer Satz>", "company_name": "<Competitor>"}, ...], '
+        '"opportunities": [{"text": "<1 klarer Satz>", "company_name": "<Competitor>"}, ...]}'
+    )
+
+
 def build_intro_summary_prompt(sections: list[dict]) -> str:
     items_text = "\n".join(
         f"[{section['title']}] {item.get('title', '')} ({item.get('company', '')})"

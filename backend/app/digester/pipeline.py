@@ -5,11 +5,10 @@ from sqlalchemy.orm import Session
 
 from app.models.digest import WeeklyDigest
 from app.models.context import InternalCompanyContext
-from app.models.intelligence_briefing import IntelligenceBriefing
 from app.digester.sections import SECTIONS
 from app.digester.candidates import query_candidates, build_candidate_dict
 from app.digester.dedup import get_prev_signal_index, should_include
-from app.digester.curator import curate_section, generate_intro_summary
+from app.digester.curator import curate_section, generate_intro_summary, generate_digest_risks_opportunities
 from app.digester.events import build_event_calendar_section
 
 
@@ -97,15 +96,10 @@ def generate_digest(db: Session) -> WeeklyDigest:
         built_sections.append(event_section)
 
     summary = generate_intro_summary(built_sections) if built_sections else ""
-
-    latest_briefing = (
-        db.query(IntelligenceBriefing)
-        .filter(IntelligenceBriefing.curated_risks.isnot(None))
-        .order_by(IntelligenceBriefing.generated_at.desc())
-        .first()
+    digest_risks, digest_opportunities = (
+        generate_digest_risks_opportunities(built_sections, context_summary)
+        if built_sections else ([], [])
     )
-    digest_risks = (latest_briefing.curated_risks or [])[:2] if latest_briefing else []
-    digest_opportunities = (latest_briefing.curated_opportunities or [])[:2] if latest_briefing else []
 
     digest = WeeklyDigest(
         id=str(uuid.uuid4()),

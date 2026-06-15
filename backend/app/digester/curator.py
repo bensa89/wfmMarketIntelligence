@@ -4,6 +4,7 @@ from app.analyser.client import call_llm
 from app.digester.prompts import (
     build_section_curation_prompt,
     build_intro_summary_prompt,
+    build_risks_opportunities_prompt,
 )
 
 
@@ -50,6 +51,18 @@ def curate_section(
             }
         )
     return result
+
+
+def generate_digest_risks_opportunities(sections: list[dict], context_summary: str) -> tuple[list, list]:
+    if not any(s.get("items") for s in sections if s.get("key") != "events_calendar"):
+        return [], []
+    prompt = build_risks_opportunities_prompt(sections, context_summary)
+    response = call_llm(prompt, max_tokens=512, caller="digester:risks-opportunities")
+    try:
+        data = json.loads(response)
+        return data.get("risks", [])[:2], data.get("opportunities", [])[:2]
+    except (json.JSONDecodeError, AttributeError):
+        return [], []
 
 
 def generate_intro_summary(sections: list[dict]) -> str:
