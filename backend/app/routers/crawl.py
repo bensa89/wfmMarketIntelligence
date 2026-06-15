@@ -142,6 +142,7 @@ def _crawl_source_worker(
 def _run_crawl_background(
     crawl_run_id: str,
     source_ids: List[str],
+    run_post_processing: bool = False,
 ) -> None:
     thread_db = SessionLocal()
     try:
@@ -289,39 +290,60 @@ def _run_crawl_background(
             except Exception as e:
                 logger.warning("Auto-briefing generation failed: %s", e)
 
-            try:
-                from app.models.signal import Signal
-                from app.models.company import Company
-                from app.assessor.summarizer import generate_competitor_summary
+            if run_post_processing:
+                try:
+                    from app.models.signal import Signal
+                    from app.models.company import Company
+                    from app.assessor.summarizer import generate_competitor_summary
 
-                crawl_run = thread_db.query(CrawlRun).filter(CrawlRun.id == crawl_run_id).first()
-                if crawl_run and crawl_run.started_at is not None:
-                    company_ids_with_new_signals = (
-                        thread_db.query(Signal.company_id)
-                        .filter(Signal.created_at >= crawl_run.started_at)
-                        .distinct()
-                        .all()
+                    crawl_run = thread_db.query(CrawlRun).filter(CrawlRun.id == crawl_run_id).first()
+                    if crawl_run and crawl_run.started_at is not None:
+                        company_ids_with_new_signals = (
+                            thread_db.query(Signal.company_id)
+                            .filter(Signal.created_at >= crawl_run.started_at)
+                            .distinct()
+                            .all()
+                        )
+                        for (cid,) in company_ids_with_new_signals:
+                            company = thread_db.query(Company).filter(Company.id == cid).first()
+                            if company:
+                                for period in ("7d", "30d"):
+                                    try:
+                                        generate_competitor_summary(company, period, thread_db)
+                                    except Exception as period_exc:
+                                        logger.warning(
+                                            "Summary gen failed for %s/%s: %s",
+                                            company.name,
+                                            period,
+                                            period_exc,
+                                        )
+                    elif crawl_run:
+                        logger.warning(
+                            "Skipping post-crawl summary: crawl_run.started_at is None for run %s",
+                            crawl_run_id,
+                        )
+                except Exception as e:
+                    logger.warning("Post-crawl summary trigger failed: %s", e)
+
+                try:
+                    from app.assessor.intel_briefing import generate_intelligence_briefing, curate_risks_opportunities_watchpoints
+                    from app.models.intelligence_briefing import IntelligenceBriefing
+
+                    content, signal_count, assessment_count = generate_intelligence_briefing(thread_db)
+                    curated_risks, curated_opportunities, curated_watchpoints = curate_risks_opportunities_watchpoints(thread_db)
+                    intel_briefing = IntelligenceBriefing(
+                        content=content,
+                        signal_count=signal_count,
+                        assessment_count=assessment_count,
+                        generated_at=datetime.now(timezone.utc),
+                        curated_risks=curated_risks or None,
+                        curated_opportunities=curated_opportunities or None,
+                        curated_watchpoints=curated_watchpoints or None,
                     )
-                    for (cid,) in company_ids_with_new_signals:
-                        company = thread_db.query(Company).filter(Company.id == cid).first()
-                        if company:
-                            for period in ("7d", "30d"):
-                                try:
-                                    generate_competitor_summary(company, period, thread_db)
-                                except Exception as period_exc:
-                                    logger.warning(
-                                        "Summary gen failed for %s/%s: %s",
-                                        company.name,
-                                        period,
-                                        period_exc,
-                                    )
-                elif crawl_run:
-                    logger.warning(
-                        "Skipping post-crawl summary: crawl_run.started_at is None for run %s",
-                        crawl_run_id,
-                    )
-            except Exception as e:
-                logger.warning("Post-crawl summary trigger failed: %s", e)
+                    thread_db.add(intel_briefing)
+                    thread_db.commit()
+                except Exception as e:
+                    logger.warning("Auto-intelligence-briefing generation failed: %s", e)
 
             # Auto-start queued run if one exists
             queued_run = (
@@ -336,7 +358,7 @@ def _run_crawl_background(
                 thread_db.commit()
                 threading.Thread(
                     target=_run_crawl_background,
-                    args=(queued_run.id, queued_source_ids),
+                    args=(queued_run.id, queued_source_ids, run_post_processing),
                     daemon=True,
                 ).start()
 
@@ -482,7 +504,7 @@ def start_crawl_background(db: Session = Depends(get_db)) -> Dict[str, Any]:
     crawl_run = _create_crawl_run(source_ids, db)
     threading.Thread(
         target=_run_crawl_background,
-        args=(crawl_run.id, source_ids),
+        args=(crawl_run.id, source_ids, True),
         daemon=True,
     ).start()
     return {"crawl_run_id": crawl_run.id, "status": "running", "total_sources": len(source_ids)}

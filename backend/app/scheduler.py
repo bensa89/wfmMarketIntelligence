@@ -113,7 +113,7 @@ def scheduled_crawl_job() -> None:
         return
 
     # Run crawl synchronously — APScheduler executes jobs in a threadpool
-    _run_crawl_background(crawl_run_id, source_ids)
+    _run_crawl_background(crawl_run_id, source_ids, run_post_processing=True)
     logger.info("Scheduled crawl job finished: run_id=%s", crawl_run_id)
 
     # Generate digest if configured
