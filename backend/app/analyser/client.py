@@ -1,7 +1,15 @@
+import time
+import logging
+
 from app.config import settings
+
+logger = logging.getLogger(__name__)
 
 _anthropic_client = None
 _opencode_client = None
+
+_OPENCODE_RETRY_ATTEMPTS = 3
+_OPENCODE_RETRY_BACKOFF = 30  # seconds; error says retry_after=120 but 30s is enough for transient 524s
 
 
 def _get_anthropic_client():
@@ -22,7 +30,7 @@ def _get_opencode_client():
             api_key=settings.opencode_api_key,
             base_url=settings.opencode_base_url,
             timeout=180.0,
-            max_retries=1,
+            max_retries=0,  # we handle retries ourselves
         )
     return _opencode_client
 
@@ -46,13 +54,31 @@ def _call_claude(prompt: str, max_tokens: int = 1024) -> str:
 
 
 def _call_opencode(prompt: str, max_tokens: int = 1024) -> str:
+    """Stream the response to avoid Cloudflare's 120-second proxy timeout (error 524)."""
     client = _get_opencode_client()
-    response = client.chat.completions.create(
-        model=settings.opencode_model,
-        max_tokens=max_tokens,
-        messages=[{"role": "user", "content": prompt}],
-    )
-    return response.choices[0].message.content
+    last_exc: Exception | None = None
+    for attempt in range(_OPENCODE_RETRY_ATTEMPTS):
+        if attempt > 0:
+            wait = _OPENCODE_RETRY_BACKOFF * attempt
+            logger.warning("opencode retry %d/%d after %ds", attempt + 1, _OPENCODE_RETRY_ATTEMPTS, wait)
+            time.sleep(wait)
+        try:
+            chunks: list[str] = []
+            with client.chat.completions.create(
+                model=settings.opencode_model,
+                max_tokens=max_tokens,
+                messages=[{"role": "user", "content": prompt}],
+                stream=True,
+            ) as stream:
+                for chunk in stream:
+                    delta = chunk.choices[0].delta.content
+                    if delta:
+                        chunks.append(delta)
+            return "".join(chunks)
+        except Exception as exc:
+            last_exc = exc
+            logger.warning("opencode attempt %d failed: %s", attempt + 1, exc)
+    raise last_exc
 
 
 def _call_ollama(prompt: str, max_tokens: int = 1024) -> str:
