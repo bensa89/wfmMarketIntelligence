@@ -15,6 +15,7 @@ def test_overview_endpoint_returns_expected_keys(client):
     assert "recent_market_shaping" in data
     assert "emerging_risks" in data
     assert "emerging_opportunities" in data
+    assert "emerging_watchpoints" in data
 
 
 def test_signals_feed_returns_paginated_response(client):

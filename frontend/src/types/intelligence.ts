@@ -79,8 +79,9 @@ export interface OverviewResponse {
   top_movers_30d: CompetitorMover[];
   capability_heatmap: HeatmapRow[];
   recent_market_shaping: SignalFeedItem[];
-  emerging_risks: string[];
-  emerging_opportunities: string[];
+  emerging_risks: RiskItem[];
+  emerging_opportunities: RiskItem[];
+  emerging_watchpoints: RiskItem[];
 }
 
 export interface CapabilityCount {
@@ -104,6 +105,9 @@ export interface RiskItem {
   text: string;
   signal_ids?: string[];
   is_new?: boolean;
+  company_id?: string;
+  company_name?: string;
+  company_slug?: string;
 }
 
 export interface CompetitorSummary {

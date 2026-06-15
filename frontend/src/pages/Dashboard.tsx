@@ -25,6 +25,7 @@ import MarketShapingFeed from '../components/overview/MarketShapingFeed';
 import RisksOpportunitiesPanel from '../components/overview/RisksOpportunitiesPanel';
 import EventTimelinePanel from '../components/overview/EventTimelinePanel';
 import SignalDetailDrawer from '../components/signals/SignalDetailDrawer';
+import { ScorecardSignalDrawer } from '../components/scorecard/ScorecardSignalDrawer';
 
 import { Play, Loader2 } from 'lucide-react';
 import type { SignalType, Signal } from '../types';
@@ -41,6 +42,7 @@ export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSignal, setSelectedSignal] = useState<Signal | null>(null);
   const [selectedOverviewSignal, setSelectedOverviewSignal] = useState<SignalFeedItem | null>(null);
+  const [selectedRiskSignalId, setSelectedRiskSignalId] = useState<string | null>(null);
   const { start: startCrawl, isRunning: isCrawlRunning, run: crawlRun, phase: crawlPhase } = useCrawlStatus();
   const { activeRun } = useActiveCrawlRun();
   const { lastCrawl } = useLastCompletedCrawl();
@@ -129,7 +131,12 @@ export default function Dashboard() {
         {overviewData && (
           <div className="grid grid-cols-2 gap-4 mb-4">
             <MarketShapingFeed signals={overviewData.recent_market_shaping} onSelect={setSelectedOverviewSignal} />
-            <RisksOpportunitiesPanel risks={overviewData.emerging_risks} opportunities={overviewData.emerging_opportunities} />
+            <RisksOpportunitiesPanel
+              risks={overviewData.emerging_risks}
+              opportunities={overviewData.emerging_opportunities}
+              watchpoints={overviewData.emerging_watchpoints}
+              onSelectSignal={setSelectedRiskSignalId}
+            />
           </div>
         )}
 
@@ -200,6 +207,7 @@ export default function Dashboard() {
         {selectedOverviewSignal && (
           <SignalDetailDrawer item={selectedOverviewSignal} onClose={() => setSelectedOverviewSignal(null)} />
         )}
+        <ScorecardSignalDrawer signalId={selectedRiskSignalId} onClose={() => setSelectedRiskSignalId(null)} />
         {selectedSignal && (
           <SignalDocumentModal signal={selectedSignal} onClose={() => setSelectedSignal(null)} />
         )}

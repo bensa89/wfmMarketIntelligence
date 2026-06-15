@@ -206,8 +206,40 @@ def get_overview(db: Session = Depends(get_db)) -> dict:
         .all()
     )
 
-    emerging_risks: list[str] = []
-    emerging_opportunities: list[str] = []
+    def _to_overview_item(raw: dict | str, company: Company) -> dict:
+        if isinstance(raw, dict):
+            return {
+                "text": raw.get("text", ""),
+                "signal_ids": raw.get("signal_ids") or [],
+                "is_new": raw.get("is_new", False),
+                "company_id": company.id,
+                "company_name": company.name,
+                "company_slug": company.slug,
+            }
+        return {
+            "text": raw,
+            "signal_ids": [],
+            "is_new": False,
+            "company_id": company.id,
+            "company_name": company.name,
+            "company_slug": company.slug,
+        }
+
+    def _dedup(items: list[dict], max_items: int = 10) -> list[dict]:
+        seen: set[str] = set()
+        result = []
+        for item in items:
+            key = item["text"].strip().lower()
+            if key and key not in seen:
+                seen.add(key)
+                result.append(item)
+                if len(result) >= max_items:
+                    break
+        return result
+
+    emerging_risks: list[dict] = []
+    emerging_opportunities: list[dict] = []
+    emerging_watchpoints: list[dict] = []
     companies_with_summaries = (
         db.query(CompetitorSummary.company_id)
         .filter(CompetitorSummary.period_type == PeriodType.thirty_days)
@@ -215,6 +247,9 @@ def get_overview(db: Session = Depends(get_db)) -> dict:
         .all()
     )
     for (cid,) in companies_with_summaries:
+        company = db.query(Company).filter(Company.id == cid).first()
+        if not company:
+            continue
         latest = (
             db.query(CompetitorSummary)
             .filter(
@@ -226,17 +261,23 @@ def get_overview(db: Session = Depends(get_db)) -> dict:
         )
         if latest:
             emerging_risks.extend(
-                item["text"] if isinstance(item, dict) else item
+                _to_overview_item(item, company)
                 for item in (latest.top_risks or [])
                 if item
             )
             emerging_opportunities.extend(
-                item["text"] if isinstance(item, dict) else item
+                _to_overview_item(item, company)
                 for item in (latest.top_opportunities or [])
                 if item
             )
-    emerging_risks = list(dict.fromkeys(emerging_risks))[:10]
-    emerging_opportunities = list(dict.fromkeys(emerging_opportunities))[:10]
+            emerging_watchpoints.extend(
+                _to_overview_item(item, company)
+                for item in (latest.watchpoints or [])
+                if item
+            )
+    emerging_risks = _dedup(emerging_risks)
+    emerging_opportunities = _dedup(emerging_opportunities)
+    emerging_watchpoints = _dedup(emerging_watchpoints)
 
     return {
         "top_movers_7d": _top_movers(cutoff_7d),
@@ -249,6 +290,7 @@ def get_overview(db: Session = Depends(get_db)) -> dict:
         ],
         "emerging_risks": emerging_risks,
         "emerging_opportunities": emerging_opportunities,
+        "emerging_watchpoints": emerging_watchpoints,
     }
 
 
