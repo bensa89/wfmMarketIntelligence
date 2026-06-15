@@ -11,6 +11,7 @@ from app.models.company import Company
 from app.models.signal import Signal
 from app.models.signal_assessment import SignalAssessment, MovementStrength
 from app.models.competitor_summary import CompetitorSummary, PeriodType
+from app.models.intelligence_briefing import IntelligenceBriefing
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -237,47 +238,60 @@ def get_overview(db: Session = Depends(get_db)) -> dict:
                     break
         return result
 
-    emerging_risks: list[dict] = []
-    emerging_opportunities: list[dict] = []
-    emerging_watchpoints: list[dict] = []
-    companies_with_summaries = (
-        db.query(CompetitorSummary.company_id)
-        .filter(CompetitorSummary.period_type == PeriodType.thirty_days)
-        .distinct()
-        .all()
+    # Use LLM-curated items from latest briefing if available, else fall back to mechanical aggregation
+    latest_briefing = (
+        db.query(IntelligenceBriefing)
+        .filter(IntelligenceBriefing.curated_risks.isnot(None))
+        .order_by(IntelligenceBriefing.generated_at.desc())
+        .first()
     )
-    for (cid,) in companies_with_summaries:
-        company = db.query(Company).filter(Company.id == cid).first()
-        if not company:
-            continue
-        latest = (
-            db.query(CompetitorSummary)
-            .filter(
-                CompetitorSummary.company_id == cid,
-                CompetitorSummary.period_type == PeriodType.thirty_days,
-            )
-            .order_by(CompetitorSummary.created_at.desc())
-            .first()
+
+    if latest_briefing:
+        emerging_risks: list[dict] = latest_briefing.curated_risks or []
+        emerging_opportunities: list[dict] = latest_briefing.curated_opportunities or []
+        emerging_watchpoints: list[dict] = latest_briefing.curated_watchpoints or []
+    else:
+        emerging_risks = []
+        emerging_opportunities = []
+        emerging_watchpoints = []
+        companies_with_summaries = (
+            db.query(CompetitorSummary.company_id)
+            .filter(CompetitorSummary.period_type == PeriodType.thirty_days)
+            .distinct()
+            .all()
         )
-        if latest:
-            emerging_risks.extend(
-                _to_overview_item(item, company)
-                for item in (latest.top_risks or [])
-                if item
+        for (cid,) in companies_with_summaries:
+            company = db.query(Company).filter(Company.id == cid).first()
+            if not company:
+                continue
+            latest = (
+                db.query(CompetitorSummary)
+                .filter(
+                    CompetitorSummary.company_id == cid,
+                    CompetitorSummary.period_type == PeriodType.thirty_days,
+                )
+                .order_by(CompetitorSummary.created_at.desc())
+                .first()
             )
-            emerging_opportunities.extend(
-                _to_overview_item(item, company)
-                for item in (latest.top_opportunities or [])
-                if item
-            )
-            emerging_watchpoints.extend(
-                _to_overview_item(item, company)
-                for item in (latest.watchpoints or [])
-                if item
-            )
-    emerging_risks = _dedup(emerging_risks)
-    emerging_opportunities = _dedup(emerging_opportunities)
-    emerging_watchpoints = _dedup(emerging_watchpoints)
+            if latest:
+                emerging_risks.extend(
+                    _to_overview_item(item, company)
+                    for item in (latest.top_risks or [])
+                    if item
+                )
+                emerging_opportunities.extend(
+                    _to_overview_item(item, company)
+                    for item in (latest.top_opportunities or [])
+                    if item
+                )
+                emerging_watchpoints.extend(
+                    _to_overview_item(item, company)
+                    for item in (latest.watchpoints or [])
+                    if item
+                )
+        emerging_risks = _dedup(emerging_risks)
+        emerging_opportunities = _dedup(emerging_opportunities)
+        emerging_watchpoints = _dedup(emerging_watchpoints)
 
     return {
         "top_movers_7d": _top_movers(cutoff_7d),

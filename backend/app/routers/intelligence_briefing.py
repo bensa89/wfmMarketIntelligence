@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.intelligence_briefing import IntelligenceBriefing
 from app.schemas.intelligence_briefing import IntelligenceBriefingRead
-from app.assessor.intel_briefing import generate_intelligence_briefing
+from app.assessor.intel_briefing import generate_intelligence_briefing, curate_risks_opportunities_watchpoints
 
 router = APIRouter()
 
@@ -25,11 +25,15 @@ def get_latest(db: Session = Depends(get_db)):
 @router.post("/generate", response_model=IntelligenceBriefingRead)
 def generate(db: Session = Depends(get_db)):
     content, signal_count, assessment_count = generate_intelligence_briefing(db)
+    curated_risks, curated_opportunities, curated_watchpoints = curate_risks_opportunities_watchpoints(db)
     briefing = IntelligenceBriefing(
         content=content,
         signal_count=signal_count,
         assessment_count=assessment_count,
         generated_at=datetime.now(timezone.utc),
+        curated_risks=curated_risks or None,
+        curated_opportunities=curated_opportunities or None,
+        curated_watchpoints=curated_watchpoints or None,
     )
     db.add(briefing)
     db.commit()

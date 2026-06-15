@@ -1,3 +1,5 @@
+import json
+import logging
 from datetime import datetime, timedelta, timezone
 from sqlalchemy.orm import Session
 
@@ -6,6 +8,9 @@ from app.models.signal import Signal
 from app.models.signal_assessment import SignalAssessment
 from app.models.company import Company
 from app.models.context import InternalCompanyContext
+from app.models.competitor_summary import CompetitorSummary, PeriodType
+
+logger = logging.getLogger(__name__)
 
 
 def _build_prompt(signals: list, assessments: list, context: dict) -> str:
@@ -70,6 +75,104 @@ def _build_prompt(signals: list, assessments: list, context: dict) -> str:
         "Maximal 3 Handlungsempfehlungen. Fokus auf konkrete, umsetzbare Maßnahmen für unser Produkt- oder GTM-Team.",
     ]
     return "\n".join(lines)
+
+
+def _build_curation_prompt(all_items: list[dict], context: dict) -> str:
+    lines = [
+        "Du bist ein strategischer Market Intelligence Analyst für ein WFM-Softwareunternehmen.",
+        "Unten sind alle Risks, Opportunities und Watchpoints aus den neuesten Competitor-Analysen (letzte 30 Tage).",
+        "Wähle jeweils die 4 strategisch wichtigsten Einträge pro Kategorie aus.",
+        "",
+        f"Unsere Kernkompetenzen: {', '.join(context.get('core_capabilities', []))}",
+        f"Strategische Prioritäten: {', '.join(context.get('strategic_priorities', []))}",
+        "",
+        "Alle Einträge (mit Competitor-Kontext):",
+        json.dumps(all_items, ensure_ascii=False, indent=2),
+        "",
+        "Gib exakt dieses JSON zurück (kein anderer Text):",
+        json.dumps({
+            "risks": [{"text": "<text>", "signal_ids": ["<id>"], "is_new": True, "company_id": "<id>", "company_name": "<name>", "company_slug": "<slug>"}],
+            "opportunities": [{"text": "<text>", "signal_ids": ["<id>"], "is_new": True, "company_id": "<id>", "company_name": "<name>", "company_slug": "<slug>"}],
+            "watchpoints": [{"text": "<text>", "signal_ids": ["<id>"], "is_new": True, "company_id": "<id>", "company_name": "<name>", "company_slug": "<slug>"}],
+        }, ensure_ascii=False, indent=2),
+        "",
+        "Regeln:",
+        "- Exakt 4 Einträge pro Kategorie (oder weniger wenn nicht genug vorhanden).",
+        "- Übernehme text, signal_ids, is_new, company_id, company_name, company_slug unverändert aus dem Input.",
+        "- Priorisiere nach strategischer Relevanz für uns (Marktpositionierung, Kundenverlust-Risiko, Differenzierungschancen).",
+        "- Keine Duplikate, keine neuen Formulierungen — nur Auswahl aus dem Input.",
+    ]
+    return "\n".join(lines)
+
+
+def curate_risks_opportunities_watchpoints(db: Session) -> tuple[list, list, list]:
+    """Returns (curated_risks, curated_opportunities, curated_watchpoints) as lists of RiskItem dicts."""
+    company_ids = (
+        db.query(CompetitorSummary.company_id)
+        .filter(CompetitorSummary.period_type == PeriodType.thirty_days)
+        .distinct()
+        .all()
+    )
+
+    all_risks: list[dict] = []
+    all_opportunities: list[dict] = []
+    all_watchpoints: list[dict] = []
+
+    for (cid,) in company_ids:
+        company = db.query(Company).filter(Company.id == cid).first()
+        if not company:
+            continue
+        latest = (
+            db.query(CompetitorSummary)
+            .filter(
+                CompetitorSummary.company_id == cid,
+                CompetitorSummary.period_type == PeriodType.thirty_days,
+            )
+            .order_by(CompetitorSummary.created_at.desc())
+            .first()
+        )
+        if not latest:
+            continue
+
+        def _enrich(raw: dict | str) -> dict:
+            if isinstance(raw, str):
+                raw = {"text": raw, "signal_ids": [], "is_new": False}
+            return {
+                "text": raw.get("text", ""),
+                "signal_ids": raw.get("signal_ids") or [],
+                "is_new": raw.get("is_new", False),
+                "company_id": company.id,
+                "company_name": company.name,
+                "company_slug": company.slug,
+            }
+
+        all_risks.extend(_enrich(r) for r in (latest.top_risks or []) if r)
+        all_opportunities.extend(_enrich(o) for o in (latest.top_opportunities or []) if o)
+        all_watchpoints.extend(_enrich(w) for w in (latest.watchpoints or []) if w)
+
+    if not any([all_risks, all_opportunities, all_watchpoints]):
+        return [], [], []
+
+    all_items = {"risks": all_risks, "opportunities": all_opportunities, "watchpoints": all_watchpoints}
+    ctx_record = db.query(InternalCompanyContext).first()
+    context = {}
+    if ctx_record:
+        context = {
+            "core_capabilities": ctx_record.core_capabilities or [],
+            "strategic_priorities": ctx_record.strategic_priorities or [],
+        }
+
+    prompt = _build_curation_prompt(all_items, context)
+    try:
+        raw = call_llm(prompt, max_tokens=2048)
+        import re
+        raw = re.sub(r"^```(?:json)?\s*", "", raw.strip(), flags=re.IGNORECASE)
+        raw = re.sub(r"\s*```$", "", raw)
+        data = json.loads(raw)
+        return data.get("risks", [])[:4], data.get("opportunities", [])[:4], data.get("watchpoints", [])[:4]
+    except Exception as e:
+        logger.warning("Curation LLM call failed: %s", e)
+        return all_risks[:4], all_opportunities[:4], all_watchpoints[:4]
 
 
 def generate_intelligence_briefing(db: Session) -> tuple[str, int, int]:

@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel
 from datetime import datetime
 
@@ -10,3 +11,6 @@ class IntelligenceBriefingRead(BaseModel):
     signal_count: int
     assessment_count: int
     generated_at: datetime
+    curated_risks: Optional[list] = None
+    curated_opportunities: Optional[list] = None
+    curated_watchpoints: Optional[list] = None
