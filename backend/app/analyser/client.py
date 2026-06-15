@@ -72,6 +72,8 @@ def _call_opencode(prompt: str, max_tokens: int = 1024) -> str:
                 stream=True,
             ) as stream:
                 for chunk in stream:
+                    if not chunk.choices:
+                        continue
                     delta = chunk.choices[0].delta.content
                     if delta:
                         chunks.append(delta)
