@@ -53,6 +53,8 @@ def _to_digest_read(digest: WeeklyDigest, db: Session) -> DigestRead:
         summary=digest.summary,
         key_signals=expanded,
         sections=sections,
+        risks=digest.risks or [],
+        opportunities=digest.opportunities or [],
         generated_at=digest.generated_at,
         is_published=digest.is_published,
     )
