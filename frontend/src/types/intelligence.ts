@@ -108,6 +108,7 @@ export interface RiskItem {
   company_id?: string;
   company_name?: string;
   company_slug?: string;
+  logo_path?: string | null;
 }
 
 export interface CompetitorSummary {

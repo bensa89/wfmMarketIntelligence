@@ -216,6 +216,7 @@ def get_overview(db: Session = Depends(get_db)) -> dict:
                 "company_id": company.id,
                 "company_name": company.name,
                 "company_slug": company.slug,
+                "logo_path": company.logo_path,
             }
         return {
             "text": raw,
@@ -224,6 +225,7 @@ def get_overview(db: Session = Depends(get_db)) -> dict:
             "company_id": company.id,
             "company_name": company.name,
             "company_slug": company.slug,
+            "logo_path": company.logo_path,
         }
 
     def _dedup(items: list[dict], max_items: int = 10) -> list[dict]:
@@ -250,6 +252,21 @@ def get_overview(db: Session = Depends(get_db)) -> dict:
         emerging_risks: list[dict] = latest_briefing.curated_risks or []
         emerging_opportunities: list[dict] = latest_briefing.curated_opportunities or []
         emerging_watchpoints: list[dict] = latest_briefing.curated_watchpoints or []
+
+        all_cids = {
+            item.get("company_id")
+            for items in (emerging_risks, emerging_opportunities, emerging_watchpoints)
+            for item in items
+            if item.get("company_id")
+        }
+        logo_by_id = {
+            c.id: c.logo_path
+            for c in db.query(Company).filter(Company.id.in_(all_cids)).all()
+        }
+        for items in (emerging_risks, emerging_opportunities, emerging_watchpoints):
+            for item in items:
+                if "logo_path" not in item:
+                    item["logo_path"] = logo_by_id.get(item.get("company_id"))
     else:
         emerging_risks = []
         emerging_opportunities = []

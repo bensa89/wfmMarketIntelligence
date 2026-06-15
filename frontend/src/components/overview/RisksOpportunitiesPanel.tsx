@@ -56,6 +56,7 @@ function RiskColumn({ title, items = [], bulletClass, hoverClass, newBadgeClass,
                       name={item.company_name}
                       slug={item.company_slug}
                       companyId={item.company_id}
+                      logo_path={item.logo_path}
                       size="sm"
                     />
                     <span className="text-[10px] text-slate-400">{item.company_name}</span>
