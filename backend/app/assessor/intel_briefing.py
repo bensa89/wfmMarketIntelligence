@@ -98,9 +98,10 @@ def _build_curation_prompt(all_items: list[dict], context: dict) -> str:
         "",
         "Regeln:",
         "- Exakt 4 Einträge pro Kategorie (oder weniger wenn nicht genug vorhanden).",
-        "- Übernehme text, signal_ids, is_new, company_id, company_name, company_slug unverändert aus dem Input.",
+        "- Das Feld 'text' muss auf Deutsch sein. Falls der Input-Text auf Englisch ist, übersetze ihn präzise ins Deutsche.",
+        "- signal_ids, is_new, company_id, company_name, company_slug unverändert aus dem Input übernehmen.",
         "- Priorisiere nach strategischer Relevanz für uns (Marktpositionierung, Kundenverlust-Risiko, Differenzierungschancen).",
-        "- Keine Duplikate, keine neuen Formulierungen — nur Auswahl aus dem Input.",
+        "- Keine Duplikate.",
     ]
     return "\n".join(lines)
 

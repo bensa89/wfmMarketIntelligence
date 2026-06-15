@@ -122,14 +122,15 @@ Return exactly this JSON object (no other text):
     {{"key": "<capability_key>", "label": "<label>", "activity_level": "<low|medium|high>", "notes": "<one sentence>"}}
   ],
   "top_risks": [
-    {{"text": "<risk for us, one sentence>", "signal_ids": ["<signal_id from the list above>"], "is_new": true}}
+    {{"text": "<Risiko für uns, ein Satz auf Deutsch>", "signal_ids": ["<signal_id from the list above>"], "is_new": true}}
   ],
   "top_opportunities": [
-    {{"text": "<opportunity for us, one sentence>", "signal_ids": ["<signal_id from the list above>"], "is_new": true}}
+    {{"text": "<Chance für uns, ein Satz auf Deutsch>", "signal_ids": ["<signal_id from the list above>"], "is_new": true}}
   ],
   "watchpoints": [
-    {{"text": "<specific thing to monitor>", "signal_ids": ["<signal_id from the list above>"], "is_new": true}}
+    {{"text": "<konkret zu beobachtender Punkt, ein Satz auf Deutsch>", "signal_ids": ["<signal_id from the list above>"], "is_new": true}}
   ]
 }}
 
-Each item in top_risks, top_opportunities, and watchpoints must cite 1-3 signal_ids from the assessments list above (use the exact signal_id values). Only include signal_ids that directly support or evidence the stated point.{delta_instructions}"""
+The text fields in top_risks, top_opportunities, and watchpoints must be written in German.
+Each item must cite 1-3 signal_ids from the assessments list above (use the exact signal_id values). Only include signal_ids that directly support or evidence the stated point.{delta_instructions}"""
