@@ -56,8 +56,9 @@ export default function OverviewPage() {
       <div className="grid grid-cols-2 gap-4 mb-4">
         <MarketShapingFeed signals={data.recent_market_shaping} onSelect={setSelectedSignal} />
         <RisksOpportunitiesPanel
-          risks={data.emerging_risks}
-          opportunities={data.emerging_opportunities}
+          risks={data.emerging_risks ?? []}
+          opportunities={data.emerging_opportunities ?? []}
+          watchpoints={data.emerging_watchpoints ?? []}
         />
       </div>
 

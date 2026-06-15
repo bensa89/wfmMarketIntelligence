@@ -4,7 +4,7 @@ import CompanyLogo from '../CompanyLogo';
 interface Props {
   risks: RiskItem[];
   opportunities: RiskItem[];
-  watchpoints: RiskItem[];
+  watchpoints?: RiskItem[];
   onSelectSignal?: (signalId: string) => void;
 }
 
@@ -18,7 +18,7 @@ interface ColumnProps {
   onSelectSignal?: (signalId: string) => void;
 }
 
-function RiskColumn({ title, items, bulletClass, hoverClass, newBadgeClass, max = 5, onSelectSignal }: ColumnProps) {
+function RiskColumn({ title, items = [], bulletClass, hoverClass, newBadgeClass, max = 5, onSelectSignal }: ColumnProps) {
   const visible = items.slice(0, max);
   return (
     <div>
