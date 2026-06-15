@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from bs4 import BeautifulSoup
 from sqlalchemy.orm import Session
 
-from app.models.source import Source, AnalysisStatus
+from app.models.source import Source, AnalysisStatus, SourceType
 from app.models.document import Document
 from app.models.discovered_page import DiscoveredPage, DiscoveredPageStatus
 from app.models.signal import Signal
@@ -27,8 +27,11 @@ _CONTENT_PREFIXES = (
     "/insights/",
     "/resources/",
     "/product/",
+    "/events/",
+    "/webinar/",
+    "/webinare/",
 )
-_CONTENT_SEGMENTS = {"news", "blog", "press", "insights", "resources", "product"}
+_CONTENT_SEGMENTS = {"news", "blog", "press", "insights", "resources", "product", "events", "webinar", "webinare"}
 _NAVIGATION_SEGMENTS = {
     "de",
     "en",
@@ -82,6 +85,15 @@ def _is_article_url(url: str, seed_url: str = "") -> bool:
     return False
 
 
+def _is_listing_page(url: str) -> bool:
+    """Return True if URL looks like a category/listing page rather than an article."""
+    path = urlparse(url).path.rstrip("/")
+    if not path:
+        return True
+    last_segment = path.rsplit("/", 1)[-1]
+    return last_segment in _CONTENT_SEGMENTS
+
+
 def _is_article_content(html: str) -> bool:
     soup = BeautifulSoup(html, "html.parser")
     if soup.find("article"):
@@ -99,6 +111,26 @@ def _is_article_content(html: str) -> bool:
         if len(nav_text.split()) / max(len(body_text.split()), 1) > 0.3:
             return False
     return True
+
+
+def _extract_content_area_links(html: str, base_url: str) -> List[str]:
+    """Extract links only from the main content area, ignoring nav/header/footer/aside."""
+    soup = BeautifulSoup(html, "html.parser")
+    for tag in soup(["nav", "header", "footer", "aside"]):
+        tag.decompose()
+    content = soup.find("main") or soup.find("article") or soup.find("body") or soup
+    base_netloc = urlparse(base_url).netloc
+    links: Set[str] = set()
+    for a in content.find_all("a", href=True):
+        href = a["href"]
+        abs_url = urljoin(base_url, href)
+        parsed = urlparse(abs_url)
+        if parsed.scheme not in ("http", "https"):
+            continue
+        if parsed.netloc != base_netloc:
+            continue
+        links.add(abs_url.split("#")[0])
+    return list(links)
 
 
 def _extract_internal_links(html: str, base_url: str) -> List[str]:
@@ -191,11 +223,17 @@ def discover_and_crawl(
     if known_inactive:
         logger.debug("Known inactive URLs: %s", known_inactive)
 
-    all_links = _extract_internal_links(seed_html, source.url)
+    _LISTING_SOURCE_TYPES = {SourceType.events, SourceType.news, SourceType.blog, SourceType.press}
+    is_listing_source = source.source_type in _LISTING_SOURCE_TYPES
+    if is_listing_source:
+        all_links = _extract_content_area_links(seed_html, source.url)
+    else:
+        all_links = _extract_internal_links(seed_html, source.url)
     logger.info(
-        "Discovery for source %s: %d internal links found in seed HTML",
+        "Discovery for source %s: %d internal links found in seed HTML%s",
         source.url,
         len(all_links),
+        " (content area only)" if is_listing_source else "",
     )
 
     child_links: List[tuple] = []
@@ -203,12 +241,17 @@ def discover_and_crawl(
     skipped_not_article = 0
     skipped_inactive = 0
     for url in all_links:
-        is_article = _is_article_url(url, seed_url=source.url)
         if url in known_inactive:
             skipped_inactive += 1
             logger.debug("Skipping inactive URL: %s", url)
             continue
-        if not is_article:
+        # For listing sources (events, news, blog, press) skip other listing/category
+        # pages (same keyword as last segment) but allow article URLs. Standard sources
+        # apply the full article-URL heuristic.
+        if is_listing_source and _is_listing_page(url):
+            skipped_not_article += 1
+            continue
+        if not is_listing_source and not _is_article_url(url, seed_url=source.url):
             skipped_not_article += 1
             continue
         if _is_child_path(url, source.url):

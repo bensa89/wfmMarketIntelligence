@@ -178,7 +178,7 @@ def split_event_sections(html: str, base_url: str) -> list:
                 "date_str": date_str,
                 "parsed_date": parsed_date,
             })
-        if len(qualifying) >= 2:
+        if len(qualifying) >= 1:
             return qualifying
 
     # Fallback: divs — but only leaf nodes (no child divs that also contain dates)
@@ -204,7 +204,29 @@ def split_event_sections(html: str, base_url: str) -> list:
             "date_str": date_str,
             "parsed_date": _parse_date_from_text(text),
         })
-    if len(qualifying) >= 2:
+    if len(qualifying) >= 1:
         return qualifying
+
+    # Second pass: no date requirement — pages like gfos where dates are in attributes
+    # or loaded via JS. Require heading + sufficient text only.
+    for tag_name in ("article", "section", "li"):
+        containers = main.find_all(tag_name)
+        qualifying = []
+        for c in containers:
+            text = c.get_text(" ", strip=True)
+            if len(text.split()) < 15:
+                continue
+            heading = c.find(["h1", "h2", "h3", "h4"])
+            if not heading:
+                continue
+            title = heading.get_text(" ", strip=True)
+            qualifying.append({
+                "html": f"<html><body><main>{c}</main></body></html>",
+                "title": title,
+                "date_str": None,
+                "parsed_date": None,
+            })
+        if len(qualifying) >= 1:
+            return qualifying
 
     return []

@@ -1,8 +1,10 @@
+import json
 import logging
+import re
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import Callable, Dict, Optional
+from typing import Callable, Dict, List, Optional
 from datetime import datetime, timezone
 from sqlalchemy.orm import Session
 from app.models.source import Source, CrawlStatus, AnalysisStatus, SourceType
@@ -205,6 +207,141 @@ def _save_html_event_sections(source: Source, fetch_result, sections: list, db: 
     return new + changed
 
 
+def _extract_events_with_llm(
+    markdown: str,
+    page_url: str,
+    linked_urls: List[str] = None,
+    known_titles: List[str] = None,
+) -> List[dict]:
+    """Ask the LLM to extract inline events from a listing page (those without a dedicated linked page)."""
+    from app.analyser.client import call_llm
+
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+    linked_note = ""
+    if linked_urls:
+        urls_str = "\n".join(f"- {u}" for u in linked_urls[:30])
+        linked_note = (
+            f"\n\nIMPORTANT: The following URLs are already linked from this page and will be "
+            f"crawled as separate documents. Do NOT extract events that correspond to these URLs — "
+            f"only extract events that appear inline on this page without their own dedicated page:\n{urls_str}\n"
+        )
+
+    known_note = ""
+    if known_titles:
+        titles_str = "\n".join(f"- {t}" for t in known_titles[:50])
+        known_note = (
+            f"\n\nThe following events have already been recorded and must NOT be returned again:\n{titles_str}\n"
+        )
+
+    prompt = f"""You are extracting event data from a competitor's events listing page.
+
+PAGE URL: {page_url}
+TODAY: {today}
+{linked_note}{known_note}
+CONTENT:
+{markdown[:5000]}
+
+Extract ONLY events that:
+1. Do NOT have a dedicated linked page (inline-only events)
+2. Have NOT already been recorded (see list above)
+
+For each new event return a JSON object with exactly these keys:
+- "title": official event name (string)
+- "date_iso": start date YYYY-MM-DD — infer the year from context or from TODAY if not stated (string or null)
+- "date_end_iso": end date YYYY-MM-DD for multi-day events (string or null)
+- "location": city/venue or "Online" (string or null)
+- "description": 1-2 sentences about the event and the company's role or presence there (string)
+
+Return ONLY a valid JSON array. If no new inline events are found, return [].
+"""
+    try:
+        raw = call_llm(prompt, max_tokens=1500)
+        match = re.search(r"\[.*\]", raw, re.DOTALL)
+        if not match:
+            return []
+        events = json.loads(match.group(0))
+        return events if isinstance(events, list) else []
+    except Exception:
+        logger.exception("LLM event extraction failed for %s", page_url)
+        return []
+
+
+def _save_llm_extracted_events(source: Source, fetch_result, llm_events: List[dict], db: Session) -> int:
+    """Persist LLM-extracted events as Documents. Returns count of new/changed docs."""
+    import html as html_module
+    new = 0
+    changed = 0
+    now = datetime.now(timezone.utc)
+
+    for i, ev in enumerate(llm_events):
+        title = ev.get("title") or f"Event {i}"
+        slug = re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")
+        event_url = f"{fetch_result.final_url}#llm-event-{slug}"
+
+        date_iso = ev.get("date_iso")
+        published_at = None
+        if date_iso:
+            try:
+                published_at = datetime.strptime(date_iso[:10], "%Y-%m-%d")
+            except ValueError:
+                pass
+
+        parts = [f"<html><body><main><h1>{html_module.escape(title)}</h1><ul>"]
+        if ev.get("date_iso"):
+            end = ev.get("date_end_iso")
+            date_str = ev["date_iso"] + (f" – {end}" if end else "")
+            parts.append(f"<li><strong>Datum:</strong> {html_module.escape(date_str)}</li>")
+        if ev.get("location"):
+            parts.append(f"<li><strong>Ort:</strong> {html_module.escape(str(ev['location']))}</li>")
+        if ev.get("description"):
+            parts.append(f"<li><strong>Beschreibung:</strong> {html_module.escape(str(ev['description']))}</li>")
+        parts.append("</ul></main></body></html>")
+        event_html = "".join(parts)
+
+        extraction = extract_content(event_html, url=event_url)
+        if len(extraction.markdown.split()) < _MIN_CONTENT_WORDS:
+            continue
+
+        try:
+            existing = db.query(Document).filter(Document.url == event_url).first()
+            if existing:
+                if existing.content_hash == extraction.content_hash:
+                    continue
+                existing.title = title
+                existing.content_markdown = extraction.markdown
+                existing.content_raw_html = event_html
+                existing.content_hash = extraction.content_hash
+                existing.crawled_at = now
+                existing.is_analysed = False
+                if published_at and not existing.published_at:
+                    existing.published_at = published_at
+                db.commit()
+                changed += 1
+                logger.info("Updated LLM event: %s", title)
+            else:
+                doc = Document(
+                    source_id=source.id,
+                    url=event_url,
+                    title=title,
+                    content_markdown=extraction.markdown,
+                    content_raw_html=event_html,
+                    content_hash=extraction.content_hash,
+                    crawled_at=now,
+                    published_at=published_at,
+                )
+                db.add(doc)
+                db.commit()
+                new += 1
+                logger.info("New LLM event: %s (date=%s)", title, date_iso or "unknown")
+        except Exception:
+            db.rollback()
+            logger.exception("Failed to save LLM event: %s", title)
+
+    logger.info("LLM events for %s: %d new, %d changed out of %d extracted", source.url, new, changed, len(llm_events))
+    return new + changed
+
+
 def _looks_like_js_app(html: str) -> bool:
     js_indicators = [
         '<div id="root"',
@@ -292,6 +429,7 @@ def run_crawl_source(
         emit({"type": "error", "source_id": source.id, "message": "Fetch failed"})
         return result
 
+    js_rendered = False
     if settings.js_rendering_enabled and _needs_js_rendering(
         fetch_result.html, fetch_result.final_url
     ):
@@ -299,6 +437,7 @@ def run_crawl_source(
         js_result = fetch_url_js(fetch_result.final_url)
         if js_result is not None:
             fetch_result = js_result
+            js_rendered = True
         else:
             logger.warning("JS rendering failed for %s, using static HTML", source.url)
 
@@ -328,6 +467,21 @@ def run_crawl_source(
     elif source.source_type == SourceType.events:
         from app.crawler.extractor import split_event_sections
         sections = split_event_sections(fetch_result.html, fetch_result.final_url)
+        if not sections and not js_rendered and settings.js_rendering_enabled:
+            word_count = len(extraction.markdown.split())
+            if word_count < _MIN_CONTENT_WORDS * 3:
+                logger.info(
+                    "Events source %s: sparse content (%d words) and no HTML sections — retrying with JS rendering",
+                    source.url, word_count,
+                )
+                emit({"type": "step", "source_id": source.id, "step": "js_rendering"})
+                js_result = fetch_url_js(fetch_result.final_url)
+                if js_result is not None:
+                    fetch_result = js_result
+                    extraction = extract_content(fetch_result.html, url=fetch_result.final_url)
+                    sections = split_event_sections(fetch_result.html, fetch_result.final_url)
+                else:
+                    logger.warning("JS rendering retry failed for events source %s", source.url)
         if sections:
             logger.info(
                 "Events source %s: found %d HTML sections — creating per-section documents",
@@ -342,10 +496,51 @@ def run_crawl_source(
                 source.crawl_status = CrawlStatus.known
             db.commit()
         else:
-            logger.info(
-                "Events source %s: no splittable sections found — falling back to single document",
-                source.url,
-            )
+            if source.content_hash and source.content_hash == extraction.content_hash:
+                logger.info("Events source %s: listing page unchanged, skipping LLM extraction", source.url)
+                source.crawl_status = CrawlStatus.known
+                db.commit()
+            else:
+                from app.crawler.discovery import _extract_content_area_links
+                content_links = _extract_content_area_links(fetch_result.html, fetch_result.final_url)
+                known_titles = [
+                    doc.title for doc in
+                    db.query(Document.title)
+                    .filter(
+                        Document.source_id == source.id,
+                        Document.url.like(f"{fetch_result.final_url}#llm-event-%"),
+                        Document.title.isnot(None),
+                    )
+                    .all()
+                    if doc.title
+                ]
+                logger.info(
+                    "Events source %s: no HTML sections — trying LLM extraction "
+                    "(%d linked pages, %d known events to exclude)",
+                    source.url, len(content_links), len(known_titles),
+                )
+                llm_events = _extract_events_with_llm(
+                    extraction.markdown,
+                    fetch_result.final_url,
+                    linked_urls=content_links,
+                    known_titles=known_titles,
+                )
+                if llm_events:
+                    logger.info("Events source %s: LLM extracted %d inline events", source.url, len(llm_events))
+                    n = _save_llm_extracted_events(source, fetch_result, llm_events, db)
+                    result["new_documents"] += n
+                    source.content_hash = extraction.content_hash
+                    if n > 0:
+                        source.crawl_status = CrawlStatus.new
+                        source.analysis_status = AnalysisStatus.pending
+                    else:
+                        source.crawl_status = CrawlStatus.known
+                    db.commit()
+                else:
+                    logger.info(
+                        "Events source %s: no inline events found via LLM — falling back to single document",
+                        source.url,
+                    )
             word_count = len(extraction.markdown.split())
             if word_count < _MIN_CONTENT_WORDS:
                 logger.info(
