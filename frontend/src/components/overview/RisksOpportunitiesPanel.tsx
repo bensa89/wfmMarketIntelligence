@@ -98,7 +98,7 @@ export default function RisksOpportunitiesPanel({ risks, opportunities, watchpoi
       <div className="bg-amber-50 border border-amber-100 rounded-xl p-4 text-amber-700">
         <RiskColumn
           title="Watchpoints"
-          items={watchpoints}
+          items={watchpoints ?? []}
           bulletClass="text-amber-500"
           hoverClass="hover:bg-amber-100"
           newBadgeClass="bg-amber-100 text-amber-700"
