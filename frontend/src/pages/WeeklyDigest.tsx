@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useDigests, useGenerateDigest } from '../hooks/useDigests';
 import { Calendar, RefreshCw } from 'lucide-react';
 import type { RiskItem } from '../types/intelligence';
-import type { Digest, DigestSectionItem, EventCalendarItem } from '../types';
+import type { Digest, DigestSectionItem, DigestSection, EventCalendarItem, OwnCompanySignalItem } from '../types';
 
 const MOVEMENT_COLOURS: Record<string, string> = {
   weak: 'bg-gray-100 text-gray-600',
@@ -142,6 +142,46 @@ function DigestRisksOpportunities({ risks, opportunities }: { risks: RiskItem[];
   );
 }
 
+function OwnCompanySection({ items }: { items: OwnCompanySignalItem[] }) {
+  return (
+    <div className="space-y-5">
+      {items.map((item) => (
+        <div key={item.signal_id} className="space-y-1">
+          <div className="flex items-center gap-2 flex-wrap">
+            {item.signal_type && (
+              <span className="text-xs font-medium text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">
+                {item.signal_type.replace(/_/g, ' ')}
+              </span>
+            )}
+            {item.topic && (
+              <span className="text-xs text-ink-muted">{item.topic}</span>
+            )}
+          </div>
+          <div>
+            {item.source_url ? (
+              <a href={item.source_url} target="_blank" rel="noopener noreferrer"
+                className="font-medium text-gray-900 hover:underline">
+                {item.title}
+              </a>
+            ) : (
+              <span className="font-medium text-gray-900">{item.title}</span>
+            )}
+          </div>
+          <p className="text-sm text-gray-700">{item.summary}</p>
+          {item.why_it_matters && (
+            <p className="text-sm text-gray-500 italic">{item.why_it_matters}</p>
+          )}
+          {(item.source_domain || item.source_title) && (
+            <p className="text-xs text-gray-400">
+              Quelle: {[item.source_domain, item.source_title].filter(Boolean).join(' — ')}
+            </p>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function SectionItems({ items }: { items: DigestSectionItem[] }) {
   return (
     <div className="space-y-5">
@@ -242,6 +282,18 @@ export default function WeeklyDigest() {
             if (item.source_url) text += `  ${item.source_url}\n`;
             text += '\n';
           }
+        }
+      } else if (section.key === 'own_company_communication') {
+        const ownItems = section.items as unknown as OwnCompanySignalItem[];
+        for (const item of ownItems) {
+          text += `▸ ${item.title}\n`;
+          text += `  ${item.summary}`;
+          if (item.why_it_matters) text += ` ${item.why_it_matters}`;
+          text += '\n';
+          const source = [item.source_domain, item.source_title].filter(Boolean).join(' — ');
+          if (source) text += `  Quelle: ${source}\n`;
+          if (item.source_url) text += `  ${item.source_url}\n`;
+          text += '\n';
         }
       } else {
         for (const item of section.items) {
@@ -370,6 +422,8 @@ export default function WeeklyDigest() {
                             upcoming={section.upcoming ?? []}
                             newly_discovered={section.newly_discovered ?? []}
                           />
+                        ) : section.key === 'own_company_communication' ? (
+                          <OwnCompanySection items={(section.items as unknown) as OwnCompanySignalItem[]} />
                         ) : (
                           <SectionItems items={section.items} />
                         )}

@@ -63,6 +63,50 @@ def query_candidates(
     return q.limit(30).all()
 
 
+def query_own_company_signals(
+    db: Session,
+    week_start: date,
+    week_end: date,
+) -> list[Signal]:
+    from datetime import time as dt_time
+    return (
+        db.query(Signal)
+        .join(Signal.company)
+        .join(Signal.document)
+        .options(
+            selectinload(Signal.company),
+            selectinload(Signal.document).selectinload(Document.source),
+            selectinload(Signal.assessment),
+        )
+        .filter(
+            Company.type == CompanyType.own_company,
+            Signal.created_at >= datetime.combine(week_start, dt_time.min),
+            Signal.created_at <= datetime.combine(week_end, dt_time.max),
+        )
+        .order_by(Signal.relevance_score.desc())
+        .limit(20)
+        .all()
+    )
+
+
+def build_own_company_signal_dict(signal: Signal) -> dict:
+    doc = signal.document
+    domain = urlparse(doc.url).netloc if doc and doc.url else None
+    return {
+        "signal_id": signal.id,
+        "title": signal.title or "",
+        "topic": signal.topic or "",
+        "summary": signal.summary or "",
+        "why_it_matters": signal.why_it_matters or "",
+        "signal_type": signal.signal_type.value if signal.signal_type else None,
+        "relevance_score": signal.relevance_score,
+        "source_url": doc.url if doc else None,
+        "source_domain": domain,
+        "source_title": (doc.title or domain) if doc else None,
+        "published_at": signal.published_at.isoformat() if signal.published_at else None,
+    }
+
+
 def build_candidate_dict(signal: Signal) -> dict:
     doc = signal.document
     assessment = signal.assessment

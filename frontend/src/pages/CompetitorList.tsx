@@ -32,6 +32,7 @@ export default function CompetitorList() {
 
   const competitors = companies?.filter((c) => c.type === 'competitor') ?? [];
   const marketSources = companies?.filter((c) => c.type === 'market_source') ?? [];
+  const ownCompanies = companies?.filter((c) => c.type === 'own_company') ?? [];
 
   function countSignals(companyId: string): number {
     return allSignals?.filter((s) => s.company_id === companyId).length ?? 0;
@@ -132,6 +133,48 @@ export default function CompetitorList() {
         <p className="text-ink-muted">Loading...</p>
       ) : (
         <>
+          {ownCompanies.length > 0 && (
+            <>
+              <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                <Users size={20} /> Eigenes Unternehmen
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+                {ownCompanies.map((c) => (
+                  <Link
+                    key={c.id}
+                    to={`/competitors/${c.slug}`}
+                    className="card hover:border-emerald-400/40 transition-colors border-emerald-200 bg-emerald-50/30"
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <CompanyLogo
+                        name={c.name}
+                        slug={c.slug}
+                        logo_path={c.logo_path}
+                        size="md"
+                        companyId={c.id}
+                      />
+                      <div className="flex items-center justify-between flex-1 min-w-0">
+                        <h3 className="font-semibold truncate">{c.name}</h3>
+                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 ml-2 shrink-0">Wir</span>
+                      </div>
+                    </div>
+                    {c.description && (
+                      <p className="text-sm text-ink-muted line-clamp-2 mb-2">{c.description}</p>
+                    )}
+                    <div className="flex items-center gap-1 text-sm text-ink-muted">
+                      <BarChart3 size={14} />
+                      {countSignals(c.id)} signals
+                    </div>
+                    <ScorecardSummaryStrip
+                      scorecard={scorecardByCompanyId[c.id] ?? null}
+                      loading={scorecardLoading}
+                    />
+                  </Link>
+                ))}
+              </div>
+            </>
+          )}
+
           <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
             <Users size={20} /> Competitors
           </h2>

@@ -30,7 +30,7 @@ class BenchmarkQueryService:
     def get_overview(self, period_type: str = "30d") -> BenchmarkOverviewResponse:
         period_start, period_end = get_period_bounds(period_type)
         competitors = (
-            self.db.query(Company).filter(Company.type == "competitor").all()
+            self.db.query(Company).filter(Company.type.in_(["competitor", "own_company"])).all()
         )
         benchmarks = (
             self.db.query(CompetitorCapabilityBenchmark)

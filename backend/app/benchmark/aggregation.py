@@ -35,7 +35,7 @@ class BenchmarkAggregationService:
 
     def recompute_all(self, period_type: str = "180d") -> list[CompetitorCapabilityBenchmark]:
         competitors = (
-            self.db.query(Company).filter(Company.type == "competitor").all()
+            self.db.query(Company).filter(Company.type.in_(["competitor", "own_company"])).all()
         )
         results = []
         for c in competitors:

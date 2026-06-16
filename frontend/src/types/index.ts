@@ -1,4 +1,31 @@
-export type CompanyType = 'competitor' | 'market_source';
+export type CompanyType = 'competitor' | 'market_source' | 'own_company';
+
+export interface ExternalCompanyView {
+  id: string;
+  summary: string | null;
+  key_messages: string[];
+  observed_capabilities: string[];
+  observed_differentiators: string[];
+  observed_target_markets: string[];
+  tone_and_positioning: string | null;
+  signal_count_used: number;
+  generated_at: string | null;
+  updated_at: string | null;
+}
+
+export interface OwnCompanySignalItem {
+  signal_id: string;
+  title: string;
+  topic: string;
+  summary: string;
+  why_it_matters: string;
+  signal_type: string | null;
+  relevance_score: number | null;
+  source_url: string | null;
+  source_domain: string | null;
+  source_title: string | null;
+  published_at: string | null;
+}
 
 export interface Company {
   id: string;
@@ -146,6 +173,7 @@ export interface DigestSection {
   items: DigestSectionItem[];
   upcoming?: EventCalendarItem[];
   newly_discovered?: EventCalendarItem[];
+  own_company_items?: OwnCompanySignalItem[];
 }
 
 export interface Digest {

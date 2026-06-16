@@ -35,7 +35,7 @@ def build_event_calendar_section(db: Session, week_start: date) -> dict | None:
         )
         .filter(
             Signal.signal_type == SignalType.event_or_thought_leadership,
-            Company.type == CompanyType.competitor,
+            Company.type.in_([CompanyType.competitor, CompanyType.own_company]),
             Signal.event_date.isnot(None),
             Signal.event_date >= datetime.combine(today, time.min),
         )

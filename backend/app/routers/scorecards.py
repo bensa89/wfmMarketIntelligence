@@ -287,7 +287,9 @@ def recompute_all(
     db: Session = Depends(get_db),
 ):
     from app.models.company import CompanyType
-    companies = db.query(Company).filter_by(type=CompanyType.competitor).all()
+    companies = db.query(Company).filter(
+        Company.type.in_([CompanyType.competitor, CompanyType.own_company])
+    ).all()
     builder = ScorecardBuilder(db)
     recomputed = 0
     errors = []

@@ -362,6 +362,32 @@ def _run_crawl_background(
                 except Exception as e:
                     logger.warning("Post-crawl: intelligence briefing failed [run=%s]: %s", crawl_run_id, e)
 
+                try:
+                    from app.models.company import CompanyType
+                    from app.models.signal import Signal
+
+                    crawl_run = thread_db.query(CrawlRun).filter(CrawlRun.id == crawl_run_id).first()
+                    if crawl_run and crawl_run.started_at:
+                        own_company_new_signals = (
+                            thread_db.query(Signal)
+                            .join(Signal.company)
+                            .filter(
+                                Company.type == CompanyType.own_company,
+                                Signal.created_at >= crawl_run.started_at,
+                            )
+                            .count()
+                        )
+                        if own_company_new_signals > 0:
+                            logger.info(
+                                "Post-crawl: synthesizing ExternalCompanyView (%d new own-company signals) [run=%s]",
+                                own_company_new_signals,
+                                crawl_run_id,
+                            )
+                            from app.synthesizer.pipeline import run_synthesis
+                            run_synthesis(thread_db)
+                except Exception as e:
+                    logger.warning("Post-crawl: ExternalCompanyView synthesis failed [run=%s]: %s", crawl_run_id, e)
+
             # Auto-start queued run if one exists
             queued_run = (
                 thread_db.query(CrawlRun)

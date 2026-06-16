@@ -9,6 +9,7 @@ from app.database import Base
 class CompanyType(str, enum.Enum):
     competitor = "competitor"
     market_source = "market_source"
+    own_company = "own_company"
 
 
 class Company(Base):

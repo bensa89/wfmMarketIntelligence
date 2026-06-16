@@ -4,11 +4,13 @@ from sqlalchemy import and_
 from app.models.document import Document
 from app.models.signal import Signal
 from app.models.context import InternalCompanyContext
+from app.models.company import Company
 import logging
 
 from app.analyser.client import call_llm
-from app.analyser.prompts import build_analysis_prompt
+from app.analyser.prompts import build_analysis_prompt, build_self_analysis_prompt
 from app.analyser.parser import parse_llm_response
+from app.models.company import CompanyType
 
 logger = logging.getLogger(__name__)
 
@@ -104,7 +106,26 @@ def analyse_document(
         (doc.title or "")[:60],
         word_count,
     )
-    prompt = build_analysis_prompt(doc.content_markdown, context)
+
+    # Detect if this document belongs to own_company → use adapted prompt
+    company = db.query(Company).filter_by(id=company_id).first()
+    is_own_company = company and company.type == CompanyType.own_company
+
+    if is_own_company:
+        prompt = build_self_analysis_prompt(doc.content_markdown, context)
+    else:
+        from app.models.external_company_view import ExternalCompanyView
+        ext_view_record = db.query(ExternalCompanyView).first()
+        external_view = None
+        if ext_view_record and ext_view_record.summary:
+            external_view = {
+                "key_messages": ext_view_record.key_messages or [],
+                "observed_capabilities": ext_view_record.observed_capabilities or [],
+                "observed_differentiators": ext_view_record.observed_differentiators or [],
+                "observed_target_markets": ext_view_record.observed_target_markets or [],
+                "tone_and_positioning": ext_view_record.tone_and_positioning,
+            }
+        prompt = build_analysis_prompt(doc.content_markdown, context, external_view=external_view)
     raw_response = call_llm(prompt, caller="analyser:signal-extraction")
     signal_data = parse_llm_response(raw_response)
 

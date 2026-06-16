@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useContextData, useUpdateContext } from '../hooks/useContext';
+import { useContextData, useUpdateContext, useExternalView, useSynthesizeExternalView } from '../hooks/useContext';
 import TagList from '../components/TagList';
 import type { ContextUpdate } from '../types';
-import { Save, Globe } from 'lucide-react';
+import { Save, Globe, RefreshCw, Eye } from 'lucide-react';
 
 const listFields: { key: keyof ContextUpdate; label: string; placeholder: string }[] = [
   { key: 'target_industries', label: 'Target Industries', placeholder: 'Add industry...' },
@@ -17,6 +17,8 @@ const listFields: { key: keyof ContextUpdate; label: string; placeholder: string
 export default function CompanyContext() {
   const { data: context, isLoading } = useContextData();
   const updateContext = useUpdateContext();
+  const { data: externalView, isLoading: externalViewLoading } = useExternalView();
+  const synthesize = useSynthesizeExternalView();
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState<ContextUpdate>({});
   const [inputValues, setInputValues] = useState<Record<string, string>>({});
@@ -155,6 +157,80 @@ export default function CompanyContext() {
       <p className="text-xs text-ink-muted mt-4">
         Last updated: {new Date(context.updated_at).toLocaleString('de-DE')}
       </p>
+
+      {/* ExternalCompanyView Panel */}
+      <div className="mt-8">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-lg font-semibold flex items-center gap-2">
+            <Eye size={20} /> Außensicht
+          </h2>
+          <button
+            onClick={() => synthesize.mutate()}
+            disabled={synthesize.isPending}
+            className="btn-secondary flex items-center gap-2 text-sm"
+          >
+            <RefreshCw size={14} className={synthesize.isPending ? 'animate-spin' : ''} />
+            {synthesize.isPending ? 'Wird analysiert…' : 'Außensicht aktualisieren'}
+          </button>
+        </div>
+        {synthesize.isError && (
+          <p className="text-sm text-signal-low mb-3">
+            {(synthesize.error as { message?: string })?.message ?? 'Synthese fehlgeschlagen.'}
+          </p>
+        )}
+        {externalViewLoading ? (
+          <p className="text-sm text-ink-muted">Lade Außensicht…</p>
+        ) : !externalView ? (
+          <div className="card text-center py-6 text-ink-muted text-sm">
+            Noch keine Außensicht vorhanden. Zuerst die eigene Website crawlen, dann "Außensicht aktualisieren" klicken.
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {externalView.summary && (
+              <div className="card">
+                <h3 className="text-sm font-semibold mb-2">Zusammenfassung</h3>
+                <p className="text-sm text-ink">{externalView.summary}</p>
+              </div>
+            )}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {externalView.key_messages?.length > 0 && (
+                <div className="card">
+                  <h3 className="text-sm font-semibold mb-2">Kernbotschaften</h3>
+                  <TagList items={externalView.key_messages} />
+                </div>
+              )}
+              {externalView.observed_capabilities?.length > 0 && (
+                <div className="card">
+                  <h3 className="text-sm font-semibold mb-2">Kommunizierte Capabilities</h3>
+                  <TagList items={externalView.observed_capabilities} />
+                </div>
+              )}
+              {externalView.observed_differentiators?.length > 0 && (
+                <div className="card">
+                  <h3 className="text-sm font-semibold mb-2">Kommunizierte Differenzierungsmerkmale</h3>
+                  <TagList items={externalView.observed_differentiators} />
+                </div>
+              )}
+              {externalView.observed_target_markets?.length > 0 && (
+                <div className="card">
+                  <h3 className="text-sm font-semibold mb-2">Kommunizierte Zielmärkte</h3>
+                  <TagList items={externalView.observed_target_markets} />
+                </div>
+              )}
+            </div>
+            {externalView.tone_and_positioning && (
+              <div className="card">
+                <h3 className="text-sm font-semibold mb-2">Tone & Positioning</h3>
+                <p className="text-sm text-ink">{externalView.tone_and_positioning}</p>
+              </div>
+            )}
+            <p className="text-xs text-ink-muted">
+              Basiert auf {externalView.signal_count_used} Signals
+              {externalView.generated_at && ` · Zuletzt generiert: ${new Date(externalView.generated_at).toLocaleString('de-DE')}`}
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
