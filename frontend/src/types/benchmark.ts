@@ -14,6 +14,7 @@ export interface CompetitorBrief {
   name: string;
   slug: string;
   logo_path: string | null;
+  type?: string;
 }
 
 export interface BenchmarkMatrixCell {

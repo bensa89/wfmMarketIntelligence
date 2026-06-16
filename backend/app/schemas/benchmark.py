@@ -46,6 +46,7 @@ class CompetitorBrief(BaseModel):
     name: str
     slug: str
     logo_path: str | None = None
+    type: str = "competitor"
 
 
 class BenchmarkMatrixCell(BaseModel):

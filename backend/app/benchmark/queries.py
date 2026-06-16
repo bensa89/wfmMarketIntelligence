@@ -72,7 +72,7 @@ class BenchmarkQueryService:
             period_start=period_start,
             period_end=period_end,
             capabilities=cap_keys,
-            competitors=[CompetitorBrief(id=c.id, name=c.name, slug=c.slug, logo_path=c.logo_path) for c in competitors],
+            competitors=[CompetitorBrief(id=c.id, name=c.name, slug=c.slug, logo_path=c.logo_path, type=c.type.value) for c in competitors],
             matrix=matrix,
         )
 
@@ -137,7 +137,7 @@ class BenchmarkQueryService:
         weakest = [d.capability_key for d in sorted_by_score if d.tier == "weakly_evidenced"][:3]
 
         return CompetitorBenchmarkResponse(
-            competitor=CompetitorBrief(id=company.id, name=company.name, slug=company.slug),
+            competitor=CompetitorBrief(id=company.id, name=company.name, slug=company.slug, type=company.type.value),
             period_type=period_type,
             capabilities=details,
             strongest_capabilities=strongest,

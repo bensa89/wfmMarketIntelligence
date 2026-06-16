@@ -111,6 +111,11 @@ interface CapabilityStrengthMatrixProps {
 
 export function CapabilityStrengthMatrix({ data, onCapabilityClick, onCompetitorClick }: CapabilityStrengthMatrixProps) {
   const visibleCaps = data.capabilities.filter(k => CAPABILITIES[k]?.visibilityToUser !== false);
+  const sortedCompetitors = [...data.competitors].sort((a, b) => {
+    if (a.type === 'own_company') return -1;
+    if (b.type === 'own_company') return 1;
+    return 0;
+  });
 
   return (
     <div className="overflow-x-auto">
@@ -137,15 +142,21 @@ export function CapabilityStrengthMatrix({ data, onCapabilityClick, onCompetitor
           </tr>
         </thead>
         <tbody>
-          {data.competitors.map(comp => (
-            <tr key={comp.id}>
-              <td className="text-xs text-slate-700 font-medium pr-3 whitespace-nowrap">
+          {sortedCompetitors.map((comp, idx) => {
+            const isOwnCompany = comp.type === 'own_company';
+            const isLastOwnCompany = isOwnCompany && (idx === sortedCompetitors.length - 1 || sortedCompetitors[idx + 1]?.type !== 'own_company');
+            return (
+            <tr key={comp.id} className={isOwnCompany ? 'bg-emerald-50/60' : ''}>
+              <td className={`text-xs font-medium pr-3 whitespace-nowrap ${isOwnCompany ? 'text-emerald-800' : 'text-slate-700'} ${isLastOwnCompany ? 'border-b-2 border-emerald-200 pb-1' : ''}`}>
                 <button
                   onClick={() => onCompetitorClick?.(comp.slug)}
                   className="flex items-center gap-1.5 hover:underline text-left"
                 >
                   <CompanyLogo name={comp.name} slug={comp.slug} logo_path={comp.logo_path} size="sm" companyId={comp.id} />
                   {comp.name}
+                  {isOwnCompany && (
+                    <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 ml-1">Wir</span>
+                  )}
                 </button>
               </td>
               {visibleCaps.map(capKey => {
@@ -162,7 +173,8 @@ export function CapabilityStrengthMatrix({ data, onCapabilityClick, onCompetitor
                 );
               })}
             </tr>
-          ))}
+            );
+          })}
         </tbody>
       </table>
     </div>
