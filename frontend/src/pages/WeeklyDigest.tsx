@@ -168,9 +168,6 @@ function OwnCompanySection({ items }: { items: DigestSectionItem[] }) {
             )}
           </div>
           <p className="text-sm text-gray-700">{item.summary}</p>
-          {item.why_it_matters && (
-            <p className="text-sm text-gray-500 italic">{item.why_it_matters}</p>
-          )}
           {(item.source_domain || item.source_title) && (
             <p className="text-xs text-gray-400">
               Quelle: {[item.source_domain, item.source_title].filter(Boolean).join(' — ')}
