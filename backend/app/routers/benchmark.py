@@ -57,18 +57,26 @@ def get_capability_leaderboard(
 
 @router.post("/recompute")
 def recompute_all(
-    period_type: str = "180d",
+    period_type: str = "all",
     db: Session = Depends(get_db),
 ):
-    results = BenchmarkAggregationService(db).recompute_all(period_type)
-    return {"recomputed": len(results), "period_type": period_type}
+    svc = BenchmarkAggregationService(db)
+    periods = ["30d", "90d", "180d"] if period_type == "all" else [period_type]
+    total = 0
+    for p in periods:
+        total += len(svc.recompute_all(p))
+    return {"recomputed": total, "periods": periods}
 
 
 @router.post("/recompute/{company_id}")
 def recompute_company(
     company_id: str,
-    period_type: str = "180d",
+    period_type: str = "all",
     db: Session = Depends(get_db),
 ):
-    results = BenchmarkAggregationService(db).recompute_company(company_id, period_type)
-    return {"recomputed": len(results), "company_id": company_id, "period_type": period_type}
+    svc = BenchmarkAggregationService(db)
+    periods = ["30d", "90d", "180d"] if period_type == "all" else [period_type]
+    total = 0
+    for p in periods:
+        total += len(svc.recompute_company(company_id, p))
+    return {"recomputed": total, "company_id": company_id, "periods": periods}
