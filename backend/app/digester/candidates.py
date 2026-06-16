@@ -82,9 +82,10 @@ def query_own_company_signals(
             Company.type == CompanyType.own_company,
             Signal.created_at >= datetime.combine(week_start, dt_time.min),
             Signal.created_at <= datetime.combine(week_end, dt_time.max),
+            Signal.relevance_score >= 0.55,
         )
         .order_by(Signal.relevance_score.desc())
-        .limit(20)
+        .limit(8)
         .all()
     )
 

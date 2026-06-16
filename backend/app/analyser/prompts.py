@@ -63,32 +63,32 @@ Strategic Priorities: {", ".join(context.get("strategic_priorities", []))}
 Differentiators: {", ".join(context.get("differentiators", []))}
 """.strip()
 
-    return f"""You are a market intelligence analyst reviewing your own company's external communication.
+    return f"""Du bist ein Market-Intelligence-Analyst und analysierst die externe Kommunikation deines eigenen Unternehmens.
 
-Internal context about the company:
+Interner Kontext über das Unternehmen:
 {ctx_str}
 
-Analyze the following content from the company's own public website/blog and extract a structured signal describing what is being communicated externally.
+Analysiere den folgenden Inhalt von der öffentlichen Website oder dem Blog des Unternehmens. Beschreibe, was nach außen kommuniziert wird.
 
-Focus on: what message or theme this content conveys, how it positions the company, and whether it signals any strategic direction or capability.
+Fokus auf: Welche Botschaft oder welches Thema vermittelt dieser Inhalt? Wie positioniert er das Unternehmen? Signalisiert er eine strategische Richtung oder Capability?
 
-CONTENT:
+INHALT:
 {markdown[:4000]}
 
-Respond ONLY with a valid JSON object matching this exact schema:
+Antworte NUR mit einem gültigen JSON-Objekt nach diesem Schema. Alle Texte (title, topic, summary, why_it_matters) MÜSSEN AUF DEUTSCH sein:
 {{
-  "title": "short descriptive title of the external message (max 100 chars)",
-  "signal_type": one of: product_update | ai_announcement | partnership | positioning_change | target_market_change | event_or_thought_leadership | hiring_signal | other,
-  "topic": "main topic or theme (max 60 chars)",
-  "summary": "2-3 sentence factual summary of what this content communicates",
-  "why_it_matters": "1-2 sentences on what this reveals about our external positioning or strategic direction",
-  "relevance_score": float between 0.0 (generic/low-signal) and 1.0 (highly strategic message),
-  "confidence_score": float between 0.0 (uncertain) and 1.0 (very confident in analysis),
-  "published_at": "ISO-8601 date string of when the content was originally published, or null if unknown",
-  "event_date": "ISO-8601 date string of when the event itself takes place (only for event_or_thought_leadership signals describing a specific event), or null",
-  "event_name": "Official name of the event — only for event_or_thought_leadership signals, or null",
-  "event_type": "Type of event in German, one of: Messe | Konferenz | Webinar | Summit | Workshop | Roundtable | Pressemitteilung | Sonstiges — only for event_or_thought_leadership signals, or null",
-  "event_location": "City or venue where the event takes place (only for event_or_thought_leadership signals describing a specific event), or null"
+  "title": "kurzer beschreibender Titel der externen Botschaft (max 100 Zeichen, auf Deutsch)",
+  "signal_type": eines von: product_update | ai_announcement | partnership | positioning_change | target_market_change | event_or_thought_leadership | hiring_signal | other,
+  "topic": "Hauptthema oder -schwerpunkt (max 60 Zeichen, auf Deutsch)",
+  "summary": "2-3 Sätze faktische Zusammenfassung was dieser Inhalt kommuniziert (auf Deutsch)",
+  "why_it_matters": "1-2 Sätze was dies über unsere externe Positionierung oder strategische Ausrichtung aussagt (auf Deutsch)",
+  "relevance_score": Dezimalzahl zwischen 0.0 (generisch/wenig aussagekräftig) und 1.0 (sehr strategische Botschaft),
+  "confidence_score": Dezimalzahl zwischen 0.0 (unsicher) und 1.0 (sehr sicher in der Analyse),
+  "published_at": "ISO-8601 Datumsstring des ursprünglichen Veröffentlichungsdatums, oder null falls unbekannt",
+  "event_date": "ISO-8601 Datumsstring wann das Event stattfindet (nur für event_or_thought_leadership mit konkretem Termin), oder null",
+  "event_name": "Offizieller Name des Events — nur für event_or_thought_leadership, oder null",
+  "event_type": "Art des Events auf Deutsch, eines von: Messe | Konferenz | Webinar | Summit | Workshop | Roundtable | Pressemitteilung | Sonstiges — nur für event_or_thought_leadership, oder null",
+  "event_location": "Stadt oder Veranstaltungsort (nur für event_or_thought_leadership mit konkretem Termin), oder null"
 }}
 
-No markdown fences, no extra text. Only the JSON object."""
+Keine Markdown-Fences, kein zusätzlicher Text. Nur das JSON-Objekt."""
