@@ -449,8 +449,8 @@ def _render_own_company_section(section: dict) -> str:
     return f"""
         <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:32px;">
           <tr>
-            <td style="padding-bottom:14px;border-bottom:2px solid #d1fae5;">
-              <h2 style="margin:0;color:#065f46;font-size:13px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;">{title}</h2>
+            <td style="padding-bottom:14px;border-bottom:2px solid #f1f5f9;">
+              <h2 style="margin:0;color:#0f172a;font-size:13px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;">{title}</h2>
             </td>
           </tr>
           {rows}
