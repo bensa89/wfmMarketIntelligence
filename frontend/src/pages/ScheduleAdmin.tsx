@@ -212,10 +212,12 @@ export default function ScheduleAdmin() {
   });
 
   const [form, setForm] = useState<ScheduleConfig>(DEFAULT_CONFIG);
+  const [recipientsText, setRecipientsText] = useState('');
 
   const [synced, setSynced] = useState(false);
   if (status && !synced) {
     setForm(status.config);
+    setRecipientsText(status.config.email_recipients.join('\n'));
     setSynced(true);
   }
 
@@ -373,16 +375,17 @@ export default function ScheduleAdmin() {
               <label className="block text-xs font-medium text-slate-500 mb-1">Empfänger (eine Adresse pro Zeile)</label>
               <textarea
                 rows={3}
-                value={form.email_recipients.join('\n')}
-                onChange={(e) =>
+                value={recipientsText}
+                onChange={(e) => {
+                  setRecipientsText(e.target.value);
                   set(
                     'email_recipients',
                     e.target.value
                       .split('\n')
                       .map((s) => s.trim())
                       .filter(Boolean),
-                  )
-                }
+                  );
+                }}
                 className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="max@example.com&#10;lisa@example.com"
               />
