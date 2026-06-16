@@ -34,7 +34,7 @@ SECTIONS: list[SectionDef] = [
     ),
     SectionDef(
         key="events",
-        title="Events & Thought Leadership",
+        title="Thought Leadership",
         signal_types=["event_or_thought_leadership"],
         assessment_classes=["thought_leadership_signal"],
     ),
