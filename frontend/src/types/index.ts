@@ -147,14 +147,21 @@ export interface DigestSignal {
 
 export interface DigestSectionItem {
   signal_id: string;
-  company: string;
+  company: string | null;
   title: string;
-  narrative: string;
-  implication_for_us: string;
+  narrative: string | null;
+  implication_for_us: string | null;
   movement_strength: 'weak' | 'relevant' | 'strong' | 'market_shaping' | null;
   source_url: string | null;
   source_domain: string | null;
   source_title: string | null;
+  // own_company_communication fields
+  topic?: string | null;
+  summary?: string | null;
+  why_it_matters?: string | null;
+  signal_type?: string | null;
+  relevance_score?: number | null;
+  published_at?: string | null;
 }
 
 export interface EventCalendarItem {

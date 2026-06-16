@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useDigests, useGenerateDigest } from '../hooks/useDigests';
 import { Calendar, RefreshCw } from 'lucide-react';
 import type { RiskItem } from '../types/intelligence';
-import type { Digest, DigestSectionItem, EventCalendarItem, OwnCompanySignalItem } from '../types';
+import type { Digest, DigestSectionItem, EventCalendarItem } from '../types';
 
 const MOVEMENT_COLOURS: Record<string, string> = {
   weak: 'bg-gray-100 text-gray-600',
@@ -142,7 +142,7 @@ function DigestRisksOpportunities({ risks, opportunities }: { risks: RiskItem[];
   );
 }
 
-function OwnCompanySection({ items }: { items: OwnCompanySignalItem[] }) {
+function OwnCompanySection({ items }: { items: DigestSectionItem[] }) {
   return (
     <div className="space-y-5">
       {items.map((item) => (
@@ -284,7 +284,7 @@ export default function WeeklyDigest() {
           }
         }
       } else if (section.key === 'own_company_communication') {
-        const ownItems = section.items as unknown as OwnCompanySignalItem[];
+        const ownItems = section.items;
         for (const item of ownItems) {
           text += `▸ ${item.title}\n`;
           text += `  ${item.summary}`;
@@ -423,7 +423,7 @@ export default function WeeklyDigest() {
                             newly_discovered={section.newly_discovered ?? []}
                           />
                         ) : section.key === 'own_company_communication' ? (
-                          <OwnCompanySection items={(section.items as unknown) as OwnCompanySignalItem[]} />
+                          <OwnCompanySection items={section.items} />
                         ) : (
                           <SectionItems items={section.items} />
                         )}
