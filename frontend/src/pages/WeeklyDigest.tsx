@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useDigests, useGenerateDigest } from '../hooks/useDigests';
 import { Calendar, RefreshCw } from 'lucide-react';
 import type { RiskItem } from '../types/intelligence';
-import type { Digest, DigestSectionItem, DigestSection, EventCalendarItem, OwnCompanySignalItem } from '../types';
+import type { Digest, DigestSectionItem, EventCalendarItem, OwnCompanySignalItem } from '../types';
 
 const MOVEMENT_COLOURS: Record<string, string> = {
   weak: 'bg-gray-100 text-gray-600',
