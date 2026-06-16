@@ -474,8 +474,8 @@ export default function SourcesAdmin() {
                       <div className="flex items-center gap-3">
                         <ChevronDown size={18} className="text-ink-muted flex-shrink-0" />
                         <h2 className="text-lg font-semibold">{company.name}</h2>
-                        <span className={`text-xs px-2 py-0.5 rounded ${company.type === 'competitor' ? 'bg-type-product_update/20 text-type-product_update' : 'bg-type-ai_announcement/20 text-type-ai_announcement'}`}>
-                          {company.type === 'competitor' ? 'Competitor' : 'Market Source'}
+                        <span className={`text-xs px-2 py-0.5 rounded ${company.type === 'competitor' ? 'bg-type-product_update/20 text-type-product_update' : company.type === 'own_company' ? 'bg-emerald-100 text-emerald-700' : 'bg-type-ai_announcement/20 text-type-ai_announcement'}`}>
+                          {company.type === 'competitor' ? 'Competitor' : company.type === 'own_company' ? 'Own Company' : 'Market Source'}
                         </span>
                         <span className="text-xs text-ink-muted">{results.length} Treffer</span>
                         {company.website && <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-xs text-accent-blue hover:underline truncate max-w-xs">{company.website}</a>}
@@ -749,6 +749,7 @@ export default function SourcesAdmin() {
                 <select value={newCompanyType} onChange={(e) => setNewCompanyType(e.target.value as CompanyType)} className="input-field w-full">
                   <option value="competitor">Competitor</option>
                   <option value="market_source">Market Source</option>
+                  <option value="own_company">Own Company</option>
                 </select>
               </div>
               <div>
@@ -921,6 +922,7 @@ export default function SourcesAdmin() {
                 >
                   <option value="competitor">Competitor</option>
                   <option value="market_source">Market Source</option>
+                  <option value="own_company">Own Company</option>
                 </select>
               </div>
               <div>
