@@ -19,8 +19,10 @@ def run_synthesis(db: Session) -> ExternalCompanyView:
     own_company_ids = [c.id for c in own_companies]
 
     if not own_company_ids:
+        logger.warning("run_synthesis — no company with type 'own_company' found")
         raise ValueError("No company with type 'own_company' found")
 
+    company_names = [c.name for c in own_companies]
     signals = (
         db.query(Signal)
         .filter(Signal.company_id.in_(own_company_ids))
@@ -30,7 +32,17 @@ def run_synthesis(db: Session) -> ExternalCompanyView:
     )
 
     if not signals:
+        logger.warning(
+            "run_synthesis — no signals found for own_company [companies=%s]",
+            company_names,
+        )
         raise ValueError("No signals found for own_company — crawl the company first")
+
+    logger.info(
+        "run_synthesis — starting synthesis [companies=%s signals=%d]",
+        company_names,
+        len(signals),
+    )
 
     signal_dicts = [
         {
@@ -49,12 +61,15 @@ def run_synthesis(db: Session) -> ExternalCompanyView:
         data = json.loads(raw.strip())
     except json.JSONDecodeError:
         import re
+        logger.warning("run_synthesis — LLM response not valid JSON, attempting regex extraction")
         match = re.search(r"\{.*\}", raw, re.DOTALL)
         if not match:
+            logger.error("run_synthesis — could not extract JSON from LLM response: %r", raw[:200])
             raise ValueError(f"LLM returned invalid JSON: {raw[:200]}")
         data = json.loads(match.group())
 
     view = db.query(ExternalCompanyView).first()
+    is_update = view is not None
     now = datetime.now(timezone.utc)
 
     if view is None:
@@ -85,8 +100,11 @@ def run_synthesis(db: Session) -> ExternalCompanyView:
     db.refresh(view)
 
     logger.info(
-        "ExternalCompanyView synthesized from %d signals (id=%s)",
-        len(signals),
+        "ExternalCompanyView %s [id=%s signals=%d key_messages=%d capabilities=%d]",
+        "updated" if is_update else "created",
         view.id,
+        len(signals),
+        len(view.key_messages or []),
+        len(view.observed_capabilities or []),
     )
     return view

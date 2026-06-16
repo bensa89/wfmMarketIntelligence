@@ -1,9 +1,12 @@
+import logging
 import uuid
 from datetime import date, timedelta
 
 from sqlalchemy.orm import Session
 
 from app.models.digest import WeeklyDigest
+
+logger = logging.getLogger(__name__)
 from app.models.context import InternalCompanyContext
 from app.digester.sections import SECTIONS
 from app.digester.candidates import (
@@ -98,11 +101,23 @@ def generate_digest(db: Session) -> WeeklyDigest:
 
     own_company_signals = query_own_company_signals(db, week_start, week_end)
     if own_company_signals:
+        logger.info(
+            "Digest [%s–%s]: adding own_company section with %d signals",
+            week_start,
+            week_end,
+            len(own_company_signals),
+        )
         built_sections.append({
             "key": "own_company_communication",
             "title": "Unsere externe Kommunikation",
             "items": [build_own_company_signal_dict(s) for s in own_company_signals],
         })
+    else:
+        logger.info(
+            "Digest [%s–%s]: no own_company signals this week — section omitted",
+            week_start,
+            week_end,
+        )
 
     event_section = build_event_calendar_section(db, week_start)
     if event_section:

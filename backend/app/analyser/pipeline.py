@@ -112,6 +112,11 @@ def analyse_document(
     is_own_company = company and company.type == CompanyType.own_company
 
     if is_own_company:
+        logger.info(
+            "Using self-analysis prompt for own_company doc %s [company=%s]",
+            doc.id,
+            company.name if company else company_id,
+        )
         prompt = build_self_analysis_prompt(doc.content_markdown, context)
     else:
         from app.models.external_company_view import ExternalCompanyView
@@ -125,6 +130,16 @@ def analyse_document(
                 "observed_target_markets": ext_view_record.observed_target_markets or [],
                 "tone_and_positioning": ext_view_record.tone_and_positioning,
             }
+            logger.debug(
+                "ExternalCompanyView injected into competitor analysis for doc %s [signals_used=%d]",
+                doc.id,
+                ext_view_record.signal_count_used or 0,
+            )
+        else:
+            logger.debug(
+                "No ExternalCompanyView available for doc %s — using standard prompt",
+                doc.id,
+            )
         prompt = build_analysis_prompt(doc.content_markdown, context, external_view=external_view)
     raw_response = call_llm(prompt, caller="analyser:signal-extraction")
     signal_data = parse_llm_response(raw_response)
