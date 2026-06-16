@@ -85,7 +85,7 @@ def query_own_company_signals(
             Signal.relevance_score >= 0.55,
         )
         .order_by(Signal.relevance_score.desc())
-        .limit(8)
+        .limit(4)
         .all()
     )
 
