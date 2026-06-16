@@ -48,6 +48,7 @@ export interface CompanyCreate {
 
 export interface CompanyUpdate {
   name?: string;
+  type?: CompanyType;
   description?: string | null;
   website?: string | null;
 }
