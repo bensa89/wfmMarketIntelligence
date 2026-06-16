@@ -166,6 +166,18 @@ def _build_plain_text(digest, date_range: str, kw: int, digest_url: str, signals
                     if item.get("source_url"):
                         lines.append(f"  {item['source_url']}")
                     lines.append("")
+        elif section.get("key") == "own_company_communication":
+            for item in section.get("items", []):
+                lines.append(f"▸ {item.get('title', '')}")
+                if item.get("topic"):
+                    lines.append(f"  [{item['topic']}]")
+                if item.get("summary"):
+                    lines.append(f"  {item['summary']}")
+                if item.get("why_it_matters"):
+                    lines.append(f"  {item['why_it_matters']}")
+                if item.get("source_url"):
+                    lines.append(f"  Quelle: {item['source_url']}")
+                lines.append("")
         else:
             for item in section.get("items", []):
                 lines += [
@@ -397,11 +409,61 @@ def _render_risks_opportunities(risks: list, opportunities: list) -> str:
     </table>"""
 
 
+def _render_own_company_section(section: dict) -> str:
+    title = html.escape(section.get("title", ""))
+    items = section.get("items", [])
+    rows = ""
+    for i, item in enumerate(items):
+        border = "border-bottom:1px solid #f1f5f9;" if i < len(items) - 1 else ""
+        title_text = html.escape(item.get("title", ""))
+        topic = html.escape(item.get("topic") or "")
+        summary = html.escape(item.get("summary") or "")
+        why = html.escape(item.get("why_it_matters") or "")
+        source_url = item.get("source_url") or ""
+        source_label = html.escape(item.get("source_title") or item.get("source_domain") or source_url)
+
+        title_html = (
+            f'<a href="{html.escape(source_url)}" style="color:#1e40af;text-decoration:none;font-weight:600;font-size:14px;">{title_text}</a>'
+            if source_url else
+            f'<span style="font-weight:600;font-size:14px;color:#0f172a;">{title_text}</span>'
+        )
+        topic_html = f'<span style="display:inline-block;margin-bottom:6px;font-size:11px;color:#047857;background:#d1fae5;padding:2px 8px;border-radius:4px;">{topic}</span>' if topic else ""
+        summary_html = f'<p style="margin:6px 0 0;font-size:13px;color:#374151;line-height:1.5;">{summary}</p>' if summary else ""
+        why_html = f'<p style="margin:4px 0 0;font-size:12px;color:#6b7280;font-style:italic;">{why}</p>' if why else ""
+        source_html = (
+            f'<p style="margin:6px 0 0;font-size:11px;color:#94a3b8;">Quelle: <a href="{html.escape(source_url)}" style="color:#94a3b8;">{source_label}</a></p>'
+            if source_url else ""
+        )
+
+        rows += f"""
+          <tr>
+            <td style="padding:16px 0;{border}">
+              {topic_html}
+              {title_html}
+              {summary_html}
+              {why_html}
+              {source_html}
+            </td>
+          </tr>"""
+
+    return f"""
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:32px;">
+          <tr>
+            <td style="padding-bottom:14px;border-bottom:2px solid #d1fae5;">
+              <h2 style="margin:0;color:#065f46;font-size:13px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;">{title}</h2>
+            </td>
+          </tr>
+          {rows}
+        </table>"""
+
+
 def _render_sections(sections: list, company_logos: dict) -> str:
     parts = []
     for section in sections:
         if section.get("key") == "events_calendar":
             parts.append(_render_event_calendar_section(section, company_logos))
+        elif section.get("key") == "own_company_communication":
+            parts.append(_render_own_company_section(section))
         else:
             title = html.escape(section.get("title", ""))
             items_html = _render_items(section.get("items", []), company_logos)
