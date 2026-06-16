@@ -19,14 +19,21 @@ class DigestSignalRead(BaseModel):
 
 class DigestSectionItem(BaseModel):
     signal_id: str
-    company: str
+    company: Optional[str] = None
     title: str
-    narrative: str
-    implication_for_us: str
+    narrative: Optional[str] = None
+    implication_for_us: Optional[str] = None
     movement_strength: Optional[str] = None
     source_url: Optional[str] = None
     source_domain: Optional[str] = None
     source_title: Optional[str] = None
+    # own_company_communication fields
+    topic: Optional[str] = None
+    summary: Optional[str] = None
+    why_it_matters: Optional[str] = None
+    signal_type: Optional[str] = None
+    relevance_score: Optional[float] = None
+    published_at: Optional[str] = None
 
     model_config = {"from_attributes": True}
 
