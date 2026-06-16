@@ -91,7 +91,7 @@ def send_digest_email(
     sections = digest.sections or []
 
     msg = EmailMessage()
-    msg["Subject"] = f"[WFM Intel] Weekly Digest KW {kw} – {date_range}"
+    msg["Subject"] = f"Weekly Digest KW {kw} – {date_range}"
     msg["From"] = f"WFM Intelligence Hub <{smtp_from}>"
     msg["To"] = ", ".join(recipients)
 
@@ -438,14 +438,23 @@ def _build_html(
 
     return f"""<!DOCTYPE html>
 <html lang="de">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<style>
+@media only screen and (max-width:600px) {{
+  .pad {{ padding-left:20px !important; padding-right:20px !important; }}
+  .wrap {{ padding:16px 0 !important; }}
+}}
+</style>
+</head>
 <body style="margin:0;padding:0;background:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;padding:32px 16px;">
+<table width="100%" cellpadding="0" cellspacing="0" class="wrap" style="background:#f1f5f9;padding:32px 16px;">
   <tr><td align="center">
     <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
 
       <tr>
-        <td style="background:#0f172a;border-radius:12px 12px 0 0;padding:32px 40px;">
+        <td class="pad" style="background:#0f172a;border-radius:12px 12px 0 0;padding:32px 40px;">
           <table width="100%" cellpadding="0" cellspacing="0">
             <tr>
               <td>
@@ -462,7 +471,7 @@ def _build_html(
       </tr>
 
       <tr>
-        <td style="background:#1e293b;padding:20px 40px 24px;">
+        <td class="pad" style="background:#1e293b;padding:20px 40px 24px;">
           <p style="margin:0;color:#cbd5e1;font-size:14px;line-height:1.65;">{summary}</p>
           <p style="margin:12px 0 0;color:#475569;font-size:12px;">
             <a href="{signals_url_escaped}" style="color:#60a5fa;text-decoration:none;font-weight:500;">{signal_label} diese Woche →</a>
@@ -473,7 +482,7 @@ def _build_html(
       <tr><td style="background:#0f172a;height:1px;font-size:0;line-height:0;">&nbsp;</td></tr>
 
       <tr>
-        <td style="background:#ffffff;padding:32px 40px;border-radius:0 0 12px 12px;">
+        <td class="pad" style="background:#ffffff;padding:32px 40px;border-radius:0 0 12px 12px;">
           {risks_opps_html}
           {sections_html}
 
