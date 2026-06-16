@@ -154,9 +154,6 @@ export function CapabilityStrengthMatrix({ data, onCapabilityClick, onCompetitor
                 >
                   <CompanyLogo name={comp.name} slug={comp.slug} logo_path={comp.logo_path} size="sm" companyId={comp.id} />
                   {comp.name}
-                  {isOwnCompany && (
-                    <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 ml-1">Wir</span>
-                  )}
                 </button>
               </td>
               {visibleCaps.map(capKey => {
