@@ -77,6 +77,7 @@ def send_digest_email(
     logger.info("Sending digest email to %d recipients via %s:%s", len(recipients), smtp_host, smtp_port)
     week_start = digest.week_start
     week_end = digest.week_end
+    kw = week_start.isocalendar()[1]
     date_range = (
         f"{week_start.day:02d}. – "
         f"{week_end.day:02d}. {_MONTHS_DE[week_end.month - 1]} {week_end.year}"
@@ -90,13 +91,13 @@ def send_digest_email(
     sections = digest.sections or []
 
     msg = EmailMessage()
-    msg["Subject"] = f"[WFM Intel] Weekly Digest – {date_range}"
+    msg["Subject"] = f"[WFM Intel] Weekly Digest KW {kw} – {date_range}"
     msg["From"] = f"WFM Intelligence Hub <{smtp_from}>"
     msg["To"] = ", ".join(recipients)
 
-    msg.set_content(_build_plain_text(digest, date_range, digest_url, signals_url, sections, new_signals_count))
+    msg.set_content(_build_plain_text(digest, date_range, kw, digest_url, signals_url, sections, new_signals_count))
     msg.add_alternative(
-        _build_html(digest, date_range, digest_url, signals_url, sections, app_base_url, company_logos or {}, new_signals_count),
+        _build_html(digest, date_range, kw, digest_url, signals_url, sections, app_base_url, company_logos or {}, new_signals_count),
         subtype="html",
     )
 
@@ -115,10 +116,10 @@ def _format_event_date_plain(date_str: str | None) -> str:
         return date_str
 
 
-def _build_plain_text(digest, date_range: str, digest_url: str, signals_url: str, sections: list, signal_count: int) -> str:
+def _build_plain_text(digest, date_range: str, kw: int, digest_url: str, signals_url: str, sections: list, signal_count: int) -> str:
     signal_label = "1 Signal" if signal_count == 1 else f"{signal_count} Signale"
     lines = [
-        "WFM Market Intelligence Hub – Weekly Digest",
+        f"WFM Market Intelligence Hub – Weekly Digest KW {kw}",
         f"Zeitraum: {date_range}  |  {signal_label}",
         "",
     ]
@@ -262,7 +263,7 @@ def _format_event_date_html(date_str: str | None) -> str:
         return html.escape(date_str)
 
 
-def _render_event_items(items: list, show_new_badge: bool) -> str:
+def _render_event_items(items: list, show_new_badge: bool, company_logos: dict, force_badge: bool = False) -> str:
     parts = []
     for i, item in enumerate(items):
         border = "border-bottom:1px solid #f1f5f9;" if i < len(items) - 1 else ""
@@ -272,7 +273,7 @@ def _render_event_items(items: list, show_new_badge: bool) -> str:
         event_type = html.escape(item.get("event_type") or "")
         date_label = _format_event_date_html(item.get("event_date"))
         source_url = item.get("source_url") or ""
-        is_new = show_new_badge and item.get("is_new", False)
+        is_new = force_badge or (show_new_badge and item.get("is_new", False))
 
         new_badge = ""
         if is_new:
@@ -284,8 +285,14 @@ def _render_event_items(items: list, show_new_badge: bool) -> str:
             f'<span style="font-weight:600;font-size:14px;color:#0f172a;">{event_name}</span>'
         )
 
-        meta_parts = [p for p in [date_label, location, event_type] if p]
-        meta = " · ".join(meta_parts)
+        logo_img = ""
+        logo_url = company_logos.get(item.get("company", ""))
+        if logo_url:
+            logo_img = (
+                f'<img src="{html.escape(logo_url)}" width="16" height="16" '
+                f'style="border-radius:3px;object-fit:contain;vertical-align:middle;'
+                f'margin-right:4px;display:inline-block;" alt="{company}">'
+            )
 
         parts.append(f"""
         <tr>
@@ -298,7 +305,7 @@ def _render_event_items(items: list, show_new_badge: bool) -> str:
                 <td style="vertical-align:top;">
                   <div>{title_cell}{new_badge}</div>
                   <div style="margin-top:4px;">
-                    <span style="background:#f1f5f9;color:#475569;font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;">{company}</span>
+                    <span style="background:#f1f5f9;color:#475569;font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;">{logo_img}{company}</span>
                     {f'<span style="color:#94a3b8;font-size:11px;margin-left:8px;">{" · ".join(p for p in [location, event_type] if p)}</span>' if location or event_type else ''}
                   </div>
                 </td>
@@ -309,14 +316,13 @@ def _render_event_items(items: list, show_new_badge: bool) -> str:
     return "\n".join(parts)
 
 
-def _render_event_calendar_section(section: dict) -> str:
-    title = html.escape(section.get("title", "Events"))
+def _render_event_calendar_section(section: dict, company_logos: dict) -> str:
     upcoming = section.get("upcoming", [])
     newly = section.get("newly_discovered", [])
 
     blocks = ""
     if upcoming:
-        rows = _render_event_items(upcoming, show_new_badge=True)
+        rows = _render_event_items(upcoming, show_new_badge=True, company_logos=company_logos)
         blocks += f"""
         <tr>
           <td style="padding:12px 0 4px;">
@@ -326,7 +332,7 @@ def _render_event_calendar_section(section: dict) -> str:
         {rows}"""
 
     if newly:
-        rows = _render_event_items(newly, show_new_badge=False)
+        rows = _render_event_items(newly, show_new_badge=False, company_logos=company_logos, force_badge=True)
         blocks += f"""
         <tr>
           <td style="padding:16px 0 4px;">
@@ -339,7 +345,7 @@ def _render_event_calendar_section(section: dict) -> str:
         <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:32px;">
           <tr>
             <td style="padding-bottom:14px;border-bottom:2px solid #f1f5f9;">
-              <h2 style="margin:0;color:#0f172a;font-size:13px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;">{title}</h2>
+              <h2 style="margin:0;color:#0f172a;font-size:13px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;">Events in den kommenden 14 Tagen</h2>
             </td>
           </tr>
           {blocks}
@@ -365,25 +371,29 @@ def _render_risks_opportunities(risks: list, opportunities: list) -> str:
             </tr>"""
         return rows
 
-    cols = ""
+    rows = ""
     if risks:
-        cols += f"""
-        <td width="48%" valign="top" style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:16px 18px;">
-          <p style="margin:0 0 10px;color:#dc2626;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">Emerging Risks</p>
-          <table width="100%" cellpadding="0" cellspacing="0">{render_items(risks, '#ef4444')}</table>
-        </td>"""
+        rows += f"""
+        <tr>
+          <td style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:16px 18px;">
+            <p style="margin:0 0 10px;color:#dc2626;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">Emerging Risks</p>
+            <table width="100%" cellpadding="0" cellspacing="0">{render_items(risks, '#ef4444')}</table>
+          </td>
+        </tr>"""
     if risks and opportunities:
-        cols += '<td width="4%"></td>'
+        rows += '<tr><td style="height:12px;font-size:0;line-height:0;">&nbsp;</td></tr>'
     if opportunities:
-        cols += f"""
-        <td width="48%" valign="top" style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:16px 18px;">
-          <p style="margin:0 0 10px;color:#16a34a;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">Emerging Opportunities</p>
-          <table width="100%" cellpadding="0" cellspacing="0">{render_items(opportunities, '#22c55e')}</table>
-        </td>"""
+        rows += f"""
+        <tr>
+          <td style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:16px 18px;">
+            <p style="margin:0 0 10px;color:#16a34a;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">Emerging Opportunities</p>
+            <table width="100%" cellpadding="0" cellspacing="0">{render_items(opportunities, '#22c55e')}</table>
+          </td>
+        </tr>"""
 
     return f"""
     <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
-      <tr>{cols}</tr>
+      {rows}
     </table>"""
 
 
@@ -391,7 +401,7 @@ def _render_sections(sections: list, company_logos: dict) -> str:
     parts = []
     for section in sections:
         if section.get("key") == "events_calendar":
-            parts.append(_render_event_calendar_section(section))
+            parts.append(_render_event_calendar_section(section, company_logos))
         else:
             title = html.escape(section.get("title", ""))
             items_html = _render_items(section.get("items", []), company_logos)
@@ -410,6 +420,7 @@ def _render_sections(sections: list, company_logos: dict) -> str:
 def _build_html(
     digest,
     date_range: str,
+    kw: int,
     digest_url: str,
     signals_url: str,
     sections: list,
@@ -439,7 +450,7 @@ def _build_html(
             <tr>
               <td>
                 <p style="margin:0;color:#94a3b8;font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;">Market Intelligence Hub</p>
-                <h1 style="margin:8px 0 0;color:#f8fafc;font-size:22px;font-weight:700;letter-spacing:-0.01em;">Weekly Digest</h1>
+                <h1 style="margin:8px 0 0;color:#f8fafc;font-size:22px;font-weight:700;letter-spacing:-0.01em;">Weekly Digest KW {kw}</h1>
                 <p style="margin:6px 0 0;color:#64748b;font-size:13px;">{date_range}</p>
               </td>
               <td align="right" valign="top">
