@@ -61,6 +61,57 @@ If this signal has evidence_strength >= 4 or is market-shaping, also include:
 Otherwise omit these two fields entirely."""
 
 
+SELF_ASSESSMENT_SYSTEM_PROMPT = """Du bist ein Market-Intelligence-Analyst für ein WFM-Softwareunternehmen.
+Deine Aufgabe ist es, Signale aus der eigenen externen Kommunikation des Unternehmens zu bewerten.
+Gib NUR valides JSON zurück. Keine Erklärungen, kein Markdown.
+Deine Ausgabe muss per json.loads() parsierbar sein."""
+
+
+def build_self_assessment_prompt(
+    company_name: str,
+    signal_type: str,
+    title: str,
+    topic: str | None,
+    summary: str | None,
+    relevance_score: float,
+    context: dict[Any, Any],
+    capability_keys: list[str],
+) -> str:
+    return f"""Bewerte dieses Signal aus der eigenen externen Kommunikation von "{company_name}".
+
+Signal:
+- Typ: {signal_type}
+- Titel: {title}
+- Thema: {topic or "unbekannt"}
+- Zusammenfassung: {summary or "keine Zusammenfassung"}
+- Relevanz-Score: {relevance_score}
+
+Unser interner Kontext:
+- Kernkompetenzen: {", ".join(context.get("core_capabilities", []))}
+- Strategische Prioritäten: {", ".join(context.get("strategic_priorities", []))}
+- Differenzierungsmerkmale: {", ".join(context.get("differentiators", []))}
+
+Verfügbare Capability-Keys: {", ".join(capability_keys)}
+
+Bewerte welche Capability dieser externe Kommunikationsinhalt demonstriert oder adressiert.
+Beurteile die Stärke des öffentlichen Nachweises (evidence_strength) und die strategische Ausrichtung (signal_class).
+
+Gib exakt dieses JSON-Objekt zurück (kein anderer Text):
+{{
+  "capability_primary": "<ein Capability-Key aus der Liste oben, oder null>",
+  "capability_secondary": ["<key>"],
+  "signal_class": "<product_capability_move|positioning_move|ecosystem_move|thought_leadership_signal|hiring_signal|weak_signal|market_expansion_move>",
+  "evidence_strength": <integer 1-5, wie stark belegt dieser Inhalt die genannte Capability öffentlich>,
+  "visibility_impact": "<low|medium|high>",
+  "strategic_intent_guess": "<ein Satz: Was signalisiert dieser Inhalt über unsere strategische Ausrichtung nach außen?>",
+  "gameplay_tags": ["<tag>"],
+  "assessment_summary": "<2-3 Sätze auf Deutsch: Was kommunizieren wir hier nach außen und welche Capability demonstrieren wir?>",
+  "implication_for_us": null,
+  "watch_items": ["<konkreter Aspekt unserer externen Kommunikation den wir beobachten sollten>"],
+  "confidence": <float 0.0-1.0>
+}}"""
+
+
 SUMMARY_SYSTEM_PROMPT = """You are a competitive intelligence analyst for a WFM software company.
 Synthesize multiple signal assessments into a competitor summary.
 Return ONLY valid JSON. No prose, no markdown."""

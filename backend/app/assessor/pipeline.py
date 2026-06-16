@@ -3,7 +3,12 @@ from datetime import datetime, timezone
 from sqlalchemy.orm import Session
 
 from app.analyser.client import call_llm
-from app.assessor.prompts import ASSESSMENT_SYSTEM_PROMPT, build_assessment_prompt
+from app.assessor.prompts import (
+    ASSESSMENT_SYSTEM_PROMPT,
+    SELF_ASSESSMENT_SYSTEM_PROMPT,
+    build_assessment_prompt,
+    build_self_assessment_prompt,
+)
 from app.assessor.parser import parse_assessment_response, MAX_RETRIES
 from app.assessor.rules import compute_movement_score, compute_movement_strength, map_signal_type_to_class
 from app.assessor.capabilities import CAPABILITY_KEYS, CAPABILITIES
@@ -159,6 +164,127 @@ def assess_signal(signal: Signal, db: Session) -> SignalAssessment | None:
     db.add(assessment)
     db.commit()
     # Trigger benchmark recompute for this company (best-effort, non-blocking)
+    try:
+        from app.benchmark.aggregation import BenchmarkAggregationService
+        BenchmarkAggregationService(db).recompute_company(assessment.company_id, "30d")
+    except Exception as exc:
+        logger.warning("Benchmark recompute failed: %s", exc)
+    try:
+        from app.scorecard.builder import ScorecardBuilder
+        builder = ScorecardBuilder(db)
+        for period_type in VALID_PERIOD_TYPES:
+            builder.build(assessment.company_id, period_type)
+    except Exception as exc:
+        logger.warning("Scorecard build failed: %s", exc)
+    return assessment
+
+
+def assess_signal_self(signal: Signal, db: Session) -> SignalAssessment | None:
+    """Assessment for own_company signals — uses self-assessment prompt, implication_for_us is always None."""
+    ctx_record = db.query(InternalCompanyContext).first()
+    context = {}
+    if ctx_record:
+        context = {
+            "core_capabilities": ctx_record.core_capabilities or [],
+            "strategic_priorities": ctx_record.strategic_priorities or [],
+            "differentiators": ctx_record.differentiators or [],
+        }
+
+    company_name = signal.company.name if signal.company else "Unknown"
+    prompt = build_self_assessment_prompt(
+        company_name=company_name,
+        signal_type=signal.signal_type.value,
+        title=signal.title,
+        topic=signal.topic,
+        summary=signal.summary,
+        relevance_score=signal.relevance_score or 0.0,
+        context=context,
+        capability_keys=CAPABILITY_KEYS,
+    )
+
+    parsed = None
+    for attempt in range(MAX_RETRIES + 1):
+        try:
+            raw = call_llm(prompt, caller="assessor:self-assessment")
+        except Exception as exc:
+            logger.warning("call_llm raised on attempt %d/%d for signal %s: %s", attempt + 1, MAX_RETRIES + 1, signal.id, exc)
+            continue
+        parsed = parse_assessment_response(raw)
+        if parsed is not None:
+            break
+        logger.warning("Self-assessment parse failed (attempt %d/%d) for signal %s", attempt + 1, MAX_RETRIES + 1, signal.id)
+
+    if parsed is None:
+        logger.warning("All self-assessment attempts failed for signal %s — skipping", signal.id)
+        return None
+
+    signal_class = parsed.signal_class or map_signal_type_to_class(signal.signal_type)
+    capability_primary = parsed.capability_primary
+    strategic_weight = (
+        CAPABILITIES[capability_primary]["strategic_weight"]
+        if capability_primary and capability_primary in CAPABILITIES
+        else 5
+    )
+    movement_score = compute_movement_score(
+        relevance_score=signal.relevance_score or 0.0,
+        confidence_score=signal.confidence_score or 0.0,
+        evidence_strength=parsed.evidence_strength or 3,
+        visibility_impact=parsed.visibility_impact or "low",
+        signal_class=signal_class,
+    )
+    movement_strength = compute_movement_strength(movement_score)
+    now = datetime.now(timezone.utc)
+    routing_result = DimensionRouter.route(
+        type("_A", (), {
+            "signal_class": signal_class,
+            "evidence_strength": parsed.evidence_strength or 3,
+            "visibility_impact": parsed.visibility_impact or "low",
+            "movement_strength": movement_strength,
+            "assessment_weight": parsed.assessment_weight or 1.0,
+        })()
+    )
+    valid_from = signal.published_at if signal.published_at else now
+
+    existing = db.query(SignalAssessment).filter(SignalAssessment.signal_id == signal.id).first()
+    fields = dict(
+        capability_primary=capability_primary,
+        capability_secondary=parsed.capability_secondary,
+        signal_class=signal_class,
+        evidence_strength=parsed.evidence_strength,
+        visibility_impact=parsed.visibility_impact,
+        strategic_weight=strategic_weight,
+        movement_score=movement_score,
+        movement_strength=movement_strength,
+        confidence=parsed.confidence,
+        strategic_intent_guess=parsed.strategic_intent_guess,
+        gameplay_tags=parsed.gameplay_tags,
+        assessment_summary=parsed.assessment_summary,
+        implication_for_us=None,
+        watch_items=parsed.watch_items,
+        dimension_targets=routing_result.dimension_targets,
+        kpi_targets=routing_result.kpi_targets,
+        assessment_weight=parsed.assessment_weight or 1.0,
+        buyer_relevance=None,
+        valid_from=valid_from,
+        routing_version=ROUTING_VERSION,
+    )
+
+    if existing:
+        for k, v in fields.items():
+            setattr(existing, k, v)
+        existing.updated_at = now
+        db.commit()
+        assessment = existing
+    else:
+        assessment = SignalAssessment(
+            signal_id=signal.id, company_id=signal.company_id,
+            created_at=now, updated_at=now, **fields,
+        )
+        db.add(assessment)
+        db.commit()
+
+    logger.info("Self-assessment created [signal=%s capability=%s]", signal.id, capability_primary)
+
     try:
         from app.benchmark.aggregation import BenchmarkAggregationService
         BenchmarkAggregationService(db).recompute_company(assessment.company_id, "30d")

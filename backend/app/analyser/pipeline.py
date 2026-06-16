@@ -195,16 +195,17 @@ def analyse_document(
         signal_data.event_date or "none",
     )
 
-    # Skip assessment for own_company signals — the assessor is designed for competitor intelligence
-    # and would generate semantically incorrect implication_for_us fields for own content.
-    if not is_own_company:
-        try:
-            from app.config import settings
-            if (signal.relevance_score or 0.0) >= settings.assessment_threshold:
+    # Trigger assessment — own_company signals use a dedicated self-assessment prompt
+    try:
+        from app.config import settings
+        if (signal.relevance_score or 0.0) >= settings.assessment_threshold:
+            if is_own_company:
+                from app.assessor.pipeline import assess_signal_self
+                logger.info("Triggering self-assessment for own_company signal %s (relevance=%.2f)", signal.id, signal.relevance_score)
+                assess_signal_self(signal, db)
+            else:
                 from app.assessor.pipeline import assess_signal
                 logger.info("Triggering assessment for signal %s (relevance=%.2f)", signal.id, signal.relevance_score)
                 assess_signal(signal, db)
-        except Exception as e:
-            logger.warning("Assessment hook failed for signal %s: %s", signal.id, e)
-    else:
-        logger.debug("Skipping assessment for own_company signal %s", signal.id)
+    except Exception as e:
+        logger.warning("Assessment hook failed for signal %s: %s", signal.id, e)
