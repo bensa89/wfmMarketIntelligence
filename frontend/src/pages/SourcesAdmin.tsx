@@ -592,8 +592,8 @@ export default function SourcesAdmin() {
                      {isExpanded ? <ChevronDown size={18} className="text-ink-muted flex-shrink-0" /> : <ChevronRight size={18} className="text-ink-muted flex-shrink-0" />}
                      <CompanyLogo name={company.name} slug={company.slug} logo_path={company.logo_path} size="sm" companyId={company.id} />
                      <h2 className="text-lg font-semibold">{company.name}</h2>
-                     <span className={`text-xs px-2 py-0.5 rounded ${company.type === 'competitor' ? 'bg-type-product_update/20 text-type-product_update' : 'bg-type-ai_announcement/20 text-type-ai_announcement'}`}>
-                       {company.type === 'competitor' ? 'Competitor' : 'Market Source'}
+                     <span className={`text-xs px-2 py-0.5 rounded ${company.type === 'competitor' ? 'bg-type-product_update/20 text-type-product_update' : company.type === 'own_company' ? 'bg-emerald-100 text-emerald-700' : 'bg-type-ai_announcement/20 text-type-ai_announcement'}`}>
+                       {company.type === 'competitor' ? 'Competitor' : company.type === 'own_company' ? 'Own Company' : 'Market Source'}
                      </span>
                       <span className="text-xs text-ink-muted">{companySources.length} Source{companySources.length !== 1 ? 's' : ''}</span>
                       {company.website && <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-xs text-accent-blue hover:underline truncate max-w-xs" onClick={(e) => e.stopPropagation()}>{company.website}</a>}
