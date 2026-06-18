@@ -1,0 +1,1 @@
+{"nodes": [{"id": "migration_c3bdabd2ba94", "label": "add what_changed to competitor_summaries", "file_type": "code", "source_file": "backend/alembic/versions/c3bdabd2ba94_add_what_changed_to_competitor_summaries.py", "source_location": "1", "source_url": null, "captured_at": null, "author": null, "contributor": null}], "edges": [], "hyperedges": []}

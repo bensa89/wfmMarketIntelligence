@@ -1,0 +1,1 @@
+{"nodes": [{"id": "migration_b3f1a9c2d8e7", "label": "add_curated_fields_to_intelligence_briefings", "file_type": "code", "source_file": "backend/alembic/versions/b3f1a9c2d8e7_add_curated_fields_to_intelligence_briefings.py", "source_location": "1", "source_url": null, "captured_at": null, "author": null, "contributor": null}], "edges": [], "hyperedges": []}

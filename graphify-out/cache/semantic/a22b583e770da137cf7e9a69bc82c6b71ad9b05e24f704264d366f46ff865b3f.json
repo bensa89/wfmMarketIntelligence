@@ -1,0 +1,1 @@
+{"nodes": [{"id": "prompts_build_synthesis_prompt", "label": "build_synthesis_prompt (synthesizer)", "file_type": "code", "source_file": "backend/app/synthesizer/prompts.py", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}], "edges": [], "hyperedges": []}

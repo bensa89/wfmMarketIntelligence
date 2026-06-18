@@ -35,9 +35,9 @@
     "semantic_hash": "3f8785213a9953efb579e78815106a80"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/package.json": {
-    "mtime": 1778004178.7848663,
-    "ast_hash": "1258f1a830e8fbc2837a8b5717771d1d",
-    "semantic_hash": "1258f1a830e8fbc2837a8b5717771d1d"
+    "mtime": 1781817723.7028174,
+    "ast_hash": "e7c0300727749bb24ae17747e3530ecc",
+    "semantic_hash": "e7c0300727749bb24ae17747e3530ecc"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/tsconfig.json": {
     "mtime": 1776370924.7745934,
@@ -50,9 +50,9 @@
     "semantic_hash": "b8893da386a89dfd3672dad848f4ec7e"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/vite.config.ts": {
-    "mtime": 1779386948.8689115,
-    "ast_hash": "76e73d4504709888879cf589da5c4eec",
-    "semantic_hash": "76e73d4504709888879cf589da5c4eec"
+    "mtime": 1779475527.9789584,
+    "ast_hash": "094a4faf1118c84882da8955ad9a70f8",
+    "semantic_hash": "094a4faf1118c84882da8955ad9a70f8"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/postcss.config.js": {
     "mtime": 1776370974.6929133,
@@ -60,39 +60,34 @@
     "semantic_hash": "ef3ba2a81ba19f8ea5ddf625521e96f0"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/App.tsx": {
-    "mtime": 1779427252.6832552,
-    "ast_hash": "b52d251d2b2999dcc64427466d3b9634",
-    "semantic_hash": "b52d251d2b2999dcc64427466d3b9634"
+    "mtime": 1781817681.6512828,
+    "ast_hash": "45d56617c99b9ffe21b1c4195bd61473",
+    "semantic_hash": "45d56617c99b9ffe21b1c4195bd61473"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/main.tsx": {
     "mtime": 1776370924.774438,
     "ast_hash": "787e5a07efeb2bf6209d5937195f2f68",
     "semantic_hash": "787e5a07efeb2bf6209d5937195f2f68"
   },
-  "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/types/search.ts": {
-    "mtime": 1776605325.9824958,
-    "ast_hash": "9d8bf9fc27faacf8398dac44423e3603",
-    "semantic_hash": "9d8bf9fc27faacf8398dac44423e3603"
-  },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/types/scorecard.ts": {
-    "mtime": 1779397158.8654122,
-    "ast_hash": "022cdb3bebd1d57d836cfbdf50092e88",
-    "semantic_hash": "022cdb3bebd1d57d836cfbdf50092e88"
+    "mtime": 1781818369.8252428,
+    "ast_hash": "e3d7415ce5b4535b7b03bd76fad4a6eb",
+    "semantic_hash": "e3d7415ce5b4535b7b03bd76fad4a6eb"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/types/intelligence.ts": {
-    "mtime": 1779396374.2519362,
-    "ast_hash": "b5eb21c5de0b4e56762d834da94450b6",
-    "semantic_hash": "b5eb21c5de0b4e56762d834da94450b6"
+    "mtime": 1781818091.7733142,
+    "ast_hash": "dbb9101a100f498188e36e9af4fec96e",
+    "semantic_hash": "dbb9101a100f498188e36e9af4fec96e"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/types/index.ts": {
-    "mtime": 1778185576.729667,
-    "ast_hash": "5f1988538cdacefc4f88ce1ddaa000de",
-    "semantic_hash": "5f1988538cdacefc4f88ce1ddaa000de"
+    "mtime": 1781818349.530732,
+    "ast_hash": "b26ccdf30cecaa76d8bde169f5c7c8bb",
+    "semantic_hash": "b26ccdf30cecaa76d8bde169f5c7c8bb"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/types/benchmark.ts": {
-    "mtime": 1779427025.1169026,
-    "ast_hash": "e637c85b25b8408d9bfe776add100b30",
-    "semantic_hash": "e637c85b25b8408d9bfe776add100b30"
+    "mtime": 1781818056.332269,
+    "ast_hash": "a7068dc567007e41491a9ea62737e4cd",
+    "semantic_hash": "a7068dc567007e41491a9ea62737e4cd"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/test/setup.ts": {
     "mtime": 1778004178.7877295,
@@ -100,9 +95,9 @@
     "semantic_hash": "00e47f7b9836e8f731101981fa2bb2de"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/constants/capabilities.ts": {
-    "mtime": 1776885621.71812,
-    "ast_hash": "b1e734fc5c9a2892fdd74b512e1542a9",
-    "semantic_hash": "b1e734fc5c9a2892fdd74b512e1542a9"
+    "mtime": 1781818202.2586002,
+    "ast_hash": "9d6b24d89a7c834b93475b8d359a7dc0",
+    "semantic_hash": "9d6b24d89a7c834b93475b8d359a7dc0"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/utils/dates.ts": {
     "mtime": 1776967117.2616632,
@@ -110,9 +105,9 @@
     "semantic_hash": "064f879f15364e3a79f3e125e6ab8140"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/SignalCard.tsx": {
-    "mtime": 1776808589.9271224,
-    "ast_hash": "6f9c8b3912d718972c88ae562a450eb7",
-    "semantic_hash": "6f9c8b3912d718972c88ae562a450eb7"
+    "mtime": 1779454309.5658603,
+    "ast_hash": "8fc91b470826c5f88e3cbf2ab23075a9",
+    "semantic_hash": "8fc91b470826c5f88e3cbf2ab23075a9"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/RelevanceBadge.tsx": {
     "mtime": 1776630673.6575549,
@@ -120,9 +115,9 @@
     "semantic_hash": "ae6de6f728e12d369ce4d31b3773b8d1"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/FilterBar.tsx": {
-    "mtime": 1776885621.7128503,
-    "ast_hash": "fe32200b45c537a551dc0cec58b51a1f",
-    "semantic_hash": "fe32200b45c537a551dc0cec58b51a1f"
+    "mtime": 1779454483.1366482,
+    "ast_hash": "54080cc31830c8573506d16b17ec1a38",
+    "semantic_hash": "54080cc31830c8573506d16b17ec1a38"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/TagList.tsx": {
     "mtime": 1776627506.8277767,
@@ -135,9 +130,9 @@
     "semantic_hash": "3daf0036b92d14f32f657e17d1146f61"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/SignalTypeIcon.tsx": {
-    "mtime": 1776631569.8181791,
-    "ast_hash": "02c594e1d62056bd0ae9c167db3f51e0",
-    "semantic_hash": "02c594e1d62056bd0ae9c167db3f51e0"
+    "mtime": 1781818192.9549654,
+    "ast_hash": "b07b176792f05e6acdaef6ae7a9a1868",
+    "semantic_hash": "b07b176792f05e6acdaef6ae7a9a1868"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/MarkdownViewer.tsx": {
     "mtime": 1776967663.5829272,
@@ -150,9 +145,9 @@
     "semantic_hash": "b43cbfdf02e3f75f793dcfd2eb7754c7"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/Layout.tsx": {
-    "mtime": 1778004178.7855673,
-    "ast_hash": "8976868f2a844604fba4d8f783a08764",
-    "semantic_hash": "8976868f2a844604fba4d8f783a08764"
+    "mtime": 1781817069.71204,
+    "ast_hash": "9c31669d1207ceb753fa65b0012d6798",
+    "semantic_hash": "9c31669d1207ceb753fa65b0012d6798"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/InfoTooltip.tsx": {
     "mtime": 1779135384.2327554,
@@ -185,24 +180,24 @@
     "semantic_hash": "b051e16cdc122d2d52f1998d2aead465"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/benchmark/CapabilityStrengthMatrix.tsx": {
-    "mtime": 1777843339.9288034,
-    "ast_hash": "792c5c98182345418a86981ef57c9217",
-    "semantic_hash": "792c5c98182345418a86981ef57c9217"
+    "mtime": 1781644350.9664807,
+    "ast_hash": "1c076f7d14af8be6d87bc16db60f01e0",
+    "semantic_hash": "1c076f7d14af8be6d87bc16db60f01e0"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/signals/SignalFeedFilters.tsx": {
-    "mtime": 1776963706.2555962,
-    "ast_hash": "ef3b548e674e051be0cb56a9e53c8e39",
-    "semantic_hash": "ef3b548e674e051be0cb56a9e53c8e39"
+    "mtime": 1781376579.7016056,
+    "ast_hash": "38536e5c28c9c483d732cc2fe4a8c18a",
+    "semantic_hash": "38536e5c28c9c483d732cc2fe4a8c18a"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/signals/SignalFeedTable.tsx": {
-    "mtime": 1776967574.7732785,
-    "ast_hash": "7cd88099ebda77c219d567c5bf13b15e",
-    "semantic_hash": "7cd88099ebda77c219d567c5bf13b15e"
+    "mtime": 1781251072.2418356,
+    "ast_hash": "9900f662ad1a50e00623f7e1ec919421",
+    "semantic_hash": "9900f662ad1a50e00623f7e1ec919421"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/signals/SignalDetailDrawer.tsx": {
-    "mtime": 1779135606.6654441,
-    "ast_hash": "65dba1d8d567273fad4b63373e9272ae",
-    "semantic_hash": "65dba1d8d567273fad4b63373e9272ae"
+    "mtime": 1781472176.2114465,
+    "ast_hash": "4cc0c3b36054d05f2c8f64d58e47d77d",
+    "semantic_hash": "4cc0c3b36054d05f2c8f64d58e47d77d"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/signals/ConfidenceBar.tsx": {
     "mtime": 1776885621.715164,
@@ -214,45 +209,30 @@
     "ast_hash": "179672bd25da11b1b5f4a7a011d7132d",
     "semantic_hash": "179672bd25da11b1b5f4a7a011d7132d"
   },
-  "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/workspace/RecentMovesTimeline.tsx": {
-    "mtime": 1779397184.3622866,
-    "ast_hash": "393ec5181d7f5cc2f15d644624a2f323",
-    "semantic_hash": "393ec5181d7f5cc2f15d644624a2f323"
-  },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/workspace/StrategicPostureCard.tsx": {
-    "mtime": 1776963625.1898391,
-    "ast_hash": "dc498910a5da2c8efc2fb22d5cb7405d",
-    "semantic_hash": "dc498910a5da2c8efc2fb22d5cb7405d"
+    "mtime": 1779434803.0941632,
+    "ast_hash": "caba98a9bd9fd347d0bb9eb1dc50f7b4",
+    "semantic_hash": "caba98a9bd9fd347d0bb9eb1dc50f7b4"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/workspace/RelativeCapabilityStrengthPanel.tsx": {
-    "mtime": 1779427519.7603357,
-    "ast_hash": "6c5710a07652d3e06e819f577803eeda",
-    "semantic_hash": "6c5710a07652d3e06e819f577803eeda"
+    "mtime": 1781268536.0298245,
+    "ast_hash": "7e1e16a3f8864419932588fe3977b76a",
+    "semantic_hash": "7e1e16a3f8864419932588fe3977b76a"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/workspace/CapabilityExplainDrawer.tsx": {
-    "mtime": 1779427351.406615,
-    "ast_hash": "8675588bbe261953b1f1ba7852cb1a78",
-    "semantic_hash": "8675588bbe261953b1f1ba7852cb1a78"
-  },
-  "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/workspace/SummaryPeriodTabs.tsx": {
-    "mtime": 1776963683.0797856,
-    "ast_hash": "914ce0c012993dd070fa900049c656ce",
-    "semantic_hash": "914ce0c012993dd070fa900049c656ce"
-  },
-  "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/workspace/CompetitorHeader.tsx": {
-    "mtime": 1776963610.1503487,
-    "ast_hash": "c5c8c3579a571d0de60cfa0efdb54051",
-    "semantic_hash": "c5c8c3579a571d0de60cfa0efdb54051"
+    "mtime": 1781266178.7318347,
+    "ast_hash": "3c3f84e905a61011f0e12efe6a788a94",
+    "semantic_hash": "3c3f84e905a61011f0e12efe6a788a94"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/workspace/RisksOpportunitiesCards.tsx": {
-    "mtime": 1779396393.3581917,
-    "ast_hash": "ebfb721b97cb7708a407e86942019a40",
-    "semantic_hash": "ebfb721b97cb7708a407e86942019a40"
+    "mtime": 1779434791.00222,
+    "ast_hash": "b1802e346952f2ede59726667812f24b",
+    "semantic_hash": "b1802e346952f2ede59726667812f24b"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/workspace/InfoTooltip.tsx": {
-    "mtime": 1779427186.385587,
-    "ast_hash": "19c1d6744c2ee41cc43a578982018616",
-    "semantic_hash": "19c1d6744c2ee41cc43a578982018616"
+    "mtime": 1779431453.071225,
+    "ast_hash": "ca14315630c4b3e8b4f2394206c80767",
+    "semantic_hash": "ca14315630c4b3e8b4f2394206c80767"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/docs/ExpandablePanel.tsx": {
     "mtime": 1778004178.785839,
@@ -279,100 +259,45 @@
     "ast_hash": "c647a7ca7a535bd8027d321eb75c4e4b",
     "semantic_hash": "c647a7ca7a535bd8027d321eb75c4e4b"
   },
-  "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/dashboard/CompanySignalHeatmap.tsx": {
-    "mtime": 1778004180.7698534,
-    "ast_hash": "a1802419e0fed71e62f3d08d8280dfa7",
-    "semantic_hash": "a1802419e0fed71e62f3d08d8280dfa7"
-  },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/dashboard/SignalFeedTable.tsx": {
     "mtime": 1776808606.2371233,
     "ast_hash": "3cc7ec9a22d6745a3fe184583a9820f9",
     "semantic_hash": "3cc7ec9a22d6745a3fe184583a9820f9"
   },
-  "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/dashboard/BriefingPanel.tsx": {
-    "mtime": 1778004180.7696717,
-    "ast_hash": "768e6a64193d1a2eaf4f6744d25e6ec8",
-    "semantic_hash": "768e6a64193d1a2eaf4f6744d25e6ec8"
-  },
-  "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/dashboard/SignalsOverTimeChart.tsx": {
-    "mtime": 1776630592.7055035,
-    "ast_hash": "f43141c22ba6e78a77b56ee875d34c98",
-    "semantic_hash": "f43141c22ba6e78a77b56ee875d34c98"
-  },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/dashboard/CompanyColorMap.tsx": {
-    "mtime": 1776630563.3120742,
-    "ast_hash": "2fc2241dc77234de41ca88e36285472e",
-    "semantic_hash": "2fc2241dc77234de41ca88e36285472e"
-  },
-  "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/dashboard/TopSignalsPanel.tsx": {
-    "mtime": 1776633167.3119965,
-    "ast_hash": "4baf871c2e258daa501fc301625d48fb",
-    "semantic_hash": "4baf871c2e258daa501fc301625d48fb"
-  },
-  "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/dashboard/DeltaKpiCard.tsx": {
-    "mtime": 1776630568.5377305,
-    "ast_hash": "89fd83354999c41b4ac0b2476fa66452",
-    "semantic_hash": "89fd83354999c41b4ac0b2476fa66452"
-  },
-  "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/dashboard/SignalTypeDistribution.tsx": {
-    "mtime": 1776630605.7062588,
-    "ast_hash": "3361df0aaadcffa7bcb590fbf5b39008",
-    "semantic_hash": "3361df0aaadcffa7bcb590fbf5b39008"
-  },
-  "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/dashboard/CrawlSummaryCard.tsx": {
-    "mtime": 1776630573.1454933,
-    "ast_hash": "3b8614fbab285fc554f67d57dc5318b1",
-    "semantic_hash": "3b8614fbab285fc554f67d57dc5318b1"
+    "mtime": 1781818197.8516092,
+    "ast_hash": "aa8de96cd8a2180e6fe451b38c5cfa68",
+    "semantic_hash": "aa8de96cd8a2180e6fe451b38c5cfa68"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/overview/IntelligenceBriefingPanel.tsx": {
     "mtime": 1776967723.7299485,
     "ast_hash": "8b9ade461cc91d45f931235b150fb6a4",
     "semantic_hash": "8b9ade461cc91d45f931235b150fb6a4"
   },
-  "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/overview/OverviewKPIBar.tsx": {
-    "mtime": 1776963534.5656862,
-    "ast_hash": "74d37856cc6b0f4fd977eefb73bd5b8a",
-    "semantic_hash": "74d37856cc6b0f4fd977eefb73bd5b8a"
-  },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/overview/CapabilityHeatmapV2.tsx": {
-    "mtime": 1776963568.3818562,
-    "ast_hash": "ddc44f4533622dbc10f475fdb2f84de9",
-    "semantic_hash": "ddc44f4533622dbc10f475fdb2f84de9"
+    "mtime": 1781814485.7404127,
+    "ast_hash": "d3ed240315e9878ff4b80ea17dfa80ed",
+    "semantic_hash": "d3ed240315e9878ff4b80ea17dfa80ed"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/overview/MarketShapingFeed.tsx": {
-    "mtime": 1778004180.770093,
-    "ast_hash": "5fb08c2a6fe4c021a49549db3f2b0a3f",
-    "semantic_hash": "5fb08c2a6fe4c021a49549db3f2b0a3f"
+    "mtime": 1781816932.798032,
+    "ast_hash": "b671ae6f81bb4f913d829eb69f2a8e8d",
+    "semantic_hash": "b671ae6f81bb4f913d829eb69f2a8e8d"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/overview/TopMoversList.tsx": {
-    "mtime": 1776963552.1142325,
-    "ast_hash": "2ec9e50a26688cdd851b02b71ec98e10",
-    "semantic_hash": "2ec9e50a26688cdd851b02b71ec98e10"
+    "mtime": 1781814769.1731052,
+    "ast_hash": "23aa0fc8d4bdcced8dd234b24e2aa3e6",
+    "semantic_hash": "23aa0fc8d4bdcced8dd234b24e2aa3e6"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/overview/RisksOpportunitiesPanel.tsx": {
-    "mtime": 1776963597.3429244,
-    "ast_hash": "e4f89109f44de776f60236a1c68882f7",
-    "semantic_hash": "e4f89109f44de776f60236a1c68882f7"
+    "mtime": 1781558780.5758312,
+    "ast_hash": "d364d01e45013f2e42398eb35b3ae637",
+    "semantic_hash": "d364d01e45013f2e42398eb35b3ae637"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/scorecard/DimensionScoreGrid.tsx": {
     "mtime": 1779427151.5203393,
     "ast_hash": "bb1eb31590447ce2998cba5bdeb3b9bc",
     "semantic_hash": "bb1eb31590447ce2998cba5bdeb3b9bc"
-  },
-  "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/scorecard/TopMovesTimeline.tsx": {
-    "mtime": 1779397169.359153,
-    "ast_hash": "080ac223d86ef7d3f02103fd1324fdc3",
-    "semantic_hash": "080ac223d86ef7d3f02103fd1324fdc3"
-  },
-  "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/scorecard/RiskFlagsPanel.tsx": {
-    "mtime": 1779394726.7505715,
-    "ast_hash": "f167091c5237ed918d89bc1e0e021606",
-    "semantic_hash": "f167091c5237ed918d89bc1e0e021606"
-  },
-  "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/scorecard/WatchpointsPanel.tsx": {
-    "mtime": 1779393707.9108126,
-    "ast_hash": "686a93f52cf736173001b0a89b14c56c",
-    "semantic_hash": "686a93f52cf736173001b0a89b14c56c"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/scorecard/DimensionScoreCard.tsx": {
     "mtime": 1779427145.2826514,
@@ -384,11 +309,6 @@
     "ast_hash": "c6651f0f3320f996009d8ad6633cf64a",
     "semantic_hash": "c6651f0f3320f996009d8ad6633cf64a"
   },
-  "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/scorecard/CapabilityStrengthPanel.tsx": {
-    "mtime": 1779393707.9093294,
-    "ast_hash": "034b7af39e4578b2b7f7e206b9aedaca",
-    "semantic_hash": "034b7af39e4578b2b7f7e206b9aedaca"
-  },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/scorecard/ExplainabilityDrawer.tsx": {
     "mtime": 1779398658.4845214,
     "ast_hash": "216db9b744c74f063dea657e27e95bcf",
@@ -399,15 +319,10 @@
     "ast_hash": "04826df1bf9e7750cd783fe63a8f0d22",
     "semantic_hash": "04826df1bf9e7750cd783fe63a8f0d22"
   },
-  "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/hooks/useDeduplicate.ts": {
-    "mtime": 1776792285.7418954,
-    "ast_hash": "5576c780c9a83ddb54a0b460a2d7f72d",
-    "semantic_hash": "5576c780c9a83ddb54a0b460a2d7f72d"
-  },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/hooks/useBenchmark.ts": {
-    "mtime": 1779427125.0904393,
-    "ast_hash": "3c4f32a092ee8d686d5f20a6dc88c883",
-    "semantic_hash": "3c4f32a092ee8d686d5f20a6dc88c883"
+    "mtime": 1781818110.1986616,
+    "ast_hash": "d969a8e0a577d8d4045ab7a5a7fed38d",
+    "semantic_hash": "d969a8e0a577d8d4045ab7a5a7fed38d"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/hooks/useSourceSearch.ts": {
     "mtime": 1778056577.5994372,
@@ -425,29 +340,29 @@
     "semantic_hash": "ccd3e284755cc771d3c9129cae631251"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/hooks/useCrawlStatus.ts": {
-    "mtime": 1778163642.501215,
-    "ast_hash": "771f120107b00224fde4bc1ff19056df",
-    "semantic_hash": "771f120107b00224fde4bc1ff19056df"
+    "mtime": 1779433439.124616,
+    "ast_hash": "0aad2badd7940008235a1b3ac1c089c3",
+    "semantic_hash": "0aad2badd7940008235a1b3ac1c089c3"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/hooks/useDigests.ts": {
-    "mtime": 1776373276.138377,
-    "ast_hash": "46734db980d95bcd89eb542a054286a6",
-    "semantic_hash": "46734db980d95bcd89eb542a054286a6"
+    "mtime": 1781818144.6039314,
+    "ast_hash": "77985c9153451067507b7759000d710e",
+    "semantic_hash": "77985c9153451067507b7759000d710e"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/hooks/useContext.ts": {
-    "mtime": 1776373276.1380756,
-    "ast_hash": "0ebc44f94186a8d581c05fbd0d681da1",
-    "semantic_hash": "0ebc44f94186a8d581c05fbd0d681da1"
+    "mtime": 1781642758.2949321,
+    "ast_hash": "056d6d2f93344100c39b7cea23d503c3",
+    "semantic_hash": "056d6d2f93344100c39b7cea23d503c3"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/hooks/useDiscoveredPages.ts": {
-    "mtime": 1776630559.224945,
-    "ast_hash": "1e67c53fba3b45d8ff3eb2b03f7cbd9e",
-    "semantic_hash": "1e67c53fba3b45d8ff3eb2b03f7cbd9e"
+    "mtime": 1781818155.6940901,
+    "ast_hash": "b8a9fa4d56c16165daeff55189308727",
+    "semantic_hash": "b8a9fa4d56c16165daeff55189308727"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/hooks/useCrawlRuns.ts": {
-    "mtime": 1776630888.4480157,
-    "ast_hash": "04ee0df1edafb3fa47ed17508b720932",
-    "semantic_hash": "04ee0df1edafb3fa47ed17508b720932"
+    "mtime": 1781818140.1044464,
+    "ast_hash": "0e2fe572f9d843732db830e017315842",
+    "semantic_hash": "0e2fe572f9d843732db830e017315842"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/hooks/useSources.ts": {
     "mtime": 1778102679.9627838,
@@ -465,34 +380,24 @@
     "semantic_hash": "32c6c4efb0e4388eb4702a664b33c192"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/hooks/useSearch.ts": {
-    "mtime": 1776631585.8945608,
-    "ast_hash": "b4948b4a8af8d42ca0b586ea381edc4a",
-    "semantic_hash": "b4948b4a8af8d42ca0b586ea381edc4a"
+    "mtime": 1781818183.2063468,
+    "ast_hash": "87b7e8a2d1fdd438611af07e51de74ed",
+    "semantic_hash": "87b7e8a2d1fdd438611af07e51de74ed"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/hooks/useCrawl.ts": {
-    "mtime": 1778059849.584462,
-    "ast_hash": "6d05d97d5f4a4b3a32a27fc1cfd94d6f",
-    "semantic_hash": "6d05d97d5f4a4b3a32a27fc1cfd94d6f"
-  },
-  "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/hooks/useBriefing.ts": {
-    "mtime": 1776800983.9444342,
-    "ast_hash": "e4f2b99702eb7c577d54384930cfcc20",
-    "semantic_hash": "e4f2b99702eb7c577d54384930cfcc20"
+    "mtime": 1781818130.8945482,
+    "ast_hash": "e6be2f1da5c179128d9dc4725f495e9d",
+    "semantic_hash": "e6be2f1da5c179128d9dc4725f495e9d"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/hooks/useSignalsFeed.ts": {
-    "mtime": 1779394896.2863963,
-    "ast_hash": "cf6dfb27940e27ed6b5f6ac5d48829a4",
-    "semantic_hash": "cf6dfb27940e27ed6b5f6ac5d48829a4"
+    "mtime": 1781376380.4300673,
+    "ast_hash": "3a5ecca82e74cdef3ef6d35599480947",
+    "semantic_hash": "3a5ecca82e74cdef3ef6d35599480947"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/hooks/useScorecard.ts": {
-    "mtime": 1779393707.9111583,
-    "ast_hash": "0ac78822f0f6a6b01f7347cdecad822c",
-    "semantic_hash": "0ac78822f0f6a6b01f7347cdecad822c"
-  },
-  "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/hooks/useSourceCandidates.ts": {
-    "mtime": 1776630553.7861912,
-    "ast_hash": "4cf791c268f337c32159ff30bdc8db01",
-    "semantic_hash": "4cf791c268f337c32159ff30bdc8db01"
+    "mtime": 1781818177.4198294,
+    "ast_hash": "07c460dce7104463e2ab68ef1dd4ad0f",
+    "semantic_hash": "07c460dce7104463e2ab68ef1dd4ad0f"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/hooks/useSummarizeCompetitor.ts": {
     "mtime": 1776885621.7193496,
@@ -500,19 +405,14 @@
     "semantic_hash": "18cecd3edbfe9a8721f43aa4c7d5424a"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/hooks/useCompanies.ts": {
-    "mtime": 1776430933.676379,
-    "ast_hash": "00c6a8838d046d1b511d64be350d6237",
-    "semantic_hash": "00c6a8838d046d1b511d64be350d6237"
+    "mtime": 1781818124.025215,
+    "ast_hash": "294a6c1e25358eda23885ec904187603",
+    "semantic_hash": "294a6c1e25358eda23885ec904187603"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/hooks/useOverview.ts": {
     "mtime": 1776885621.718883,
     "ast_hash": "acfcd4e5158308a399addfd36609d1f1",
     "semantic_hash": "acfcd4e5158308a399addfd36609d1f1"
-  },
-  "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/hooks/useSignalStats.ts": {
-    "mtime": 1776630552.6616092,
-    "ast_hash": "9d6aee62034006fd6cf10714bb30b761",
-    "semantic_hash": "9d6aee62034006fd6cf10714bb30b761"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/hooks/useAssessSignal.ts": {
     "mtime": 1776885621.7184846,
@@ -520,24 +420,24 @@
     "semantic_hash": "2131482f39f6c69146968eca0c446d4c"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/hooks/useSignals.ts": {
-    "mtime": 1778004180.7703125,
-    "ast_hash": "2d920e7ff60fcdaf53c97a84f289e213",
-    "semantic_hash": "2d920e7ff60fcdaf53c97a84f289e213"
+    "mtime": 1781818187.5911028,
+    "ast_hash": "a1d17ba53519dc7fc3f5f86add5d53c9",
+    "semantic_hash": "a1d17ba53519dc7fc3f5f86add5d53c9"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/api/scorecard.ts": {
-    "mtime": 1779393707.9089136,
-    "ast_hash": "3c50699161ff756a54b992e90df82f8d",
-    "semantic_hash": "3c50699161ff756a54b992e90df82f8d"
+    "mtime": 1781818327.88475,
+    "ast_hash": "ddbfd8d472f07553b389f2b82d112e6a",
+    "semantic_hash": "ddbfd8d472f07553b389f2b82d112e6a"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/api/client.ts": {
-    "mtime": 1776430520.2091832,
-    "ast_hash": "4108a8508de8c1ac1b64c9b9ea24997d",
-    "semantic_hash": "4108a8508de8c1ac1b64c9b9ea24997d"
+    "mtime": 1779453701.99433,
+    "ast_hash": "bc270b20baeb9a4d1f3fb02df0bd31b0",
+    "semantic_hash": "bc270b20baeb9a4d1f3fb02df0bd31b0"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/api/benchmark.ts": {
-    "mtime": 1779427117.1053987,
-    "ast_hash": "8318b60dcc8ada2417c7bec4bc9bedd9",
-    "semantic_hash": "8318b60dcc8ada2417c7bec4bc9bedd9"
+    "mtime": 1781818320.6597087,
+    "ast_hash": "5498ee96a7c59d7b792b1894d0129a5d",
+    "semantic_hash": "5498ee96a7c59d7b792b1894d0129a5d"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/pages/LoginPage.tsx": {
     "mtime": 1776627506.8291693,
@@ -545,39 +445,29 @@
     "semantic_hash": "1aa8ee1da53a337c06fa763b7fb5434a"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/pages/MarketTrends.tsx": {
-    "mtime": 1776804144.1009462,
-    "ast_hash": "4b6971038f3e18ae51c8833511dcbff9",
-    "semantic_hash": "4b6971038f3e18ae51c8833511dcbff9"
+    "mtime": 1779454314.682235,
+    "ast_hash": "51740ee3d037f226bda089e058907295",
+    "semantic_hash": "51740ee3d037f226bda089e058907295"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/pages/SourcesAdmin.tsx": {
-    "mtime": 1778174423.626556,
-    "ast_hash": "020a858fed1088108bac3f1eb3f4f28b",
-    "semantic_hash": "020a858fed1088108bac3f1eb3f4f28b"
+    "mtime": 1781643399.0351346,
+    "ast_hash": "272e0e0102681e8a4447220c9e12aa95",
+    "semantic_hash": "272e0e0102681e8a4447220c9e12aa95"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/pages/Dashboard.tsx": {
-    "mtime": 1778163490.5491962,
-    "ast_hash": "e4a776d9b23ec3c0473efca8a0546bfe",
-    "semantic_hash": "e4a776d9b23ec3c0473efca8a0546bfe"
-  },
-  "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/pages/OverviewPage.tsx": {
-    "mtime": 1776967235.2971876,
-    "ast_hash": "f9210c8efec5f8217be54927483a60b4",
-    "semantic_hash": "f9210c8efec5f8217be54927483a60b4"
+    "mtime": 1781816914.1496582,
+    "ast_hash": "0b9ae89543c0c6ccf837cf95bf4e3373",
+    "semantic_hash": "0b9ae89543c0c6ccf837cf95bf4e3373"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/pages/CrawlRunDetailPage.tsx": {
     "mtime": 1778004178.7870905,
     "ast_hash": "67bae611faa5a85b7e29711e1c69cbf2",
     "semantic_hash": "67bae611faa5a85b7e29711e1c69cbf2"
   },
-  "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/pages/CompetitorDetail.tsx": {
-    "mtime": 1779393707.9116538,
-    "ast_hash": "5ab13a347ed0b9311882b7b78d75cd79",
-    "semantic_hash": "5ab13a347ed0b9311882b7b78d75cd79"
-  },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/pages/SignalsFeedPage.tsx": {
-    "mtime": 1776963522.8790908,
-    "ast_hash": "014e626e9b6eb2531940df8762e217aa",
-    "semantic_hash": "014e626e9b6eb2531940df8762e217aa"
+    "mtime": 1781251040.1958015,
+    "ast_hash": "b58363b615d607f3f15e4fb19a11a1d3",
+    "semantic_hash": "b58363b615d607f3f15e4fb19a11a1d3"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/pages/SearchPage.tsx": {
     "mtime": 1776627506.8297737,
@@ -585,14 +475,14 @@
     "semantic_hash": "ce1f9b8cab4daaa7c3a696fbd543c580"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/pages/CompetitorWorkspacePage.tsx": {
-    "mtime": 1779427647.0440457,
-    "ast_hash": "a2768b5913804572ed78e7e329c5d964",
-    "semantic_hash": "a2768b5913804572ed78e7e329c5d964"
+    "mtime": 1781376616.2826636,
+    "ast_hash": "4f0689450cf3b4ab0ea05b3ae146981c",
+    "semantic_hash": "4f0689450cf3b4ab0ea05b3ae146981c"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/pages/CompanyContext.tsx": {
-    "mtime": 1776627506.828281,
-    "ast_hash": "f1a244f855606906cd387e849b6d3699",
-    "semantic_hash": "f1a244f855606906cd387e849b6d3699"
+    "mtime": 1781642792.714385,
+    "ast_hash": "528bf35c6253a8925097837c99334ad8",
+    "semantic_hash": "528bf35c6253a8925097837c99334ad8"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/pages/HowItWorksPage.tsx": {
     "mtime": 1778004178.7873666,
@@ -600,14 +490,14 @@
     "semantic_hash": "68e02c389a750776fd71cfb07b0bd490"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/pages/WeeklyDigest.tsx": {
-    "mtime": 1778185576.7292821,
-    "ast_hash": "745bb1a17d458b99e03d19d38f426aea",
-    "semantic_hash": "745bb1a17d458b99e03d19d38f426aea"
+    "mtime": 1781646835.4047,
+    "ast_hash": "a43bd561cc020cade938a6ad4e70810f",
+    "semantic_hash": "a43bd561cc020cade938a6ad4e70810f"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/pages/CompetitorList.tsx": {
-    "mtime": 1779393707.9120054,
-    "ast_hash": "bcfd3dca133d3b0c9ac89450c9bc036d",
-    "semantic_hash": "bcfd3dca133d3b0c9ac89450c9bc036d"
+    "mtime": 1781642811.546591,
+    "ast_hash": "0e97b329135363bb7d6d80779eead7a6",
+    "semantic_hash": "0e97b329135363bb7d6d80779eead7a6"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/.claude/settings.local.json": {
     "mtime": 1778146106.8241332,
@@ -615,9 +505,9 @@
     "semantic_hash": "524de794872259b8aaf920fa940c0990"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/config.py": {
-    "mtime": 1779387324.069405,
-    "ast_hash": "e401e3d7f86d11c754b2e4ef78581d77",
-    "semantic_hash": "e401e3d7f86d11c754b2e4ef78581d77"
+    "mtime": 1781211687.2306159,
+    "ast_hash": "6501838340a98be6ed413468a5dad21a",
+    "semantic_hash": "6501838340a98be6ed413468a5dad21a"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/database.py": {
     "mtime": 1776368039.55181,
@@ -630,19 +520,19 @@
     "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/main.py": {
-    "mtime": 1779308370.0448375,
-    "ast_hash": "f08667f1489e096070b967c73711957b",
-    "semantic_hash": "f08667f1489e096070b967c73711957b"
+    "mtime": 1781246753.6943095,
+    "ast_hash": "b4d56247549f793a3d9cf0c58ad86c0c",
+    "semantic_hash": "b4d56247549f793a3d9cf0c58ad86c0c"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/benchmark/aggregation.py": {
-    "mtime": 1777843339.9251459,
-    "ast_hash": "dc80e8b99671e0d059d9c9bca60bc729",
-    "semantic_hash": "dc80e8b99671e0d059d9c9bca60bc729"
+    "mtime": 1781642653.5935957,
+    "ast_hash": "e9a94fbb8fb07f0c89ff37ccdf2181d3",
+    "semantic_hash": "e9a94fbb8fb07f0c89ff37ccdf2181d3"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/benchmark/scoring.py": {
-    "mtime": 1777843339.925686,
-    "ast_hash": "df70feafe87c40c42b75ab670c18060f",
-    "semantic_hash": "df70feafe87c40c42b75ab670c18060f"
+    "mtime": 1781268201.378857,
+    "ast_hash": "82a03384bae8264a29066238811824af",
+    "semantic_hash": "82a03384bae8264a29066238811824af"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/benchmark/__init__.py": {
     "mtime": 1777843339.9248533,
@@ -655,19 +545,19 @@
     "semantic_hash": "26dc54ee78f5325e8106df9087e665fa"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/benchmark/queries.py": {
-    "mtime": 1779399041.8198605,
-    "ast_hash": "226416459290f315ee0b5195900964b3",
-    "semantic_hash": "226416459290f315ee0b5195900964b3"
+    "mtime": 1781644293.4118721,
+    "ast_hash": "958f1f53cce66e4fa4662d6c07bd5068",
+    "semantic_hash": "958f1f53cce66e4fa4662d6c07bd5068"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/routers/crawl.py": {
-    "mtime": 1779392690.2991202,
-    "ast_hash": "c0f775a0ce2ce9ddbb6b74bce410c0ba",
-    "semantic_hash": "c0f775a0ce2ce9ddbb6b74bce410c0ba"
+    "mtime": 1781642653.594779,
+    "ast_hash": "80fbc55386fa90f9a313d4d88779dbf6",
+    "semantic_hash": "80fbc55386fa90f9a313d4d88779dbf6"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/routers/signals.py": {
-    "mtime": 1778004180.7692106,
-    "ast_hash": "99c4bc06232e7951d45d980a2e64565d",
-    "semantic_hash": "99c4bc06232e7951d45d980a2e64565d"
+    "mtime": 1781466469.0469751,
+    "ast_hash": "b41710fb344bacea00c7617a6f444e72",
+    "semantic_hash": "b41710fb344bacea00c7617a6f444e72"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/routers/crawl_runs.py": {
     "mtime": 1776629186.3066306,
@@ -675,9 +565,9 @@
     "semantic_hash": "2b89578e911fa4f818df4f8540f32554"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/routers/benchmark.py": {
-    "mtime": 1779426755.8419902,
-    "ast_hash": "2811f96b9c74d5cf39d9d06bdb2798f5",
-    "semantic_hash": "2811f96b9c74d5cf39d9d06bdb2798f5"
+    "mtime": 1781644131.437979,
+    "ast_hash": "9c639b24081030a67a1b8131fb94a744",
+    "semantic_hash": "9c639b24081030a67a1b8131fb94a744"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/routers/documents.py": {
     "mtime": 1776368512.7693815,
@@ -685,9 +575,9 @@
     "semantic_hash": "31dd852f52c9c4bc6cedace2711998fb"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/routers/scorecards.py": {
-    "mtime": 1779308360.0366635,
-    "ast_hash": "f42a68213a3168dab5262d58f8f88f24",
-    "semantic_hash": "f42a68213a3168dab5262d58f8f88f24"
+    "mtime": 1781642653.5949543,
+    "ast_hash": "1d5c9f56b3461003d3964684d9dbc607",
+    "semantic_hash": "1d5c9f56b3461003d3964684d9dbc607"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/routers/__init__.py": {
     "mtime": 1776368088.4026394,
@@ -695,14 +585,14 @@
     "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/routers/intelligence.py": {
-    "mtime": 1779394881.649098,
-    "ast_hash": "ba8d339e38310ff8d0b79a6b226b1111",
-    "semantic_hash": "ba8d339e38310ff8d0b79a6b226b1111"
+    "mtime": 1781814687.5585687,
+    "ast_hash": "e7a737a6cb622addb6486a2aa7da21d5",
+    "semantic_hash": "e7a737a6cb622addb6486a2aa7da21d5"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/routers/digests.py": {
-    "mtime": 1778185576.7260318,
-    "ast_hash": "73850e525ae97c8f4383c37bd7276aeb",
-    "semantic_hash": "73850e525ae97c8f4383c37bd7276aeb"
+    "mtime": 1781561736.101015,
+    "ast_hash": "c068893f43eb6dae367dc05d544768c1",
+    "semantic_hash": "c068893f43eb6dae367dc05d544768c1"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/routers/sources.py": {
     "mtime": 1778056566.5718956,
@@ -710,14 +600,14 @@
     "semantic_hash": "afab31629cd01f792ebfb9769d830490"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/routers/intelligence_briefing.py": {
-    "mtime": 1776967010.630478,
-    "ast_hash": "775091ce02cc50e5b0ebb7baabc693fa",
-    "semantic_hash": "775091ce02cc50e5b0ebb7baabc693fa"
+    "mtime": 1781557876.7690337,
+    "ast_hash": "7a882838efd3ec8a7b1e3ddd4bd2a339",
+    "semantic_hash": "7a882838efd3ec8a7b1e3ddd4bd2a339"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/routers/context.py": {
-    "mtime": 1776368516.8079066,
-    "ast_hash": "f0d1f02e429f5ddf8f91e4a464834bb2",
-    "semantic_hash": "f0d1f02e429f5ddf8f91e4a464834bb2"
+    "mtime": 1781642929.497161,
+    "ast_hash": "d980d5756ad8f09f5706aa56c87d0a1b",
+    "semantic_hash": "d980d5756ad8f09f5706aa56c87d0a1b"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/routers/discovered_pages.py": {
     "mtime": 1776630525.5011435,
@@ -730,9 +620,9 @@
     "semantic_hash": "1bea2f379940074860544bc5ffff94eb"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/routers/stats.py": {
-    "mtime": 1776630500.3540516,
-    "ast_hash": "fff75e5452c853e3275cfd3ce6ef455c",
-    "semantic_hash": "fff75e5452c853e3275cfd3ce6ef455c"
+    "mtime": 1781813478.1841881,
+    "ast_hash": "cb39ac7709e82b83ed935beee67a6bac",
+    "semantic_hash": "cb39ac7709e82b83ed935beee67a6bac"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/routers/search.py": {
     "mtime": 1776609695.5825398,
@@ -740,14 +630,14 @@
     "semantic_hash": "692cb0bcd32d683ce39c31e4275b4fb0"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/routers/companies.py": {
-    "mtime": 1776430473.5979679,
-    "ast_hash": "044cf3409aae2d67cd4760e7b0b83162",
-    "semantic_hash": "044cf3409aae2d67cd4760e7b0b83162"
+    "mtime": 1779453312.6304755,
+    "ast_hash": "7d7dfd32443e9e4f7aec24f151431dd7",
+    "semantic_hash": "7d7dfd32443e9e4f7aec24f151431dd7"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/searcher/query_generator.py": {
-    "mtime": 1776604686.2610056,
-    "ast_hash": "a04c55cf79aef222805a1e75b00a7399",
-    "semantic_hash": "a04c55cf79aef222805a1e75b00a7399"
+    "mtime": 1781558542.9670238,
+    "ast_hash": "83a0df6f1bfbd49bcb1134ddbe6b962b",
+    "semantic_hash": "83a0df6f1bfbd49bcb1134ddbe6b962b"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/searcher/client.py": {
     "mtime": 1776604686.2604585,
@@ -765,9 +655,9 @@
     "semantic_hash": "b767ed3a2819753e2ce00f684945ced4"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/crawler/discovery.py": {
-    "mtime": 1778088568.9853237,
-    "ast_hash": "8f8b59654b63e05b8757011c542203b2",
-    "semantic_hash": "8f8b59654b63e05b8757011c542203b2"
+    "mtime": 1781552796.4155855,
+    "ast_hash": "ae9c061c32957975566c4a82201f3dd9",
+    "semantic_hash": "ae9c061c32957975566c4a82201f3dd9"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/crawler/__init__.py": {
     "mtime": 1776368088.4026902,
@@ -775,29 +665,29 @@
     "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/crawler/extractor.py": {
-    "mtime": 1776809144.4556427,
-    "ast_hash": "c174ad796ab7d2662250965a4bf1eb68",
-    "semantic_hash": "c174ad796ab7d2662250965a4bf1eb68"
+    "mtime": 1781553954.7573438,
+    "ast_hash": "706099d1a6fec70317de70f5e049cb50",
+    "semantic_hash": "706099d1a6fec70317de70f5e049cb50"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/crawler/pipeline.py": {
-    "mtime": 1779429894.7783425,
-    "ast_hash": "12bc2bf8f50753b40fc2fff0cc0a5b44",
-    "semantic_hash": "12bc2bf8f50753b40fc2fff0cc0a5b44"
+    "mtime": 1781558512.573173,
+    "ast_hash": "6e0a6319646ab6fb522b207ffdb77d0f",
+    "semantic_hash": "6e0a6319646ab6fb522b207ffdb77d0f"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/crawler/js_fetcher.py": {
-    "mtime": 1776600509.4113884,
-    "ast_hash": "7a024527dc3b377d088360b90bf64fad",
-    "semantic_hash": "7a024527dc3b377d088360b90bf64fad"
+    "mtime": 1781470417.9778407,
+    "ast_hash": "8c8388906b38ca2d800af15666f503d4",
+    "semantic_hash": "8c8388906b38ca2d800af15666f503d4"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/crawler/fetcher.py": {
-    "mtime": 1778103434.193008,
-    "ast_hash": "02d6a61634b1b08d96b67b84846b3674",
-    "semantic_hash": "02d6a61634b1b08d96b67b84846b3674"
+    "mtime": 1781470406.758161,
+    "ast_hash": "3f9dfd59326497968e74f43b6e1ac30a",
+    "semantic_hash": "3f9dfd59326497968e74f43b6e1ac30a"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/assessor/intel_briefing.py": {
-    "mtime": 1776967710.5272691,
-    "ast_hash": "7357c3236e7d2a9a91dbef981aa02dca",
-    "semantic_hash": "7357c3236e7d2a9a91dbef981aa02dca"
+    "mtime": 1781559718.786496,
+    "ast_hash": "44c75bd23b1776a897f02938568e0cb0",
+    "semantic_hash": "44c75bd23b1776a897f02938568e0cb0"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/assessor/__init__.py": {
     "mtime": 1776862201.2232888,
@@ -810,14 +700,14 @@
     "semantic_hash": "cb29823a38be6a8a2755edbb1a3f1118"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/assessor/prompts.py": {
-    "mtime": 1779396361.3086617,
-    "ast_hash": "4dd998d1a20247ba4ce493ee133d1256",
-    "semantic_hash": "4dd998d1a20247ba4ce493ee133d1256"
+    "mtime": 1781647092.8564641,
+    "ast_hash": "aa0188a5665ca5b70f0444f179cf13e9",
+    "semantic_hash": "aa0188a5665ca5b70f0444f179cf13e9"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/assessor/parser.py": {
-    "mtime": 1779396369.9061842,
-    "ast_hash": "61a90df99c089506e5647bc678f2e59e",
-    "semantic_hash": "61a90df99c089506e5647bc678f2e59e"
+    "mtime": 1779434679.6108742,
+    "ast_hash": "401da96d53bdde01e0a417d89020d933",
+    "semantic_hash": "401da96d53bdde01e0a417d89020d933"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/assessor/capabilities.py": {
     "mtime": 1776862201.2237508,
@@ -825,24 +715,24 @@
     "semantic_hash": "0c807bff49af04d4959e00c4296360b0"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/assessor/pipeline.py": {
-    "mtime": 1779308167.6134953,
-    "ast_hash": "397d879b2ecf7069610d9c7a02886568",
-    "semantic_hash": "397d879b2ecf7069610d9c7a02886568"
+    "mtime": 1781818636.4354546,
+    "ast_hash": "a56f8b8bfdf64432b1e17da577c32c8d",
+    "semantic_hash": "a56f8b8bfdf64432b1e17da577c32c8d"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/assessor/summarizer.py": {
-    "mtime": 1779396190.2993155,
-    "ast_hash": "ad35d05014f53b62400bf967d9835eb2",
-    "semantic_hash": "ad35d05014f53b62400bf967d9835eb2"
+    "mtime": 1781558512.5641565,
+    "ast_hash": "7c34fd4032ddf4ab17469cd204c3e18e",
+    "semantic_hash": "7c34fd4032ddf4ab17469cd204c3e18e"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/models/digest.py": {
-    "mtime": 1778185576.7258065,
-    "ast_hash": "a4ee7a710c47a619ea500b1fff22992b",
-    "semantic_hash": "a4ee7a710c47a619ea500b1fff22992b"
+    "mtime": 1781560468.6704555,
+    "ast_hash": "8f1455b30c89ce456e0d2b5868f84175",
+    "semantic_hash": "8f1455b30c89ce456e0d2b5868f84175"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/models/company.py": {
-    "mtime": 1776368129.7100077,
-    "ast_hash": "ff16ebb28eb3b599338ac30cecf530fd",
-    "semantic_hash": "ff16ebb28eb3b599338ac30cecf530fd"
+    "mtime": 1781642653.5944464,
+    "ast_hash": "7610aa4557e5351c79d9d4336462304d",
+    "semantic_hash": "7610aa4557e5351c79d9d4336462304d"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/models/signal_assessment.py": {
     "mtime": 1779307384.0451062,
@@ -850,9 +740,9 @@
     "semantic_hash": "74991c95ec4807cb79e3313375d1c91e"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/models/signal.py": {
-    "mtime": 1778004180.7688215,
-    "ast_hash": "d9acd8e0249d7dc508f722b3326a5e6c",
-    "semantic_hash": "d9acd8e0249d7dc508f722b3326a5e6c"
+    "mtime": 1781472031.0413404,
+    "ast_hash": "65843161567adea63371bcdff802071c",
+    "semantic_hash": "65843161567adea63371bcdff802071c"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/models/source_candidate.py": {
     "mtime": 1776604686.2592094,
@@ -870,9 +760,9 @@
     "semantic_hash": "c4409f34a62b70ba40a4b858751675ff"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/models/competitor_summary.py": {
-    "mtime": 1776862201.2295582,
-    "ast_hash": "281256970bf8ba90540fcf41c9c5de43",
-    "semantic_hash": "281256970bf8ba90540fcf41c9c5de43"
+    "mtime": 1779434638.6191669,
+    "ast_hash": "b2e807eeafb7647936846d5eb81b06db",
+    "semantic_hash": "b2e807eeafb7647936846d5eb81b06db"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/models/search_result.py": {
     "mtime": 1778004180.7686236,
@@ -885,9 +775,9 @@
     "semantic_hash": "91eef8c5402d3d7a3b3404e2db2c098d"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/models/__init__.py": {
-    "mtime": 1779307396.635539,
-    "ast_hash": "28b6b9de1e67e9dac8cc14f2a85c4fd8",
-    "semantic_hash": "28b6b9de1e67e9dac8cc14f2a85c4fd8"
+    "mtime": 1781642653.5943246,
+    "ast_hash": "d9e70fa30b4971c05a29d7e2a045d7f3",
+    "semantic_hash": "d9e70fa30b4971c05a29d7e2a045d7f3"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/models/search_run.py": {
     "mtime": 1776604686.2590258,
@@ -895,9 +785,9 @@
     "semantic_hash": "60d709617d14a1431f36ac8067c54940"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/models/intelligence_briefing.py": {
-    "mtime": 1776966898.1205783,
-    "ast_hash": "627bbf9e6f453a07bc7cb62aaa73f450",
-    "semantic_hash": "627bbf9e6f453a07bc7cb62aaa73f450"
+    "mtime": 1781557811.6773484,
+    "ast_hash": "cfc0673813ef802011b0ea928a768626",
+    "semantic_hash": "cfc0673813ef802011b0ea928a768626"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/models/context.py": {
     "mtime": 1776368140.1680126,
@@ -920,24 +810,24 @@
     "semantic_hash": "0f288578ab579c4383992c8ff815ddc5"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/models/source.py": {
-    "mtime": 1778087826.0138526,
-    "ast_hash": "59938af3653aa9e3883ffda374c0af5f",
-    "semantic_hash": "59938af3653aa9e3883ffda374c0af5f"
+    "mtime": 1781471340.978772,
+    "ast_hash": "d22e97142d93456d3851129cf0e9c210",
+    "semantic_hash": "d22e97142d93456d3851129cf0e9c210"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/models/capability_benchmark.py": {
-    "mtime": 1777843546.2152622,
-    "ast_hash": "cef71b3a18013396641c2a01098b19ef",
-    "semantic_hash": "cef71b3a18013396641c2a01098b19ef"
+    "mtime": 1779699102.464767,
+    "ast_hash": "7d1469705c24177811187b2c655f94f4",
+    "semantic_hash": "7d1469705c24177811187b2c655f94f4"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/schemas/digest.py": {
-    "mtime": 1778185576.7264204,
-    "ast_hash": "f647ccdf9bb51fb91e6aa1118e5a102c",
-    "semantic_hash": "f647ccdf9bb51fb91e6aa1118e5a102c"
+    "mtime": 1781645501.7164571,
+    "ast_hash": "0316f8d8bb1c9a0cb741ca412120a20b",
+    "semantic_hash": "0316f8d8bb1c9a0cb741ca412120a20b"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/schemas/company.py": {
-    "mtime": 1776368284.34733,
-    "ast_hash": "4dd7083972b4f02e995adc83c37f0714",
-    "semantic_hash": "4dd7083972b4f02e995adc83c37f0714"
+    "mtime": 1781643295.6003191,
+    "ast_hash": "b1e0b12518ad559ebad26d5239277d70",
+    "semantic_hash": "b1e0b12518ad559ebad26d5239277d70"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/schemas/signal_assessment.py": {
     "mtime": 1776862201.2310631,
@@ -945,14 +835,14 @@
     "semantic_hash": "62f1842197771168dd0538beecffe718"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/schemas/signal.py": {
-    "mtime": 1776785739.5560367,
-    "ast_hash": "de4ef3ea7f8541057a41822365ce1007",
-    "semantic_hash": "de4ef3ea7f8541057a41822365ce1007"
+    "mtime": 1781472090.1945567,
+    "ast_hash": "851711d044d14987e263356e4e2666dc",
+    "semantic_hash": "851711d044d14987e263356e4e2666dc"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/schemas/benchmark.py": {
-    "mtime": 1779398768.0616455,
-    "ast_hash": "d3d5bd5ce3f1fd8cfa3b114fa221ab02",
-    "semantic_hash": "d3d5bd5ce3f1fd8cfa3b114fa221ab02"
+    "mtime": 1781644277.4120033,
+    "ast_hash": "28a78d987ad9e7a6868f693f34fe0965",
+    "semantic_hash": "28a78d987ad9e7a6868f693f34fe0965"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/schemas/crawl_run.py": {
     "mtime": 1778143792.002506,
@@ -975,14 +865,14 @@
     "semantic_hash": "42425f2825fb5d6e8a4411bc10660ab7"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/schemas/scorecard.py": {
-    "mtime": 1779307473.2333472,
-    "ast_hash": "705ab0019ffdf763d7ff1ccd288574c5",
-    "semantic_hash": "705ab0019ffdf763d7ff1ccd288574c5"
+    "mtime": 1779431852.2010562,
+    "ast_hash": "b3512588b151fd3c6c71b89a608e61e5",
+    "semantic_hash": "b3512588b151fd3c6c71b89a608e61e5"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/schemas/intelligence_briefing.py": {
-    "mtime": 1776966901.8733995,
-    "ast_hash": "46523b0ac89c107ff93f9519954a54ed",
-    "semantic_hash": "46523b0ac89c107ff93f9519954a54ed"
+    "mtime": 1781557818.5068552,
+    "ast_hash": "772b116743d8d8ef5c9c26e933913d7a",
+    "semantic_hash": "772b116743d8d8ef5c9c26e933913d7a"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/schemas/context.py": {
     "mtime": 1776368291.191321,
@@ -990,9 +880,9 @@
     "semantic_hash": "e7182db39184c6fcf5018d99c8d7bcc0"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/schemas/stats.py": {
-    "mtime": 1776630504.324971,
-    "ast_hash": "3c0b80897ac336a147f99149c95477a9",
-    "semantic_hash": "3c0b80897ac336a147f99149c95477a9"
+    "mtime": 1781813478.1842947,
+    "ast_hash": "295291c003657d35408c0fcad5160946",
+    "semantic_hash": "295291c003657d35408c0fcad5160946"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/schemas/document.py": {
     "mtime": 1776368286.5894697,
@@ -1015,9 +905,9 @@
     "semantic_hash": "c752c5e45abc33927840d177a475414f"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/digester/sections.py": {
-    "mtime": 1778185576.7255785,
-    "ast_hash": "1c9864a3fd121cfae0bc6be5134d23d6",
-    "semantic_hash": "1c9864a3fd121cfae0bc6be5134d23d6"
+    "mtime": 1781647266.9295335,
+    "ast_hash": "96d4b815b5952e572690db42e11ed1d6",
+    "semantic_hash": "96d4b815b5952e572690db42e11ed1d6"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/digester/__init__.py": {
     "mtime": 1778185576.7237523,
@@ -1025,9 +915,9 @@
     "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/digester/prompts.py": {
-    "mtime": 1778186594.7824936,
-    "ast_hash": "8e0ffc849ab6eb49d58372e3d0384dc3",
-    "semantic_hash": "8e0ffc849ab6eb49d58372e3d0384dc3"
+    "mtime": 1781560738.700143,
+    "ast_hash": "66a0b011316eb01a1eafe1c926bc993b",
+    "semantic_hash": "66a0b011316eb01a1eafe1c926bc993b"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/digester/dedup.py": {
     "mtime": 1778185576.7247202,
@@ -1035,24 +925,24 @@
     "semantic_hash": "eb1c5f5bf914d1463a0a52085efdd830"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/digester/pipeline.py": {
-    "mtime": 1778185576.7250516,
-    "ast_hash": "6301a6ce7a57964dc9027b7560cc02ed",
-    "semantic_hash": "6301a6ce7a57964dc9027b7560cc02ed"
+    "mtime": 1781642984.8940136,
+    "ast_hash": "49e2adb6df6060e250bef51c5eb70e7b",
+    "semantic_hash": "49e2adb6df6060e250bef51c5eb70e7b"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/digester/candidates.py": {
-    "mtime": 1778186753.1522117,
-    "ast_hash": "e2e666c8f8678464f8081b7a6c2c4000",
-    "semantic_hash": "e2e666c8f8678464f8081b7a6c2c4000"
+    "mtime": 1781646632.426542,
+    "ast_hash": "5ac62582e6d6b13bee4902c7bb40ebf0",
+    "semantic_hash": "5ac62582e6d6b13bee4902c7bb40ebf0"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/digester/curator.py": {
-    "mtime": 1778185576.7245014,
-    "ast_hash": "73a5920129badf2367b244eff08e12d9",
-    "semantic_hash": "73a5920129badf2367b244eff08e12d9"
+    "mtime": 1781561714.5350847,
+    "ast_hash": "027ea0431e395206e889232b5edeaeaa",
+    "semantic_hash": "027ea0431e395206e889232b5edeaeaa"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/analyser/client.py": {
-    "mtime": 1778139205.435638,
-    "ast_hash": "63ac6bcef90e86632d426cf8be114d10",
-    "semantic_hash": "63ac6bcef90e86632d426cf8be114d10"
+    "mtime": 1781559468.8027709,
+    "ast_hash": "272cfedf0f20c41043fd28ef272a9b0a",
+    "semantic_hash": "272cfedf0f20c41043fd28ef272a9b0a"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/analyser/__init__.py": {
     "mtime": 1776368088.4027426,
@@ -1060,29 +950,29 @@
     "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/analyser/prompts.py": {
-    "mtime": 1776632838.470325,
-    "ast_hash": "a670604803e92cf01360a9874d4f82e7",
-    "semantic_hash": "a670604803e92cf01360a9874d4f82e7"
+    "mtime": 1781646609.8423672,
+    "ast_hash": "c1d7d1fbc93f9ced7f872bc11ec1c2b2",
+    "semantic_hash": "c1d7d1fbc93f9ced7f872bc11ec1c2b2"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/analyser/parser.py": {
-    "mtime": 1776808445.9798806,
-    "ast_hash": "e0ae585a7c452f7761aaf9462355fc48",
-    "semantic_hash": "e0ae585a7c452f7761aaf9462355fc48"
+    "mtime": 1781472114.9136455,
+    "ast_hash": "9ad4163c49d15b4e07788c9bf5ccae1e",
+    "semantic_hash": "9ad4163c49d15b4e07788c9bf5ccae1e"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/analyser/dedup.py": {
-    "mtime": 1778004180.7669885,
-    "ast_hash": "5ef678586bfecf269781b6b364c403d0",
-    "semantic_hash": "5ef678586bfecf269781b6b364c403d0"
+    "mtime": 1781558512.5580041,
+    "ast_hash": "a1404ec5daf4648c732b0ee3e05e83a4",
+    "semantic_hash": "a1404ec5daf4648c732b0ee3e05e83a4"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/analyser/pipeline.py": {
-    "mtime": 1778139205.4361172,
-    "ast_hash": "d3396aa9e470cc8f257517f9599538cf",
-    "semantic_hash": "d3396aa9e470cc8f257517f9599538cf"
+    "mtime": 1781647104.0772529,
+    "ast_hash": "b04bf7b1223b2693d79fb9b373287c94",
+    "semantic_hash": "b04bf7b1223b2693d79fb9b373287c94"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/analyser/briefing.py": {
-    "mtime": 1778004180.7665832,
-    "ast_hash": "b197dcd5a070d21afba6fa1c573cc67f",
-    "semantic_hash": "b197dcd5a070d21afba6fa1c573cc67f"
+    "mtime": 1781558512.5545294,
+    "ast_hash": "55b6a881c9523e3f66df86408b9440b5",
+    "semantic_hash": "55b6a881c9523e3f66df86408b9440b5"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/scorecard/dimension_router.py": {
     "mtime": 1779307564.4128358,
@@ -1090,9 +980,9 @@
     "semantic_hash": "f24f721a4278160163748aa4205ebad7"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/scorecard/constants.py": {
-    "mtime": 1779307440.3954458,
-    "ast_hash": "83a9169ae5326d94503bb5bf8537c3cf",
-    "semantic_hash": "83a9169ae5326d94503bb5bf8537c3cf"
+    "mtime": 1781266923.3424766,
+    "ast_hash": "a3bcdafe39bab78b792f1149a036f29b",
+    "semantic_hash": "a3bcdafe39bab78b792f1149a036f29b"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/scorecard/__init__.py": {
     "mtime": 1779307437.1739662,
@@ -1100,14 +990,14 @@
     "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/scorecard/kpi_engine.py": {
-    "mtime": 1779307816.7873054,
-    "ast_hash": "cc05454b873dff6d28ccd01372ee8b94",
-    "semantic_hash": "cc05454b873dff6d28ccd01372ee8b94"
+    "mtime": 1781266973.1664696,
+    "ast_hash": "4a087c876e65611927e14a0b3b6b6b10",
+    "semantic_hash": "4a087c876e65611927e14a0b3b6b6b10"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/scorecard/builder.py": {
-    "mtime": 1779397147.1654847,
-    "ast_hash": "e85983b8ca45dafbdb6efe8e4f5eb5b2",
-    "semantic_hash": "e85983b8ca45dafbdb6efe8e4f5eb5b2"
+    "mtime": 1781267024.0156147,
+    "ast_hash": "4a09bf6e413df67af7b48e7733ea33d6",
+    "semantic_hash": "4a09bf6e413df67af7b48e7733ea33d6"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/tests/test_crawl_router.py": {
     "mtime": 1778145534.871562,
@@ -1130,9 +1020,9 @@
     "semantic_hash": "81820aac1ec9b081c47e8b289b21571d"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/tests/conftest.py": {
-    "mtime": 1776862201.231498,
-    "ast_hash": "95c22b7aff1ab2a2df415ef0464549e5",
-    "semantic_hash": "95c22b7aff1ab2a2df415ef0464549e5"
+    "mtime": 1781208949.4906905,
+    "ast_hash": "a2ae177b6953a5cba2e4b75fc6160e77",
+    "semantic_hash": "a2ae177b6953a5cba2e4b75fc6160e77"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/tests/test_intelligence_briefing_router.py": {
     "mtime": 1776967043.4998922,
@@ -1145,9 +1035,9 @@
     "semantic_hash": "558c963152eb4da27bf7ececa134b0d5"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/tests/test_stats.py": {
-    "mtime": 1776630529.6171956,
-    "ast_hash": "9368ddf6408f740f736d8a1d2dab700c",
-    "semantic_hash": "9368ddf6408f740f736d8a1d2dab700c"
+    "mtime": 1781813478.1843915,
+    "ast_hash": "f87e30a8467f4b3652d0d4443b1969be",
+    "semantic_hash": "f87e30a8467f4b3652d0d4443b1969be"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/tests/test_digester_candidates.py": {
     "mtime": 1778185576.7267983,
@@ -1215,14 +1105,14 @@
     "semantic_hash": "4090b8a91b1bd840ea122dbf25d7d4bf"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/tests/test_intelligence_router.py": {
-    "mtime": 1776862201.232126,
-    "ast_hash": "1b7eb096ec652218f2ca86e195956f88",
-    "semantic_hash": "1b7eb096ec652218f2ca86e195956f88"
+    "mtime": 1781814775.718278,
+    "ast_hash": "a16f93b4c6c839d7792dc257c93a0fa7",
+    "semantic_hash": "a16f93b4c6c839d7792dc257c93a0fa7"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/tests/test_companies.py": {
-    "mtime": 1776368440.0275288,
-    "ast_hash": "870ae70c9353c93dd26f7e36ef39c0dd",
-    "semantic_hash": "870ae70c9353c93dd26f7e36ef39c0dd"
+    "mtime": 1779453280.646855,
+    "ast_hash": "56011bef546437399afc56d490c1c329",
+    "semantic_hash": "56011bef546437399afc56d490c1c329"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/tests/test_scorecard_router.py": {
     "mtime": 1779308308.8751037,
@@ -1265,9 +1155,9 @@
     "semantic_hash": "0e0885060f96efb837c145584ad63391"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/tests/test_kpi_engine.py": {
-    "mtime": 1779307784.5137682,
-    "ast_hash": "c80093c144bffb51e28342171a5a6cb0",
-    "semantic_hash": "c80093c144bffb51e28342171a5a6cb0"
+    "mtime": 1781267069.9393764,
+    "ast_hash": "fb303ece7ed448ac948768abf553eab5",
+    "semantic_hash": "fb303ece7ed448ac948768abf553eab5"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/tests/test_models.py": {
     "mtime": 1776862201.232393,
@@ -1300,9 +1190,9 @@
     "semantic_hash": "7d495c1f8706c31cd9202638cfacc00b"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/tests/test_crawler.py": {
-    "mtime": 1779429972.810027,
-    "ast_hash": "29d282d1a597492e923ad2b11d05fe65",
-    "semantic_hash": "29d282d1a597492e923ad2b11d05fe65"
+    "mtime": 1781471515.9528947,
+    "ast_hash": "afcd93abbb4818786859a1e91df59d77",
+    "semantic_hash": "afcd93abbb4818786859a1e91df59d77"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/tests/test_benchmark_queries.py": {
     "mtime": 1779426891.1129203,
@@ -1480,14 +1370,14 @@
     "semantic_hash": "2b5d043c1b2f3c7f3d3dc75afa6d92b8"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/docker-compose.dev.yml": {
-    "mtime": 1776374366.3590887,
-    "ast_hash": "7a03abad4ebbdaef6576804c5acdfac9",
-    "semantic_hash": "7a03abad4ebbdaef6576804c5acdfac9"
+    "mtime": 1779453022.022017,
+    "ast_hash": "9e77f5f8ff877f46e6d2b8552131a158",
+    "semantic_hash": "9e77f5f8ff877f46e6d2b8552131a158"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/docker-compose.yml": {
-    "mtime": 1779390034.1668534,
-    "ast_hash": "682d81144d89e78c193fe1fea2ecb06c",
-    "semantic_hash": "682d81144d89e78c193fe1fea2ecb06c"
+    "mtime": 1781258705.094907,
+    "ast_hash": "c2e4fe1c120826cc968d52fe17204da9",
+    "semantic_hash": "c2e4fe1c120826cc968d52fe17204da9"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/CLAUDE.md": {
     "mtime": 1778145402.8123245,
@@ -1510,9 +1400,9 @@
     "semantic_hash": "f6e3faf55d738cf2affe1b44195f27cf"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/requirements.txt": {
-    "mtime": 1778004180.7694242,
-    "ast_hash": "1c02f636649365c16d634c7d62c1c1df",
-    "semantic_hash": "1c02f636649365c16d634c7d62c1c1df"
+    "mtime": 1781207694.489282,
+    "ast_hash": "6e78f33174da5684c7a9e00c009ddf78",
+    "semantic_hash": "6e78f33174da5684c7a9e00c009ddf78"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/docs/superpowers/plans/competitor_capabilities.md": {
     "mtime": 1776971634.5959244,
@@ -1855,9 +1745,9 @@
     "semantic_hash": "de2d86b567c6a4605345843a53c15f5f"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/.github/workflows/deploy.yml": {
-    "mtime": 1779390978.900773,
-    "ast_hash": "ae19a26d357c34b0ced4c5ee2e1497be",
-    "semantic_hash": "ae19a26d357c34b0ced4c5ee2e1497be"
+    "mtime": 1781258716.9006639,
+    "ast_hash": "d9402a55a95ae53be994874eeacd6883",
+    "semantic_hash": "d9402a55a95ae53be994874eeacd6883"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/public/icons.svg": {
     "mtime": 1776370924.7732534,
@@ -1883,5 +1773,290 @@
     "mtime": 1776370924.774173,
     "ast_hash": "f0402b67b6ce880f65666bb49e841696",
     "semantic_hash": "f0402b67b6ce880f65666bb49e841696"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/CompanyLogo.tsx": {
+    "mtime": 1779455072.1785245,
+    "ast_hash": "0d2fbb8b24e9fd3ef87a92d87eb01d3f",
+    "semantic_hash": "0d2fbb8b24e9fd3ef87a92d87eb01d3f"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/benchmark/MatrixInfoDrawer.tsx": {
+    "mtime": 1781268551.1720653,
+    "ast_hash": "9593f72f661b394f8b85137e120dad19",
+    "semantic_hash": "9593f72f661b394f8b85137e120dad19"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/benchmark/CapabilityStrengthVsMovement.tsx": {
+    "mtime": 1781377986.4896662,
+    "ast_hash": "ea7bfe4759947d90dd1f11cc451ecfef",
+    "semantic_hash": "ea7bfe4759947d90dd1f11cc451ecfef"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/workspace/MovesPanel.tsx": {
+    "mtime": 1779432850.76753,
+    "ast_hash": "676a22e83a842ce66917f56f6d268b71",
+    "semantic_hash": "676a22e83a842ce66917f56f6d268b71"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/overview/KPICard.tsx": {
+    "mtime": 1781813807.7293377,
+    "ast_hash": "ee8cd46d0353f1269bc6b4d61d046680",
+    "semantic_hash": "ee8cd46d0353f1269bc6b4d61d046680"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/overview/EventTimelinePanel.tsx": {
+    "mtime": 1781816791.1287785,
+    "ast_hash": "b4ff93f7ce2f2c7ba8d9f468ad48895c",
+    "semantic_hash": "b4ff93f7ce2f2c7ba8d9f468ad48895c"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/overview/DashboardKPIRow.tsx": {
+    "mtime": 1781814771.349418,
+    "ast_hash": "016bc73ebbaeea0206595db1974d58d5",
+    "semantic_hash": "016bc73ebbaeea0206595db1974d58d5"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/hooks/useStats.ts": {
+    "mtime": 1781813381.0209258,
+    "ast_hash": "8d4ad5c9bbd0a7c0797f529a912d4fa8",
+    "semantic_hash": "8d4ad5c9bbd0a7c0797f529a912d4fa8"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/hooks/useEventCalendar.ts": {
+    "mtime": 1781813478.1849046,
+    "ast_hash": "eb5b25903941eaa7aa00718133ed8f32",
+    "semantic_hash": "eb5b25903941eaa7aa00718133ed8f32"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/hooks/useLogStream.ts": {
+    "mtime": 1781246775.308462,
+    "ast_hash": "94692b50ef9f99173f756e8dd0cc0239",
+    "semantic_hash": "94692b50ef9f99173f756e8dd0cc0239"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/pages/ScheduleAdmin.tsx": {
+    "mtime": 1781639745.134932,
+    "ast_hash": "a850122e6c19cb8adbce725dfd8cd70c",
+    "semantic_hash": "a850122e6c19cb8adbce725dfd8cd70c"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/pages/LogsAdmin.tsx": {
+    "mtime": 1781246809.1178856,
+    "ast_hash": "d613c872c53b8fc36294d31c2156185a",
+    "semantic_hash": "d613c872c53b8fc36294d31c2156185a"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/pages/EventCalendarPage.tsx": {
+    "mtime": 1781811933.244724,
+    "ast_hash": "24ba6b03276fc54dc2463ec771c953f5",
+    "semantic_hash": "24ba6b03276fc54dc2463ec771c953f5"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/log_stream.py": {
+    "mtime": 1781246718.9837887,
+    "ast_hash": "d01e28ae24a5582e58db6647f44f1e49",
+    "semantic_hash": "d01e28ae24a5582e58db6647f44f1e49"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/scheduler.py": {
+    "mtime": 1781818636.4356287,
+    "ast_hash": "253eb565e19d29e0231c37cb82d1f638",
+    "semantic_hash": "253eb565e19d29e0231c37cb82d1f638"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/routers/logs.py": {
+    "mtime": 1781246727.6880116,
+    "ast_hash": "0b5a74bd43a476b63b402855d4eab57d",
+    "semantic_hash": "0b5a74bd43a476b63b402855d4eab57d"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/routers/schedule.py": {
+    "mtime": 1781249634.88783,
+    "ast_hash": "40c6107de5cfd40f5f571c7b8ced3856",
+    "semantic_hash": "40c6107de5cfd40f5f571c7b8ced3856"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/models/external_company_view.py": {
+    "mtime": 1781642155.9821348,
+    "ast_hash": "9298467ae6a82189d3ce300f1d53c743",
+    "semantic_hash": "9298467ae6a82189d3ce300f1d53c743"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/models/schedule.py": {
+    "mtime": 1781207835.4371333,
+    "ast_hash": "0772b6b083f2a775d450340d340f9dc6",
+    "semantic_hash": "0772b6b083f2a775d450340d340f9dc6"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/schemas/external_company_view.py": {
+    "mtime": 1781642169.7402508,
+    "ast_hash": "6661c69649685c9ef90c19e651646922",
+    "semantic_hash": "6661c69649685c9ef90c19e651646922"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/schemas/schedule.py": {
+    "mtime": 1781208586.936666,
+    "ast_hash": "54e581f2649c9b87a21d05904ae36893",
+    "semantic_hash": "54e581f2649c9b87a21d05904ae36893"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/synthesizer/__init__.py": {
+    "mtime": 1781642305.7273865,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/synthesizer/prompts.py": {
+    "mtime": 1781642314.3358524,
+    "ast_hash": "1e95d7c59d25ad0e8ab91632a41e2b2c",
+    "semantic_hash": "1e95d7c59d25ad0e8ab91632a41e2b2c"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/synthesizer/pipeline.py": {
+    "mtime": 1781642964.363817,
+    "ast_hash": "c950cb25915c8b221db00f55b5e46ade",
+    "semantic_hash": "c950cb25915c8b221db00f55b5e46ade"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/digester/events.py": {
+    "mtime": 1781642660.5113852,
+    "ast_hash": "71ace84cf5a3044d514036888e9f6ef0",
+    "semantic_hash": "71ace84cf5a3044d514036888e9f6ef0"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/notifications/__init__.py": {
+    "mtime": 1781208096.9127994,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/notifications/email.py": {
+    "mtime": 1781813478.1838672,
+    "ast_hash": "56d9a55f3b6a0508a0a9a987ae9e6d9a",
+    "semantic_hash": "56d9a55f3b6a0508a0a9a987ae9e6d9a"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/tests/test_email.py": {
+    "mtime": 1781560092.7348647,
+    "ast_hash": "d2330b4d99105bbb5079b2d715b5bd1c",
+    "semantic_hash": "d2330b4d99105bbb5079b2d715b5bd1c"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/tests/test_scheduler.py": {
+    "mtime": 1781208352.4243567,
+    "ast_hash": "cddf9b1f9d74a7af2c328d3b67ab4e0d",
+    "semantic_hash": "cddf9b1f9d74a7af2c328d3b67ab4e0d"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/tests/test_schedule_router.py": {
+    "mtime": 1781211664.4209752,
+    "ast_hash": "5ddc4d9f47927387c7362d1a4c0b8006",
+    "semantic_hash": "5ddc4d9f47927387c7362d1a4c0b8006"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/alembic/versions/c3bdabd2ba94_add_what_changed_to_competitor_summaries.py": {
+    "mtime": 1779434657.8384848,
+    "ast_hash": "5f88e1f6ef084533dc6d1d609b17d7a8",
+    "semantic_hash": "5f88e1f6ef084533dc6d1d609b17d7a8"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/alembic/versions/e9d3c7f1b5a2_add_risks_opportunities_to_weekly_digests.py": {
+    "mtime": 1781560666.7861853,
+    "ast_hash": "5335c1b29fa974eb7c8e790aba44553b",
+    "semantic_hash": "5335c1b29fa974eb7c8e790aba44553b"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/alembic/versions/0099979dff60_add_events_source_type.py": {
+    "mtime": 1781471420.5884476,
+    "ast_hash": "74d79a40e627eafc5ee9c6bef8b23775",
+    "semantic_hash": "74d79a40e627eafc5ee9c6bef8b23775"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/alembic/versions/22f127a149f8_add_logo_path_to_companies.py": {
+    "mtime": 1779452911.985133,
+    "ast_hash": "1b7f465cc986e114af779c54b1810f2e",
+    "semantic_hash": "1b7f465cc986e114af779c54b1810f2e"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/alembic/versions/a8f3c1e92d47_add_event_date_location_to_signals.py": {
+    "mtime": 1781377998.0714784,
+    "ast_hash": "f584e8a5cdc3f7df6243e9490b005cfe",
+    "semantic_hash": "f584e8a5cdc3f7df6243e9490b005cfe"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/alembic/versions/b3f1a9c2d8e7_add_curated_fields_to_intelligence_briefings.py": {
+    "mtime": 1781557786.1242254,
+    "ast_hash": "d3979b0c8750553b42475a3518491753",
+    "semantic_hash": "d3979b0c8750553b42475a3518491753"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/alembic/versions/ce52950e1e40_merge_heads.py": {
+    "mtime": 1781561012.9443426,
+    "ast_hash": "95aedbb37fccd7fe9f20c7550d7a000f",
+    "semantic_hash": "95aedbb37fccd7fe9f20c7550d7a000f"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/alembic/versions/62c18dd583bc_add_schedule_config.py": {
+    "mtime": 1781207943.7087994,
+    "ast_hash": "8baa1c451d38403bd53ce7dd28e6b167",
+    "semantic_hash": "8baa1c451d38403bd53ce7dd28e6b167"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/alembic/versions/1a3dc0384956_add_momentum_delta_to_benchmark.py": {
+    "mtime": 1779699165.0149605,
+    "ast_hash": "38dec05ba0cda8e63c9c4254265ee29b",
+    "semantic_hash": "38dec05ba0cda8e63c9c4254265ee29b"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/alembic/versions/e022ae1dcfab_add_event_name_and_event_type_to_signals.py": {
+    "mtime": 1781472075.0885522,
+    "ast_hash": "2e995102d6726f351d962f05e1bde341",
+    "semantic_hash": "2e995102d6726f351d962f05e1bde341"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/alembic/versions/bc9bbf2a2b8b_add_own_company_type_and_external_.py": {
+    "mtime": 1781642230.657819,
+    "ast_hash": "689d2438c3da5dac3c62e6dd6ebf03de",
+    "semantic_hash": "689d2438c3da5dac3c62e6dd6ebf03de"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/docs/superpowers/digest-email-preview.html": {
+    "mtime": 1781212731.1227887,
+    "ast_hash": "be6a9b21097db5fb72dfd711a8b544f8",
+    "semantic_hash": "be6a9b21097db5fb72dfd711a8b544f8"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/docs/superpowers/plans/2026-06-14-events-source-type.md": {
+    "mtime": 1781471235.918402,
+    "ast_hash": "8c15b3690aed0d83a167957293b1d83c",
+    "semantic_hash": "8c15b3690aed0d83a167957293b1d83c"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/docs/superpowers/plans/2026-06-12-mobile-responsive.md": {
+    "mtime": 1781250620.5580027,
+    "ast_hash": "6a06e40082f5cfbff700fd9330591471",
+    "semantic_hash": "6a06e40082f5cfbff700fd9330591471"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/docs/superpowers/plans/2026-06-11-automation-scheduling.md": {
+    "mtime": 1781207415.6394792,
+    "ast_hash": "ea4a8b9db5585962716702b7e7f391a1",
+    "semantic_hash": "ea4a8b9db5585962716702b7e7f391a1"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/docs/superpowers/specs/2026-06-11-digest-email-design.md": {
+    "mtime": 1781211510.8289087,
+    "ast_hash": "168bb873fc033dd91a5646d3fea75457",
+    "semantic_hash": "168bb873fc033dd91a5646d3fea75457"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/docs/superpowers/specs/2026-06-12-live-log-viewer-design.md": {
+    "mtime": 1781251666.0440648,
+    "ast_hash": "ce09b4bda4daf6d355ccdb78d3d64a76",
+    "semantic_hash": "ce09b4bda4daf6d355ccdb78d3d64a76"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/docs/superpowers/specs/2026-06-11-automation-scheduling-design.md": {
+    "mtime": 1781206712.7909682,
+    "ast_hash": "3218964c85954c47dab751d642d6ba6e",
+    "semantic_hash": "3218964c85954c47dab751d642d6ba6e"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/docs/superpowers/specs/2026-05-22-summary-delta-awareness-design.md": {
+    "mtime": 1779434570.5310783,
+    "ast_hash": "dabcfe8fe2f1f4dbe12f935aad992959",
+    "semantic_hash": "dabcfe8fe2f1f4dbe12f935aad992959"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/docs/superpowers/specs/2026-05-22-unified-moves-panel-design.md": {
+    "mtime": 1779432523.5257988,
+    "ast_hash": "ab01547c09bf5004fdc92d4bca7f3e78",
+    "semantic_hash": "ab01547c09bf5004fdc92d4bca7f3e78"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/docs/superpowers/specs/2026-05-25-capability-strength-vs-movement-design.md": {
+    "mtime": 1779698936.164848,
+    "ast_hash": "da3335d9f67184fcb78e472682f2b099",
+    "semantic_hash": "da3335d9f67184fcb78e472682f2b099"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/docs/superpowers/specs/2026-06-16-own-company-crawling-design.md": {
+    "mtime": 1781641872.7082896,
+    "ast_hash": "72bec5db737f1e857d0afff914ed7893",
+    "semantic_hash": "72bec5db737f1e857d0afff914ed7893"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/docs/superpowers/specs/2026-06-18-event-list-rework-design.md": {
+    "mtime": 1781816710.1428175,
+    "ast_hash": "ed72a34d707fd6d867c3bb988df4fdfa",
+    "semantic_hash": "ed72a34d707fd6d867c3bb988df4fdfa"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/docs/superpowers/specs/2026-06-15-dashboard-watchpoints-design.md": {
+    "mtime": 1781556647.4106176,
+    "ast_hash": "3b880a121f23cf91de55cc903ba24369",
+    "semantic_hash": "3b880a121f23cf91de55cc903ba24369"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/docs/superpowers/specs/2026-06-12-build-version-sidebar-design.md": {
+    "mtime": 1781258664.5068502,
+    "ast_hash": "c4080f5cf0d932f54e5e06ca67c8b1db",
+    "semantic_hash": "c4080f5cf0d932f54e5e06ca67c8b1db"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/docs/superpowers/specs/2026-06-14-unified-dashboard-design.md": {
+    "mtime": 1781469487.0414672,
+    "ast_hash": "fa3b1ffca3c8587be9eade4a28dbd9a0",
+    "semantic_hash": "fa3b1ffca3c8587be9eade4a28dbd9a0"
+  },
+  "/Users/benjaminsaure/dev/wfmMarketIntelligence/docs/superpowers/specs/2026-06-13-event-calendar-overview-design.md": {
+    "mtime": 1781377902.1904697,
+    "ast_hash": "7d2aaefe6f0ab0d4da4101e1ee0e2463",
+    "semantic_hash": "7d2aaefe6f0ab0d4da4101e1ee0e2463"
   }
 }

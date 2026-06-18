@@ -1,0 +1,1 @@
+{"nodes": [{"id": "test_companies_upload_logo", "label": "test_upload_logo_* suite", "file_type": "code", "source_file": "backend/tests/test_companies.py", "source_location": "86", "source_url": null, "captured_at": null, "author": null, "contributor": null}], "edges": [], "hyperedges": []}
