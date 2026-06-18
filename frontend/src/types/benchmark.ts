@@ -1,7 +1,7 @@
 export type BenchmarkTier = 'leader' | 'strong' | 'emerging' | 'weakly_evidenced';
 export type BenchmarkPeriodType = '30d' | '90d' | '180d';
 
-export interface BenchmarkSubScores {
+interface BenchmarkSubScores {
   capability_depth: number;
   execution_momentum: number;
   market_proof: number;
@@ -9,7 +9,7 @@ export interface BenchmarkSubScores {
   evidence_coverage: number;
 }
 
-export interface CompetitorBrief {
+interface CompetitorBrief {
   id: string;
   name: string;
   slug: string;
@@ -60,7 +60,7 @@ export interface CompetitorBenchmarkResponse {
   weakest_evidenced_capabilities: string[];
 }
 
-export interface LeaderboardEntry {
+interface LeaderboardEntry {
   company_id: string;
   company_name: string;
   slug: string;
@@ -82,7 +82,7 @@ export interface CapabilityLeaderboardResponse {
   fastest_riser: LeaderboardEntry | null;
 }
 
-export interface CapabilityAssessmentItem {
+interface CapabilityAssessmentItem {
   assessment_id: string;
   signal_id: string;
   title: string;

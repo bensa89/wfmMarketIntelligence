@@ -1,7 +1,6 @@
 export type ScorecardPeriodType = '30d' | '90d' | '180d';
-export const SCORECARD_PERIOD_TYPES: ScorecardPeriodType[] = ['30d', '90d', '180d'];
 
-export interface ScorecardKPIValue {
+interface ScorecardKPIValue {
   value: number | null;
   contributing_ids: string[];
 }
@@ -22,7 +21,7 @@ export interface ScorecardTopMove {
   assessed_at: string | null;
 }
 
-export interface ScorecardRiskFlag {
+interface ScorecardRiskFlag {
   assessment_id: string;
   signal_id: string;
   capability_key: string;
@@ -30,7 +29,7 @@ export interface ScorecardRiskFlag {
   title: string;
 }
 
-export interface ScorecardBenchmarkPosition {
+interface ScorecardBenchmarkPosition {
   rank: number;
   percentile: number;
   total_competitors: number;
@@ -57,15 +56,7 @@ export interface CompetitorScorecard {
   routing_version: string | null;
 }
 
-export interface ScorecardHistoryItem {
-  id: string;
-  overall_score: number | null;
-  overall_trend: 'rising' | 'stable' | 'declining' | null;
-  generated_at: string;
-  scorecard_version: string | null;
-}
-
-export interface ScorecardExplainAssessment {
+interface ScorecardExplainAssessment {
   assessment_id: string;
   signal_id: string;
   title: string;
@@ -73,7 +64,7 @@ export interface ScorecardExplainAssessment {
   signal_class: string;
 }
 
-export interface ScorecardExplainDimension {
+interface ScorecardExplainDimension {
   dimension: string;
   score: number | null;
   dimension_weight: number;

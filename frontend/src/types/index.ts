@@ -13,7 +13,7 @@ export interface ExternalCompanyView {
   updated_at: string | null;
 }
 
-export interface OwnCompanySignalItem {
+interface OwnCompanySignalItem {
   signal_id: string;
   title: string;
   topic: string;
@@ -133,7 +133,7 @@ export interface Signal {
   event_type: string | null;
 }
 
-export interface DigestSignal {
+interface DigestSignal {
   id: string;
   title: string;
   signal_type: SignalType;
@@ -175,7 +175,7 @@ export interface EventCalendarItem {
   is_new: boolean;
 }
 
-export interface DigestSection {
+interface DigestSection {
   key: string;
   title: string;
   items: DigestSectionItem[];
@@ -223,18 +223,7 @@ export interface ContextUpdate {
   non_focus_areas?: string[];
 }
 
-export interface CrawlResult {
-  sources_processed: number;
-  results: unknown[];
-}
-
-export interface CrawlSingleResult {
-  source_id: string;
-  document_id?: string;
-  status: string;
-}
-
-export type DiscoveredPageStatus = 'new' | 'known' | 'changed' | 'ignored';
+type DiscoveredPageStatus = 'new' | 'known' | 'changed' | 'ignored';
 
 export interface DiscoveredPage {
   id: string;
@@ -257,146 +246,7 @@ export interface SourceSearchResult {
   matching_subsites: string[];
 }
 
-export type CrawlStep = 'fetching' | 'extracting' | 'analysing' | 'discovering';
-
-export interface CrawlStartEvent {
-  type: 'crawl_start';
-  crawl_run_id: string;
-  total: number;
-}
-export interface CrawlSourceStartEvent {
-  type: 'source_start';
-  crawl_run_id: string;
-  source_id: string;
-  url: string;
-  index: number;
-  total: number;
-}
-export interface CrawlStepEvent {
-  type: 'step';
-  crawl_run_id: string;
-  source_id: string;
-  step: CrawlStep;
-}
-export interface CrawlDiscoveryProgressEvent {
-  type: 'discovery_progress';
-  crawl_run_id: string;
-  source_id: string;
-  pages_found: number;
-  pages_crawled: number;
-  max_pages: number;
-  current_url: string;
-}
-export interface CrawlStepTimingEvent {
-  type: 'step_timing';
-  crawl_run_id: string;
-  source_id: string;
-  step: CrawlStep;
-  duration_ms: number;
-}
-export interface CrawlSourceDoneEvent {
-  type: 'source_done';
-  crawl_run_id: string;
-  source_id: string;
-  new_documents: number;
-  skipped: number;
-  errors: number;
-  timings?: {
-    fetch_ms?: number;
-    extract_ms?: number;
-    analyse_ms?: number;
-    discover_ms?: number;
-  };
-}
 export type CrawlPhase = 'idle' | 'crawling' | 'analysing' | 'done';
-
-export interface CrawlDoneEvent {
-  type: 'crawl_done';
-  crawl_run_id: string;
-  sources_processed: number;
-  total_new: number;
-  total_errors: number;
-  analysis_pending: boolean;
-  docs_to_analyse: number;
-}
-export interface CrawlErrorEvent {
-  type: 'error';
-  crawl_run_id?: string;
-  source_id: string | null;
-  message: string;
-}
-export interface CrawlInitialStateEvent {
-  type: 'initial_state';
-  crawl_run_id: string;
-  total: number;
-  sources: CrawlRunSourceState[];
-  analysis_phase_active: boolean;
-  docs_to_analyse: number;
-  docs_analysed: number;
-}
-export interface CrawlReconnectCompleteEvent {
-  type: 'reconnect_complete';
-}
-export interface CrawlNoActiveRunEvent {
-  type: 'no_active_run';
-}
-export interface CrawlQueuedStateEvent {
-  type: 'queued_state';
-  crawl_run_id: string;
-  sources: { source_id: string; url: string }[];
-}
-
-export interface CrawlAnalysisPhaseStartEvent {
-  type: 'analysis_phase_start';
-  crawl_run_id: string;
-}
-
-export interface CrawlAnalysisStartEvent {
-  type: 'analysis_start';
-  crawl_run_id: string;
-  source_id: string;
-  url: string;
-}
-
-export interface CrawlAnalysisProgressEvent {
-  type: 'analysis_progress';
-  source_id: string;
-  current: number;
-  total: number;
-}
-
-export interface CrawlAnalysisDoneEvent {
-  type: 'analysis_done';
-  crawl_run_id: string;
-  source_id: string;
-  url: string;
-  analysed: number;
-  analyse_ms: number;
-}
-
-export interface CrawlAnalysisPhaseDoneEvent {
-  type: 'analysis_phase_done';
-  crawl_run_id: string;
-}
-
-export type CrawlEvent =
-  | CrawlStartEvent
-  | CrawlSourceStartEvent
-  | CrawlStepEvent
-  | CrawlDiscoveryProgressEvent
-  | CrawlStepTimingEvent
-  | CrawlSourceDoneEvent
-  | CrawlDoneEvent
-  | CrawlErrorEvent
-  | CrawlInitialStateEvent
-  | CrawlReconnectCompleteEvent
-  | CrawlNoActiveRunEvent
-  | CrawlQueuedStateEvent
-  | CrawlAnalysisPhaseStartEvent
-  | CrawlAnalysisStartEvent
-  | CrawlAnalysisProgressEvent
-  | CrawlAnalysisDoneEvent
-  | CrawlAnalysisPhaseDoneEvent;
 
 export interface CrawlRunSourceState {
   source_id: string;
@@ -474,35 +324,13 @@ export interface CrawlStatusResponse {
   queued_run: CrawlStatusQueuedRun | null;
 }
 
-export interface SourceCrawlState {
-  source_id: string;
-  url: string;
-  status: 'waiting' | 'running' | 'done' | 'error';
-  currentStep?: CrawlStep;
-  result?: { new_documents: number; skipped: number; errors: number };
-  errorMessage?: string;
-  discoveryProgress?: { pages_found: number; pages_crawled: number; max_pages: number };
-  stepTimings?: Partial<Record<CrawlStep, number>>;
-  analysisProgress?: {
-    current: number;
-    total: number;
-  };
-  discoveredUrls?: string[];
-}
-
-export interface CrawlStreamSummary {
-  sources_processed: number;
-  total_new: number;
-  total_errors: number;
-}
-
 // --- Search / Source Candidates ---
 
-export type SearchRunStatus = 'pending' | 'running' | 'done' | 'error';
-export type SearchResultStatus = 'pending' | 'fetched' | 'skipped' | 'error';
-export type SourceCandidateStatus = 'candidate' | 'approved' | 'rejected' | 'monitored';
+type SearchRunStatus = 'pending' | 'running' | 'done' | 'error';
+type SearchResultStatus = 'pending' | 'fetched' | 'skipped' | 'error';
+type SourceCandidateStatus = 'candidate' | 'approved' | 'rejected' | 'monitored';
 
-export interface SearchQuery {
+interface SearchQuery {
   id: string;
   query_text: string;
   company_id: string | null;
@@ -560,31 +388,7 @@ export interface SearchRunResult {
 
 // --- Stats ---
 
-export interface SignalOverTimePoint {
-  date: string;
-  company_id: string;
-  company_name: string;
-  count: number;
-}
-
-export interface SignalTypeCount {
-  signal_type: string;
-  count: number;
-}
-
-export interface CompanySignalTypeCount {
-  company_id: string;
-  company_name: string;
-  signal_type: string;
-  count: number;
-}
-
-export interface SignalDistribution {
-  by_type: SignalTypeCount[];
-  by_company_and_type: CompanySignalTypeCount[];
-}
-
-export interface LastCrawlRunInfo {
+interface LastCrawlRunInfo {
   id: string;
   status: string;
   started_at: string;
@@ -599,26 +403,6 @@ export interface LastCrawlSummary {
   new_documents: number;
   high_relevance_signals: number;
   unanalysed_backlog: number;
-}
-
-export interface DedupResult {
-  merged_count: number;
-  removed_ids: string[];
-  kept_signals: { id: string; title: string; relevance_score: number | null }[];
-}
-
-export interface DiscoveredPagesStats {
-  total: number;
-  new: number;
-  changed: number;
-  known: number;
-}
-
-export interface CrawlBriefing {
-  id: string;
-  crawl_run_id: string | null;
-  content: string;
-  generated_at: string;
 }
 
 export * from './benchmark';

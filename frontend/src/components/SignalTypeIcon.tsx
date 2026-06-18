@@ -21,7 +21,7 @@ const iconMap: Record<SignalType, React.ComponentType<{ size?: number }>> = {
   other:                       HelpCircle,
 };
 
-export const labelMap: Record<SignalType, string> = {
+const labelMap: Record<SignalType, string> = {
   product_update:              'Product Update',
   ai_announcement:             'AI Announcement',
   partnership:                 'Partnership',

@@ -39,11 +39,3 @@ export function useSignals(filters?: SignalsFilters) {
     },
   });
 }
-
-export function useSignal(id: string) {
-  return useQuery<Signal>({
-    queryKey: ['signals', id],
-    queryFn: () => apiGet<Signal>(`/signals/${id}`),
-    enabled: !!id,
-  });
-}

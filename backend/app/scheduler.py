@@ -242,7 +242,6 @@ def _build_crawl_stats(crawl_run) -> dict:
     if started and finished:
         # started_at may be naive (no timezone), normalise
         if hasattr(started, "tzinfo") and started.tzinfo is None:
-            from datetime import timezone as tz
             finished_naive = finished.replace(tzinfo=None) if hasattr(finished, "tzinfo") else finished
             secs = int((finished_naive - started).total_seconds())
         else:

@@ -9,14 +9,6 @@ export function useDigests() {
   });
 }
 
-export function useDigest(id: string) {
-  return useQuery<Digest>({
-    queryKey: ['digests', id],
-    queryFn: () => apiGet<Digest>(`/digests/${id}`),
-    enabled: !!id,
-  });
-}
-
 export function useGenerateDigest() {
   const qc = useQueryClient();
   return useMutation({

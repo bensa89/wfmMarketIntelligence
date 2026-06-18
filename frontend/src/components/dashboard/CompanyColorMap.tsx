@@ -19,8 +19,3 @@ export function getCompanyColor(companyId: string): string {
   return color;
 }
 
-export function resetCompanyColors(): void {
-  colorMap.clear();
-}
-
-export { COMPANY_COLORS };

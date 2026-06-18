@@ -1,18 +1,11 @@
 import { apiGet, apiPost } from './client';
 import type {
-  CompetitorScorecard, ScorecardHistoryItem, ScorecardExplain,
+  CompetitorScorecard, ScorecardExplain,
   BenchmarkScorecardView, ScorecardRecomputeAck, ScorecardPeriodType,
 } from '../types/scorecard';
 
 export function fetchScorecard(slug: string, periodType: ScorecardPeriodType) {
   return apiGet<CompetitorScorecard>(`/scorecards/${slug}`, { period_type: periodType });
-}
-
-export function fetchScorecardHistory(slug: string, periodType: ScorecardPeriodType, limit = 10) {
-  return apiGet<ScorecardHistoryItem[]>(`/scorecards/${slug}/history`, {
-    period_type: periodType,
-    limit: String(limit),
-  });
 }
 
 export function fetchScorecardExplain(slug: string, periodType: ScorecardPeriodType) {

@@ -27,8 +27,6 @@ export const CAPABILITIES: Record<string, CapabilityMeta> = {
   optimization_engine: { key: 'optimization_engine', label: 'Optimization Engine', visibilityToUser: true, strategicWeight: 9, description: 'Mathematical optimization for schedule quality and cost', icon: 'Target' },
 };
 
-export const CAPABILITY_KEYS = Object.keys(CAPABILITIES);
-
 export function getCapabilityLabel(key: string | null | undefined): string {
   if (!key) return 'Unknown';
   return CAPABILITIES[key]?.label ?? key;

@@ -13,14 +13,6 @@ export function useCompanies() {
   });
 }
 
-export function useCompany(slug: string) {
-  return useQuery<Company>({
-    queryKey: ['companies', slug],
-    queryFn: () => apiGet<Company>(`/companies/${slug}`),
-    enabled: !!slug,
-  });
-}
-
 export function useCreateCompany() {
   const qc = useQueryClient();
   return useMutation({
@@ -28,17 +20,6 @@ export function useCreateCompany() {
     onSuccess: async () => {
       await qc.invalidateQueries({ queryKey: ['companies'] });
       await qc.refetchQueries({ queryKey: ['companies'] });
-    },
-  });
-}
-
-export function useUpdateCompany(slug: string) {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (data: CompanyUpdate) => apiPut<Company>(`/companies/${slug}`, data),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['companies'] });
-      qc.invalidateQueries({ queryKey: ['companies', slug] });
     },
   });
 }

@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
-  fetchScorecard, fetchScorecardHistory, fetchScorecardExplain,
+  fetchScorecard, fetchScorecardExplain,
   recomputeScorecard, fetchBenchmarkScorecard,
 } from '../api/scorecard';
 import type { ScorecardPeriodType } from '../types/scorecard';
@@ -11,14 +11,6 @@ export function useScorecard(slug: string, periodType: ScorecardPeriodType) {
     queryFn: () => fetchScorecard(slug, periodType),
     enabled: Boolean(slug),
     retry: false,         // 404 is valid — competitor has no scorecard yet
-  });
-}
-
-export function useScorecardHistory(slug: string, periodType: ScorecardPeriodType) {
-  return useQuery({
-    queryKey: ['scorecard', 'history', slug, periodType],
-    queryFn: () => fetchScorecardHistory(slug, periodType),
-    enabled: Boolean(slug),
   });
 }
 

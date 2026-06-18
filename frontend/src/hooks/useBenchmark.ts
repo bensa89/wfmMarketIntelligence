@@ -5,7 +5,6 @@ import {
   fetchCapabilityLeaderboard,
   fetchCapabilityAssessments,
   recomputeAllBenchmarks,
-  recomputeCompanyBenchmark,
 } from '../api/benchmark';
 import type { BenchmarkPeriodType, CapabilityAssessmentsResponse } from '../types/benchmark';
 
@@ -37,17 +36,6 @@ export function useRecomputeBenchmarks() {
   return useMutation({
     mutationFn: (periodType: BenchmarkPeriodType = '180d') => recomputeAllBenchmarks(periodType),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['benchmark'] });
-    },
-  });
-}
-
-export function useRecomputeCompanyBenchmark() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({ companyId, periodType = '180d' }: { companyId: string; periodType?: BenchmarkPeriodType }) =>
-      recomputeCompanyBenchmark(companyId, periodType),
-    onSuccess: (_data, { companyId: _companyId }) => {
       queryClient.invalidateQueries({ queryKey: ['benchmark'] });
     },
   });

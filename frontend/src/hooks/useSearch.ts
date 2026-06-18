@@ -21,18 +21,6 @@ export function useRunSearchAll() {
   });
 }
 
-export function useRunSearchForCompany() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (companyId: string) => apiPost<SearchRunResult>(`/search/run/${companyId}`),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['search-runs'] });
-      qc.invalidateQueries({ queryKey: ['source-candidates'] });
-      qc.invalidateQueries({ queryKey: ['signals'] });
-    },
-  });
-}
-
 export function useSearchRuns(companyId?: string) {
   return useQuery({
     queryKey: ['search-runs', companyId],

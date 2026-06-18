@@ -4,8 +4,6 @@ from sqlalchemy.orm import Session
 
 from app.analyser.client import call_llm
 from app.assessor.prompts import (
-    ASSESSMENT_SYSTEM_PROMPT,
-    SELF_ASSESSMENT_SYSTEM_PROMPT,
     build_assessment_prompt,
     build_self_assessment_prompt,
 )

@@ -4,7 +4,7 @@ import type { SignalType } from './index';
 export type MovementStrength = 'weak' | 'relevant' | 'strong' | 'market_shaping';
 export type VisibilityImpact = 'low' | 'medium' | 'high';
 export type PeriodType = '7d' | '30d' | '90d' | 'quarter';
-export type SignalClass =
+type SignalClass =
   | 'product_capability_move'
   | 'positioning_move'
   | 'ecosystem_move'
@@ -94,7 +94,7 @@ export interface CapabilityCount {
   avg_movement_score: number;
 }
 
-export interface TimelineEntry {
+interface TimelineEntry {
   signal_id: string;
   title: string;
   signal_type: SignalType;
@@ -183,7 +183,7 @@ export interface IntelligenceBriefing {
   generated_at: string;
 }
 
-export interface EventAttendee {
+interface EventAttendee {
   company_id: string;
   company_name: string;
   company_slug: string;
