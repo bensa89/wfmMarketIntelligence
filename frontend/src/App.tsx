@@ -17,6 +17,7 @@ import HowItWorksPage from './pages/HowItWorksPage';
 import CrawlRunDetailPage from './pages/CrawlRunDetailPage';
 import ScheduleAdmin from './pages/ScheduleAdmin';
 import LogsAdmin from './pages/LogsAdmin';
+import EventCalendarPage from './pages/EventCalendarPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -47,6 +48,7 @@ export default function App() {
             <Route path="competitors/:slug" element={<CompetitorWorkspacePage />} />
             <Route path="signals" element={<SignalsFeedPage />} />
             <Route path="trends" element={<MarketTrends />} />
+            <Route path="events" element={<EventCalendarPage />} />
             <Route path="digest" element={<WeeklyDigest />} />
             <Route path="search" element={<SearchPage />} />
             <Route path="admin/sources" element={<SourcesAdmin />} />

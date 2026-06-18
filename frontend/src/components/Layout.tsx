@@ -2,25 +2,20 @@ import { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import {
   LayoutDashboard, Users, TrendingUp, FileText, Settings, Search,
-  Globe, LogOut, BarChart2, Zap, BookOpen, Clock, Terminal, Menu, X, GitCommit,
+  Globe, LogOut, Zap, BookOpen, Clock, Terminal, Menu, X, GitCommit, Calendar,
 } from 'lucide-react';
 import { hasCredentials, clearCredentials } from '../api/client';
 import { useNavigate } from 'react-router-dom';
 
 const navSections = [
   {
-    label: 'Intelligence',
-    items: [
-      { to: '/overview', label: 'Overview', icon: BarChart2 },
-      { to: '/competitors', label: 'Competitors', icon: Users },
-      { to: '/signals', label: 'Signals Feed', icon: Zap },
-    ],
-  },
-  {
     label: 'Übersicht',
     items: [
       { to: '/', label: 'Dashboard', icon: LayoutDashboard },
       { to: '/trends', label: 'Markt-Trends', icon: TrendingUp },
+      { to: '/events', label: 'Event-Kalender', icon: Calendar },
+      { to: '/competitors', label: 'Competitors', icon: Users },
+      { to: '/signals', label: 'Signals Feed', icon: Zap },
     ],
   },
   {

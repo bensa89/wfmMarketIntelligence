@@ -5,20 +5,16 @@ import { useSignals } from '../hooks/useSignals';
 import { useCrawlStatus } from '../hooks/useCrawlStatus';
 import { useLastCompletedCrawl } from '../hooks/useCrawlRuns';
 import { useActiveCrawlRun } from '../hooks/useActiveCrawlRun';
-import { useSignalsOverTime, useSignalDistribution } from '../hooks/useSignalStats';
 import { useDocument } from '../hooks/useDocuments';
 import { useOverview } from '../hooks/useOverview';
+import { useLastCrawlSummary } from '../hooks/useStats';
 
-import TopSignalsPanel from '../components/dashboard/TopSignalsPanel';
-import SignalsOverTimeChart from '../components/dashboard/SignalsOverTimeChart';
-import SignalTypeDistribution from '../components/dashboard/SignalTypeDistribution';
-import CompanySignalHeatmap from '../components/dashboard/CompanySignalHeatmap';
 import SignalFeedTable from '../components/dashboard/SignalFeedTable';
 import FilterBar from '../components/FilterBar';
 import MarkdownViewer from '../components/MarkdownViewer';
 
 import IntelligenceBriefingPanel from '../components/overview/IntelligenceBriefingPanel';
-import OverviewKPIBar from '../components/overview/OverviewKPIBar';
+import DashboardKPIRow from '../components/overview/DashboardKPIRow';
 import TopMoversList from '../components/overview/TopMoversList';
 import CapabilityHeatmapV2 from '../components/overview/CapabilityHeatmapV2';
 import MarketShapingFeed from '../components/overview/MarketShapingFeed';
@@ -54,9 +50,8 @@ export default function Dashboard() {
     max_age_days: lastMonth ? 30 : undefined,
     q: searchQuery || undefined,
   });
-  const { data: overTimeData } = useSignalsOverTime(14);
-  const { data: distribution } = useSignalDistribution(companyId || undefined);
   const { data: overviewData } = useOverview();
+  const { data: lastCrawlSummary } = useLastCrawlSummary();
 
   const lastCrawlTime = lastCrawl?.started_at ? new Date(lastCrawl.started_at) : null;
 
@@ -115,7 +110,21 @@ export default function Dashboard() {
 
         {/* Zone 1: Übersicht */}
         <IntelligenceBriefingPanel />
-        {overviewData && <OverviewKPIBar data={overviewData} />}
+        {overviewData && lastCrawlSummary && (
+          <DashboardKPIRow overview={overviewData} lastCrawl={lastCrawlSummary} />
+        )}
+
+        {overviewData && (
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <MarketShapingFeed
+              signals7d={overviewData.recent_market_shaping_7d}
+              signals30d={overviewData.recent_market_shaping_30d}
+              signals90d={overviewData.recent_market_shaping_90d}
+              onSelect={setSelectedOverviewSignal}
+            />
+            <EventTimelinePanel />
+          </div>
+        )}
 
         {overviewData && (
           <div className="grid grid-cols-3 gap-4 mb-4">
@@ -129,8 +138,7 @@ export default function Dashboard() {
         )}
 
         {overviewData && (
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <MarketShapingFeed signals={overviewData.recent_market_shaping} onSelect={setSelectedOverviewSignal} />
+          <div className="mb-4">
             <RisksOpportunitiesPanel
               risks={overviewData.emerging_risks}
               opportunities={overviewData.emerging_opportunities}
@@ -140,38 +148,12 @@ export default function Dashboard() {
           </div>
         )}
 
-        <div className="mb-4">
-          <EventTimelinePanel />
-        </div>
-
         {/* Divider */}
         <div className="flex items-center gap-3 my-6">
           <div className="flex-1 border-t-2 border-dashed border-slate-200" />
           <span className="text-[11px] font-semibold uppercase tracking-widest text-slate-400">Signal Details & Analyse</span>
           <div className="flex-1 border-t-2 border-dashed border-slate-200" />
         </div>
-
-        {/* Zone 2: Signal Details */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-          <TopSignalsPanel
-            signals={allSignals ?? []}
-            lastCrawl={lastCrawl ?? null}
-            maxItems={5}
-            onSignalClick={setSelectedSignal}
-          />
-          <div className="space-y-4">
-            {overTimeData && overTimeData.length > 0 && (
-              <SignalsOverTimeChart data={overTimeData} />
-            )}
-            {distribution && <SignalTypeDistribution byType={distribution.by_type} />}
-          </div>
-        </div>
-
-        {distribution && companies && (
-          <div className="mb-4">
-            <CompanySignalHeatmap data={distribution.by_company_and_type} companies={companies} />
-          </div>
-        )}
 
         <div className="mt-2">
           <FilterBar

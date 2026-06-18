@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { CompetitorMover } from '../../types/intelligence';
 import { getCapabilityLabel } from '../../constants/capabilities';
+import CompanyLogo from '../CompanyLogo';
 
 interface Props {
   movers7d: CompetitorMover[];
@@ -40,7 +41,14 @@ export default function TopMoversList({ movers7d, movers30d }: Props) {
           {movers.map((mover, i) => (
             <li key={mover.company_id} className="flex items-center gap-3">
               <span className="text-[11px] text-slate-400 w-4 tabular-nums">{i + 1}</span>
-              <div className="flex-1 min-w-0">
+              <CompanyLogo
+                name={mover.company_name}
+                slug={mover.company_slug}
+                logo_path={mover.logo_path}
+                size="sm"
+                companyId={mover.company_id}
+              />
+              <div className="flex-1 min-w-0 leading-tight">
                 <Link
                   to={`/competitors/${mover.company_slug}`}
                   className="text-[13px] text-slate-900 hover:text-blue-600 font-medium truncate block transition-colors"
@@ -48,7 +56,7 @@ export default function TopMoversList({ movers7d, movers30d }: Props) {
                   {mover.company_name}
                 </Link>
                 {mover.top_capability && (
-                  <span className="text-[11px] text-slate-500">{getCapabilityLabel(mover.top_capability)}</span>
+                  <span className="text-[11px] text-slate-500 block truncate">{getCapabilityLabel(mover.top_capability)}</span>
                 )}
               </div>
               <div className="text-right flex-shrink-0">

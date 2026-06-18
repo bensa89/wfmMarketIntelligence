@@ -1,5 +1,6 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
+from datetime import datetime
 
 
 class SignalOverTimePoint(BaseModel):
@@ -24,3 +25,22 @@ class CompanySignalTypeCount(BaseModel):
 class SignalDistribution(BaseModel):
     by_type: List[SignalTypeCount]
     by_company_and_type: List[CompanySignalTypeCount]
+
+
+class LastCrawlRunInfo(BaseModel):
+    model_config = {"from_attributes": True}
+
+    id: str
+    status: str
+    started_at: datetime
+    finished_at: Optional[datetime]
+    total_sources: int
+    total_errors: int
+
+
+class LastCrawlSummary(BaseModel):
+    crawl_run: Optional[LastCrawlRunInfo]
+    new_signals: int
+    new_documents: int
+    high_relevance_signals: int
+    unanalysed_backlog: int

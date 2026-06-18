@@ -56,6 +56,7 @@ export interface SignalFeedItem {
   event_name: string | null;
   event_type: string | null;
   event_location: string | null;
+  company_logo_path: string | null;
   assessment: SignalAssessment | null;
 }
 
@@ -63,6 +64,7 @@ export interface CompetitorMover {
   company_id: string;
   company_name: string;
   company_slug: string;
+  logo_path: string | null;
   avg_movement_score: number;
   signal_count: number;
   top_capability: string | null;
@@ -78,7 +80,9 @@ export interface OverviewResponse {
   top_movers_7d: CompetitorMover[];
   top_movers_30d: CompetitorMover[];
   capability_heatmap: HeatmapRow[];
-  recent_market_shaping: SignalFeedItem[];
+  recent_market_shaping_7d: SignalFeedItem[];
+  recent_market_shaping_30d: SignalFeedItem[];
+  recent_market_shaping_90d: SignalFeedItem[];
   emerging_risks: RiskItem[];
   emerging_opportunities: RiskItem[];
   emerging_watchpoints: RiskItem[];

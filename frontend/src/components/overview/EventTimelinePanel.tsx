@@ -1,6 +1,7 @@
 import { useEventCalendar } from '../../hooks/useEventCalendar';
 import { useState } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ChevronDown, ChevronUp, ArrowRight } from 'lucide-react';
 import SignalDetailDrawer from '../signals/SignalDetailDrawer';
 import CompanyLogo from '../CompanyLogo';
 import type { CalendarEvent } from '../../types/intelligence';
@@ -57,22 +58,13 @@ function EventRow({ event, isPast, onSelect, logoMap }: EventRowProps) {
       }}
     >
       {/* Date column */}
-      <div className="w-[88px] flex-shrink-0 text-right pt-0.5">
+      <div className="w-[70px] flex-shrink-0 text-right pt-0.5">
         <div className={`text-[11px] font-semibold ${isPast ? 'text-slate-400' : 'text-slate-700'}`}>
           {formatEventDate(event.event_date)}
         </div>
         <div className={`text-[10px] ${isPast ? 'text-slate-300' : 'text-blue-500'}`}>
           {daysLabel}
         </div>
-      </div>
-
-      {/* Dot */}
-      <div className="flex flex-col items-center flex-shrink-0 mt-1">
-        <div
-          className={`w-2.5 h-2.5 rounded-full border-2 border-white shadow-sm ${
-            isPast ? 'bg-slate-300' : 'bg-blue-500'
-          }`}
-        />
       </div>
 
       {/* Content */}
@@ -124,13 +116,16 @@ function EventRow({ event, isPast, onSelect, logoMap }: EventRowProps) {
 }
 
 const PAST_COLLAPSED_LIMIT = 2;
-const UPCOMING_NEAR_DAYS = 90;
+const UPCOMING_NEAR_DAYS = 30;
 
-export default function EventTimelinePanel() {
-  const { data, isLoading } = useEventCalendar();
+interface EventTimelinePanelProps {
+  fullView?: boolean;
+}
+
+export default function EventTimelinePanel({ fullView = false }: EventTimelinePanelProps) {
+  const { data, isLoading } = useEventCalendar(fullView);
   const [selectedSignal, setSelectedSignal] = useState<SignalFeedItem | null>(null);
   const [pastExpanded, setPastExpanded] = useState(false);
-  const [upcomingExpanded, setUpcomingExpanded] = useState(false);
 
   async function handleSelectSignal(signalId: string) {
     try {
@@ -149,9 +144,8 @@ export default function EventTimelinePanel() {
   const upcoming = data?.upcoming ?? [];
   const past = data?.past ?? [];
   const hasEvents = upcoming.length > 0 || past.length > 0;
-  const visiblePast = pastExpanded ? past : past.slice(0, PAST_COLLAPSED_LIMIT);
-  const upcomingNear = upcoming.filter((e) => daysFromNow(e.event_date) <= UPCOMING_NEAR_DAYS);
-  const upcomingLater = upcoming.filter((e) => daysFromNow(e.event_date) > UPCOMING_NEAR_DAYS);
+  const visiblePast = fullView && pastExpanded ? past : past.slice(0, PAST_COLLAPSED_LIMIT);
+  const upcomingNear = fullView ? upcoming : upcoming.filter((e) => daysFromNow(e.event_date) <= UPCOMING_NEAR_DAYS);
 
   return (
     <>
@@ -159,7 +153,9 @@ export default function EventTimelinePanel() {
         <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
           <div>
             <div className="text-[11px] font-bold text-slate-900 uppercase tracking-wide">Event-Kalender</div>
-            <div className="text-[10px] text-slate-400 mt-0.5">Wettbewerber-Events · Upcoming & letzte 30 Tage</div>
+            <div className="text-[10px] text-slate-400 mt-0.5">
+              Wettbewerber-Events · {fullView ? 'Gesamte Historie' : 'Bevorstehende Events'}
+            </div>
           </div>
           {upcoming.length > 0 && (
             <span className="text-[10px] font-semibold text-blue-600 bg-blue-50 rounded-full px-2 py-0.5">
@@ -180,102 +176,80 @@ export default function EventTimelinePanel() {
           )}
 
           {!isLoading && hasEvents && (
-            <div className="relative">
-              {/* Vertical timeline line */}
-              <div className="absolute left-[95px] top-0 bottom-0 w-px bg-slate-100" />
+            <div>
 
-              <div className="space-y-0 pl-[95px]">
-
-                {/* Past events — above Heute */}
-                {past.length > 0 && (
-                  <div className="mb-3">
-                    <div className="flex items-center justify-between -ml-[95px] pl-[103px] mb-2">
-                      <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide">
-                        Letzte 30 Tage
-                      </div>
-                      {past.length > PAST_COLLAPSED_LIMIT && (
-                        <button
-                          onClick={() => setPastExpanded((v) => !v)}
-                          className="flex items-center gap-0.5 text-[10px] text-slate-400 hover:text-slate-600 transition-colors"
-                        >
-                          {pastExpanded ? (
-                            <><ChevronUp size={11} /> Weniger</>
-                          ) : (
-                            <><ChevronDown size={11} /> +{past.length - PAST_COLLAPSED_LIMIT} weitere</>
-                          )}
-                        </button>
-                      )}
+              {/* Past events — above Heute */}
+              {fullView && past.length > 0 && (
+                <div className="mb-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide">
+                      {fullView ? 'Vergangene Events' : 'Letzte 30 Tage'}
                     </div>
-                    <div className="space-y-2">
-                      {visiblePast.map((event) => (
-                        <EventRow
-                          key={`${event.event_date}-${event.title}`}
-                          event={event}
-                          isPast={true}
-                          onSelect={handleSelectSignal}
-                          logoMap={logoMap}
-                        />
-                      ))}
-                    </div>
+                    {fullView && past.length > PAST_COLLAPSED_LIMIT && (
+                      <button
+                        onClick={() => setPastExpanded((v) => !v)}
+                        className="flex items-center gap-0.5 text-[10px] text-slate-400 hover:text-slate-600 transition-colors"
+                      >
+                        {pastExpanded ? (
+                          <><ChevronUp size={11} /> Weniger</>
+                        ) : (
+                          <><ChevronDown size={11} /> +{past.length - PAST_COLLAPSED_LIMIT} weitere</>
+                        )}
+                      </button>
+                    )}
                   </div>
-                )}
-
-                {/* TODAY marker */}
-                <div className="flex items-center gap-3 my-3 -ml-[95px]">
-                  <div className="w-[88px] text-right">
-                    <span className="text-[10px] font-bold text-red-500 uppercase tracking-wide">Heute</span>
-                  </div>
-                  <div className="w-2.5 h-2.5 rounded-full bg-red-500 border-2 border-white shadow flex-shrink-0" />
-                  <div className="text-[10px] text-red-400">
-                    {new Date().toLocaleDateString('de-DE', { day: 'numeric', month: 'short', year: 'numeric' })}
-                  </div>
-                </div>
-
-                {/* Upcoming events — below Heute */}
-                {upcoming.length === 0 ? (
-                  <div className="text-[11px] text-slate-300 italic pl-2 pb-2">Keine bevorstehenden Events</div>
-                ) : (
                   <div className="space-y-2">
-                    {upcomingNear.map((event) => (
+                    {visiblePast.map((event) => (
                       <EventRow
                         key={`${event.event_date}-${event.title}`}
                         event={event}
-                        isPast={false}
+                        isPast={true}
                         onSelect={handleSelectSignal}
                         logoMap={logoMap}
                       />
                     ))}
-
-                    {upcomingLater.length > 0 && (
-                      <>
-                        {upcomingExpanded && upcomingLater.map((event) => (
-                          <EventRow
-                            key={`${event.event_date}-${event.title}`}
-                            event={event}
-                            isPast={false}
-                            onSelect={handleSelectSignal}
-                            logoMap={logoMap}
-                          />
-                        ))}
-                        <button
-                          onClick={() => setUpcomingExpanded((v) => !v)}
-                          className="flex items-center gap-0.5 text-[10px] text-slate-400 hover:text-slate-600 transition-colors mt-1 pl-2"
-                        >
-                          {upcomingExpanded ? (
-                            <><ChevronUp size={11} /> Weniger anzeigen</>
-                          ) : (
-                            <><ChevronDown size={11} /> +{upcomingLater.length} weitere (über 90 Tage)</>
-                          )}
-                        </button>
-                      </>
-                    )}
                   </div>
-                )}
+                </div>
+              )}
 
+              {/* TODAY divider */}
+              <div className="flex items-center gap-2 my-3">
+                <span className="text-[10px] font-bold text-red-500 uppercase tracking-wide">Heute</span>
+                <span className="text-[10px] text-slate-400">
+                  {new Date().toLocaleDateString('de-DE', { day: 'numeric', month: 'short', year: 'numeric' })}
+                </span>
+                <div className="flex-1 border-t border-slate-100" />
               </div>
+
+              {/* Upcoming events — below Heute */}
+              {upcoming.length === 0 ? (
+                <div className="text-[11px] text-slate-300 italic pb-2">Keine bevorstehenden Events</div>
+              ) : (
+                <div className="space-y-2">
+                  {upcomingNear.map((event) => (
+                    <EventRow
+                      key={`${event.event_date}-${event.title}`}
+                      event={event}
+                      isPast={false}
+                      onSelect={handleSelectSignal}
+                      logoMap={logoMap}
+                    />
+                  ))}
+                </div>
+              )}
+
             </div>
           )}
         </div>
+
+        {!fullView && (
+          <Link
+            to="/events"
+            className="flex items-center justify-center gap-1 text-[11px] font-medium text-blue-600 hover:text-blue-700 border-t border-slate-100 px-4 py-2.5 transition-colors"
+          >
+            Alle Events ansehen <ArrowRight size={12} />
+          </Link>
+        )}
       </div>
 
       {selectedSignal && (

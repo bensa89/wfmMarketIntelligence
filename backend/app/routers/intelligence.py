@@ -4,7 +4,7 @@ from typing import Optional, Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session, selectinload
-from sqlalchemy import func
+from sqlalchemy import func, case
 
 from app.database import get_db
 from app.models.company import Company
@@ -64,26 +64,28 @@ def _signal_feed_item(signal: Signal, assessment: Optional[SignalAssessment]) ->
         "event_name": signal.event_name,
         "event_type": signal.event_type,
         "event_location": signal.event_location,
+        "company_logo_path": signal.company.logo_path if signal.company else None,
         "assessment": _assessment_to_dict(assessment) if assessment else None,
     }
 
 
 @router.get("/events")
-def get_events(db: Session = Depends(get_db)) -> dict:
+def get_events(db: Session = Depends(get_db), full: bool = Query(False)) -> dict:
     now = datetime.now(timezone.utc).replace(tzinfo=None)
-    cutoff_30d = now - timedelta(days=30)
 
-    signals = (
+    query = (
         db.query(Signal)
         .options(selectinload(Signal.company))
         .filter(
             Signal.signal_type == "event_or_thought_leadership",
             Signal.event_date.isnot(None),
-            Signal.event_date >= cutoff_30d,
         )
-        .order_by(Signal.event_date.asc())
-        .all()
     )
+    if not full:
+        cutoff_30d = now - timedelta(days=30)
+        query = query.filter(Signal.event_date >= cutoff_30d)
+
+    signals = query.order_by(Signal.event_date.asc()).all()
 
     upcoming: list[dict] = []
     past: list[dict] = []
@@ -135,6 +137,7 @@ def get_overview(db: Session = Depends(get_db)) -> dict:
     now = datetime.now(timezone.utc)
     cutoff_7d = now - timedelta(days=7)
     cutoff_30d = now - timedelta(days=30)
+    cutoff_90d = now - timedelta(days=90)
 
     def _top_movers(cutoff: datetime) -> list[dict]:
         rows = (
@@ -168,6 +171,7 @@ def get_overview(db: Session = Depends(get_db)) -> dict:
                 "company_id": company.id,
                 "company_name": company.name,
                 "company_slug": company.slug,
+                "logo_path": company.logo_path,
                 "avg_movement_score": round(row.avg_score or 0, 1),
                 "signal_count": row.count,
                 "top_capability": top_cap,
@@ -196,16 +200,29 @@ def get_overview(db: Session = Depends(get_db)) -> dict:
         if row.capability_primary:
             heatmap[key]["capabilities"][row.capability_primary] = round(row.avg_score or 0, 1)
 
-    market_shaping = (
-        db.query(SignalAssessment)
-        .options(selectinload(SignalAssessment.signal))
-        .filter(SignalAssessment.movement_strength == MovementStrength.market_shaping)
-        .join(Signal, SignalAssessment.signal_id == Signal.id)
-        .filter(Signal.created_at >= cutoff_30d)
-        .order_by(Signal.created_at.desc())
-        .limit(10)
-        .all()
+    strength_rank = case(
+        (SignalAssessment.movement_strength == MovementStrength.market_shaping, 0),
+        (SignalAssessment.movement_strength == MovementStrength.strong, 1),
+        else_=2,
     )
+
+    def _market_shaping_signals(cutoff: datetime) -> list[SignalAssessment]:
+        return (
+            db.query(SignalAssessment)
+            .options(selectinload(SignalAssessment.signal))
+            .filter(SignalAssessment.movement_strength.in_(
+                [MovementStrength.strong, MovementStrength.market_shaping]
+            ))
+            .join(Signal, SignalAssessment.signal_id == Signal.id)
+            .filter(Signal.created_at >= cutoff)
+            .order_by(strength_rank, Signal.created_at.desc())
+            .limit(10)
+            .all()
+        )
+
+    market_shaping_7d = _market_shaping_signals(cutoff_7d)
+    market_shaping_30d = _market_shaping_signals(cutoff_30d)
+    market_shaping_90d = _market_shaping_signals(cutoff_90d)
 
     def _to_overview_item(raw: dict | str, company: Company) -> dict:
         if isinstance(raw, dict):
@@ -314,10 +331,14 @@ def get_overview(db: Session = Depends(get_db)) -> dict:
         "top_movers_7d": _top_movers(cutoff_7d),
         "top_movers_30d": _top_movers(cutoff_30d),
         "capability_heatmap": list(heatmap.values()),
-        "recent_market_shaping": [
-            _signal_feed_item(a.signal, a)
-            for a in market_shaping
-            if a.signal
+        "recent_market_shaping_7d": [
+            _signal_feed_item(a.signal, a) for a in market_shaping_7d if a.signal
+        ],
+        "recent_market_shaping_30d": [
+            _signal_feed_item(a.signal, a) for a in market_shaping_30d if a.signal
+        ],
+        "recent_market_shaping_90d": [
+            _signal_feed_item(a.signal, a) for a in market_shaping_90d if a.signal
         ],
         "emerging_risks": emerging_risks,
         "emerging_opportunities": emerging_opportunities,

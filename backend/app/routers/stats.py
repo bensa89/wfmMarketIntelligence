@@ -6,12 +6,17 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.signal import Signal, SignalType
 from app.models.company import Company
+from app.models.document import Document
+from app.models.crawl_run import CrawlRun, CrawlRunStatus
 from app.schemas.stats import (
     SignalOverTimePoint,
     SignalTypeCount,
     CompanySignalTypeCount,
     SignalDistribution,
+    LastCrawlSummary,
 )
+
+HIGH_RELEVANCE_THRESHOLD = 0.7
 
 router = APIRouter()
 
@@ -96,3 +101,59 @@ def signal_distribution(
         )
 
     return SignalDistribution(by_type=by_type, by_company_and_type=by_company_and_type)
+
+
+@router.get("/last-crawl-summary", response_model=LastCrawlSummary)
+def last_crawl_summary(db: Session = Depends(get_db)):
+    unanalysed_backlog = (
+        db.query(func.count(Document.id)).filter(Document.is_analysed.is_(False)).scalar()
+    )
+
+    # Heuristic: a "global" crawl run covers more than one source. Single-source
+    # runs (triggered via POST /api/crawl/run/{source_id}) always have total_sources == 1.
+    last_run = (
+        db.query(CrawlRun)
+        .filter(CrawlRun.status == CrawlRunStatus.completed, CrawlRun.total_sources > 1)
+        .order_by(CrawlRun.started_at.desc())
+        .first()
+    )
+
+    if not last_run:
+        return LastCrawlSummary(
+            crawl_run=None,
+            new_signals=0,
+            new_documents=0,
+            high_relevance_signals=0,
+            unanalysed_backlog=unanalysed_backlog,
+        )
+
+    window_start = last_run.started_at
+    window_end = last_run.finished_at or datetime.now(timezone.utc)
+
+    new_signals = (
+        db.query(func.count(Signal.id))
+        .filter(Signal.created_at >= window_start, Signal.created_at <= window_end)
+        .scalar()
+    )
+    new_documents = (
+        db.query(func.count(Document.id))
+        .filter(Document.crawled_at >= window_start, Document.crawled_at <= window_end)
+        .scalar()
+    )
+    high_relevance_signals = (
+        db.query(func.count(Signal.id))
+        .filter(
+            Signal.created_at >= window_start,
+            Signal.created_at <= window_end,
+            Signal.relevance_score >= HIGH_RELEVANCE_THRESHOLD,
+        )
+        .scalar()
+    )
+
+    return LastCrawlSummary(
+        crawl_run=last_run,
+        new_signals=new_signals,
+        new_documents=new_documents,
+        high_relevance_signals=high_relevance_signals,
+        unanalysed_backlog=unanalysed_backlog,
+    )

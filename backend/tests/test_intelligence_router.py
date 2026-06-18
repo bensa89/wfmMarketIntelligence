@@ -12,7 +12,9 @@ def test_overview_endpoint_returns_expected_keys(client):
     assert "top_movers_7d" in data
     assert "top_movers_30d" in data
     assert "capability_heatmap" in data
-    assert "recent_market_shaping" in data
+    assert "recent_market_shaping_7d" in data
+    assert "recent_market_shaping_30d" in data
+    assert "recent_market_shaping_90d" in data
     assert "emerging_risks" in data
     assert "emerging_opportunities" in data
     assert "emerging_watchpoints" in data

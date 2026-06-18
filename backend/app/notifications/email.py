@@ -169,12 +169,8 @@ def _build_plain_text(digest, date_range: str, kw: int, digest_url: str, signals
         elif section.get("key") == "own_company_communication":
             for item in section.get("items", []):
                 lines.append(f"▸ {item.get('title', '')}")
-                if item.get("topic"):
-                    lines.append(f"  [{item['topic']}]")
                 if item.get("summary"):
                     lines.append(f"  {item['summary']}")
-                if item.get("why_it_matters"):
-                    lines.append(f"  {item['why_it_matters']}")
                 if item.get("source_url"):
                     lines.append(f"  Quelle: {item['source_url']}")
                 lines.append("")
@@ -328,9 +324,10 @@ def _render_event_items(items: list, show_new_badge: bool, company_logos: dict, 
     return "\n".join(parts)
 
 
-def _render_event_calendar_section(section: dict, company_logos: dict) -> str:
+def _render_event_calendar_section(section: dict, company_logos: dict, app_base_url: str) -> str:
     upcoming = section.get("upcoming", [])
     newly = section.get("newly_discovered", [])
+    events_url = html.escape(f"{app_base_url}/events")
 
     blocks = ""
     if upcoming:
@@ -357,7 +354,12 @@ def _render_event_calendar_section(section: dict, company_logos: dict) -> str:
         <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:32px;">
           <tr>
             <td style="padding-bottom:14px;border-bottom:2px solid #f1f5f9;">
-              <h2 style="margin:0;color:#0f172a;font-size:13px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;">Events in den kommenden 14 Tagen</h2>
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td><h2 style="margin:0;color:#0f172a;font-size:13px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;">Events in den kommenden 14 Tagen</h2></td>
+                  <td align="right"><a href="{events_url}" style="color:#2563eb;font-size:11px;font-weight:600;text-decoration:none;">Alle Events ↗</a></td>
+                </tr>
+              </table>
             </td>
           </tr>
           {blocks}
@@ -416,9 +418,7 @@ def _render_own_company_section(section: dict) -> str:
     for i, item in enumerate(items):
         border = "border-bottom:1px solid #f1f5f9;" if i < len(items) - 1 else ""
         title_text = html.escape(item.get("title", ""))
-        topic = html.escape(item.get("topic") or "")
         summary = html.escape(item.get("summary") or "")
-        why = html.escape(item.get("why_it_matters") or "")
         source_url = item.get("source_url") or ""
         source_label = html.escape(item.get("source_title") or item.get("source_domain") or source_url)
 
@@ -427,21 +427,18 @@ def _render_own_company_section(section: dict) -> str:
             if source_url else
             f'<span style="font-weight:600;font-size:14px;color:#0f172a;">{title_text}</span>'
         )
-        topic_html = f'<span style="display:inline-block;margin-bottom:6px;font-size:11px;color:#047857;background:#d1fae5;padding:2px 8px;border-radius:4px;">{topic}</span>' if topic else ""
         summary_html = f'<p style="margin:6px 0 0;font-size:13px;color:#374151;line-height:1.5;">{summary}</p>' if summary else ""
-        why_html = f'<p style="margin:4px 0 0;font-size:12px;color:#6b7280;font-style:italic;">{why}</p>' if why else ""
         source_html = (
-            f'<p style="margin:6px 0 0;font-size:11px;color:#94a3b8;">Quelle: <a href="{html.escape(source_url)}" style="color:#94a3b8;">{source_label}</a></p>'
+            f'<p style="margin:8px 0 0;"><a href="{html.escape(source_url)}" style="color:#2563eb;font-size:12px;'
+            f'text-decoration:none;font-weight:500;">↗ {source_label}</a></p>'
             if source_url else ""
         )
 
         rows += f"""
           <tr>
             <td style="padding:16px 0;{border}">
-              {topic_html}
               {title_html}
               {summary_html}
-              {why_html}
               {source_html}
             </td>
           </tr>"""
@@ -457,11 +454,11 @@ def _render_own_company_section(section: dict) -> str:
         </table>"""
 
 
-def _render_sections(sections: list, company_logos: dict) -> str:
+def _render_sections(sections: list, company_logos: dict, app_base_url: str) -> str:
     parts = []
     for section in sections:
         if section.get("key") == "events_calendar":
-            parts.append(_render_event_calendar_section(section, company_logos))
+            parts.append(_render_event_calendar_section(section, company_logos, app_base_url))
         elif section.get("key") == "own_company_communication":
             parts.append(_render_own_company_section(section))
         else:
@@ -492,7 +489,7 @@ def _build_html(
 ) -> str:
     summary = html.escape(digest.summary or "")
     risks_opps_html = _render_risks_opportunities(digest.risks or [], digest.opportunities or [])
-    sections_html = _render_sections(sections, company_logos)
+    sections_html = _render_sections(sections, company_logos, app_base_url)
     digest_url_escaped = html.escape(digest_url)
     signals_url_escaped = html.escape(signals_url)
     app_url_escaped = html.escape(app_base_url)

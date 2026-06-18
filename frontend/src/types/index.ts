@@ -584,6 +584,23 @@ export interface SignalDistribution {
   by_company_and_type: CompanySignalTypeCount[];
 }
 
+export interface LastCrawlRunInfo {
+  id: string;
+  status: string;
+  started_at: string;
+  finished_at: string | null;
+  total_sources: number;
+  total_errors: number;
+}
+
+export interface LastCrawlSummary {
+  crawl_run: LastCrawlRunInfo | null;
+  new_signals: number;
+  new_documents: number;
+  high_relevance_signals: number;
+  unanalysed_backlog: number;
+}
+
 export interface DedupResult {
   merged_count: number;
   removed_ids: string[];
