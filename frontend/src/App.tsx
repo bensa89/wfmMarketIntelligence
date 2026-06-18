@@ -5,7 +5,6 @@ import AuthGate from './components/AuthGate';
 import LoginPage from './pages/LoginPage';
 import Dashboard from './pages/Dashboard';
 import CompetitorList from './pages/CompetitorList';
-import OverviewPage from './pages/OverviewPage';
 import CompetitorWorkspacePage from './pages/CompetitorWorkspacePage';
 import SignalsFeedPage from './pages/SignalsFeedPage';
 import MarketTrends from './pages/MarketTrends';
@@ -43,7 +42,6 @@ export default function App() {
             }
           >
             <Route index element={<Dashboard />} />
-            <Route path="overview" element={<OverviewPage />} />
             <Route path="competitors" element={<CompetitorList />} />
             <Route path="competitors/:slug" element={<CompetitorWorkspacePage />} />
             <Route path="signals" element={<SignalsFeedPage />} />
