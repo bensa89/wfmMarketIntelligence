@@ -10,6 +10,7 @@ const STEPS: PipelineStep[] = [
   { id: 'assessment', label: 'Tiefenbewertung', type: 'ai', description: 'KI bewertet tiefer' },
   { id: 'capabilities', label: 'Capability-Mapping', type: 'rule', description: 'Movement Score' },
   { id: 'benchmark', label: 'Benchmark', type: 'rule', description: 'Stärke-Matrix' },
+  { id: 'scorecard', label: 'Scorecard', type: 'rule', description: 'Gewichteter Gesamtscore' },
   { id: 'summary', label: 'Competitor Summary', type: 'ai', description: 'KI synthetisiert' },
   { id: 'briefing', label: 'Briefings', type: 'ai', description: 'KI-Zusammenfassung' },
 ];
@@ -169,6 +170,31 @@ export default function HowItWorksPage() {
         Fingerabdruck bereits, wird der Inhalt übersprungen — so werden Duplikate
         zuverlässig vermieden.
       </p>
+
+      <p className="font-medium text-slate-300 mt-3 mb-1">Neue Quellen automatisch finden</p>
+      <p>
+        Neben manuell gepflegten Quellen kann das System per Web-Suche (Tavily API)
+        aktiv nach neuen, relevanten Quellen für ein Unternehmen suchen. Treffer landen
+        zunächst als <strong className="text-slate-200">Source Candidate</strong> mit
+        Status <code className="text-blue-300">candidate</code> — erst nach manueller
+        Prüfung in der Admin-Oberfläche (<code className="text-blue-300">approved</code>{' '}
+        oder <code className="text-blue-300">rejected</code>) wird daraus eine aktiv
+        überwachte Quelle. So wächst die Quellenliste mit, ohne dass das System
+        unbeaufsichtigt neue Domains crawlt.
+      </p>
+
+      <p className="font-medium text-slate-300 mt-3 mb-1">Crawl-Läufe & Zeitplan</p>
+      <p>
+        Jeder Crawl-Lauf wird als eigener Datensatz mit Status (
+        <code className="text-blue-300">running</code>,{' '}
+        <code className="text-blue-300">completed</code>,{' '}
+        <code className="text-blue-300">failed</code> …) und Fortschritt pro Quelle und
+        Phase (Fetching → Extracting → Analysing → Discovering, inkl. Dauer je Phase)
+        nachgehalten — das macht laufende und vergangene Crawls in der Admin-Oberfläche
+        nachvollziehbar. Crawl-Läufe und die wöchentliche Digest-Erstellung können über
+        einen Zeitplan (Wochentag + Uhrzeit) automatisiert werden, statt sie manuell
+        anzustoßen.
+      </p>
     </>
   }
   example={
@@ -202,7 +228,7 @@ export default function HowItWorksPage() {
         {[
           ['name', 'Name des Unternehmens'],
           ['slug', 'URL-freundlicher Bezeichner (z.B. workday)'],
-          ['type', 'competitor oder market_source'],
+          ['type', 'competitor, market_source oder own_company (für die eigene Außenwirkung, siehe unten)'],
           ['description', 'Kurzbeschreibung'],
         ].map(([field, desc]) => (
           <tr key={field} className="border-b border-white/5">
@@ -282,8 +308,9 @@ export default function HowItWorksPage() {
       <p>
         Vor der KI-Analyse prüft das System zwei{' '}
         <span className="text-blue-400 font-medium">🔢 regelbasierte Filter</span>:
-        Dokumente mit weniger als 50 Wörtern werden übersprungen; Dokumente älter als 365
-        Tage ebenfalls.
+        Dokumente mit weniger als 20 Wörtern werden übersprungen; Dokumente älter als 365
+        Tage ebenfalls (geprüft sowohl anhand des aus dem HTML extrahierten Datums als
+        auch anhand des von der KI im Text erkannten Datums).
       </p>
       <div className="mt-3 grid grid-cols-2 gap-2">
         {[
@@ -425,8 +452,9 @@ Antworte NUR mit einem validen JSON-Objekt nach diesem Schema:
   explanation={
     <>
       <p>
-        Signale, deren Relevanz-Score einen konfigurierbaren Schwellenwert überschreitet,
-        werden einem zweiten, spezialisierten KI-Analysten übergeben. Dieser geht tiefer:
+        Signale, deren Relevanz-Score einen konfigurierbaren Schwellenwert überschreitet
+        (Standardwert: <strong className="text-slate-200">0.4</strong>), werden einem
+        zweiten, spezialisierten KI-Analysten übergeben. Dieser geht tiefer:
         Er ordnet das Signal einer konkreten WFM-Capability zu (z.B. „AI Copilot" oder
         „Shift Scheduling"), klassifiziert die Art des strategischen Moves, schätzt wie
         belastbar der Beweis ist (Evidence Strength 1–5) und leitet ab, was die
@@ -452,7 +480,7 @@ Antworte NUR mit einem validen JSON-Objekt nach diesem Schema:
   }
   example={
     <p>
-      Das Signal überschreitet den Schwellenwert (0.88 ≥ 0.7). Der Assessment-Analyst
+      Das Signal überschreitet den Schwellenwert (0.88 ≥ 0.4). Der Assessment-Analyst
       bewertet: Capability{' '}
       <code className="text-purple-300 bg-purple-900/30 px-1 rounded">ai_copilot</code>{' '}
       (primär), Signal Class{' '}
@@ -665,19 +693,83 @@ Antworte mit genau diesem JSON-Objekt:
   }
 />
 
+{/* ── SEKTION 5b: Competitor Scorecard ── */}
+<PipelineSection
+  id="scorecard"
+  title="Competitor Scorecard"
+  type="rule"
+  explanation={
+    <>
+      <p>
+        Zusätzlich zur Capability Strength Matrix berechnet das System pro Wettbewerber
+        und Zeitraum (30 / 90 / 180 Tage) eine{' '}
+        <strong className="text-slate-200">Competitor Scorecard</strong> — einen
+        gewichteten Gesamtscore aus fünf Dimensionen, rein deterministisch berechnet
+        (keine KI involviert):
+      </p>
+      <div className="mt-2 space-y-1 text-[13px]">
+        {[
+          ['Capability Strength', '30%', 'Wie stark ist der Wettbewerber über alle Capabilities hinweg?'],
+          ['Market Impact', '25%', 'Wie sichtbar/wirkungsvoll sind die Moves im Markt?'],
+          ['Activity', '20%', 'Wie aktiv ist der Wettbewerber (Signal-Frequenz)?'],
+          ['Customer Proof', '15%', 'Wie belastbar sind die Beweise (Evidence Strength)?'],
+          ['Momentum', '10%', 'Beschleunigt oder verlangsamt sich die Aktivität gegenüber vor 60 Tagen?'],
+        ].map(([dim, weight, desc]) => (
+          <div key={dim} className="flex gap-2">
+            <span className="text-blue-400 flex-shrink-0 font-mono text-[11px] w-[110px]">{dim}</span>
+            <span className="text-slate-500 flex-shrink-0">{weight}</span>
+            <span>{desc}</span>
+          </div>
+        ))}
+      </div>
+      <p className="mt-3">
+        Ältere Signale fließen mit exponentiell abnehmendem Gewicht ein (Halbwertszeit
+        abhängig vom gewählten Zeitraum) — neuere Aktivität zählt also mehr. Das Ergebnis
+        ist ein <strong className="text-slate-200">Overall Score</strong> mit Trend
+        (steigend/fallend), eine Rangliste der Top-Moves, automatisch erkannte{' '}
+        <strong className="text-slate-200">Risk Flags</strong> (market-shaping Signale in
+        strategisch besonders wichtigen Capabilities) sowie die Position des Wettbewerbers
+        relativ zu seinen Peers (Rang/Perzentil).
+      </p>
+    </>
+  }
+  example={
+    <p>
+      Workdays Scorecard für die letzten 90 Tage: Overall Score{' '}
+      <strong className="text-amber-300">71</strong>, Trend{' '}
+      <strong className="text-emerald-400">steigend</strong>. Das aktuelle
+      AI-Copilot-Signal (market_shaping, Capability-Gewicht 9/10) löst eine{' '}
+      <strong className="text-orange-400">Risk Flag</strong> aus. In der Peer-Vergleichsgruppe
+      liegt Workday damit auf Rang 1 von 6 beobachteten Wettbewerbern.
+    </p>
+  }
+/>
+
 {/* ── SEKTION 6: Competitor Summary ── */}
 <PipelineSection
   id="summary"
   title="Competitor Summary"
   type="ai"
   explanation={
-    <p>
-      Auf Knopfdruck (oder automatisch) fasst ein KI-Analyst alle Assessments eines
-      Wettbewerbers für einen Zeitraum zusammen. Das Ergebnis ist ein vollständiges
-      strategisches Profil: Wie ist die Gesamtausrichtung gerade? In welchen Capabilities
-      ist der Wettbewerber am aktivsten? Was sind die konkreten Risiken und Chancen für
-      uns — und was sollten wir in den nächsten Wochen besonders beobachten?
-    </p>
+    <>
+      <p>
+        Auf Knopfdruck (oder automatisch) fasst ein KI-Analyst die letzten bis zu 50
+        Assessments eines Wettbewerbers für einen Zeitraum (7 / 30 / 90 Tage oder Quartal)
+        zusammen. Das Ergebnis ist ein vollständiges strategisches Profil: Wie ist die
+        Gesamtausrichtung gerade? In welchen Capabilities ist der Wettbewerber am
+        aktivsten? Was sind die konkreten Risiken und Chancen für uns — und was sollten
+        wir in den nächsten Wochen besonders beobachten?
+      </p>
+      <p className="mt-2">
+        Existiert bereits eine frühere Summary für denselben Wettbewerber und Zeitraum,
+        bekommt die KI diese als Vergleichsbasis mit. Sie markiert dann jedes Risiko, jede
+        Chance und jeden Watchpoint als <code className="text-blue-300">is_new</code> oder
+        Fortführung eines bestehenden Punkts, und liefert zusätzlich ein{' '}
+        <code className="text-blue-300">what_changed</code>-Feld: ein bis zwei Sätze, was
+        sich seit der letzten Periode konkret verändert hat. So wird sichtbar, ob ein
+        Risiko neu ist oder sich nur ein bereits bekanntes Thema fortsetzt.
+      </p>
+    </>
   }
   example={
     <p>
@@ -687,20 +779,25 @@ Antworte mit genau diesem JSON-Objekt:
         aggressive_ai_expansion
       </code>
       . Top Risk: „Workday positioniert KI als Standard-Feature — Gefahr der
-      Commoditisierung unseres AI-Differenzierers." Watchpoint: „Nächste Workday Rising
-      Keynote auf weitere AI-Announcements überwachen."
+      Commoditisierung unseres AI-Differenzierers" (
+      <code className="text-blue-300">is_new: true</code>). What Changed: „Die
+      AI-Investitionssignale haben sich gegenüber der letzten Periode deutlich verstärkt."
+      Watchpoint: „Nächste Workday Rising Keynote auf weitere AI-Announcements
+      überwachen."
     </p>
   }
 >
   <ExpandablePanel title="Prompt anzeigen" variant="prompt">
     <p className="mb-3 text-slate-300">
       Der Analyst bekommt alle Assessments des Wettbewerbers im Zeitraum als strukturierte
-      Liste sowie unser Kontext-Profil. Er soll ein zusammenfassendes strategisches Bild
-      zeichnen: Gesamtausrichtung, stärkste Capabilities, Risiken und Chancen für uns.
+      Liste sowie unser Kontext-Profil. Existiert eine vorherige Summary, wird sie als
+      Vergleichsbasis mitgegeben, inkl. Anweisung zur Delta-Erkennung. Er soll ein
+      zusammenfassendes strategisches Bild zeichnen: Gesamtausrichtung, stärkste
+      Capabilities, Risiken und Chancen für uns.
     </p>
     <pre className="bg-slate-900/60 rounded p-3 text-[11px] text-slate-300 overflow-x-auto whitespace-pre-wrap">{`Synthetisiere diese Signal-Assessments für Wettbewerber "[Name]" über [Zeitraum].
 
-Assessments ([N] Signale):
+Assessments ([N] Signale, max. 50):
 [Strukturierte Liste aller Assessments mit capability_primary, signal_class,
 evidence_strength, assessment_summary, implication_for_us]
 
@@ -708,16 +805,21 @@ Unser interner Kontext:
 - Kernkompetenzen: [core_capabilities]
 - Strategische Prioritäten: [strategic_priorities]
 
+Vorherige Summary (falls vorhanden):
+- Positioning: [...] / Risks: [...] / Opportunities: [...] / Watchpoints: [...]
+→ Markiere jeden Punkt als is_new, und fülle what_changed mit dem konkreten Delta.
+
 Antworte mit genau diesem JSON-Objekt:
 {
   "strategic_posture": "<2-4 Wort Label, z.B. aggressive_expansion>",
   "positioning_summary": "<2-3 Sätze zur strategischen Ausrichtung>",
+  "what_changed": "<1-2 Sätze was sich seit der letzten Periode verändert hat, oder null>",
   "top_capabilities": ["<capability_key>"],
   "capability_assessment": [
     {"key": "...", "label": "...", "activity_level": "low|medium|high", "notes": "..."}
   ],
-  "top_risks": ["<Risiko für uns, je ein Satz>"],
-  "top_opportunities": ["<Chance für uns, je ein Satz>"],
+  "top_risks": [{"text": "<Risiko, ein Satz>", "signal_ids": ["..."], "is_new": true}],
+  "top_opportunities": [{"text": "<Chance, ein Satz>", "signal_ids": ["..."], "is_new": true}],
   "watchpoints": ["<konkretes Beobachtungsziel>"]
 }`}</pre>
   </ExpandablePanel>
@@ -733,16 +835,17 @@ Antworte mit genau diesem JSON-Objekt:
       <tbody className="text-slate-400">
         {[
           ['company', 'Bewerteter Wettbewerber'],
-          ['period_type', 'Zeitraum: 7d / 30d / 90d'],
+          ['period_type', 'Zeitraum: 7d / 30d / 90d / quarter'],
           ['strategic_posture', 'KI-generiertes Label (z.B. aggressive_expansion)'],
           ['positioning_summary', '2–3 Sätze zur strategischen Ausrichtung'],
+          ['what_changed', 'Was sich seit der letzten Summary verändert hat (oder null)'],
           ['top_capabilities', 'Aktivste Capabilities im Zeitraum'],
           ['capability_assessment', 'Aktivitätslevel pro Capability'],
-          ['top_risks', 'Risiken für uns (Liste)'],
-          ['top_opportunities', 'Chancen für uns (Liste)'],
+          ['top_risks', 'Risiken für uns, je mit is_new-Flag (Liste)'],
+          ['top_opportunities', 'Chancen für uns, je mit is_new-Flag (Liste)'],
           ['watchpoints', 'Konkrete Beobachtungspunkte (Liste)'],
           ['avg_movement_score', 'Durchschnittlicher Movement Score im Zeitraum'],
-          ['signal_count', 'Anzahl Signals im Zeitraum'],
+          ['signal_count', 'Anzahl Signals im Zeitraum (max. 50)'],
         ].map(([field, desc]) => (
           <tr key={field} className="border-b border-white/5">
             <td className="py-1.5 pr-4 font-mono text-blue-300">{field}</td>
@@ -789,6 +892,13 @@ Antworte mit genau diesem JSON-Objekt:
           </p>
         </div>
       </div>
+      <p className="mt-3">
+        Beide Briefings können automatisch nach Zeitplan generiert werden (siehe
+        Crawl-Läufe & Zeitplan oben). Nach jedem Crawl-Lauf und nach jeder
+        Digest-Erstellung verschickt das System zusätzlich einen kurzen
+        E-Mail-Bericht an konfigurierte Empfänger — mit Kennzahlen zum Lauf (gecrawlte
+        Quellen, Fehler, Dauer) bzw. einem Hinweis, dass ein neuer Digest verfügbar ist.
+      </p>
     </>
   }
   example={
@@ -864,6 +974,26 @@ Erstelle:
 2. Top 3 Handlungsempfehlungen für Produkt / GTM (je 1-2 Sätze, konkret)`}</pre>
   </ExpandablePanel>
 </PipelineSection>
+
+{/* ── SEKTION 7b: Eigene Außenwirkung ── */}
+<section className="scroll-mt-24 py-10 border-t border-white/5">
+  <div className="flex items-center gap-3 mb-4">
+    <h2 className="text-lg font-semibold text-slate-100">Bonus: Eigene Außenwirkung</h2>
+    <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-purple-900/40 text-purple-300 border border-purple-700/30">
+      🤖 KI
+    </span>
+  </div>
+  <p className="text-[14px] text-slate-400 leading-relaxed">
+    Die gleiche Crawling- und Signal-Pipeline funktioniert auch für die eigene
+    Unternehmens-Website (Company-Typ <code className="text-blue-300">own_company</code>).
+    Aus den eigenen, öffentlich gecrawlten Signalen synthetisiert ein KI-Analyst
+    regelmäßig ein <strong className="text-slate-200">External Company View</strong> —
+    wie wir uns aktuell nach außen positionieren: Kernbotschaften, wahrgenommene
+    Capabilities, Differenzierungsmerkmale, Zielmärkte und Tonalität. Das ist ein
+    nützlicher Realitätscheck: Was kommunizieren wir tatsächlich öffentlich — und deckt
+    sich das mit unserer internen Strategie aus dem Kontext-Profil?
+  </p>
+</section>
 
 {/* ── SEKTION 8: Bewertungskriterien ── */}
 <section className="scroll-mt-24 py-10 border-t border-white/5">
