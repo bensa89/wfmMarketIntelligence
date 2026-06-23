@@ -99,7 +99,7 @@ def _call_claude(prompt: str, max_tokens: int = 1024) -> tuple[str, int, int, bo
     return text, message.usage.input_tokens, message.usage.output_tokens, False
 
 
-def _call_opencode(prompt: str, max_tokens: int = 1024) -> str:
+def _call_opencode(prompt: str, max_tokens: int = 1024) -> tuple[str, int, int, bool]:
     """Stream the response to avoid Cloudflare's 120-second proxy timeout (error 524)."""
     client = _get_opencode_client()
     last_exc: Exception | None = None
@@ -110,19 +110,28 @@ def _call_opencode(prompt: str, max_tokens: int = 1024) -> str:
             time.sleep(wait)
         try:
             chunks: list[str] = []
+            usage = None
             with client.chat.completions.create(
                 model=settings.opencode_model,
                 max_tokens=max_tokens,
                 messages=[{"role": "user", "content": prompt}],
                 stream=True,
+                stream_options={"include_usage": True},
             ) as stream:
                 for chunk in stream:
+                    if getattr(chunk, "usage", None):
+                        usage = chunk.usage
                     if not chunk.choices:
                         continue
                     delta = chunk.choices[0].delta.content
                     if delta:
                         chunks.append(delta)
-            return "".join(chunks)
+            text = "".join(chunks)
+            if usage is not None:
+                return text, usage.prompt_tokens, usage.completion_tokens, False
+            input_tokens = max(len(prompt) // 4, 1)
+            output_tokens = max(len(text) // 4, 1)
+            return text, input_tokens, output_tokens, True
         except Exception as exc:
             last_exc = exc
             logger.warning("opencode attempt %d failed: %s", attempt + 1, exc)

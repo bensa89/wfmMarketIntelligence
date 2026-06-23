@@ -55,3 +55,63 @@ def test_call_llm_ollama_records_exact_token_usage(db_session, monkeypatch):
     assert rows[0].input_tokens == 80
     assert rows[0].output_tokens == 30
     assert rows[0].estimated is False
+
+
+def test_call_llm_opencode_uses_exact_usage_when_available(db_session, monkeypatch):
+    import app.analyser.client as client_module
+    from app.config import settings
+    from app.models.llm_call import LlmCall
+
+    monkeypatch.setattr(settings, "llm_provider", "opencode")
+    monkeypatch.setattr(settings, "opencode_model", "qwen3.6-plus")
+
+    mock_chunk = MagicMock()
+    mock_chunk.choices = [MagicMock(delta=MagicMock(content="hi"))]
+    mock_chunk.usage = MagicMock(prompt_tokens=50, completion_tokens=20)
+
+    mock_stream = MagicMock()
+    mock_stream.__enter__.return_value = [mock_chunk]
+    mock_stream.__exit__.return_value = False
+
+    mock_client = MagicMock()
+    mock_client.chat.completions.create.return_value = mock_stream
+    client_module._opencode_client = mock_client
+
+    result = client_module.call_llm("prompt", caller="synthesizer")
+
+    assert result == "hi"
+    rows = db_session.query(LlmCall).all()
+    assert len(rows) == 1
+    assert rows[0].input_tokens == 50
+    assert rows[0].output_tokens == 20
+    assert rows[0].estimated is False
+
+
+def test_call_llm_opencode_estimates_tokens_when_usage_missing(db_session, monkeypatch):
+    import app.analyser.client as client_module
+    from app.config import settings
+    from app.models.llm_call import LlmCall
+
+    monkeypatch.setattr(settings, "llm_provider", "opencode")
+    monkeypatch.setattr(settings, "opencode_model", "qwen3.6-plus")
+
+    mock_chunk = MagicMock()
+    mock_chunk.choices = [MagicMock(delta=MagicMock(content="hi"))]
+    mock_chunk.usage = None
+
+    mock_stream = MagicMock()
+    mock_stream.__enter__.return_value = [mock_chunk]
+    mock_stream.__exit__.return_value = False
+
+    mock_client = MagicMock()
+    mock_client.chat.completions.create.return_value = mock_stream
+    client_module._opencode_client = mock_client
+
+    result = client_module.call_llm("prompt", caller="synthesizer")
+
+    assert result == "hi"
+    rows = db_session.query(LlmCall).all()
+    assert len(rows) == 1
+    assert rows[0].estimated is True
+    assert rows[0].input_tokens > 0
+    assert rows[0].output_tokens > 0
