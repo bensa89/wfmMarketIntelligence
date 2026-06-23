@@ -29,6 +29,8 @@ from app.models.capability_benchmark import CompetitorCapabilityBenchmark  # noq
 from app.models.competitor_scorecard import CompetitorScorecard  # noqa: F401
 from app.models.schedule import ScheduleConfig  # noqa: F401
 from app.models.external_company_view import ExternalCompanyView  # noqa: F401
+from app.models.llm_call import LlmCall  # noqa: F401
+from app.models.llm_model_price import LlmModelPrice  # noqa: F401
 
 __all__ = [
     "Company",
@@ -65,4 +67,6 @@ __all__ = [
     "CompetitorCapabilityBenchmark",
     "ScheduleConfig",
     "ExternalCompanyView",
+    "LlmCall",
+    "LlmModelPrice",
 ]
