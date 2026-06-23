@@ -107,6 +107,7 @@ from app.routers import (
     scorecards,
     schedule,
     logs,
+    llm_usage,
 )  # noqa: E402
 
 app.include_router(companies.router, prefix="/api/companies", tags=["companies"])
@@ -134,6 +135,7 @@ app.include_router(benchmark.router)
 app.include_router(scorecards.router)
 app.include_router(schedule.router, prefix="/api/schedule", tags=["schedule"])
 app.include_router(logs.router, prefix="/api/logs", tags=["logs"])
+app.include_router(llm_usage.router, prefix="/api/llm-usage", tags=["llm-usage"])
 
 
 @app.get("/api/health")
