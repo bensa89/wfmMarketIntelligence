@@ -71,3 +71,29 @@ def test_breakdown_groups_by_caller_provider_model(client, db_session):
     assert len(rows) == 2
     callers = {r["caller"] for r in rows}
     assert callers == {"analyser", "assessor"}
+
+
+def test_put_price_creates_new_entry(client):
+    response = client.put(
+        "/api/llm-usage/prices/claude-haiku-4-5-20251001",
+        json={"input_price_per_1m": 1.0, "output_price_per_1m": 5.0},
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["model"] == "claude-haiku-4-5-20251001"
+    assert data["output_price_per_1m"] == 5.0
+
+
+def test_put_price_updates_existing_entry(client, db_session):
+    db_session.add(LlmModelPrice(model="claude-haiku-4-5-20251001", input_price_per_1m=1.0, output_price_per_1m=5.0))
+    db_session.commit()
+
+    response = client.put(
+        "/api/llm-usage/prices/claude-haiku-4-5-20251001",
+        json={"input_price_per_1m": 2.0, "output_price_per_1m": 10.0},
+    )
+    assert response.status_code == 200
+    assert response.json()["input_price_per_1m"] == 2.0
+
+    response = client.get("/api/llm-usage/prices")
+    assert len(response.json()) == 1
