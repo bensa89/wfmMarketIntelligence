@@ -10,6 +10,7 @@ from app.database import get_db
 from app.models.company import Company, CompanyType
 from app.models.signal import Signal
 from app.models.signal_assessment import SignalAssessment, MovementStrength
+from app.schemas.signal_assessment import AssessSignalRequest
 from app.models.competitor_summary import CompetitorSummary, PeriodType
 from app.models.intelligence_briefing import IntelligenceBriefing
 
@@ -36,6 +37,7 @@ def _assessment_to_dict(a: SignalAssessment) -> dict:
         "assessment_summary": a.assessment_summary,
         "implication_for_us": a.implication_for_us,
         "watch_items": a.watch_items or [],
+        "user_note": a.user_note,
         "created_at": a.created_at.isoformat() if a.created_at else None,
         "updated_at": a.updated_at.isoformat() if a.updated_at else None,
     }
@@ -569,7 +571,7 @@ def get_signal_feed_item(signal_id: str, db: Session = Depends(get_db)) -> dict:
 
 
 @router.post("/signals/{signal_id}/assess")
-def trigger_assess_signal(signal_id: str, db: Session = Depends(get_db)) -> dict:
+def trigger_assess_signal(signal_id: str, payload: Optional[AssessSignalRequest] = None, db: Session = Depends(get_db)) -> dict:
     signal = (
         db.query(Signal)
         .options(selectinload(Signal.company), selectinload(Signal.document))
@@ -580,7 +582,7 @@ def trigger_assess_signal(signal_id: str, db: Session = Depends(get_db)) -> dict
         raise HTTPException(status_code=404, detail="Signal not found")
 
     from app.assessor.pipeline import assess_signal
-    assessment = assess_signal(signal, db)
+    assessment = assess_signal(signal, db, user_note=payload.user_note if payload else None)
     if assessment is None:
         raise HTTPException(status_code=422, detail="Assessment generation failed")
     return _assessment_to_dict(assessment)

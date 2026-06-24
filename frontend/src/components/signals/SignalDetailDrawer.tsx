@@ -31,6 +31,8 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
   const company = companies?.find((c) => c.id === item.company_id);
   const [showRawDocument, setShowRawDocument] = useState(false);
   const { data: doc, isLoading: docLoading } = useDocument(showRawDocument ? item.document_id : '');
+  const [showNoteInput, setShowNoteInput] = useState(false);
+  const [note, setNote] = useState(item.assessment?.user_note ?? '');
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
@@ -172,14 +174,45 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
                 </section>
               )}
 
-              {!a && (
+              {!showNoteInput ? (
                 <button
-                  onClick={() => assess.mutate(item.id)}
+                  onClick={() => setShowNoteInput(true)}
                   disabled={assess.isPending}
                   className="w-full py-2 rounded-lg text-[12px] font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors disabled:opacity-50"
                 >
-                  {assess.isPending ? 'Generating assessment…' : 'Generate Assessment'}
+                  {assess.isPending ? 'Generating assessment…' : a ? 'Assessment neu durchführen' : 'Generate Assessment'}
                 </button>
+              ) : (
+                <div className="space-y-2">
+                  <textarea
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
+                    placeholder="Optionaler Hinweis für die Bewertung, z.B. 'der Pricing-Aspekt ist hier besonders relevant'..."
+                    rows={3}
+                    className="w-full text-[12px] rounded-lg border border-slate-200 p-2 focus:outline-none focus:border-blue-300 resize-none"
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() =>
+                        assess.mutate(
+                          { signalId: item.id, userNote: note.trim() || undefined },
+                          { onSuccess: () => setShowNoteInput(false) }
+                        )
+                      }
+                      disabled={assess.isPending}
+                      className="flex-1 py-2 rounded-lg text-[12px] font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors disabled:opacity-50"
+                    >
+                      {assess.isPending ? 'Generating assessment…' : 'Ausführen'}
+                    </button>
+                    <button
+                      onClick={() => setShowNoteInput(false)}
+                      disabled={assess.isPending}
+                      className="px-4 py-2 rounded-lg text-[12px] font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors disabled:opacity-50"
+                    >
+                      Abbrechen
+                    </button>
+                  </div>
+                </div>
               )}
 
               <section>
@@ -331,7 +364,10 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
                   {item.published_at && (
                     <div className="text-[12px] text-slate-500">Artikel: <DateWithTooltip date={item.published_at} /></div>
                   )}
-                  <div className="text-[12px] text-slate-500">Analysiert: <DateWithTooltip date={item.created_at} /></div>
+                  <div className="text-[12px] text-slate-500">Crawled: <DateWithTooltip date={item.created_at} /></div>
+                  {a?.updated_at && (
+                    <div className="text-[12px] text-slate-500">Bewertet: <DateWithTooltip date={a.updated_at} /></div>
+                  )}
                 </div>
               </section>
 

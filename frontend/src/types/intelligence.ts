@@ -31,6 +31,7 @@ export interface SignalAssessment {
   assessment_summary: string | null;
   implication_for_us: string | null;
   watch_items: string[];
+  user_note: string | null;
   created_at: string;
   updated_at: string;
 }

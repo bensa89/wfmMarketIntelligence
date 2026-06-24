@@ -21,7 +21,12 @@ class SignalAssessmentRead(BaseModel):
     assessment_summary: Optional[str] = None
     implication_for_us: Optional[str] = None
     watch_items: List[str] = []
+    user_note: Optional[str] = None
     created_at: datetime
     updated_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+class AssessSignalRequest(BaseModel):
+    user_note: Optional[str] = None

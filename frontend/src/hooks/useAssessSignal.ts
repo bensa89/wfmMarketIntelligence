@@ -5,8 +5,8 @@ import type { SignalAssessment } from '../types/intelligence';
 export function useAssessSignal() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (signalId: string) =>
-      apiPost<SignalAssessment>(`/intelligence/signals/${signalId}/assess`),
+    mutationFn: ({ signalId, userNote }: { signalId: string; userNote?: string }) =>
+      apiPost<SignalAssessment>(`/intelligence/signals/${signalId}/assess`, { user_note: userNote }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['intelligence', 'signals-feed'] });
       queryClient.invalidateQueries({ queryKey: ['intelligence', 'overview'] });

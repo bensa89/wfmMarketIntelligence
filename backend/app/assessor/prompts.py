@@ -18,7 +18,16 @@ def build_assessment_prompt(
     confidence_score: float,
     context: dict[str, Any],
     capability_keys: list[str],
+    user_note: str | None = None,
 ) -> str:
+    user_note_section = (
+        f"""
+Additional guidance from the analyst — give this special weight in your assessment:
+"{user_note}"
+"""
+        if user_note
+        else ""
+    )
     return f"""Assess this competitor signal for a WFM software vendor.
 
 Signal:
@@ -30,7 +39,7 @@ Signal:
 - Why it matters: {why_it_matters or "unknown"}
 - Relevance score: {relevance_score}
 - Confidence score: {confidence_score}
-
+{user_note_section}
 Our internal context:
 - Core capabilities: {", ".join(context.get("core_capabilities", []))}
 - Strategic priorities: {", ".join(context.get("strategic_priorities", []))}

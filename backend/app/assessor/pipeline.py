@@ -19,7 +19,7 @@ from app.scorecard.constants import ROUTING_VERSION, VALID_PERIOD_TYPES
 logger = logging.getLogger(__name__)
 
 
-def assess_signal(signal: Signal, db: Session) -> SignalAssessment | None:
+def assess_signal(signal: Signal, db: Session, user_note: str | None = None) -> SignalAssessment | None:
     ctx_record = db.query(InternalCompanyContext).first()
     context = {}
     if ctx_record:
@@ -41,6 +41,7 @@ def assess_signal(signal: Signal, db: Session) -> SignalAssessment | None:
         confidence_score=signal.confidence_score or 0.0,
         context=context,
         capability_keys=CAPABILITY_KEYS,
+        user_note=user_note,
     )
 
     parsed = None
@@ -116,6 +117,7 @@ def assess_signal(signal: Signal, db: Session) -> SignalAssessment | None:
         existing.buyer_relevance = buyer_relevance
         existing.valid_from = valid_from
         existing.routing_version = ROUTING_VERSION
+        existing.user_note = user_note
         existing.updated_at = now
         db.commit()
         # Trigger benchmark recompute for this company (best-effort, non-blocking)
@@ -156,6 +158,7 @@ def assess_signal(signal: Signal, db: Session) -> SignalAssessment | None:
         buyer_relevance=buyer_relevance,
         valid_from=valid_from,
         routing_version=ROUTING_VERSION,
+        user_note=user_note,
         created_at=now,
         updated_at=now,
     )

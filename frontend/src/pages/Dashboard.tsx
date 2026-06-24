@@ -1,17 +1,11 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useCompanies } from '../hooks/useCompanies';
 import { useSignals } from '../hooks/useSignals';
 import { useCrawlStatus } from '../hooks/useCrawlStatus';
 import { useLastCompletedCrawl } from '../hooks/useCrawlRuns';
 import { useActiveCrawlRun } from '../hooks/useActiveCrawlRun';
-import { useDocument } from '../hooks/useDocuments';
 import { useOverview } from '../hooks/useOverview';
 import { useLastCrawlSummary } from '../hooks/useStats';
-
-import SignalFeedTable from '../components/dashboard/SignalFeedTable';
-import FilterBar from '../components/FilterBar';
-import MarkdownViewer from '../components/MarkdownViewer';
 
 import IntelligenceBriefingPanel from '../components/overview/IntelligenceBriefingPanel';
 import DashboardKPIRow from '../components/overview/DashboardKPIRow';
@@ -24,40 +18,17 @@ import SignalDetailDrawer from '../components/signals/SignalDetailDrawer';
 import { ScorecardSignalDrawer } from '../components/scorecard/ScorecardSignalDrawer';
 
 import { Play, Loader2 } from 'lucide-react';
-import type { SignalType, Signal } from '../types';
 import type { SignalFeedItem } from '../types/intelligence';
-import { formatPublishedAt } from '../utils/dates';
 
 export default function Dashboard() {
-  const { data: companies, isLoading: companiesLoading } = useCompanies();
-  const [signalType, setSignalType] = useState<SignalType | ''>('');
-  const [minRelevance, setMinRelevance] = useState(0);
-  const [companyId, setCompanyId] = useState('');
-  const [onlyNew, setOnlyNew] = useState(true);
-  const [lastMonth, setLastMonth] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedSignal, setSelectedSignal] = useState<Signal | null>(null);
   const [selectedOverviewSignal, setSelectedOverviewSignal] = useState<SignalFeedItem | null>(null);
   const [selectedRiskSignalId, setSelectedRiskSignalId] = useState<string | null>(null);
   const { start: startCrawl, isRunning: isCrawlRunning, run: crawlRun, phase: crawlPhase } = useCrawlStatus();
   const { activeRun } = useActiveCrawlRun();
   const { lastCrawl } = useLastCompletedCrawl();
   const { data: allSignals } = useSignals({});
-  const { data: signals, isLoading: signalsLoading } = useSignals({
-    company_id: companyId || undefined,
-    signal_type: signalType || undefined,
-    min_relevance: minRelevance || undefined,
-    max_age_days: lastMonth ? 30 : undefined,
-    q: searchQuery || undefined,
-  });
   const { data: overviewData } = useOverview();
   const { data: lastCrawlSummary } = useLastCrawlSummary();
-
-  const lastCrawlTime = lastCrawl?.started_at ? new Date(lastCrawl.started_at) : null;
-
-  const filteredSignals = onlyNew && lastCrawlTime
-    ? signals?.filter((s) => new Date(s.created_at) >= lastCrawlTime!) ?? []
-    : signals ?? [];
 
   const lastCrawlTimeStr = lastCrawl?.finished_at
     ? new Date(lastCrawl.finished_at).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
@@ -148,91 +119,10 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Divider */}
-        <div className="flex items-center gap-3 my-6">
-          <div className="flex-1 border-t-2 border-dashed border-slate-200" />
-          <span className="text-[11px] font-semibold uppercase tracking-widest text-slate-400">Signal Details & Analyse</span>
-          <div className="flex-1 border-t-2 border-dashed border-slate-200" />
-        </div>
-
-        <div className="mt-2">
-          <FilterBar
-            signalType={signalType}
-            onSignalTypeChange={setSignalType}
-            minRelevance={minRelevance}
-            onMinRelevanceChange={setMinRelevance}
-            companyId={companyId}
-            onCompanyChange={setCompanyId}
-            companies={companies}
-            onlyNew={onlyNew}
-            onOnlyNewChange={setOnlyNew}
-            lastMonth={lastMonth}
-            onLastMonthChange={setLastMonth}
-            searchQuery={searchQuery}
-            onSearchQueryChange={setSearchQuery}
-          />
-          {signalsLoading || companiesLoading ? (
-            <div className="flex items-center gap-2 text-slate-400 text-[13px]">
-              <Loader2 size={14} className="animate-spin" />
-              Lade Signale...
-            </div>
-          ) : (
-            <SignalFeedTable
-              signals={filteredSignals}
-              companies={companies ?? []}
-              lastCrawl={lastCrawl ?? null}
-              onSignalClick={setSelectedSignal}
-            />
-          )}
-        </div>
-
         {selectedOverviewSignal && (
           <SignalDetailDrawer item={selectedOverviewSignal} onClose={() => setSelectedOverviewSignal(null)} />
         )}
         <ScorecardSignalDrawer signalId={selectedRiskSignalId} onClose={() => setSelectedRiskSignalId(null)} />
-        {selectedSignal && (
-          <SignalDocumentModal signal={selectedSignal} onClose={() => setSelectedSignal(null)} />
-        )}
-      </div>
-    </div>
-  );
-}
-
-function SignalDocumentModal({ signal, onClose }: { signal: Signal; onClose: () => void }) {
-  const { data: doc, isLoading } = useDocument(signal.document_id);
-
-  return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-8 z-50" onClick={onClose}>
-      <div className="bg-white rounded-xl max-w-3xl w-full max-h-[80vh] overflow-y-auto shadow-2xl" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
-          <div className="min-w-0 flex-1 mr-4">
-            <h3 className="font-semibold text-slate-900 truncate">{signal.title}</h3>
-            <p className="text-xs text-slate-500 mt-0.5">
-              {(() => {
-                const { label, isUnknown } = formatPublishedAt(signal.published_at);
-                return (
-                  <span className={isUnknown ? 'italic text-slate-300' : ''}>{label}</span>
-                );
-              })()}
-              {signal.source_url && (
-                <> · <a href={signal.source_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Quelle</a></>
-              )}
-            </p>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Erfasst: {new Date(signal.created_at).toLocaleDateString('de-DE')}
-            </p>
-          </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-700 text-sm font-medium shrink-0">Schließen</button>
-        </div>
-        <div className="px-6 py-4">
-          {isLoading ? (
-            <p className="text-slate-400 text-sm">Dokument wird geladen...</p>
-          ) : doc?.content_markdown ? (
-            <MarkdownViewer content={doc.content_markdown} />
-          ) : (
-            <p className="text-slate-400 text-sm">Kein Dokumentinhalt verfügbar.</p>
-          )}
-        </div>
       </div>
     </div>
   );

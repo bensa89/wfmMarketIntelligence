@@ -56,6 +56,7 @@ class SignalAssessment(Base):
     valid_until = Column(DateTime, nullable=True)
     buyer_relevance = Column(SmallInteger, nullable=True)
     routing_version = Column(String(20), nullable=True)
+    user_note = Column(Text, nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 

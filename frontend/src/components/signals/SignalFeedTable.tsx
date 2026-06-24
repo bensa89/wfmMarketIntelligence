@@ -105,7 +105,7 @@ export default function SignalFeedTable({ items, total, page, pageSize, onPageCh
                   {getCapabilityLabel(item.assessment.capability_primary)}
                 </span>
               )}
-              <ConfidenceBar value={item.assessment?.confidence} />
+              <ConfidenceBar value={item.relevance_score} />
               {item.published_at && (
                 <span className="text-[11px] text-slate-400 ml-auto whitespace-nowrap">
                   <DateWithTooltip date={item.published_at} />
@@ -121,7 +121,7 @@ export default function SignalFeedTable({ items, total, page, pageSize, onPageCh
         <table className="w-full text-[12px]">
           <thead>
             <tr className="border-b border-slate-200 bg-slate-50">
-              {['Signal', 'Competitor', 'Capability', 'Strength', 'Confidence', 'Datum'].map((h) => (
+              {['Signal', 'Competitor', 'Capability', 'Strength', 'Relevanz', 'Datum'].map((h) => (
                 <th key={h} className="text-left text-[10px] font-semibold uppercase tracking-wider text-slate-500 pb-2 pr-4 pt-2">
                   {h}
                 </th>
@@ -166,7 +166,7 @@ export default function SignalFeedTable({ items, total, page, pageSize, onPageCh
                   <MovementBadge strength={item.assessment?.movement_strength} />
                 </td>
                 <td className="py-3 pr-4">
-                  <ConfidenceBar value={item.assessment?.confidence} />
+                  <ConfidenceBar value={item.relevance_score} />
                 </td>
                 <td className="py-3 text-slate-600">
                   {item.published_at && (
