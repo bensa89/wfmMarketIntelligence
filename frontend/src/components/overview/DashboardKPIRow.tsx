@@ -17,7 +17,7 @@ export default function DashboardKPIRow({ overview, lastCrawl }: Props) {
   const { crawl_run } = lastCrawl;
 
   return (
-    <div className={`grid gap-4 mb-6 ${crawl_run ? 'grid-cols-8' : 'grid-cols-4'}`}>
+    <div className={`grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4 mb-6 ${crawl_run ? 'lg:grid-cols-8' : ''}`}>
       <KPICard label="Signals (30d)" value={totalSignals} accent="bg-blue-500" />
       <KPICard label="Avg Movement Score" value={avgScore} accent="bg-purple-500" />
       <KPICard label="Wichtige neue Signale" value={importantSignalCount} accent="bg-orange-500" />
