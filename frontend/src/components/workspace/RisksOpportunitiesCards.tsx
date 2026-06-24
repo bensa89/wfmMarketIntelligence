@@ -69,7 +69,7 @@ export default function RisksOpportunitiesCards({ summary, scorecardWatchpoints,
   void scorecardTexts; // used only for dedup above
 
   return (
-    <div className="grid grid-cols-3 gap-4 mt-4">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
       <div className="bg-red-50 border border-red-100 rounded-xl p-4">
         <h4 className="text-[12px] font-semibold text-red-700 mb-2">Top Risks</h4>
         <CitedItemList items={risks} bullet="text-red-500" hoverClass="hover:bg-red-100" newBadgeClass="bg-red-100 text-red-700" onSelectSignal={onSelectSignal} />
