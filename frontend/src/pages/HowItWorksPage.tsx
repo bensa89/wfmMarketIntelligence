@@ -171,16 +171,42 @@ export default function HowItWorksPage() {
         zuverlässig vermieden.
       </p>
 
-      <p className="font-medium text-slate-300 mt-3 mb-1">Neue Quellen automatisch finden</p>
+      <p className="font-medium text-slate-300 mt-3 mb-1">Neue Quellen automatisch finden — Web Search</p>
       <p>
-        Neben manuell gepflegten Quellen kann das System per Web-Suche (Tavily API)
-        aktiv nach neuen, relevanten Quellen für ein Unternehmen suchen. Treffer landen
-        zunächst als <strong className="text-slate-200">Source Candidate</strong> mit
-        Status <code className="text-blue-300">candidate</code> — erst nach manueller
-        Prüfung in der Admin-Oberfläche (<code className="text-blue-300">approved</code>{' '}
-        oder <code className="text-blue-300">rejected</code>) wird daraus eine aktiv
-        überwachte Quelle. So wächst die Quellenliste mit, ohne dass das System
-        unbeaufsichtigt neue Domains crawlt.
+        Neben manuell gepflegten Quellen durchsucht das System auf der Seite{' '}
+        <code className="text-blue-300">/search</code> aktiv das offene Web nach neuen,
+        relevanten Quellen. Für jedes Unternehmen generiert eine KI — auf Basis unseres
+        Unternehmensprofils (Zielmärkte, Capabilities, strategische Prioritäten) — gezielte
+        Suchanfragen mit Intent-Tags wie{' '}
+        <code className="text-blue-300">ai_announcement</code>,{' '}
+        <code className="text-blue-300">product_update</code>,{' '}
+        <code className="text-blue-300">partnership</code>,{' '}
+        <code className="text-blue-300">pricing</code> oder{' '}
+        <code className="text-blue-300">hiring</code>. Zusätzlich werden ein paar
+        allgemeine Markttrend-Anfragen über alle Wettbewerbsfelder hinweg gestellt.
+      </p>
+      <p className="mt-2">
+        Jede Anfrage geht an die <strong className="text-slate-200">Tavily Search API</strong>{' '}
+        und liefert bis zu 10 Treffer mit Titel, URL und Relevanz-Score zurück. Treffer
+        unter einem Mindest-Score werden direkt übersprungen. Für die verbleibenden prüft
+        das System zuerst, ob die URL (oder ihr Inhalt per SHA-256-Hash) bereits als
+        Dokument existiert — dann wird nur verlinkt statt neu zu crawlen. Echte Neufunde
+        durchlaufen dieselbe Extraktion und Analyse wie reguläre Crawl-Treffer (siehe oben)
+        und landen als Dokument in einer virtuellen „Web Search Inbox" des Unternehmens.
+      </p>
+      <p className="mt-2">
+        Stammt ein Treffer von einer Domain, die noch keine aktive Quelle und noch kein
+        Kandidat ist, legt das System automatisch einen{' '}
+        <strong className="text-slate-200">Source Candidate</strong> an — Status{' '}
+        <code className="text-blue-300">candidate</code>. Auf der{' '}
+        <code className="text-blue-300">/search</code>-Seite kann das Team diese
+        Kandidaten (gruppiert je Unternehmen, filterbar nach Status und Relevanz) prüfen
+        und entweder <strong className="text-emerald-400">freigeben</strong> — dabei wird
+        daraus eine reguläre, aktiv überwachte <code className="text-blue-300">Source</code>{' '}
+        — oder <strong className="text-red-400">ablehnen</strong> (Status{' '}
+        <code className="text-blue-300">rejected</code>). So wächst die Quellenliste mit,
+        ohne dass das System unbeaufsichtigt neue Domains crawlt. Ein zweiter Tab auf der
+        Seite zeigt alle Search Runs mit ihren Einzelergebnissen zur Nachvollziehbarkeit.
       </p>
 
       <p className="font-medium text-slate-300 mt-3 mb-1">Crawl-Läufe & Zeitplan</p>
@@ -280,6 +306,30 @@ export default function HowItWorksPage() {
           ['published_at', 'Veröffentlichungsdatum aus HTML Meta-Tags'],
           ['crawled_at', 'Zeitpunkt des Crawls'],
           ['is_analysed', 'Ob das Dokument bereits analysiert wurde'],
+        ].map(([field, desc]) => (
+          <tr key={field} className="border-b border-white/5">
+            <td className="py-1.5 pr-4 font-mono text-blue-300">{field}</td>
+            <td className="py-1.5">{desc}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </ExpandablePanel>
+
+  <ExpandablePanel title="Datenstruktur — Source Candidate">
+    <table className="w-full text-xs mt-2 border-collapse">
+      <thead>
+        <tr className="border-b border-white/10">
+          <th className="text-left py-1.5 pr-4 text-slate-300 font-semibold">Feld</th>
+          <th className="text-left py-1.5 text-slate-300 font-semibold">Beschreibung</th>
+        </tr>
+      </thead>
+      <tbody className="text-slate-400">
+        {[
+          ['domain', 'Domain des Treffers (z.B. workday.com)'],
+          ['found_via_query', 'Die Suchanfrage, die zu diesem Treffer geführt hat'],
+          ['relevance_score', 'Tavily-Relevanz-Score des Treffers'],
+          ['status', 'candidate | approved | rejected | monitored'],
         ].map(([field, desc]) => (
           <tr key={field} className="border-b border-white/5">
             <td className="py-1.5 pr-4 font-mono text-blue-300">{field}</td>
