@@ -39,7 +39,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-app-bg flex items-center justify-center">
+    <div className="min-h-screen bg-app-bg flex items-center justify-center px-4">
       <div className="bg-app-card border border-app-border rounded-2xl p-8 w-full max-w-sm shadow-sm">
         <h1 className="text-[20px] font-bold text-ink mb-1">WFM Intel</h1>
         <p className="text-sm text-ink-muted mb-6">Market Intelligence Hub</p>
