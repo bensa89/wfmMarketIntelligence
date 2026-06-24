@@ -80,8 +80,8 @@ export default function CompetitorWorkspacePage() {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="bg-white border-b border-slate-200 px-6 py-4 flex-shrink-0">
-        <div className="flex items-start justify-between gap-4">
+      <div className="bg-white border-b border-slate-200 px-4 md:px-6 py-4 flex-shrink-0">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
           <div className="flex items-center gap-3 min-w-0">
             <CompanyLogo
               name={data.competitor_profile.name}
@@ -109,7 +109,7 @@ export default function CompetitorWorkspacePage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 flex-shrink-0 flex-wrap justify-end">
+          <div className="flex items-center gap-2 flex-shrink-0 flex-wrap justify-start sm:justify-end">
             {/* Summary period selector */}
             {(['30d', '90d'] as SummaryPeriod[]).map((p) => (
               <button
@@ -194,10 +194,10 @@ export default function CompetitorWorkspacePage() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto px-6 py-5 space-y-5">
+      <div className="flex-1 overflow-auto px-4 md:px-6 py-5 space-y-5">
 
         {/* Row 1: Strategic posture + Dimension scores (KPIs) */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <StrategicPostureCard summary={activeSummary} />
           <div className="space-y-3">
             <DimensionScoreGrid
@@ -237,7 +237,7 @@ export default function CompetitorWorkspacePage() {
         </div>
 
         {/* Row 2: Relative capability strength + Top moves */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <RelativeCapabilityStrengthPanel
             slug={slug ?? ''}
             capabilityDistribution={data.capability_distribution ?? []}
