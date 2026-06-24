@@ -16,6 +16,7 @@ import HowItWorksPage from './pages/HowItWorksPage';
 import CrawlRunDetailPage from './pages/CrawlRunDetailPage';
 import ScheduleAdmin from './pages/ScheduleAdmin';
 import LogsAdmin from './pages/LogsAdmin';
+import LlmUsageAdmin from './pages/LlmUsageAdmin';
 import EventCalendarPage from './pages/EventCalendarPage';
 
 const queryClient = new QueryClient({
@@ -55,6 +56,7 @@ export default function App() {
             <Route path="how-it-works" element={<HowItWorksPage />} />
             <Route path="admin/schedule" element={<ScheduleAdmin />} />
             <Route path="admin/logs" element={<LogsAdmin />} />
+            <Route path="admin/llm-usage" element={<LlmUsageAdmin />} />
           </Route>
         </Routes>
       </BrowserRouter>

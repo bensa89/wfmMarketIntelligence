@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import {
   LayoutDashboard, Users, TrendingUp, FileText, Settings, Search,
-  Globe, LogOut, Zap, BookOpen, Clock, Terminal, Menu, X, GitCommit, Calendar,
+  Globe, LogOut, Zap, BookOpen, Clock, Terminal, Menu, X, GitCommit, Calendar, Coins,
 } from 'lucide-react';
 import { hasCredentials, clearCredentials } from '../api/client';
 import { useNavigate } from 'react-router-dom';
@@ -31,6 +31,7 @@ const navSections = [
       { to: '/admin/sources', label: 'Quellen', icon: Settings },
       { to: '/admin/schedule', label: 'Automation', icon: Clock },
       { to: '/admin/logs', label: 'Logs', icon: Terminal },
+      { to: '/admin/llm-usage', label: 'LLM-Nutzung', icon: Coins },
       { to: '/context', label: 'Kontext', icon: Globe },
       { to: '/how-it-works', label: "Wie funktioniert's?", icon: BookOpen },
     ],
