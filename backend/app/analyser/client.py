@@ -40,27 +40,66 @@ def call_llm(prompt: str, max_tokens: int = 1024, caller: str = "") -> str:
     logger.info("LLM call start [caller=%s provider=%s max_tokens=%d]", label, settings.llm_provider, max_tokens)
     t0 = time.monotonic()
     if settings.llm_provider == "ollama":
-        result = _call_ollama(prompt, max_tokens=max_tokens)
+        text, input_tokens, output_tokens, estimated = _call_ollama(prompt, max_tokens=max_tokens)
+        model = settings.ollama_model
     elif settings.llm_provider == "opencode":
-        result = _call_opencode(prompt, max_tokens=max_tokens)
+        text, input_tokens, output_tokens, estimated = _call_opencode(prompt, max_tokens=max_tokens)
+        model = settings.opencode_model
     else:
-        result = _call_claude(prompt, max_tokens=max_tokens)
+        text, input_tokens, output_tokens, estimated = _call_claude(prompt, max_tokens=max_tokens)
+        model = settings.claude_model
     elapsed = time.monotonic() - t0
-    logger.info("LLM call done [caller=%s duration=%.1fs chars=%d]", label, elapsed, len(result))
-    return result
+    logger.info("LLM call done [caller=%s duration=%.1fs chars=%d]", label, elapsed, len(text))
+    _record_llm_call(
+        caller=label,
+        provider=settings.llm_provider,
+        model=model,
+        input_tokens=input_tokens,
+        output_tokens=output_tokens,
+        estimated=estimated,
+        duration_ms=int(elapsed * 1000),
+    )
+    return text
 
 
-def _call_claude(prompt: str, max_tokens: int = 1024) -> str:
+def _record_llm_call(
+    caller: str, provider: str, model: str,
+    input_tokens: int, output_tokens: int, estimated: bool, duration_ms: int,
+) -> None:
+    from app.database import SessionLocal
+    from app.models.llm_call import LlmCall
+
+    db = SessionLocal()
+    try:
+        db.add(LlmCall(
+            caller=caller,
+            provider=provider,
+            model=model,
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+            estimated=estimated,
+            duration_ms=duration_ms,
+        ))
+        db.commit()
+    except Exception:
+        logger.warning("Failed to record LLM usage", exc_info=True)
+        db.rollback()
+    finally:
+        db.close()
+
+
+def _call_claude(prompt: str, max_tokens: int = 1024) -> tuple[str, int, int, bool]:
     client = _get_anthropic_client()
     message = client.messages.create(
         model=settings.claude_model,
         max_tokens=max_tokens,
         messages=[{"role": "user", "content": prompt}],
     )
-    return message.content[0].text
+    text = message.content[0].text
+    return text, message.usage.input_tokens, message.usage.output_tokens, False
 
 
-def _call_opencode(prompt: str, max_tokens: int = 1024) -> str:
+def _call_opencode(prompt: str, max_tokens: int = 1024) -> tuple[str, int, int, bool]:
     """Stream the response to avoid Cloudflare's 120-second proxy timeout (error 524)."""
     client = _get_opencode_client()
     last_exc: Exception | None = None
@@ -71,26 +110,35 @@ def _call_opencode(prompt: str, max_tokens: int = 1024) -> str:
             time.sleep(wait)
         try:
             chunks: list[str] = []
+            usage = None
             with client.chat.completions.create(
                 model=settings.opencode_model,
                 max_tokens=max_tokens,
                 messages=[{"role": "user", "content": prompt}],
                 stream=True,
+                stream_options={"include_usage": True},
             ) as stream:
                 for chunk in stream:
+                    if getattr(chunk, "usage", None):
+                        usage = chunk.usage
                     if not chunk.choices:
                         continue
                     delta = chunk.choices[0].delta.content
                     if delta:
                         chunks.append(delta)
-            return "".join(chunks)
+            text = "".join(chunks)
+            if usage is not None:
+                return text, usage.prompt_tokens, usage.completion_tokens, False
+            input_tokens = max(len(prompt) // 4, 1)
+            output_tokens = max(len(text) // 4, 1)
+            return text, input_tokens, output_tokens, True
         except Exception as exc:
             last_exc = exc
             logger.warning("opencode attempt %d failed: %s", attempt + 1, exc)
     raise last_exc
 
 
-def _call_ollama(prompt: str, max_tokens: int = 1024) -> str:
+def _call_ollama(prompt: str, max_tokens: int = 1024) -> tuple[str, int, int, bool]:
     import httpx
 
     response = httpx.post(
@@ -104,4 +152,5 @@ def _call_ollama(prompt: str, max_tokens: int = 1024) -> str:
         timeout=60,
     )
     response.raise_for_status()
-    return response.json()["response"]
+    data = response.json()
+    return data["response"], data.get("prompt_eval_count", 0), data.get("eval_count", 0), False

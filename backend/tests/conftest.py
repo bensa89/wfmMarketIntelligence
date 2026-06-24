@@ -25,7 +25,24 @@ AUTH_HEADER = {
 def db_engine():
     engine = create_engine(TEST_DATABASE_URL, connect_args={"check_same_thread": False})
     Base.metadata.create_all(bind=engine)
+
+    # Code under test (e.g. app.analyser.client._record_llm_call) calls
+    # `SessionLocal()` directly rather than going through the `get_db` DI
+    # override used by the `client` fixture below. app.database.SessionLocal
+    # is a module-level singleton bound to a pooled connection created at
+    # import time, so without this alias it can hold a stale connection to
+    # a previous test's (already deleted) sqlite file, causing spurious
+    # "no such table" errors or invisible writes. Repoint it at this test's
+    # engine for the duration of the test so direct SessionLocal() calls and
+    # the `db_session` fixture observe the same database.
+    import app.database as database_module
+    test_session_factory = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    original_session_local = database_module.SessionLocal
+    database_module.SessionLocal = test_session_factory
+
     yield engine
+
+    database_module.SessionLocal = original_session_local
     Base.metadata.drop_all(bind=engine)
     engine.dispose()
     if os.path.exists(TEST_DB_PATH):
