@@ -71,8 +71,8 @@ export default function CompanyContextPage() {
   }
 
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
+    <div className="p-4 md:p-6">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <h1 className="text-2xl font-bold flex items-center gap-2">
           <Globe size={24} /> Company Context
         </h1>
@@ -160,7 +160,7 @@ export default function CompanyContextPage() {
 
       {/* ExternalCompanyView Panel */}
       <div className="mt-8">
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
           <h2 className="text-lg font-semibold flex items-center gap-2">
             <Eye size={20} /> Außensicht
           </h2>
