@@ -168,14 +168,14 @@ export default function LlmUsageAdminPage() {
   const allModels = Array.from(new Set([...(usedModels ?? []), ...(prices ?? []).map((p) => p.model)]));
 
   return (
-    <div className="p-6 max-w-5xl space-y-6">
+    <div className="p-4 md:p-6 max-w-5xl space-y-6">
       <div>
         <h1 className="text-xl font-semibold text-slate-800">LLM-Token-Nutzung</h1>
         <p className="text-sm text-slate-500 mt-0.5">Token-Verbrauch und Kosten über alle Pipelines</p>
       </div>
 
       {summary && (
-        <div className="grid grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <SummaryTile label="Heute" totals={summary.today} />
           <SummaryTile label="7 Tage" totals={summary.last_7_days} />
           <SummaryTile label="30 Tage" totals={summary.last_30_days} />
