@@ -62,7 +62,7 @@ export default function CrawlRunDetailPage() {
   };
 
   return (
-    <div className="p-6 max-w-5xl mx-auto">
+    <div className="p-4 md:p-6 max-w-5xl mx-auto">
       <h1 className="text-xl font-semibold text-ink mb-4">Crawl Run Detail</h1>
 
       <div className="bg-app-card rounded-lg p-4 mb-6 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
