@@ -93,9 +93,9 @@ export default function LogsAdminPage() {
   const { label: statusLabel, color: statusColor } = STATUS_CONFIG[status];
 
   return (
-    <div className="p-6 max-w-full h-screen flex flex-col gap-4">
+    <div className="p-4 md:p-6 max-w-full h-screen flex flex-col gap-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
           <h1 className="text-xl font-semibold text-slate-800">Backend Logs</h1>
           <p className="text-sm text-slate-500 mt-0.5">Live-Stream aller Backend-Ereignisse</p>
