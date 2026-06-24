@@ -41,6 +41,7 @@ async def lifespan(app: FastAPI):
     from app.models.schedule import ScheduleConfig
     from app import scheduler as sched_module
     from app import log_stream
+    from app.settings_overrides import load_overrides_from_db
 
     log_stream.install()
 
@@ -56,6 +57,7 @@ async def lifespan(app: FastAPI):
                 db.add(config)
                 db.commit()
                 db.refresh(config)
+            load_overrides_from_db(db)
         finally:
             db.close()
 
