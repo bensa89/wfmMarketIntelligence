@@ -310,7 +310,7 @@ function CandidatesTab() {
               <div className="divide-y divide-app-border">
                 {companyCandidates.map(c => (
                   <div key={c.id} className="px-4 py-3 hover:bg-app-bg/30 transition-colors">
-                    <div className="flex items-start justify-between gap-4">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
                           <span className="text-sm font-medium text-ink">{c.domain}</span>
@@ -365,8 +365,8 @@ export default function SearchPage() {
   const { data: runs, isLoading: runsLoading } = useSearchRuns();
 
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
+    <div className="p-4 md:p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-ink">Web Search</h1>
           <p className="text-ink-muted text-sm mt-1">AI-driven search for news, reports, and new sources</p>
@@ -374,7 +374,7 @@ export default function SearchPage() {
         <button
           onClick={() => runSearch.mutate()}
           disabled={runSearch.isPending}
-          className="flex items-center gap-2 px-4 py-2 bg-accent-blue text-ink rounded hover:opacity-90 disabled:opacity-50 transition-opacity text-sm"
+          className="flex items-center gap-2 px-4 py-2 bg-accent-blue text-ink rounded hover:opacity-90 disabled:opacity-50 transition-opacity text-sm flex-shrink-0"
         >
           <Search size={16} />
           {runSearch.isPending ? 'Searching…' : 'Search Run starten'}
