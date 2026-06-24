@@ -5,7 +5,7 @@ import { useCompanies } from '../hooks/useCompanies';
 import { useLastCompletedCrawl } from '../hooks/useCrawlRuns';
 import SignalFeedFilters from '../components/signals/SignalFeedFilters';
 import SignalFeedTable from '../components/signals/SignalFeedTable';
-import SignalDetailDrawer from '../components/signals/SignalDetailDrawer';
+import SignalDetailModal from '../components/signals/SignalDetailModal';
 import type { SignalsFeedFilters, SignalFeedItem } from '../types/intelligence';
 
 const DEFAULT_FILTERS: SignalsFeedFilters = {
@@ -67,7 +67,7 @@ export default function SignalsFeedPage() {
       )}
 
       {selectedItem && (
-        <SignalDetailDrawer
+        <SignalDetailModal
           item={selectedItem}
           onClose={() => setSelectedItem(null)}
         />

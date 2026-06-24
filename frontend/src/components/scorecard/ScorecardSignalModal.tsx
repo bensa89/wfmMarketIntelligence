@@ -1,13 +1,13 @@
 import { useSignalFeedItem } from '../../hooks/useSignalsFeed';
-import SignalDetailDrawer from '../signals/SignalDetailDrawer';
+import SignalDetailModal from '../signals/SignalDetailModal';
 
 interface Props {
   signalId: string | null;
   onClose: () => void;
 }
 
-export function ScorecardSignalDrawer({ signalId, onClose }: Props) {
+export function ScorecardSignalModal({ signalId, onClose }: Props) {
   const { data: item } = useSignalFeedItem(signalId);
   if (!signalId || !item) return null;
-  return <SignalDetailDrawer item={item} onClose={onClose} />;
+  return <SignalDetailModal item={item} onClose={onClose} />;
 }

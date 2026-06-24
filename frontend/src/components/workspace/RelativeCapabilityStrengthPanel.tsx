@@ -7,7 +7,7 @@ import type { CapabilityCount } from '../../types/intelligence';
 import { TierBadge } from '../benchmark/TierBadge';
 import { ConfidenceIndicator } from '../benchmark/ConfidenceIndicator';
 import { StrengthDeltaIndicator } from '../benchmark/StrengthDeltaIndicator';
-import { InfoTooltip } from './InfoTooltip';
+import InfoTooltip from '../InfoTooltip';
 import { CAPABILITIES } from '../../constants/capabilities';
 
 interface RelativeCapabilityStrengthPanelProps {

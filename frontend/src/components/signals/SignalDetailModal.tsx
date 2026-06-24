@@ -25,7 +25,7 @@ const VISIBILITY_LABELS: Record<VisibilityImpact, { label: string; color: string
   high:   { label: 'High',   color: 'text-orange-600 bg-orange-50' },
 };
 
-export default function SignalDetailDrawer({ item, onClose }: Props) {
+export default function SignalDetailModal({ item, onClose }: Props) {
   const assess = useAssessSignal();
   const { data: companies } = useCompanies();
   const company = companies?.find((c) => c.id === item.company_id);

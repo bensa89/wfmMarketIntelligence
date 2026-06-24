@@ -3,21 +3,21 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Layout from './components/Layout';
 import AuthGate from './components/AuthGate';
 import LoginPage from './pages/LoginPage';
-import Dashboard from './pages/Dashboard';
-import CompetitorList from './pages/CompetitorList';
+import DashboardPage from './pages/DashboardPage';
+import CompetitorListPage from './pages/CompetitorListPage';
 import CompetitorWorkspacePage from './pages/CompetitorWorkspacePage';
 import SignalsFeedPage from './pages/SignalsFeedPage';
-import MarketTrends from './pages/MarketTrends';
-import WeeklyDigest from './pages/WeeklyDigest';
-import SourcesAdmin from './pages/SourcesAdmin';
-import CompanyContext from './pages/CompanyContext';
+import MarketTrendsPage from './pages/MarketTrendsPage';
+import WeeklyDigestPage from './pages/WeeklyDigestPage';
+import SourcesAdminPage from './pages/SourcesAdminPage';
+import CompanyContextPage from './pages/CompanyContextPage';
 import SearchPage from './pages/SearchPage';
 import HowItWorksPage from './pages/HowItWorksPage';
 import CrawlRunDetailPage from './pages/CrawlRunDetailPage';
-import ScheduleAdmin from './pages/ScheduleAdmin';
-import LogsAdmin from './pages/LogsAdmin';
-import LlmUsageAdmin from './pages/LlmUsageAdmin';
-import SettingsAdmin from './pages/SettingsAdmin';
+import ScheduleAdminPage from './pages/ScheduleAdminPage';
+import LogsAdminPage from './pages/LogsAdminPage';
+import LlmUsageAdminPage from './pages/LlmUsageAdminPage';
+import SettingsAdminPage from './pages/SettingsAdminPage';
 import EventCalendarPage from './pages/EventCalendarPage';
 
 const queryClient = new QueryClient({
@@ -43,22 +43,22 @@ export default function App() {
               </AuthGate>
             }
           >
-            <Route index element={<Dashboard />} />
-            <Route path="competitors" element={<CompetitorList />} />
+            <Route index element={<DashboardPage />} />
+            <Route path="competitors" element={<CompetitorListPage />} />
             <Route path="competitors/:slug" element={<CompetitorWorkspacePage />} />
             <Route path="signals" element={<SignalsFeedPage />} />
-            <Route path="trends" element={<MarketTrends />} />
+            <Route path="trends" element={<MarketTrendsPage />} />
             <Route path="events" element={<EventCalendarPage />} />
-            <Route path="digest" element={<WeeklyDigest />} />
+            <Route path="digest" element={<WeeklyDigestPage />} />
             <Route path="search" element={<SearchPage />} />
-            <Route path="admin/sources" element={<SourcesAdmin />} />
+            <Route path="admin/sources" element={<SourcesAdminPage />} />
             <Route path="crawl-runs/:id" element={<CrawlRunDetailPage />} />
-            <Route path="context" element={<CompanyContext />} />
+            <Route path="context" element={<CompanyContextPage />} />
             <Route path="how-it-works" element={<HowItWorksPage />} />
-            <Route path="admin/schedule" element={<ScheduleAdmin />} />
-            <Route path="admin/logs" element={<LogsAdmin />} />
-            <Route path="admin/llm-usage" element={<LlmUsageAdmin />} />
-            <Route path="admin/settings" element={<SettingsAdmin />} />
+            <Route path="admin/schedule" element={<ScheduleAdminPage />} />
+            <Route path="admin/logs" element={<LogsAdminPage />} />
+            <Route path="admin/llm-usage" element={<LlmUsageAdminPage />} />
+            <Route path="admin/settings" element={<SettingsAdminPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

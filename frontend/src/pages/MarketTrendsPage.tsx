@@ -6,7 +6,7 @@ import FilterBar from '../components/FilterBar';
 import type { SignalType } from '../types';
 import { TrendingUp } from 'lucide-react';
 
-export default function MarketTrends() {
+export default function MarketTrendsPage() {
   const { data: companies } = useCompanies();
   const marketSources = companies?.filter((c) => c.type === 'market_source') ?? [];
   const marketCompanyIds = marketSources.map((c) => c.id);

@@ -2,7 +2,7 @@ import { useEventCalendar } from '../../hooks/useEventCalendar';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronDown, ChevronUp, ArrowRight } from 'lucide-react';
-import SignalDetailDrawer from '../signals/SignalDetailDrawer';
+import SignalDetailModal from '../signals/SignalDetailModal';
 import CompanyLogo from '../CompanyLogo';
 import type { CalendarEvent } from '../../types/intelligence';
 import type { SignalFeedItem } from '../../types/intelligence';
@@ -247,7 +247,7 @@ export default function EventTimelinePanel({ fullView = false }: EventTimelinePa
       </div>
 
       {selectedSignal && (
-        <SignalDetailDrawer item={selectedSignal} onClose={() => setSelectedSignal(null)} />
+        <SignalDetailModal item={selectedSignal} onClose={() => setSelectedSignal(null)} />
       )}
     </>
   );

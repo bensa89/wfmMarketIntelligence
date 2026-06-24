@@ -7,7 +7,7 @@ export function useLatestIntelligenceBriefing() {
     queryKey: ['intelligence', 'briefing', 'latest'],
     queryFn: async () => {
       try {
-        return await apiGet<IntelligenceBriefing>('/intelligence/briefing/latest');
+        return await apiGet<IntelligenceBriefing>('/intelligence-briefings/latest');
       } catch (e) {
         if (e instanceof ApiError && e.status === 404) return null;
         throw e;
@@ -19,7 +19,7 @@ export function useLatestIntelligenceBriefing() {
 export function useGenerateIntelligenceBriefing() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: () => apiPost<IntelligenceBriefing>('/intelligence/briefing/generate'),
+    mutationFn: () => apiPost<IntelligenceBriefing>('/intelligence-briefings/generate'),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['intelligence', 'briefing', 'latest'] });
     },

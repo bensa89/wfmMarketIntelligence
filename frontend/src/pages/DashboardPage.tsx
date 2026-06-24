@@ -14,13 +14,13 @@ import CapabilityHeatmapV2 from '../components/overview/CapabilityHeatmapV2';
 import MarketShapingFeed from '../components/overview/MarketShapingFeed';
 import RisksOpportunitiesPanel from '../components/overview/RisksOpportunitiesPanel';
 import EventTimelinePanel from '../components/overview/EventTimelinePanel';
-import SignalDetailDrawer from '../components/signals/SignalDetailDrawer';
-import { ScorecardSignalDrawer } from '../components/scorecard/ScorecardSignalDrawer';
+import SignalDetailModal from '../components/signals/SignalDetailModal';
+import { ScorecardSignalModal } from '../components/scorecard/ScorecardSignalModal';
 
 import { Play, Loader2 } from 'lucide-react';
 import type { SignalFeedItem } from '../types/intelligence';
 
-export default function Dashboard() {
+export default function DashboardPage() {
   const [selectedOverviewSignal, setSelectedOverviewSignal] = useState<SignalFeedItem | null>(null);
   const [selectedRiskSignalId, setSelectedRiskSignalId] = useState<string | null>(null);
   const { start: startCrawl, isRunning: isCrawlRunning, run: crawlRun, phase: crawlPhase } = useCrawlStatus();
@@ -120,9 +120,9 @@ export default function Dashboard() {
         )}
 
         {selectedOverviewSignal && (
-          <SignalDetailDrawer item={selectedOverviewSignal} onClose={() => setSelectedOverviewSignal(null)} />
+          <SignalDetailModal item={selectedOverviewSignal} onClose={() => setSelectedOverviewSignal(null)} />
         )}
-        <ScorecardSignalDrawer signalId={selectedRiskSignalId} onClose={() => setSelectedRiskSignalId(null)} />
+        <ScorecardSignalModal signalId={selectedRiskSignalId} onClose={() => setSelectedRiskSignalId(null)} />
       </div>
     </div>
   );

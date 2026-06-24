@@ -46,7 +46,7 @@ function LogLine({ entry }: { entry: LogEntry }) {
   );
 }
 
-export default function LogsAdmin() {
+export default function LogsAdminPage() {
   const { logs, status, modules, pause, resume, clear, reconnect } = useLogStream();
 
   const [levelFilter, setLevelFilter] = useState<string>('ALL');

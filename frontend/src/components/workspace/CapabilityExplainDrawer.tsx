@@ -1,7 +1,7 @@
 import { X } from 'lucide-react';
 import type { CompetitorBenchmarkDetail, BenchmarkPeriodType } from '../../types/benchmark';
 import { TierBadge } from '../benchmark/TierBadge';
-import { InfoTooltip } from './InfoTooltip';
+import InfoTooltip from '../InfoTooltip';
 import { useCapabilityAssessments } from '../../hooks/useBenchmark';
 
 // ─── Momentum helpers ────────────────────────────────────────────────────────

@@ -13,7 +13,7 @@ import { ScorecardSummaryStrip } from '../components/scorecard/ScorecardSummaryS
 import type { ScorecardPeriodType } from '../types/scorecard';
 import { MatrixInfoDrawer } from '../components/benchmark/MatrixInfoDrawer';
 
-export default function CompetitorList() {
+export default function CompetitorListPage() {
   const { data: companies, isLoading } = useCompanies();
   const { data: allSignals } = useSignals();
 

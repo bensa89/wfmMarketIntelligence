@@ -140,7 +140,7 @@ function AddModelPriceForm({ existingModels, onSaved }: { existingModels: string
   );
 }
 
-export default function LlmUsageAdmin() {
+export default function LlmUsageAdminPage() {
   const queryClient = useQueryClient();
   const [days, setDays] = useState(30);
 

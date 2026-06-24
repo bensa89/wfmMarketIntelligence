@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 
 
 def test_get_latest_briefing_404_when_none(client):
-    response = client.get("/api/briefings/latest")
+    response = client.get("/api/crawl-briefings/latest")
     assert response.status_code == 404
 
 
@@ -21,7 +21,7 @@ def test_get_latest_briefing_returns_most_recent(client, db_session):
     db_session.add_all([older, newer])
     db_session.commit()
 
-    response = client.get("/api/briefings/latest")
+    response = client.get("/api/crawl-briefings/latest")
     assert response.status_code == 200
     assert response.json()["content"] == "newer briefing"
 
@@ -31,7 +31,7 @@ def test_generate_briefing(client):
         "app.routers.briefings.generate_briefing_content",
         return_value="Test briefing content",
     ):
-        response = client.post("/api/briefings/generate", json={})
+        response = client.post("/api/crawl-briefings/generate", json={})
     assert response.status_code == 200
     data = response.json()
     assert data["content"] == "Test briefing content"
@@ -44,7 +44,7 @@ def test_generate_briefing_with_crawl_run_id(client):
         return_value="Briefing with run",
     ):
         response = client.post(
-            "/api/briefings/generate", json={"crawl_run_id": "some-run-id"}
+            "/api/crawl-briefings/generate", json={"crawl_run_id": "some-run-id"}
         )
     assert response.status_code == 200
     assert response.json()["crawl_run_id"] == "some-run-id"

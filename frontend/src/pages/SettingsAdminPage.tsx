@@ -145,7 +145,7 @@ function FieldRow({ def, setting, onSaved }: { def: FieldDef; setting: AppSettin
   );
 }
 
-export default function SettingsAdmin() {
+export default function SettingsAdminPage() {
   const queryClient = useQueryClient();
   const { data, isLoading } = useQuery({ queryKey: ['app-settings'], queryFn: fetchAppSettings });
 

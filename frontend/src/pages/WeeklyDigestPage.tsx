@@ -219,7 +219,7 @@ function SectionItems({ items }: { items: DigestSectionItem[] }) {
   );
 }
 
-export default function WeeklyDigest() {
+export default function WeeklyDigestPage() {
   const { data: digests, isLoading } = useDigests();
   const generateDigest = useGenerateDigest();
   const [selectedDigestId, setSelectedDigestId] = useState<string | null>(null);

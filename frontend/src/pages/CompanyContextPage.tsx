@@ -14,7 +14,7 @@ const listFields: { key: keyof ContextUpdate; label: string; placeholder: string
   { key: 'non_focus_areas', label: 'Non-Focus Areas', placeholder: 'Add area...' },
 ];
 
-export default function CompanyContext() {
+export default function CompanyContextPage() {
   const { data: context, isLoading } = useContextData();
   const updateContext = useUpdateContext();
   const { data: externalView, isLoading: externalViewLoading } = useExternalView();

@@ -195,7 +195,7 @@ function DiscoveredPagesSection({
   );
 }
 
-export default function SourcesAdmin() {
+export default function SourcesAdminPage() {
   const { data: companies, isLoading: companiesLoading, error: companiesError, refetch: refetchCompanies } = useCompanies();
   const { data: sources, isLoading: sourcesLoading } = useSources();
 

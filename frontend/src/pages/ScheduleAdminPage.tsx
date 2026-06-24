@@ -142,7 +142,7 @@ function NextRunBadge({ label, time }: { label: string; time: string | null }) {
   );
 }
 
-export default function ScheduleAdmin() {
+export default function ScheduleAdminPage() {
   const queryClient = useQueryClient();
   const [toast, setToast] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
   const [testEmailLoading, setTestEmailLoading] = useState(false);

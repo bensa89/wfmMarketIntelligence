@@ -15,14 +15,15 @@ import type { CompetitorBenchmarkDetail } from '../types/benchmark';
 import { MovesPanel } from '../components/workspace/MovesPanel';
 import { CapabilityStrengthVsMovement } from '../components/benchmark/CapabilityStrengthVsMovement';
 import RisksOpportunitiesCards from '../components/workspace/RisksOpportunitiesCards';
-import SignalDetailDrawer from '../components/signals/SignalDetailDrawer';
+import SignalDetailModal from '../components/signals/SignalDetailModal';
 import type { SignalFeedItem, CapabilityCount, SignalsFeedFilters } from '../types/intelligence';
 import { useScorecard, useScorecardExplain, useRecomputeScorecard } from '../hooks/useScorecard';
 import type { ScorecardPeriodType } from '../types/scorecard';
 import { useCrawlStatus } from '../hooks/useCrawlStatus';
+import { useLastCompletedCrawl } from '../hooks/useCrawlRuns';
 import { DimensionScoreGrid } from '../components/scorecard/DimensionScoreGrid';
 import { ExplainabilityDrawer } from '../components/scorecard/ExplainabilityDrawer';
-import { ScorecardSignalDrawer } from '../components/scorecard/ScorecardSignalDrawer';
+import { ScorecardSignalModal } from '../components/scorecard/ScorecardSignalModal';
 
 type SummaryPeriod = '30d' | '90d';
 
@@ -42,6 +43,7 @@ export default function CompetitorWorkspacePage() {
   const [capabilityExplainMode, setCapabilityExplainMode] = useState<'panel' | 'capability' | null>(null);
   const [selectedCapabilityDetail, setSelectedCapabilityDetail] = useState<CompetitorBenchmarkDetail | null>(null);
 
+  const { lastCrawl } = useLastCompletedCrawl();
   const summarize = useSummarizeCompetitor(data?.competitor_profile.id ?? '');
   const { data: signalsFeed } = useSignalsFeed({
     ...signalsFilters,
@@ -285,6 +287,7 @@ export default function CompetitorWorkspacePage() {
               filters={signalsFilters}
               companies={[]}
               hideCompany
+              lastCrawlStartedAt={lastCrawl?.started_at ?? null}
               onChange={(partial) => setSignalsFilters((prev) => ({ ...prev, ...partial }))}
               onReset={() => setSignalsFilters({ sort_by: 'published_at', page: 1, page_size: 25 })}
             />
@@ -310,7 +313,7 @@ export default function CompetitorWorkspacePage() {
         error={explainError}
         onSelectSignal={(signalId) => { setExplainOpen(false); setSelectedScorecardSignalId(signalId); }}
       />
-      <ScorecardSignalDrawer
+      <ScorecardSignalModal
         signalId={selectedScorecardSignalId}
         onClose={() => setSelectedScorecardSignalId(null)}
       />
@@ -331,7 +334,7 @@ export default function CompetitorWorkspacePage() {
         onSelectSignal={setSelectedScorecardSignalId}
       />
       {selectedSignal && (
-        <SignalDetailDrawer
+        <SignalDetailModal
           item={selectedSignal}
           onClose={() => setSelectedSignal(null)}
         />
