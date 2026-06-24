@@ -31,6 +31,7 @@ from app.models.schedule import ScheduleConfig  # noqa: F401
 from app.models.external_company_view import ExternalCompanyView  # noqa: F401
 from app.models.llm_call import LlmCall  # noqa: F401
 from app.models.llm_model_price import LlmModelPrice  # noqa: F401
+from app.models.app_setting import AppSetting  # noqa: F401
 
 __all__ = [
     "Company",
@@ -69,4 +70,5 @@ __all__ = [
     "ExternalCompanyView",
     "LlmCall",
     "LlmModelPrice",
+    "AppSetting",
 ]
