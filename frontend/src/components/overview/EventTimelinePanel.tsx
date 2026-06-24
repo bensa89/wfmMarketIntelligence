@@ -117,6 +117,7 @@ function EventRow({ event, isPast, onSelect, logoMap }: EventRowProps) {
 
 const PAST_COLLAPSED_LIMIT = 2;
 const UPCOMING_NEAR_DAYS = 30;
+const UPCOMING_DASHBOARD_LIMIT = 6;
 
 interface EventTimelinePanelProps {
   fullView?: boolean;
@@ -145,7 +146,9 @@ export default function EventTimelinePanel({ fullView = false }: EventTimelinePa
   const past = data?.past ?? [];
   const hasEvents = upcoming.length > 0 || past.length > 0;
   const visiblePast = fullView && pastExpanded ? past : past.slice(0, PAST_COLLAPSED_LIMIT);
-  const upcomingNear = fullView ? upcoming : upcoming.filter((e) => daysFromNow(e.event_date) <= UPCOMING_NEAR_DAYS);
+  const upcomingNear = fullView
+    ? upcoming
+    : upcoming.filter((e) => daysFromNow(e.event_date) <= UPCOMING_NEAR_DAYS).slice(0, UPCOMING_DASHBOARD_LIMIT);
 
   return (
     <>
@@ -212,16 +215,7 @@ export default function EventTimelinePanel({ fullView = false }: EventTimelinePa
                 </div>
               )}
 
-              {/* TODAY divider */}
-              <div className="flex items-center gap-2 my-3">
-                <span className="text-[10px] font-bold text-red-500 uppercase tracking-wide">Heute</span>
-                <span className="text-[10px] text-slate-400">
-                  {new Date().toLocaleDateString('de-DE', { day: 'numeric', month: 'short', year: 'numeric' })}
-                </span>
-                <div className="flex-1 border-t border-slate-100" />
-              </div>
-
-              {/* Upcoming events — below Heute */}
+              {/* Upcoming events */}
               {upcoming.length === 0 ? (
                 <div className="text-[11px] text-slate-300 italic pb-2">Keine bevorstehenden Events</div>
               ) : (

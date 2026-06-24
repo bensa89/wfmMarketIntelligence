@@ -35,7 +35,7 @@ def test_get_latest_returns_most_recent(client, db_session):
 def test_generate_creates_and_returns_briefing(client):
     with patch(
         "app.routers.intelligence_briefing.generate_intelligence_briefing",
-        return_value=("## Strategischer Überblick\nTest.", 12, 9),
+        return_value=("## Strategischer Überblick\nTest.", [], 12, 9),
     ):
         response = client.post("/api/intelligence/briefing/generate")
 
@@ -51,7 +51,7 @@ def test_generate_creates_and_returns_briefing(client):
 def test_generate_persists_briefing(client, db_session):
     with patch(
         "app.routers.intelligence_briefing.generate_intelligence_briefing",
-        return_value=("Briefing content", 3, 2),
+        return_value=("Briefing content", [], 3, 2),
     ):
         client.post("/api/intelligence/briefing/generate")
 

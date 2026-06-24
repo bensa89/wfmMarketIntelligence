@@ -27,14 +27,6 @@ CAPABILITIES: dict[str, CapabilityMeta] = {
         "default_evolution_band": "product",
         "description": "Creating and optimizing shift plans for frontline workers",
     },
-    "intraday_management": {
-        "key": "intraday_management",
-        "label": "Intraday Management",
-        "visibility_to_user": True,
-        "strategic_weight": 8,
-        "default_evolution_band": "product",
-        "description": "Real-time adjustment of staffing to match live demand",
-    },
     "time_attendance": {
         "key": "time_attendance",
         "label": "Time & Attendance",
@@ -58,14 +50,6 @@ CAPABILITIES: dict[str, CapabilityMeta] = {
         "strategic_weight": 6,
         "default_evolution_band": "product",
         "description": "Employee-facing tools for availability, shift swaps and requests",
-    },
-    "manager_experience": {
-        "key": "manager_experience",
-        "label": "Manager Experience",
-        "visibility_to_user": True,
-        "strategic_weight": 7,
-        "default_evolution_band": "product",
-        "description": "Tooling and UX specifically designed for frontline managers",
     },
     "mobile_experience": {
         "key": "mobile_experience",

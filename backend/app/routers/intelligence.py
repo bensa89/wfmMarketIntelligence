@@ -178,27 +178,29 @@ def get_overview(db: Session = Depends(get_db)) -> dict:
             })
         return result
 
-    heatmap_rows = (
-        db.query(
-            SignalAssessment.company_id,
-            SignalAssessment.capability_primary,
-            func.avg(SignalAssessment.movement_score).label("avg_score"),
+    def _heatmap(cutoff: datetime) -> list[dict]:
+        heatmap_rows = (
+            db.query(
+                SignalAssessment.company_id,
+                SignalAssessment.capability_primary,
+                func.avg(SignalAssessment.movement_score).label("avg_score"),
+            )
+            .join(Signal, SignalAssessment.signal_id == Signal.id)
+            .filter(Signal.created_at >= cutoff, SignalAssessment.capability_primary.isnot(None))
+            .group_by(SignalAssessment.company_id, SignalAssessment.capability_primary)
+            .all()
         )
-        .join(Signal, SignalAssessment.signal_id == Signal.id)
-        .filter(Signal.created_at >= cutoff_30d, SignalAssessment.capability_primary.isnot(None))
-        .group_by(SignalAssessment.company_id, SignalAssessment.capability_primary)
-        .all()
-    )
-    heatmap: dict[str, dict] = {}
-    for row in heatmap_rows:
-        company = db.query(Company).filter(Company.id == row.company_id).first()
-        if not company:
-            continue
-        key = company.id
-        if key not in heatmap:
-            heatmap[key] = {"company_id": company.id, "company_name": company.name, "capabilities": {}}
-        if row.capability_primary:
-            heatmap[key]["capabilities"][row.capability_primary] = round(row.avg_score or 0, 1)
+        heatmap: dict[str, dict] = {}
+        for row in heatmap_rows:
+            company = db.query(Company).filter(Company.id == row.company_id).first()
+            if not company:
+                continue
+            key = company.id
+            if key not in heatmap:
+                heatmap[key] = {"company_id": company.id, "company_name": company.name, "capabilities": {}}
+            if row.capability_primary:
+                heatmap[key]["capabilities"][row.capability_primary] = round(row.avg_score or 0, 1)
+        return list(heatmap.values())
 
     strength_rank = case(
         (SignalAssessment.movement_strength == MovementStrength.market_shaping, 0),
@@ -330,7 +332,8 @@ def get_overview(db: Session = Depends(get_db)) -> dict:
     return {
         "top_movers_7d": _top_movers(cutoff_7d),
         "top_movers_30d": _top_movers(cutoff_30d),
-        "capability_heatmap": list(heatmap.values()),
+        "capability_heatmap_7d": _heatmap(cutoff_7d),
+        "capability_heatmap_30d": _heatmap(cutoff_30d),
         "recent_market_shaping_7d": [
             _signal_feed_item(a.signal, a) for a in market_shaping_7d if a.signal
         ],

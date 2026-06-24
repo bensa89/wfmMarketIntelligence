@@ -11,11 +11,9 @@ export interface CapabilityMeta {
 export const CAPABILITIES: Record<string, CapabilityMeta> = {
   demand_forecasting: { key: 'demand_forecasting', label: 'Demand Forecasting', visibilityToUser: true, strategicWeight: 9, description: 'Predicting staffing demand based on historical data', icon: 'TrendingUp' },
   shift_scheduling: { key: 'shift_scheduling', label: 'Shift Scheduling', visibilityToUser: true, strategicWeight: 10, description: 'Creating and optimizing shift plans', icon: 'Calendar' },
-  intraday_management: { key: 'intraday_management', label: 'Intraday Management', visibilityToUser: true, strategicWeight: 8, description: 'Real-time adjustment of staffing to match live demand', icon: 'Activity' },
   time_attendance: { key: 'time_attendance', label: 'Time & Attendance', visibilityToUser: true, strategicWeight: 7, description: 'Tracking worked hours, absences and compliance', icon: 'CheckCircle2' },
   compliance_rules: { key: 'compliance_rules', label: 'Compliance & Labor Rules', visibilityToUser: true, strategicWeight: 8, description: 'Enforcing labor law and scheduling policies', icon: 'ShieldCheck' },
   employee_self_service: { key: 'employee_self_service', label: 'Employee Self-Service', visibilityToUser: true, strategicWeight: 6, description: 'Employee tools for availability and shift swaps', icon: 'Users' },
-  manager_experience: { key: 'manager_experience', label: 'Manager Experience', visibilityToUser: true, strategicWeight: 7, description: 'Tooling for frontline managers', icon: 'Briefcase' },
   mobile_experience: { key: 'mobile_experience', label: 'Mobile Experience', visibilityToUser: true, strategicWeight: 6, description: 'Mobile apps for deskless workers', icon: 'Smartphone' },
   analytics_insights: { key: 'analytics_insights', label: 'Analytics & Insights', visibilityToUser: true, strategicWeight: 8, description: 'Reporting dashboards and workforce analytics', icon: 'BarChart3' },
   ai_copilot: { key: 'ai_copilot', label: 'AI Copilot', visibilityToUser: true, strategicWeight: 9, description: 'AI-assisted scheduling and conversational interfaces', icon: 'Sparkles' },

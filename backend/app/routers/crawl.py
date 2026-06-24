@@ -340,7 +340,7 @@ def _run_crawl_background(
                     from app.models.intelligence_briefing import IntelligenceBriefing
 
                     logger.info("Post-crawl: generating intelligence briefing [run=%s]", crawl_run_id)
-                    content, signal_count, assessment_count = generate_intelligence_briefing(thread_db)
+                    content, recommendations, signal_count, assessment_count = generate_intelligence_briefing(thread_db)
                     curated_risks, curated_opportunities, curated_watchpoints = curate_risks_opportunities_watchpoints(thread_db)
                     intel_briefing = IntelligenceBriefing(
                         content=content,
@@ -350,6 +350,7 @@ def _run_crawl_background(
                         curated_risks=curated_risks or None,
                         curated_opportunities=curated_opportunities or None,
                         curated_watchpoints=curated_watchpoints or None,
+                        curated_recommendations=recommendations or None,
                     )
                     thread_db.add(intel_briefing)
                     thread_db.commit()

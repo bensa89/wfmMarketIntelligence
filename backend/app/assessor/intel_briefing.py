@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 from datetime import datetime, timedelta, timezone
 from sqlalchemy.orm import Session
 
@@ -13,10 +14,15 @@ from app.models.competitor_summary import CompetitorSummary, PeriodType
 logger = logging.getLogger(__name__)
 
 
-def _build_prompt(signals: list, assessments: list, context: dict) -> str:
+def _build_prompt(
+    signals: list,
+    assessments: list,
+    context: dict,
+    period_days: int = 7,
+    candidate_pool: list | None = None,
+    candidates_fallback_days: int | None = None,
+) -> str:
     company_names = sorted({s["company"] for s in signals})
-    strong = [a for a in assessments if a["movement_strength"] in ("market_shaping", "strong")]
-    strong.sort(key=lambda a: a["movement_score"] or 0, reverse=True)
 
     cap_counts: dict[str, int] = {}
     for a in assessments:
@@ -24,11 +30,16 @@ def _build_prompt(signals: list, assessments: list, context: dict) -> str:
             cap_counts[a["capability_primary"]] = cap_counts.get(a["capability_primary"], 0) + 1
     top_caps = sorted(cap_counts.items(), key=lambda x: x[1], reverse=True)[:5]
 
+    pool = candidate_pool if candidate_pool is not None else assessments
+    strong = [a for a in pool if a["movement_strength"] in ("market_shaping", "strong")]
+    strong.sort(key=lambda a: a["movement_score"] or 0, reverse=True)
+    candidates = strong[:8] if strong else pool[:8]
+
     lines = [
         "Du bist ein strategischer Market Intelligence Analyst für ein WFM-Softwareunternehmen.",
         "Analysiere die folgenden Wettbewerbsbewegungen seit dem letzten Crawl und erstelle ein strukturiertes Briefing.",
         "",
-        f"Zeitraum: letzte 7 Tage",
+        f"Zeitraum: letzte {period_days} Tage",
         f"Neue Signale: {len(signals)}",
         f"Bewertete Signale: {len(assessments)}",
         f"Beteiligte Unternehmen: {', '.join(company_names)}",
@@ -42,10 +53,17 @@ def _build_prompt(signals: list, assessments: list, context: dict) -> str:
             "",
         ]
 
-    if strong:
-        lines += ["Starke / marktprägende Bewegungen:"]
-        for a in strong[:8]:
-            lines.append(f"  [{a['company']}] {a['title']}")
+    if candidates:
+        label = "Kandidaten-Signale für Handlungsempfehlungen (signal_id verwenden, nicht erfinden):"
+        if candidates_fallback_days:
+            label = (
+                f"Keine neuen Signale in den letzten {period_days} Tagen. "
+                f"Kandidaten-Signale für Handlungsempfehlungen aus den letzten {candidates_fallback_days} Tagen "
+                "(signal_id verwenden, nicht erfinden; im Overview NICHT als 'neu' bezeichnen):"
+            )
+        lines += [label]
+        for a in candidates:
+            lines.append(f"  [signal_id={a['signal_id']}] [{a['company']}] {a['title']}")
             lines.append(f"    Stärke: {a['movement_strength']} | Score: {a['movement_score']} | Capability: {a['capability_primary']}")
             if a["assessment_summary"]:
                 lines.append(f"    Assessment: {a['assessment_summary']}")
@@ -60,19 +78,18 @@ def _build_prompt(signals: list, assessments: list, context: dict) -> str:
         lines.append("")
 
     lines += [
-        "Erstelle exakt dieses Markdown-Dokument. Kein Titel, keine Metadaten, kein Prosa außerhalb der Abschnitte:",
+        "Gib exakt dieses JSON zurück (kein anderer Text, keine Markdown-Codeblöcke):",
+        json.dumps({
+            "overview": "<2-3 Sätze Markdown-Prosa: Welche Wettbewerber bewegen sich wie? Was ist die übergeordnete Stoßrichtung?>",
+            "recommendations": [
+                {"signal_id": "<signal_id aus den Kandidaten oben>", "recommendation": "<konkrete, umsetzbare Maßnahme für unser Produkt- oder GTM-Team>"},
+            ],
+        }, ensure_ascii=False, indent=2),
         "",
-        "## Strategischer Überblick",
-        "[2–3 Sätze: Welche Wettbewerber bewegen sich wie? Was ist die übergeordnete Stoßrichtung?]",
-        "",
-        "## Handlungsempfehlungen",
-        "| Priorität | Signal | Unternehmen | Empfehlung |",
-        "|-----------|--------|-------------|------------|",
-        "| #1 | ... | ... | ... |",
-        "| #2 | ... | ... | ... |",
-        "| #3 | ... | ... | ... |",
-        "",
-        "Maximal 3 Handlungsempfehlungen. Fokus auf konkrete, umsetzbare Maßnahmen für unser Produkt- oder GTM-Team.",
+        "Regeln:",
+        "- Maximal 3 Einträge in 'recommendations', sortiert nach Priorität (wichtigste zuerst).",
+        "- 'signal_id' muss exakt einer der oben angegebenen signal_id-Werte sein. Keine erfundenen IDs.",
+        "- 'overview' ist reiner Fließtext ohne Überschrift.",
     ]
     return "\n".join(lines)
 
@@ -200,7 +217,6 @@ def curate_risks_opportunities_watchpoints(db: Session) -> tuple[list, list, lis
     prompt = _build_curation_prompt(all_items, context)
     try:
         raw = call_llm(prompt, max_tokens=4096, caller="assessor:intel-briefing:curation")
-        import re
         raw = re.sub(r"^```(?:json)?\s*", "", raw.strip(), flags=re.IGNORECASE)
         raw = re.sub(r"\s*```$", "", raw)
         data = json.loads(raw)
@@ -210,10 +226,7 @@ def curate_risks_opportunities_watchpoints(db: Session) -> tuple[list, list, lis
         return all_risks[:4], all_opportunities[:4], all_watchpoints[:4]
 
 
-def generate_intelligence_briefing(db: Session) -> tuple[str, int, int]:
-    """Returns (content, signal_count, assessment_count)."""
-    since = datetime.now(timezone.utc) - timedelta(days=7)
-
+def _fetch_signals_and_assessments(db: Session, since: datetime) -> tuple[list[dict], list[dict]]:
     signals_rows = (
         db.query(Signal, Company.name)
         .join(Company, Company.id == Signal.company_id)
@@ -224,7 +237,7 @@ def generate_intelligence_briefing(db: Session) -> tuple[str, int, int]:
 
     signal_ids = [s.id for s, _ in signals_rows]
     assessments_rows = (
-        db.query(SignalAssessment, Signal.title, Company.name)
+        db.query(SignalAssessment, Signal.title, Company)
         .join(Signal, Signal.id == SignalAssessment.signal_id)
         .join(Company, Company.id == SignalAssessment.company_id)
         .filter(SignalAssessment.signal_id.in_(signal_ids))
@@ -238,7 +251,11 @@ def generate_intelligence_briefing(db: Session) -> tuple[str, int, int]:
     ]
     assessments_data = [
         {
-            "company": cname,
+            "signal_id": a.signal_id,
+            "company": company.name,
+            "company_id": company.id,
+            "company_slug": company.slug,
+            "logo_path": company.logo_path,
             "title": title,
             "movement_strength": a.movement_strength.value if a.movement_strength else None,
             "movement_score": a.movement_score,
@@ -246,8 +263,24 @@ def generate_intelligence_briefing(db: Session) -> tuple[str, int, int]:
             "assessment_summary": a.assessment_summary,
             "implication_for_us": a.implication_for_us,
         }
-        for a, title, cname in assessments_rows
+        for a, title, company in assessments_rows
     ]
+    return signals_data, assessments_data
+
+
+def generate_intelligence_briefing(db: Session) -> tuple[str, list, int, int]:
+    """Returns (content, recommendations, signal_count, assessment_count)."""
+    period_days = 7
+    now = datetime.now(timezone.utc)
+    signals_data, assessments_data = _fetch_signals_and_assessments(db, now - timedelta(days=period_days))
+
+    candidate_pool = assessments_data
+    candidates_fallback_days: int | None = None
+    if not assessments_data:
+        candidates_fallback_days = 30
+        _, candidate_pool = _fetch_signals_and_assessments(db, now - timedelta(days=candidates_fallback_days))
+
+    assessments_by_signal_id = {a["signal_id"]: a for a in candidate_pool}
 
     ctx_record = db.query(InternalCompanyContext).first()
     context = {}
@@ -257,6 +290,39 @@ def generate_intelligence_briefing(db: Session) -> tuple[str, int, int]:
             "strategic_priorities": ctx_record.strategic_priorities or [],
         }
 
-    prompt = _build_prompt(signals_data, assessments_data, context)
-    content = call_llm(prompt, max_tokens=2048, caller="assessor:intel-briefing:generate")
-    return content, len(signals_data), len(assessments_data)
+    prompt = _build_prompt(
+        signals_data,
+        assessments_data,
+        context,
+        period_days=period_days,
+        candidate_pool=candidate_pool,
+        candidates_fallback_days=candidates_fallback_days,
+    )
+    raw = call_llm(prompt, max_tokens=2048, caller="assessor:intel-briefing:generate")
+
+    overview = raw.strip()
+    recommendations: list[dict] = []
+    try:
+        cleaned = re.sub(r"^```(?:json)?\s*", "", raw.strip(), flags=re.IGNORECASE)
+        cleaned = re.sub(r"\s*```$", "", cleaned)
+        data = json.loads(cleaned)
+        overview = data.get("overview", "").strip()
+        for i, rec in enumerate(data.get("recommendations", [])[:3]):
+            source = assessments_by_signal_id.get(rec.get("signal_id"))
+            if not source:
+                continue
+            recommendations.append({
+                "priority": i + 1,
+                "signal_id": source["signal_id"],
+                "title": source["title"],
+                "recommendation": rec.get("recommendation", ""),
+                "company_id": source["company_id"],
+                "company_name": source["company"],
+                "company_slug": source["company_slug"],
+                "logo_path": source["logo_path"],
+            })
+    except Exception as e:
+        logger.warning("Intel briefing JSON parse failed, falling back to raw overview: %s", e)
+
+    content = f"## Strategischer Überblick\n{overview}" if overview else ""
+    return content, recommendations, len(signals_data), len(assessments_data)

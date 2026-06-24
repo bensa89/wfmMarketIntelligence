@@ -24,7 +24,7 @@ def get_latest(db: Session = Depends(get_db)):
 
 @router.post("/generate", response_model=IntelligenceBriefingRead)
 def generate(db: Session = Depends(get_db)):
-    content, signal_count, assessment_count = generate_intelligence_briefing(db)
+    content, recommendations, signal_count, assessment_count = generate_intelligence_briefing(db)
     curated_risks, curated_opportunities, curated_watchpoints = curate_risks_opportunities_watchpoints(db)
     briefing = IntelligenceBriefing(
         content=content,
@@ -34,6 +34,7 @@ def generate(db: Session = Depends(get_db)):
         curated_risks=curated_risks or None,
         curated_opportunities=curated_opportunities or None,
         curated_watchpoints=curated_watchpoints or None,
+        curated_recommendations=recommendations or None,
     )
     db.add(briefing)
     db.commit()

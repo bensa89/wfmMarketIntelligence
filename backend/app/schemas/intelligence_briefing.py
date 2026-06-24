@@ -14,3 +14,4 @@ class IntelligenceBriefingRead(BaseModel):
     curated_risks: Optional[list] = None
     curated_opportunities: Optional[list] = None
     curated_watchpoints: Optional[list] = None
+    curated_recommendations: Optional[list] = None

@@ -15,3 +15,4 @@ class IntelligenceBriefing(Base):
     curated_risks = Column(JSON, nullable=True)
     curated_opportunities = Column(JSON, nullable=True)
     curated_watchpoints = Column(JSON, nullable=True)
+    curated_recommendations = Column(JSON, nullable=True)

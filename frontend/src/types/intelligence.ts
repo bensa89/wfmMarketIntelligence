@@ -79,7 +79,8 @@ export interface HeatmapRow {
 export interface OverviewResponse {
   top_movers_7d: CompetitorMover[];
   top_movers_30d: CompetitorMover[];
-  capability_heatmap: HeatmapRow[];
+  capability_heatmap_7d: HeatmapRow[];
+  capability_heatmap_30d: HeatmapRow[];
   recent_market_shaping_7d: SignalFeedItem[];
   recent_market_shaping_30d: SignalFeedItem[];
   recent_market_shaping_90d: SignalFeedItem[];
@@ -175,12 +176,24 @@ export interface SignalsFeedFilters {
   page_size?: number;
 }
 
+export interface BriefingRecommendation {
+  priority: number;
+  signal_id: string;
+  title: string;
+  recommendation: string;
+  company_id?: string;
+  company_name?: string;
+  company_slug?: string;
+  logo_path?: string | null;
+}
+
 export interface IntelligenceBriefing {
   id: string;
   content: string;
   signal_count: number;
   assessment_count: number;
   generated_at: string;
+  curated_recommendations?: BriefingRecommendation[] | null;
 }
 
 interface EventAttendee {

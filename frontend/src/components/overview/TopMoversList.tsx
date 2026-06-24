@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { HelpCircle } from 'lucide-react';
 import type { CompetitorMover } from '../../types/intelligence';
 import { getCapabilityLabel } from '../../constants/capabilities';
 import CompanyLogo from '../CompanyLogo';
+import { TopMoversInfoDrawer } from './TopMoversInfoDrawer';
 
 interface Props {
   movers7d: CompetitorMover[];
@@ -11,12 +13,23 @@ interface Props {
 
 export default function TopMoversList({ movers7d, movers30d }: Props) {
   const [period, setPeriod] = useState<'7d' | '30d'>('7d');
+  const [infoOpen, setInfoOpen] = useState(false);
   const movers = period === '7d' ? movers7d : movers30d;
 
   return (
     <div className="bg-white border border-slate-200 rounded-xl p-4">
+      <TopMoversInfoDrawer open={infoOpen} onClose={() => setInfoOpen(false)} />
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-[13px] font-semibold text-slate-700">Top Movers</h3>
+        <div className="flex items-center gap-1.5">
+          <h3 className="text-[13px] font-semibold text-slate-700">Top Movers</h3>
+          <button
+            onClick={() => setInfoOpen(true)}
+            className="p-0.5 rounded hover:bg-slate-100 transition-colors"
+            title="Erklärung"
+          >
+            <HelpCircle className="w-3.5 h-3.5 text-slate-400" />
+          </button>
+        </div>
         <div className="flex gap-1">
           {(['7d', '30d'] as const).map((p) => (
             <button

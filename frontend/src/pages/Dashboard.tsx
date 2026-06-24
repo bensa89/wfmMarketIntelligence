@@ -109,7 +109,7 @@ export default function Dashboard() {
         )}
 
         {/* Zone 1: Übersicht */}
-        <IntelligenceBriefingPanel />
+        <IntelligenceBriefingPanel onSelectSignal={setSelectedRiskSignalId} />
         {overviewData && lastCrawlSummary && (
           <DashboardKPIRow overview={overviewData} lastCrawl={lastCrawlSummary} />
         )}
@@ -132,7 +132,7 @@ export default function Dashboard() {
               <TopMoversList movers7d={overviewData.top_movers_7d} movers30d={overviewData.top_movers_30d} />
             </div>
             <div className="col-span-2">
-              <CapabilityHeatmapV2 rows={overviewData.capability_heatmap} />
+              <CapabilityHeatmapV2 rows7d={overviewData.capability_heatmap_7d} rows30d={overviewData.capability_heatmap_30d} />
             </div>
           </div>
         )}

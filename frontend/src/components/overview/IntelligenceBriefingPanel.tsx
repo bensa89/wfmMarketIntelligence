@@ -1,6 +1,7 @@
 import { RefreshCw } from 'lucide-react';
 import { useLatestIntelligenceBriefing, useGenerateIntelligenceBriefing } from '../../hooks/useIntelligenceBriefing';
 import MarkdownViewer from '../MarkdownViewer';
+import CompanyLogo from '../CompanyLogo';
 import { ApiError } from '../../api/client';
 
 function formatTimeAgo(isoString: string): string {
@@ -15,7 +16,11 @@ function formatTimeAgo(isoString: string): string {
   return `vor ${days} Tagen`;
 }
 
-export default function IntelligenceBriefingPanel() {
+interface Props {
+  onSelectSignal?: (signalId: string) => void;
+}
+
+export default function IntelligenceBriefingPanel({ onSelectSignal }: Props) {
   const { data: briefing, isLoading } = useLatestIntelligenceBriefing();
   const generate = useGenerateIntelligenceBriefing();
 
@@ -68,6 +73,44 @@ export default function IntelligenceBriefingPanel() {
             content={briefing.content}
             className="prose-headings:mt-2 prose-headings:mb-1 prose-p:my-1 prose-hr:my-2"
           />
+          {briefing.curated_recommendations && briefing.curated_recommendations.length > 0 && (
+            <div className="mt-3">
+              <h4 className="text-[12px] font-semibold text-slate-900 mb-2">Handlungsempfehlungen</h4>
+              <ul className="space-y-2">
+                {briefing.curated_recommendations.map((rec) => {
+                  const clickable = !!onSelectSignal;
+                  return (
+                    <li
+                      key={rec.signal_id}
+                      onClick={clickable ? () => onSelectSignal!(rec.signal_id) : undefined}
+                      className={`flex gap-2 p-1.5 -mx-1.5 rounded ${clickable ? 'cursor-pointer hover:bg-slate-50 group' : ''}`}
+                    >
+                      <span className="flex-shrink-0 text-[10px] font-semibold text-slate-400 mt-0.5">
+                        #{rec.priority}
+                      </span>
+                      <div className="flex-1">
+                        <span className={`text-[12px] text-slate-700 leading-snug ${clickable ? 'group-hover:underline' : ''}`}>
+                          {rec.recommendation}
+                        </span>
+                        {rec.company_name && rec.company_slug && (
+                          <div className="flex items-center gap-1 mt-0.5">
+                            <CompanyLogo
+                              name={rec.company_name}
+                              slug={rec.company_slug}
+                              companyId={rec.company_id}
+                              logo_path={rec.logo_path}
+                              size="sm"
+                            />
+                            <span className="text-[10px] text-slate-400">{rec.company_name} · {rec.title}</span>
+                          </div>
+                        )}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
         </div>
       ) : (
         <p className="text-[12px] text-slate-400">
