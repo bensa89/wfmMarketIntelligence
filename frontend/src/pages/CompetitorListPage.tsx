@@ -39,11 +39,11 @@ export default function CompetitorListPage() {
   }
 
   return (
-    <div className="p-6">
+    <div className="p-4 md:p-6">
       <h1 className="text-2xl font-bold mb-6">Competitors & Market Sources</h1>
 
       <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
           <div className="flex items-center gap-1.5">
             <h2 className="text-base font-semibold text-slate-900">Capability Strength Matrix</h2>
             <button
@@ -54,7 +54,7 @@ export default function CompetitorListPage() {
               <HelpCircle className="w-4 h-4 text-slate-400" />
             </button>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
             <div className="flex gap-1">
               {([
                 { value: '30d', label: '30d', title: 'Recency Focus: letzte 30 Tage gewichtet stärker' },
