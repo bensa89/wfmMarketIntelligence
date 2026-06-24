@@ -86,12 +86,16 @@ def _is_article_url(url: str, seed_url: str = "") -> bool:
 
 
 def _is_listing_page(url: str) -> bool:
-    """Return True if URL looks like a category/listing page rather than an article."""
+    """Return True if URL looks like a category/listing page or site-navigation page
+    (about, contact, legal, ...) rather than an article."""
     path = urlparse(url).path.rstrip("/")
     if not path:
         return True
+    segments = [s for s in path.split("/") if s]
     last_segment = path.rsplit("/", 1)[-1]
-    return last_segment in _CONTENT_SEGMENTS
+    if last_segment in _CONTENT_SEGMENTS:
+        return True
+    return any(seg in _NAVIGATION_SEGMENTS for seg in segments)
 
 
 def _is_article_content(html: str) -> bool:

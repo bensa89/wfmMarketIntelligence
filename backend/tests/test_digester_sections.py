@@ -1,8 +1,8 @@
 from app.digester.sections import SECTIONS
 
 
-def test_sections_has_five_entries():
-    assert len(SECTIONS) == 5
+def test_sections_has_four_entries():
+    assert len(SECTIONS) == 4
 
 
 def test_section_keys_are_unique():
@@ -19,10 +19,11 @@ def test_all_sections_have_required_fields():
         assert isinstance(s.use_source_type_filter, bool)
 
 
-def test_competitor_news_uses_source_type_filter():
-    news = next(s for s in SECTIONS if s.key == "competitor_news")
-    assert news.use_source_type_filter is True
-    assert news.signal_types == []
+def test_competitors_section_uses_source_type_filter_and_is_competitor_only():
+    competitors = next(s for s in SECTIONS if s.key == "competitors")
+    assert competitors.use_source_type_filter is True
+    assert competitors.competitor_only is True
+    assert competitors.signal_types == ["product_update", "partnership", "hiring_signal"]
 
 
 def test_events_section_signal_types():

@@ -4,6 +4,7 @@ from app.crawler.discovery import (
     _is_article_url,
     _is_article_content,
     _is_child_path,
+    _is_listing_page,
     _extract_internal_links,
     discover_and_crawl,
 )
@@ -108,6 +109,26 @@ def test_is_child_path_deeper_child():
         )
         is True
     )
+
+
+def test_is_listing_page_true_for_root():
+    assert _is_listing_page("https://example.com/") is True
+
+
+def test_is_listing_page_true_for_content_segment():
+    assert _is_listing_page("https://example.com/blog") is True
+    assert _is_listing_page("https://example.com/news") is True
+
+
+def test_is_listing_page_true_for_navigation_segment():
+    # Regression: generic site-navigation links (about, contact, legal, ...) must
+    # not be queued as crawl candidates for listing-type sources.
+    assert _is_listing_page("https://example.com/about") is True
+    assert _is_listing_page("https://example.com/de/contact") is True
+
+
+def test_is_listing_page_false_for_article_like_path():
+    assert _is_listing_page("https://example.com/blog/2024/04/article-one") is False
 
 
 def test_is_article_content_with_article_tag():

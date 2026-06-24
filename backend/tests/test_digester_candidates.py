@@ -63,11 +63,12 @@ def test_query_candidates_excludes_signal_outside_week(db_session, seeded):
 
 def test_query_candidates_filters_by_signal_type(db_session, seeded):
     _, _, _, signal, _ = seeded
-    # ai_announcement is in new_trends, not in competitor_activities
+    # ai_announcement is in new_trends, not in market_movements, and market_movements
+    # has no source-type fallback filter — so it must not match here.
     section_news = next(s for s in SECTIONS if s.key == "new_trends")
-    section_comp = next(s for s in SECTIONS if s.key == "competitor_activities")
+    section_other = next(s for s in SECTIONS if s.key == "market_movements")
     assert any(r.id == signal.id for r in query_candidates(db_session, section_news, date(2026, 5, 5), date(2026, 5, 11)))
-    assert not any(r.id == signal.id for r in query_candidates(db_session, section_comp, date(2026, 5, 5), date(2026, 5, 11)))
+    assert not any(r.id == signal.id for r in query_candidates(db_session, section_other, date(2026, 5, 5), date(2026, 5, 11)))
 
 
 def test_query_candidates_excludes_given_signal_ids(db_session, seeded):
@@ -77,12 +78,44 @@ def test_query_candidates_excludes_given_signal_ids(db_session, seeded):
     assert not any(r.id == signal.id for r in results)
 
 
-def test_query_candidates_competitor_news_uses_source_type(db_session, seeded):
+def test_query_candidates_competitors_section_uses_source_type_or_filter(db_session, seeded):
     _, _, _, signal, _ = seeded
-    # seeded source is SourceType.news → should appear in competitor_news
-    section = next(s for s in SECTIONS if s.key == "competitor_news")
+    # signal_type is ai_announcement (not in competitors.signal_types), but the seeded
+    # source is SourceType.news -> the OR(signal_type, source_type) filter should still match.
+    section = next(s for s in SECTIONS if s.key == "competitors")
     results = query_candidates(db_session, section, date(2026, 5, 5), date(2026, 5, 11))
     assert any(r.id == signal.id for r in results)
+
+
+def test_query_candidates_competitors_section_excludes_market_source(db_session):
+    # competitor_only=True must exclude signals from market_source companies even
+    # though their source_type would otherwise satisfy the OR-source-type-filter.
+    market_company = Company(name="Industry Watch", slug="industry-watch", type=CompanyType.market_source)
+    db_session.add(market_company)
+    db_session.commit()
+
+    source = Source(company_id=market_company.id, url="https://industry-watch.com", source_type=SourceType.news)
+    db_session.add(source)
+    db_session.commit()
+
+    doc = Document(source_id=source.id, url="https://industry-watch.com/article", content_hash="h_market")
+    db_session.add(doc)
+    db_session.commit()
+
+    signal = Signal(
+        document_id=doc.id,
+        company_id=market_company.id,
+        title="Market Trend",
+        signal_type=SignalType.ai_announcement,
+        relevance_score=0.7,
+        created_at=datetime(2026, 5, 5, 10, 0, tzinfo=timezone.utc),
+    )
+    db_session.add(signal)
+    db_session.commit()
+
+    section = next(s for s in SECTIONS if s.key == "competitors")
+    results = query_candidates(db_session, section, date(2026, 5, 5), date(2026, 5, 11))
+    assert not any(r.id == signal.id for r in results)
 
 
 def test_build_candidate_dict_structure(db_session, seeded):

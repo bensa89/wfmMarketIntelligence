@@ -10,6 +10,26 @@ from app.crawler.extractor import (
 from bs4 import BeautifulSoup
 
 
+def _assessment_json(**overrides) -> str:
+    import json
+
+    base = {
+        "capability_primary": "ai_copilot",
+        "capability_secondary": [],
+        "signal_class": "weak_signal",
+        "evidence_strength": 2,
+        "visibility_impact": "low",
+        "strategic_intent_guess": "Unclear.",
+        "gameplay_tags": [],
+        "assessment_summary": "Minor update.",
+        "implication_for_us": "Low impact.",
+        "watch_items": [],
+        "confidence": 0.5,
+    }
+    base.update(overrides)
+    return json.dumps(base)
+
+
 def test_fetch_url_returns_html_on_success():
     mock_response = MagicMock()
     mock_response.status_code = 200
@@ -94,14 +114,23 @@ def test_run_crawl_source_saves_new_document(db_session):
     db_session.commit()
 
     mock_fetch = MagicMock(
-        return_value=MagicMock(
-            html="<html><head><title>Test</title></head><body><p>New content</p></body></html>",
+        return_value=FetchResult(
+            html="<html><head><title>Test</title></head><body><p>"
+            + "New content for the pipe source. " * 10
+            + "</p></body></html>",
             final_url="https://atoss.com/pipe",
             status_code=200,
         )
     )
 
-    with patch("app.crawler.pipeline.fetch_url", mock_fetch):
+    with (
+        patch("app.crawler.pipeline.fetch_url", mock_fetch),
+        patch("app.crawler.pipeline.fetch_url_js", return_value=None),
+        patch(
+            "app.crawler.pipeline.discover_and_crawl",
+            return_value={"discovered": 0, "new": 0, "changed": 0, "known": 0},
+        ),
+    ):
         result = run_crawl_source(source, db_session, analyse=False)
 
     assert result["new_documents"] == 1
@@ -126,15 +155,24 @@ def test_run_crawl_source_skips_duplicate(db_session):
     db_session.commit()
 
     html = (
-        "<html><head><title>Same</title></head><body><p>Same content</p></body></html>"
+        "<html><head><title>Same</title></head><body><p>"
+        + "Same content for the dup2 source. " * 10
+        + "</p></body></html>"
     )
     mock_fetch = MagicMock(
-        return_value=MagicMock(
+        return_value=FetchResult(
             html=html, final_url="https://atoss.com/dup2", status_code=200
         )
     )
 
-    with patch("app.crawler.pipeline.fetch_url", mock_fetch):
+    with (
+        patch("app.crawler.pipeline.fetch_url", mock_fetch),
+        patch("app.crawler.pipeline.fetch_url_js", return_value=None),
+        patch(
+            "app.crawler.pipeline.discover_and_crawl",
+            return_value={"discovered": 0, "new": 0, "changed": 0, "known": 0},
+        ),
+    ):
         run_crawl_source(source, db_session, analyse=False)
         result = run_crawl_source(source, db_session, analyse=False)
 
@@ -159,7 +197,7 @@ def test_run_crawl_source_calls_discovery(db_session):
         "<html><head><title>Test</title></head><body><p>New content</p></body></html>"
     )
     mock_fetch = MagicMock(
-        return_value=MagicMock(
+        return_value=FetchResult(
             html=mock_html, final_url="https://atoss.com/disc", status_code=200
         )
     )
@@ -169,6 +207,7 @@ def test_run_crawl_source_calls_discovery(db_session):
 
     with (
         patch("app.crawler.pipeline.fetch_url", mock_fetch),
+        patch("app.crawler.pipeline.fetch_url_js", return_value=None),
         patch("app.crawler.pipeline.discover_and_crawl", mock_discover),
     ):
         run_crawl_source(source, db_session, analyse=False)
@@ -193,7 +232,7 @@ def test_run_crawl_source_calls_progress_callback(db_session):
     db_session.commit()
 
     mock_fetch = MagicMock(
-        return_value=MagicMock(
+        return_value=FetchResult(
             html="<html><head><title>T</title></head><body><p>New content</p></body></html>",
             final_url="https://atoss.com/cb",
             status_code=200,
@@ -204,6 +243,7 @@ def test_run_crawl_source_calls_progress_callback(db_session):
 
     with (
         patch("app.crawler.pipeline.fetch_url", mock_fetch),
+        patch("app.crawler.pipeline.fetch_url_js", return_value=None),
         patch(
             "app.crawler.pipeline.discover_and_crawl",
             return_value={"discovered": 0, "new": 0, "changed": 0, "known": 0},
@@ -273,8 +313,10 @@ def test_run_crawl_source_sets_crawl_status_new(db_session):
     db_session.commit()
 
     mock_fetch = MagicMock(
-        return_value=MagicMock(
-            html="<html><head><title>New</title></head><body><p>Fresh content</p></body></html>",
+        return_value=FetchResult(
+            html="<html><head><title>New</title></head><body><p>"
+            + "Fresh content for the status-new source. " * 10
+            + "</p></body></html>",
             final_url="https://atoss.com/status-new",
             status_code=200,
         )
@@ -282,6 +324,7 @@ def test_run_crawl_source_sets_crawl_status_new(db_session):
 
     with (
         patch("app.crawler.pipeline.fetch_url", mock_fetch),
+        patch("app.crawler.pipeline.fetch_url_js", return_value=None),
         patch(
             "app.crawler.pipeline.discover_and_crawl",
             return_value={"discovered": 0, "new": 0, "changed": 0, "known": 0},
@@ -312,16 +355,19 @@ def test_run_crawl_source_sets_crawl_status_known_on_same_content(db_session):
     db_session.commit()
 
     html = (
-        "<html><head><title>Same</title></head><body><p>Same content</p></body></html>"
+        "<html><head><title>Same</title></head><body><p>"
+        + "Same content for the status-known source. " * 10
+        + "</p></body></html>"
     )
     mock_fetch = MagicMock(
-        return_value=MagicMock(
+        return_value=FetchResult(
             html=html, final_url="https://atoss.com/status-known", status_code=200
         )
     )
 
     with (
         patch("app.crawler.pipeline.fetch_url", mock_fetch),
+        patch("app.crawler.pipeline.fetch_url_js", return_value=None),
         patch(
             "app.crawler.pipeline.discover_and_crawl",
             return_value={"discovered": 0, "new": 0, "changed": 0, "known": 0},
@@ -335,13 +381,8 @@ def test_run_crawl_source_sets_crawl_status_known_on_same_content(db_session):
 
 
 def test_run_crawl_source_sets_crawl_status_changed_on_content_change(db_session):
-    """Test that crawl_status is set to 'changed' when content changes.
-
-    Note: This test verifies the code path exists. The full integration test
-    would require complex database state setup. The 'new' and 'known' cases
-    are covered by the tests above.
-    """
-    from datetime import datetime, timezone
+    """Test that crawl_status is set to 'changed' (and the document content updated)
+    when a second crawl of the same source returns different content."""
     from app.models.company import Company, CompanyType
     from app.models.source import Source, SourceType, CrawlStatus
     from app.models.document import Document
@@ -360,31 +401,59 @@ def test_run_crawl_source_sets_crawl_status_changed_on_content_change(db_session
     db_session.add(source)
     db_session.commit()
 
-    html = "<html><head><title>Test</title></head><body><p>Content for testing</p></body></html>"
-    mock_fetch = MagicMock(
-        return_value=MagicMock(
-            html=html, final_url="https://atoss.com/status-chg", status_code=200
-        )
+    html_v1 = (
+        "<html><head><title>Test</title></head><body><p>"
+        + "Content for testing the status-chg source. " * 10
+        + "</p></body></html>"
+    )
+    html_v2 = (
+        "<html><head><title>Test</title></head><body><p>"
+        + "Different content now for the status-chg source. " * 10
+        + "</p></body></html>"
     )
 
-    # First crawl - creates new document
+    no_discovery = {"discovered": 0, "new": 0, "changed": 0, "known": 0}
+
     with (
-        patch("app.crawler.pipeline.fetch_url", mock_fetch),
         patch(
-            "app.crawler.pipeline.discover_and_crawl",
-            return_value={"discovered": 0, "new": 0, "changed": 0, "known": 0},
+            "app.crawler.pipeline.fetch_url",
+            return_value=FetchResult(
+                html=html_v1, final_url="https://atoss.com/status-chg", status_code=200
+            ),
         ),
+        patch("app.crawler.pipeline.fetch_url_js", return_value=None),
+        patch("app.crawler.pipeline.discover_and_crawl", return_value=no_discovery),
     ):
         run_crawl_source(source, db_session, analyse=False)
 
     db_session.refresh(source)
-
-    # Verify the pipeline runs and sets status to 'new' on first crawl
     assert source.crawl_status == CrawlStatus.new
-    assert source.content_hash is not None
+    first_hash = source.content_hash
+    assert first_hash is not None
+
+    with (
+        patch(
+            "app.crawler.pipeline.fetch_url",
+            return_value=FetchResult(
+                html=html_v2, final_url="https://atoss.com/status-chg", status_code=200
+            ),
+        ),
+        patch("app.crawler.pipeline.fetch_url_js", return_value=None),
+        patch("app.crawler.pipeline.discover_and_crawl", return_value=no_discovery),
+    ):
+        result = run_crawl_source(source, db_session, analyse=False)
+
+    db_session.refresh(source)
+    assert source.crawl_status == CrawlStatus.changed
+    assert source.content_hash != first_hash
+    assert result["new_documents"] == 1
+    doc = db_session.query(Document).filter(Document.source_id == source.id).first()
+    assert "Different content now" in doc.content_markdown
 
 
-def test_run_crawl_source_skips_analysis_on_non_article_page(db_session):
+def test_run_crawl_source_skips_short_content(db_session):
+    """Pages with too little extracted text (below _MIN_CONTENT_WORDS) are skipped
+    entirely — no Document is created and the source is not marked changed."""
     from app.models.company import Company, CompanyType
     from app.models.source import Source, SourceType
     from app.models.document import Document
@@ -407,25 +476,24 @@ def test_run_crawl_source_skips_analysis_on_non_article_page(db_session):
     </body></html>"""
 
     mock_fetch = MagicMock(
-        return_value=MagicMock(
+        return_value=FetchResult(
             html=nav_html, final_url="https://atoss.com/noart", status_code=200
         )
     )
 
     with (
         patch("app.crawler.pipeline.fetch_url", mock_fetch),
+        patch("app.crawler.pipeline.fetch_url_js", return_value=None),
         patch(
             "app.crawler.pipeline.discover_and_crawl",
             return_value={"discovered": 0, "new": 0, "changed": 0, "known": 0},
         ),
-        patch("app.crawler.pipeline._is_article_content", return_value=False),
-        patch("app.analyser.pipeline.analyse_document") as mock_analyse,
     ):
         result = run_crawl_source(source, db_session, analyse=True)
 
-    assert result["new_documents"] == 1
-    assert db_session.query(Document).count() == 1
-    mock_analyse.assert_not_called()
+    assert result["new_documents"] == 0
+    assert result["skipped"] == 1
+    assert db_session.query(Document).count() == 0
 
 
 def test_run_crawl_source_sets_analysis_pending(db_session):
@@ -445,28 +513,28 @@ def test_run_crawl_source_sets_analysis_pending(db_session):
     db_session.commit()
 
     article_html = """<html><head><title>Article</title></head><body>
-        <main><p>This is a real article with enough content to be considered substantive for analysis purposes and contains detailed information.</p></main>
+        <main><p>This is a real article with enough content to be considered substantive
+        for analysis purposes and contains detailed information about the topic at hand,
+        with several additional sentences to comfortably clear the minimum word count.</p></main>
     </body></html>"""
 
     mock_fetch = MagicMock(
-        return_value=MagicMock(
+        return_value=FetchResult(
             html=article_html, final_url="https://atoss.com/art", status_code=200
         )
     )
 
     with (
         patch("app.crawler.pipeline.fetch_url", mock_fetch),
+        patch("app.crawler.pipeline.fetch_url_js", return_value=None),
         patch(
             "app.crawler.pipeline.discover_and_crawl",
             return_value={"discovered": 0, "new": 0, "changed": 0, "known": 0},
         ),
-        patch("app.crawler.pipeline._is_article_content", return_value=True),
-        patch("app.analyser.pipeline.analyse_document") as mock_analyse,
     ):
         result = run_crawl_source(source, db_session, analyse=True)
 
     assert result["new_documents"] == 1
-    mock_analyse.assert_not_called()
     db_session.refresh(source)
     assert source.analysis_status == AnalysisStatus.pending
 
@@ -550,10 +618,14 @@ def test_analyse_unanalysed_for_source_creates_signals(db_session):
     db_session.add(doc)
     db_session.commit()
 
-    with patch(
-        "app.analyser.pipeline.call_llm",
-        return_value='{"title":"AI Feature","signal_type":"ai_announcement","topic":"AI","summary":"New AI feature.","why_it_matters":"Competes with us.","relevance_score":0.9,"confidence_score":0.85}',
-    ), patch("app.crawler.pipeline.SessionLocal", side_effect=lambda: MagicMock(wraps=db_session, close=MagicMock())):
+    with (
+        patch(
+            "app.analyser.pipeline.call_llm",
+            return_value='{"title":"AI Feature","signal_type":"ai_announcement","topic":"AI","summary":"New AI feature.","why_it_matters":"Competes with us.","relevance_score":0.9,"confidence_score":0.85}',
+        ),
+        patch("app.assessor.pipeline.call_llm", return_value=_assessment_json()),
+        patch("app.crawler.pipeline.SessionLocal", side_effect=lambda: MagicMock(wraps=db_session, close=MagicMock())),
+    ):
         result = analyse_unanalysed_for_source(source, db_session)
 
     assert result["analysed"] == 1
@@ -606,17 +678,17 @@ def test_analyse_unanalysed_for_source_handles_errors(db_session, db_engine):
     # independent session (needed when one worker rollbacks on error).
     TestSessionFactory = sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
 
-    call_count = 0
-
-    def mock_llm(prompt):
-        nonlocal call_count
-        call_count += 1
-        if call_count == 1:
+    def mock_llm(prompt, max_tokens=1024, caller=""):
+        # Tie the failure to doc1's content rather than call order: the two
+        # documents are analysed concurrently, so call order is not deterministic.
+        if "Article one" in prompt:
             raise RuntimeError("LLM service unavailable")
         return '{"title":"OK","signal_type":"other","topic":"OK","summary":"Fine.","why_it_matters":"OK","relevance_score":0.5,"confidence_score":0.5}'
 
-    with patch("app.analyser.pipeline.call_llm", side_effect=mock_llm), patch(
-        "app.crawler.pipeline.SessionLocal", side_effect=TestSessionFactory
+    with (
+        patch("app.analyser.pipeline.call_llm", side_effect=mock_llm),
+        patch("app.assessor.pipeline.call_llm", return_value=_assessment_json()),
+        patch("app.crawler.pipeline.SessionLocal", side_effect=TestSessionFactory),
     ):
         result = analyse_unanalysed_for_source(source, db_session)
 
@@ -668,10 +740,14 @@ def test_analyse_unanalysed_for_source_skips_analysed_docs(db_session):
     db_session.add_all([analysed_doc, unanalysed_doc])
     db_session.commit()
 
-    with patch(
-        "app.analyser.pipeline.call_llm",
-        return_value='{"title":"New Signal","signal_type":"other","topic":"New","summary":"New stuff.","why_it_matters":"OK","relevance_score":0.6,"confidence_score":0.7}',
-    ) as mock_llm, patch("app.crawler.pipeline.SessionLocal", side_effect=lambda: MagicMock(wraps=db_session, close=MagicMock())):
+    with (
+        patch(
+            "app.analyser.pipeline.call_llm",
+            return_value='{"title":"New Signal","signal_type":"other","topic":"New","summary":"New stuff.","why_it_matters":"OK","relevance_score":0.6,"confidence_score":0.7}',
+        ) as mock_llm,
+        patch("app.assessor.pipeline.call_llm", return_value=_assessment_json()),
+        patch("app.crawler.pipeline.SessionLocal", side_effect=lambda: MagicMock(wraps=db_session, close=MagicMock())),
+    ):
         result = analyse_unanalysed_for_source(source, db_session)
 
     assert result["analysed"] == 1
@@ -748,10 +824,14 @@ def test_analyse_unanalysed_for_source_emits_progress(db_session):
 
     events = []
 
-    with patch(
-        "app.analyser.pipeline.call_llm",
-        return_value='{"title":"Prog","signal_type":"other","topic":"Prog","summary":"OK.","why_it_matters":"OK","relevance_score":0.5,"confidence_score":0.5}',
-    ), patch("app.crawler.pipeline.SessionLocal", side_effect=lambda: MagicMock(wraps=db_session, close=MagicMock())):
+    with (
+        patch(
+            "app.analyser.pipeline.call_llm",
+            return_value='{"title":"Prog","signal_type":"other","topic":"Prog","summary":"OK.","why_it_matters":"OK","relevance_score":0.5,"confidence_score":0.5}',
+        ),
+        patch("app.assessor.pipeline.call_llm", return_value=_assessment_json()),
+        patch("app.crawler.pipeline.SessionLocal", side_effect=lambda: MagicMock(wraps=db_session, close=MagicMock())),
+    ):
         result = analyse_unanalysed_for_source(
             source, db_session, progress_callback=lambda e: events.append(e)
         )

@@ -91,7 +91,7 @@ def send_digest_email(
     sections = digest.sections or []
 
     msg = EmailMessage()
-    msg["Subject"] = f"Weekly Digest KW {kw} – {date_range}"
+    msg["Subject"] = f"[WFM Intel] Weekly Digest KW {kw} – {date_range}"
     msg["From"] = f"WFM Intelligence Hub <{smtp_from}>"
     msg["To"] = ", ".join(recipients)
 

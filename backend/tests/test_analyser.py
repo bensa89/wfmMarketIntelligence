@@ -1,8 +1,27 @@
+import json
 import pytest
 from unittest.mock import patch, MagicMock
 from app.analyser.prompts import build_analysis_prompt
 from app.analyser.parser import parse_llm_response, SignalData, _is_unable_to_analyze
 from app.models.signal import SignalType
+
+
+def _assessment_json(**overrides) -> str:
+    base = {
+        "capability_primary": "ai_copilot",
+        "capability_secondary": [],
+        "signal_class": "weak_signal",
+        "evidence_strength": 2,
+        "visibility_impact": "low",
+        "strategic_intent_guess": "Unclear.",
+        "gameplay_tags": [],
+        "assessment_summary": "Minor update.",
+        "implication_for_us": "Low impact.",
+        "watch_items": [],
+        "confidence": 0.5,
+    }
+    base.update(overrides)
+    return json.dumps(base)
 
 
 def test_build_prompt_includes_markdown_and_context():
@@ -154,9 +173,12 @@ def test_analyse_document_creates_signal(db_session):
         confidence_score=0.85,
     )
 
-    with patch(
-        "app.analyser.pipeline.call_llm",
-        return_value='{"title":"AI Feature","signal_type":"ai_announcement","topic":"AI","summary":"New AI feature.","why_it_matters":"Competes.","relevance_score":0.9,"confidence_score":0.85}',
+    with (
+        patch(
+            "app.analyser.pipeline.call_llm",
+            return_value='{"title":"AI Feature","signal_type":"ai_announcement","topic":"AI","summary":"New AI feature.","why_it_matters":"Competes.","relevance_score":0.9,"confidence_score":0.85}',
+        ),
+        patch("app.assessor.pipeline.call_llm", return_value=_assessment_json()),
     ):
         analyse_document(doc, company.id, db_session)
 
@@ -321,7 +343,10 @@ def test_analyse_document_proceeds_if_published_at_recent(db_session):
 
     llm_response = '{"title":"Fresh News","signal_type":"other","topic":"Fresh","summary":"New.","why_it_matters":"Relevant.","relevance_score":0.6,"confidence_score":0.7}'
 
-    with patch("app.analyser.pipeline.call_llm", return_value=llm_response):
+    with (
+        patch("app.analyser.pipeline.call_llm", return_value=llm_response),
+        patch("app.assessor.pipeline.call_llm", return_value=_assessment_json()),
+    ):
         analyse_document(doc, company.id, db_session)
 
     assert db_session.query(Signal).count() == 1

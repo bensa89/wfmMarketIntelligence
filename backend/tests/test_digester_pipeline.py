@@ -50,7 +50,7 @@ def seeded(db_session):
 def test_generate_digest_creates_record(db_session, seeded):
     signal = seeded
 
-    def fake_llm(prompt: str, max_tokens: int = 1024) -> str:
+    def fake_llm(prompt: str, max_tokens: int = 1024, caller: str = "") -> str:
         if "selected_items" in prompt:
             return json.dumps(
                 {
@@ -77,7 +77,7 @@ def test_generate_digest_creates_record(db_session, seeded):
 def test_generate_digest_sections_contain_item(db_session, seeded):
     signal = seeded
 
-    def fake_llm(prompt: str, max_tokens: int = 1024) -> str:
+    def fake_llm(prompt: str, max_tokens: int = 1024, caller: str = "") -> str:
         if "selected_items" in prompt:
             return json.dumps(
                 {
@@ -104,7 +104,7 @@ def test_generate_digest_sections_contain_item(db_session, seeded):
 def test_generate_digest_summary_set(db_session, seeded):
     signal = seeded
 
-    def fake_llm(prompt: str, max_tokens: int = 1024) -> str:
+    def fake_llm(prompt: str, max_tokens: int = 1024, caller: str = "") -> str:
         if "selected_items" in prompt:
             return json.dumps(
                 {
