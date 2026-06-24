@@ -2080,9 +2080,9 @@
     "semantic_hash": "c349d0593f8867c0615012c3816311e7"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/api/llmUsage.ts": {
-    "mtime": 1782292475.7244318,
-    "ast_hash": "4f626201215322bf16fd0601f44ae427",
-    "semantic_hash": "4f626201215322bf16fd0601f44ae427"
+    "mtime": 1782319491.2100883,
+    "ast_hash": "dc951dd4f3948d87a70d7e2795e90549",
+    "semantic_hash": ""
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/api/settingsAdmin.ts": {
     "mtime": 1782292475.724616,
@@ -2090,9 +2090,9 @@
     "semantic_hash": "e3e7c21efaa68f55aa5c9dfb242ca91e"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/pages/LlmUsageAdmin.tsx": {
-    "mtime": 1782292475.7253454,
-    "ast_hash": "66c1e1a16dea8bd81cb28174dce6eaf3",
-    "semantic_hash": "66c1e1a16dea8bd81cb28174dce6eaf3"
+    "mtime": 1782319530.9130273,
+    "ast_hash": "9bce486a775b2a9a09edd224f3ac0229",
+    "semantic_hash": ""
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/pages/SettingsAdmin.tsx": {
     "mtime": 1782292475.725537,
@@ -2110,9 +2110,9 @@
     "semantic_hash": "e446e437af10a34e2ba8251f024c00c2"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/routers/llm_usage.py": {
-    "mtime": 1782292475.7218826,
-    "ast_hash": "0d3e7c003d2b494397a18a5ab2c8656c",
-    "semantic_hash": "0d3e7c003d2b494397a18a5ab2c8656c"
+    "mtime": 1782319467.354469,
+    "ast_hash": "ae6c5e6a44d9b0be81a3c2a0d95ff59f",
+    "semantic_hash": ""
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/models/app_setting.py": {
     "mtime": 1782292475.7213142,
@@ -2150,9 +2150,9 @@
     "semantic_hash": "89a772e19d1d38889be1314007c7659d"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/tests/test_llm_usage_router.py": {
-    "mtime": 1782292475.7235544,
-    "ast_hash": "3f24a37649957d5301ab593e0faba2c6",
-    "semantic_hash": "3f24a37649957d5301ab593e0faba2c6"
+    "mtime": 1782319456.1977222,
+    "ast_hash": "98568783cf36469a3e91915863837282",
+    "semantic_hash": ""
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/tests/test_llm_call_tracking.py": {
     "mtime": 1782292475.7233822,
