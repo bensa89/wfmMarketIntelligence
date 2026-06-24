@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session, selectinload
 from sqlalchemy import func, case
 
 from app.database import get_db
-from app.models.company import Company
+from app.models.company import Company, CompanyType
 from app.models.signal import Signal
 from app.models.signal_assessment import SignalAssessment, MovementStrength
 from app.models.competitor_summary import CompetitorSummary, PeriodType
@@ -147,7 +147,8 @@ def get_overview(db: Session = Depends(get_db)) -> dict:
                 func.count(SignalAssessment.id).label("count"),
             )
             .join(Signal, SignalAssessment.signal_id == Signal.id)
-            .filter(Signal.created_at >= cutoff)
+            .join(Company, Company.id == SignalAssessment.company_id)
+            .filter(Signal.created_at >= cutoff, Company.type == CompanyType.competitor)
             .group_by(SignalAssessment.company_id)
             .order_by(func.avg(SignalAssessment.movement_score).desc())
             .limit(10)
@@ -193,11 +194,17 @@ def get_overview(db: Session = Depends(get_db)) -> dict:
         heatmap: dict[str, dict] = {}
         for row in heatmap_rows:
             company = db.query(Company).filter(Company.id == row.company_id).first()
-            if not company:
+            if not company or company.type != CompanyType.competitor:
                 continue
             key = company.id
             if key not in heatmap:
-                heatmap[key] = {"company_id": company.id, "company_name": company.name, "capabilities": {}}
+                heatmap[key] = {
+                    "company_id": company.id,
+                    "company_name": company.name,
+                    "company_slug": company.slug,
+                    "company_logo_path": company.logo_path,
+                    "capabilities": {},
+                }
             if row.capability_primary:
                 heatmap[key]["capabilities"][row.capability_primary] = round(row.avg_score or 0, 1)
         return list(heatmap.values())

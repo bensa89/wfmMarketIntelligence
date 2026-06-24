@@ -73,6 +73,8 @@ export interface CompetitorMover {
 export interface HeatmapRow {
   company_id: string;
   company_name: string;
+  company_slug: string;
+  company_logo_path?: string | null;
   capabilities: Record<string, number>;
 }
 

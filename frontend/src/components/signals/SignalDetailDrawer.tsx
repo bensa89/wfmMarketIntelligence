@@ -1,14 +1,16 @@
-import { useEffect } from 'react';
-import { X, ExternalLink, CalendarDays, MapPin } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { X, ExternalLink, CalendarDays, MapPin, ChevronDown, ChevronRight, Loader2 } from 'lucide-react';
 import type { SignalFeedItem, VisibilityImpact } from '../../types/intelligence';
 import MovementBadge from './MovementBadge';
 import ConfidenceBar from './ConfidenceBar';
 import { getCapabilityLabel } from '../../constants/capabilities';
 import { useAssessSignal } from '../../hooks/useAssessSignal';
+import { useDocument } from '../../hooks/useDocuments';
 import DateWithTooltip from '../DateWithTooltip';
 import InfoTooltip from '../InfoTooltip';
 import SignalTypeIcon from '../SignalTypeIcon';
 import CompanyLogo from '../CompanyLogo';
+import MarkdownViewer from '../MarkdownViewer';
 import { useCompanies } from '../../hooks/useCompanies';
 
 interface Props {
@@ -27,6 +29,8 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
   const assess = useAssessSignal();
   const { data: companies } = useCompanies();
   const company = companies?.find((c) => c.id === item.company_id);
+  const [showRawDocument, setShowRawDocument] = useState(false);
+  const { data: doc, isLoading: docLoading } = useDocument(showRawDocument ? item.document_id : '');
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
@@ -177,6 +181,30 @@ export default function SignalDetailDrawer({ item, onClose }: Props) {
                   {assess.isPending ? 'Generating assessment…' : 'Generate Assessment'}
                 </button>
               )}
+
+              <section>
+                <button
+                  onClick={() => setShowRawDocument((v) => !v)}
+                  className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-400 uppercase tracking-wider hover:text-slate-600 transition-colors"
+                >
+                  {showRawDocument ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+                  Rohdokument
+                </button>
+                {showRawDocument && (
+                  <div className="mt-2 max-h-96 overflow-y-auto rounded-lg border border-slate-200 bg-slate-50 p-3">
+                    {docLoading ? (
+                      <div className="flex items-center gap-2 text-slate-400 text-[12px]">
+                        <Loader2 size={12} className="animate-spin" />
+                        Dokument wird geladen...
+                      </div>
+                    ) : doc?.content_markdown ? (
+                      <MarkdownViewer content={doc.content_markdown} />
+                    ) : (
+                      <p className="text-slate-400 text-[12px]">Kein Dokumentinhalt verfügbar.</p>
+                    )}
+                  </div>
+                )}
+              </section>
             </div>
 
             {/* Right — 1/3: metadata */}

@@ -5,6 +5,7 @@ import { HelpCircle } from 'lucide-react';
 import type { HeatmapRow } from '../../types/intelligence';
 import { CAPABILITIES, type CapabilityMeta } from '../../constants/capabilities';
 import { CapabilityActivityInfoDrawer } from './CapabilityActivityInfoDrawer';
+import CompanyLogo from '../CompanyLogo';
 
 interface Props {
   rows7d: HeatmapRow[];
@@ -140,8 +141,17 @@ export default function CapabilityHeatmapV2({ rows7d, rows30d }: Props) {
           <tbody>
             {rows.map((row) => (
               <tr key={row.company_id}>
-                <td className="pr-3 py-1 text-slate-700 truncate max-w-[8rem]" title={row.company_name}>
-                  {row.company_name}
+                <td className="pr-3 py-1 text-slate-700" title={row.company_name}>
+                  <div className="flex items-center gap-1.5 max-w-[8rem]">
+                    <CompanyLogo
+                      name={row.company_name}
+                      slug={row.company_slug}
+                      logo_path={row.company_logo_path}
+                      companyId={row.company_id}
+                      size="sm"
+                    />
+                    <span className="truncate">{row.company_name}</span>
+                  </div>
                 </td>
                 {VISIBLE_CAPABILITIES.map((c) => {
                   const score = row.capabilities[c.key] ?? 0;

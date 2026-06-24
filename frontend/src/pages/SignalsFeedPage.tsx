@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useSignalsFeed } from '../hooks/useSignalsFeed';
 import { useCompanies } from '../hooks/useCompanies';
+import { useLastCompletedCrawl } from '../hooks/useCrawlRuns';
 import SignalFeedFilters from '../components/signals/SignalFeedFilters';
 import SignalFeedTable from '../components/signals/SignalFeedTable';
 import SignalDetailDrawer from '../components/signals/SignalDetailDrawer';
@@ -24,6 +25,7 @@ export default function SignalsFeedPage() {
 
   const { data, isLoading } = useSignalsFeed(filters);
   const { data: companies = [] } = useCompanies();
+  const { lastCrawl } = useLastCompletedCrawl();
 
   function handleFilterChange(partial: Partial<SignalsFeedFilters>) {
     setFilters((prev) => ({ ...prev, ...partial }));
@@ -45,6 +47,7 @@ export default function SignalsFeedPage() {
         companies={companies.filter((c) => c.type === 'competitor')}
         onChange={handleFilterChange}
         onReset={handleReset}
+        lastCrawlStartedAt={lastCrawl?.started_at ?? null}
       />
 
       {isLoading ? (
@@ -59,6 +62,7 @@ export default function SignalsFeedPage() {
           pageSize={filters.page_size ?? 25}
           onPageChange={(p) => handleFilterChange({ page: p })}
           onSelectItem={setSelectedItem}
+          newSinceTimestamp={lastCrawl?.started_at ?? null}
         />
       )}
 

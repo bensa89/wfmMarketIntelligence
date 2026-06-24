@@ -1,8 +1,16 @@
+import * as LucideIcons from 'lucide-react';
 import type { SignalFeedItem } from '../../types/intelligence';
 import MovementBadge from './MovementBadge';
 import ConfidenceBar from './ConfidenceBar';
-import { getCapabilityLabel } from '../../constants/capabilities';
+import { CAPABILITIES, getCapabilityLabel } from '../../constants/capabilities';
 import DateWithTooltip from '../DateWithTooltip';
+import CompanyLogo from '../CompanyLogo';
+
+function renderCapabilityIcon(key: string) {
+  const IconComponent = (LucideIcons as Record<string, any>)[CAPABILITIES[key]?.icon];
+  if (!IconComponent) return null;
+  return <IconComponent className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />;
+}
 
 interface Props {
   items: SignalFeedItem[];
@@ -11,6 +19,15 @@ interface Props {
   pageSize: number;
   onPageChange: (p: number) => void;
   onSelectItem: (item: SignalFeedItem) => void;
+  newSinceTimestamp?: string | null;
+}
+
+function NewBadge() {
+  return (
+    <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 whitespace-nowrap">
+      Neu
+    </span>
+  );
 }
 
 function Pagination({ page, total, pageSize, onPageChange }: Pick<Props, 'page' | 'total' | 'pageSize' | 'onPageChange'>) {
@@ -40,7 +57,10 @@ function Pagination({ page, total, pageSize, onPageChange }: Pick<Props, 'page' 
   );
 }
 
-export default function SignalFeedTable({ items, total, page, pageSize, onPageChange, onSelectItem }: Props) {
+export default function SignalFeedTable({ items, total, page, pageSize, onPageChange, onSelectItem, newSinceTimestamp }: Props) {
+  const isNew = (item: SignalFeedItem) =>
+    !!newSinceTimestamp && item.created_at >= newSinceTimestamp;
+
   if (items.length === 0) {
     return (
       <div className="py-12 text-center text-slate-500 text-sm">
@@ -60,9 +80,19 @@ export default function SignalFeedTable({ items, total, page, pageSize, onPageCh
             onClick={() => onSelectItem(item)}
           >
             <div className="flex items-start justify-between gap-2 mb-1.5">
-              <span className="text-[11px] font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded whitespace-nowrap">
-                {item.company_name ?? '—'}
-              </span>
+              <div className="flex items-center gap-1.5">
+                <CompanyLogo
+                  name={item.company_name ?? '—'}
+                  slug={item.company_slug ?? item.company_id}
+                  logo_path={item.company_logo_path}
+                  size="sm"
+                  companyId={item.company_id}
+                />
+                <span className="text-[11px] font-medium text-slate-500 whitespace-nowrap">
+                  {item.company_name ?? '—'}
+                </span>
+                {isNew(item) && <NewBadge />}
+              </div>
               <MovementBadge strength={item.assessment?.movement_strength} />
             </div>
             <div className="text-[13px] font-medium text-slate-900 line-clamp-2 leading-snug mb-1.5">
@@ -70,7 +100,8 @@ export default function SignalFeedTable({ items, total, page, pageSize, onPageCh
             </div>
             <div className="flex items-center gap-3 flex-wrap">
               {item.assessment?.capability_primary && (
-                <span className="text-[11px] text-slate-500 truncate">
+                <span className="flex items-center gap-1 text-[11px] text-slate-500 truncate">
+                  {renderCapabilityIcon(item.assessment.capability_primary)}
                   {getCapabilityLabel(item.assessment.capability_primary)}
                 </span>
               )}
@@ -105,14 +136,31 @@ export default function SignalFeedTable({ items, total, page, pageSize, onPageCh
                 onClick={() => onSelectItem(item)}
               >
                 <td className="py-3 pr-4 max-w-[300px]">
-                  <div className="text-slate-900 font-medium line-clamp-2 leading-snug">{item.title}</div>
+                  <div className="flex items-start gap-1.5">
+                    <div className="text-slate-900 font-medium line-clamp-2 leading-snug">{item.title}</div>
+                    {isNew(item) && <NewBadge />}
+                  </div>
                   {item.topic && <div className="text-slate-500 text-[11px] mt-0.5 truncate">{item.topic}</div>}
                 </td>
-                <td className="py-3 pr-4 text-slate-600 whitespace-nowrap">{item.company_name ?? '—'}</td>
                 <td className="py-3 pr-4 text-slate-600 whitespace-nowrap">
-                  {item.assessment?.capability_primary
-                    ? getCapabilityLabel(item.assessment.capability_primary)
-                    : '—'}
+                  <div className="flex items-center gap-2">
+                    <CompanyLogo
+                      name={item.company_name ?? '—'}
+                      slug={item.company_slug ?? item.company_id}
+                      logo_path={item.company_logo_path}
+                      size="sm"
+                      companyId={item.company_id}
+                    />
+                    {item.company_name ?? '—'}
+                  </div>
+                </td>
+                <td className="py-3 pr-4 text-slate-600 whitespace-nowrap">
+                  {item.assessment?.capability_primary ? (
+                    <span className="flex items-center gap-1.5">
+                      {renderCapabilityIcon(item.assessment.capability_primary)}
+                      {getCapabilityLabel(item.assessment.capability_primary)}
+                    </span>
+                  ) : '—'}
                 </td>
                 <td className="py-3 pr-4">
                   <MovementBadge strength={item.assessment?.movement_strength} />

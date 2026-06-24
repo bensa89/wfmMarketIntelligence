@@ -75,9 +75,9 @@
     "semantic_hash": "e3d7415ce5b4535b7b03bd76fad4a6eb"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/types/intelligence.ts": {
-    "mtime": 1782330014.6367922,
-    "ast_hash": "3137e3d4d8ac69511264ab3e7b6a5d1b",
-    "semantic_hash": ""
+    "mtime": 1782248749.9250147,
+    "ast_hash": "32f892b78299442546e5adcbda88f8d7",
+    "semantic_hash": "32f892b78299442546e5adcbda88f8d7"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/types/index.ts": {
     "mtime": 1781818349.530732,
@@ -185,19 +185,19 @@
     "semantic_hash": "1c076f7d14af8be6d87bc16db60f01e0"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/signals/SignalFeedFilters.tsx": {
-    "mtime": 1782331594.8101714,
-    "ast_hash": "ab8058bf095c4aba298288847486fcea",
-    "semantic_hash": ""
+    "mtime": 1781376579.7016056,
+    "ast_hash": "38536e5c28c9c483d732cc2fe4a8c18a",
+    "semantic_hash": "38536e5c28c9c483d732cc2fe4a8c18a"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/signals/SignalFeedTable.tsx": {
-    "mtime": 1782331754.6383862,
-    "ast_hash": "61acb31eaeedac5529827f373df099b6",
-    "semantic_hash": ""
+    "mtime": 1781251072.2418356,
+    "ast_hash": "9900f662ad1a50e00623f7e1ec919421",
+    "semantic_hash": "9900f662ad1a50e00623f7e1ec919421"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/signals/SignalDetailDrawer.tsx": {
-    "mtime": 1782330872.5362976,
-    "ast_hash": "c96960216acd4cb310d7afc8af518279",
-    "semantic_hash": ""
+    "mtime": 1781472176.2114465,
+    "ast_hash": "4cc0c3b36054d05f2c8f64d58e47d77d",
+    "semantic_hash": "4cc0c3b36054d05f2c8f64d58e47d77d"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/signals/ConfidenceBar.tsx": {
     "mtime": 1776885621.715164,
@@ -275,9 +275,9 @@
     "semantic_hash": "cb97413eb851c1ff33ebb11fcdfc2e32"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/overview/CapabilityHeatmapV2.tsx": {
-    "mtime": 1782330026.238196,
-    "ast_hash": "a7dbc222743815987cd7377e1ae6b8d5",
-    "semantic_hash": ""
+    "mtime": 1782248749.9239843,
+    "ast_hash": "c9ac884e00458c7074aa1de2c6587862",
+    "semantic_hash": "c9ac884e00458c7074aa1de2c6587862"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/overview/MarketShapingFeed.tsx": {
     "mtime": 1781816932.798032,
@@ -465,9 +465,9 @@
     "semantic_hash": "67bae611faa5a85b7e29711e1c69cbf2"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/pages/SignalsFeedPage.tsx": {
-    "mtime": 1782331565.191754,
-    "ast_hash": "89fcf772625ae02db01a32d16ee73ec9",
-    "semantic_hash": ""
+    "mtime": 1781251040.1958015,
+    "ast_hash": "b58363b615d607f3f15e4fb19a11a1d3",
+    "semantic_hash": "b58363b615d607f3f15e4fb19a11a1d3"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/pages/SearchPage.tsx": {
     "mtime": 1776627506.8297737,
@@ -585,9 +585,9 @@
     "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/routers/intelligence.py": {
-    "mtime": 1782330125.180721,
-    "ast_hash": "b9a38c8afe57739185b0e894f0e0c28f",
-    "semantic_hash": ""
+    "mtime": 1782248749.9231124,
+    "ast_hash": "d97c59b57fa607707d07c635db33cc36",
+    "semantic_hash": "d97c59b57fa607707d07c635db33cc36"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/routers/digests.py": {
     "mtime": 1781561736.101015,
@@ -2193,10 +2193,5 @@
     "mtime": 1782246863.6065164,
     "ast_hash": "a92046b7bc6655bc24fe6d3e278034f3",
     "semantic_hash": "a92046b7bc6655bc24fe6d3e278034f3"
-  },
-  "/Users/benjaminsaure/dev/wfmMarketIntelligence/docs/superpowers/specs/2026-06-24-signal-reassessment-design.md": {
-    "mtime": 1782332190.4674757,
-    "ast_hash": "c635205aa583f7254f7125ef856fdf62",
-    "semantic_hash": ""
   }
 }

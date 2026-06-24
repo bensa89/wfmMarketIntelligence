@@ -8,6 +8,13 @@ interface Props {
   onChange: (f: Partial<SignalsFeedFilters>) => void;
   onReset: () => void;
   hideCompany?: boolean;
+  lastCrawlStartedAt?: string | null;
+}
+
+function lastMonthCutoff(): string {
+  const d = new Date();
+  d.setDate(d.getDate() - 30);
+  return d.toISOString().slice(0, 10);
 }
 
 const SIGNAL_TYPES: SignalType[] = [
@@ -23,12 +30,15 @@ const SORT_OPTIONS = [
   { value: 'confidence', label: 'Confidence' },
 ] as const;
 
-export default function SignalFeedFilters({ filters, companies, onChange, onReset, hideCompany }: Props) {
+export default function SignalFeedFilters({ filters, companies, onChange, onReset, hideCompany, lastCrawlStartedAt }: Props) {
   const hasActiveFilters = !!(
     (!hideCompany && filters.company_id) || filters.capability || filters.signal_type ||
     filters.movement_strength || filters.min_confidence ||
     filters.created_from || filters.created_to
   );
+
+  const onlyNewActive = !!lastCrawlStartedAt && filters.created_from === lastCrawlStartedAt;
+  const lastMonthActive = filters.created_from === lastMonthCutoff();
 
   return (
     <div
@@ -104,6 +114,31 @@ export default function SignalFeedFilters({ filters, companies, onChange, onRese
         className="bg-slate-50 border border-slate-200 text-slate-700 rounded-lg text-[12px] px-2.5 py-1.5 focus:outline-none"
         title="Erstellt bis"
       />
+
+      {lastCrawlStartedAt && (
+        <button
+          onClick={() => onChange({ created_from: onlyNewActive ? undefined : lastCrawlStartedAt, created_to: undefined, page: 1 })}
+          title={`Signale seit dem letzten Crawl (${new Date(lastCrawlStartedAt).toLocaleString('de-DE')})`}
+          className={`px-3 py-1 rounded-lg text-[11px] font-medium border transition-colors ${
+            onlyNewActive
+              ? 'bg-emerald-100 border-emerald-300 text-emerald-700'
+              : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          Nur Neue
+        </button>
+      )}
+
+      <button
+        onClick={() => onChange({ created_from: lastMonthActive ? undefined : lastMonthCutoff(), created_to: undefined, page: 1 })}
+        className={`px-3 py-1 rounded-lg text-[11px] font-medium border transition-colors ${
+          lastMonthActive
+            ? 'bg-amber-100 border-amber-300 text-amber-700'
+            : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+        }`}
+      >
+        Letzter Monat
+      </button>
 
       {hasActiveFilters && (
         <button
