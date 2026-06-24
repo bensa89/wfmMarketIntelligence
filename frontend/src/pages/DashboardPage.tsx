@@ -38,7 +38,7 @@ export default function DashboardPage() {
 
   return (
     <div className="flex flex-col h-full bg-slate-50">
-      <div className="bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between flex-shrink-0">
+      <div className="bg-white border-b border-slate-200 px-4 md:px-6 py-3 flex items-center justify-between flex-shrink-0">
         <div>
           <h1 className="text-[15px] font-bold text-slate-900 tracking-tight">Dashboard</h1>
           <p className="text-[12px] text-slate-500 mt-0.5">
@@ -64,7 +64,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-auto px-6 py-5">
+      <div className="flex-1 overflow-auto px-4 md:px-6 py-5">
         {showCrawlRunning && (
           <div className="mb-4 px-4 py-2.5 rounded-xl text-[12px] font-medium border bg-blue-50 text-blue-700 border-blue-200">
             <Link to="/admin/sources" className="underline hover:no-underline">Crawl läuft</Link>
@@ -86,7 +86,7 @@ export default function DashboardPage() {
         )}
 
         {overviewData && (
-          <div className="grid grid-cols-2 gap-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <MarketShapingFeed
               signals7d={overviewData.recent_market_shaping_7d}
               signals30d={overviewData.recent_market_shaping_30d}
@@ -98,11 +98,12 @@ export default function DashboardPage() {
         )}
 
         {overviewData && (
-          <div className="grid grid-cols-3 gap-4 mb-4">
-            <div className="col-span-1">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div className="md:col-span-1">
               <TopMoversList movers7d={overviewData.top_movers_7d} movers30d={overviewData.top_movers_30d} />
             </div>
-            <div className="col-span-2">
+            {/* Capability Heatmap is a dense table visualization — not useful on a phone screen, hidden below md */}
+            <div className="hidden md:block md:col-span-2">
               <CapabilityHeatmapV2 rows7d={overviewData.capability_heatmap_7d} rows30d={overviewData.capability_heatmap_30d} />
             </div>
           </div>
