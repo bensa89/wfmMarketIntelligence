@@ -19,6 +19,10 @@ export function fetchLlmModelPrices() {
   return apiGet<LlmModelPrice[]>('/llm-usage/prices');
 }
 
+export function fetchLlmUsageModels() {
+  return apiGet<string[]>('/llm-usage/models');
+}
+
 export function updateLlmModelPrice(
   model: string,
   price: { input_price_per_1m: number; output_price_per_1m: number },

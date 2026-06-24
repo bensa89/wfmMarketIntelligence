@@ -97,3 +97,19 @@ def test_put_price_updates_existing_entry(client, db_session):
 
     response = client.get("/api/llm-usage/prices")
     assert len(response.json()) == 1
+
+
+def test_get_models_returns_distinct_models_from_calls(client, db_session):
+    _seed_call(db_session, model="claude-haiku-4-5-20251001")
+    _seed_call(db_session, model="qwen3.6-plus", provider="opencode")
+    _seed_call(db_session, model="qwen3.6-plus", provider="opencode")
+
+    response = client.get("/api/llm-usage/models")
+    assert response.status_code == 200
+    assert sorted(response.json()) == ["claude-haiku-4-5-20251001", "qwen3.6-plus"]
+
+
+def test_get_models_empty(client):
+    response = client.get("/api/llm-usage/models")
+    assert response.status_code == 200
+    assert response.json() == []

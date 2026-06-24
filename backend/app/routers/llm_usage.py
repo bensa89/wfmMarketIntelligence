@@ -120,6 +120,12 @@ def get_breakdown(days: int = 30, db: Session = Depends(get_db)):
     return result
 
 
+@router.get("/models", response_model=List[str])
+def get_models(db: Session = Depends(get_db)):
+    rows = db.query(LlmCall.model).distinct().order_by(LlmCall.model).all()
+    return [r.model for r in rows]
+
+
 @router.get("/prices", response_model=List[LlmModelPriceRead])
 def get_prices(db: Session = Depends(get_db)):
     return db.query(LlmModelPrice).order_by(LlmModelPrice.model).all()

@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
-  fetchLlmModelPrices, fetchLlmUsageBreakdown, fetchLlmUsageSummary, fetchLlmUsageTimeseries,
-  updateLlmModelPrice,
+  fetchLlmModelPrices, fetchLlmUsageBreakdown, fetchLlmUsageModels, fetchLlmUsageSummary,
+  fetchLlmUsageTimeseries, updateLlmModelPrice,
 } from '../api/llmUsage';
 import type { LlmUsageTimeseriesPoint, LlmUsageTotals } from '../types/llmUsage';
 
@@ -84,7 +84,61 @@ function PriceEditorRow({ model, inputPrice, outputPrice, onSaved }: {
   );
 }
 
-const KNOWN_MODELS = ['claude-haiku-4-5-20251001', 'claude-sonnet-4-6', 'claude-opus-4-8'];
+function AddModelPriceForm({ existingModels, onSaved }: { existingModels: string[]; onSaved: () => void }) {
+  const [model, setModel] = useState('');
+  const [input, setInput] = useState('0');
+  const [output, setOutput] = useState('0');
+
+  const alreadyExists = existingModels.includes(model.trim());
+
+  const addMutation = useMutation({
+    mutationFn: () => updateLlmModelPrice(model.trim(), {
+      input_price_per_1m: parseFloat(input) || 0,
+      output_price_per_1m: parseFloat(output) || 0,
+    }),
+    onSuccess: () => {
+      setModel('');
+      setInput('0');
+      setOutput('0');
+      onSaved();
+    },
+  });
+
+  return (
+    <div className="flex items-end gap-2 mt-3 pt-3 border-t border-slate-100">
+      <div className="flex-1">
+        <label className="text-[11px] text-slate-400">Modellname</label>
+        <input
+          type="text" value={model} onChange={(e) => setModel(e.target.value)}
+          placeholder="z.B. qwen3.6-plus"
+          className="border border-slate-200 rounded-lg px-2 py-1 text-sm w-full"
+        />
+      </div>
+      <div>
+        <label className="text-[11px] text-slate-400">Input $/1M</label>
+        <input
+          type="number" step="0.01" value={input} onChange={(e) => setInput(e.target.value)}
+          className="border border-slate-200 rounded-lg px-2 py-1 text-sm w-24"
+        />
+      </div>
+      <div>
+        <label className="text-[11px] text-slate-400">Output $/1M</label>
+        <input
+          type="number" step="0.01" value={output} onChange={(e) => setOutput(e.target.value)}
+          className="border border-slate-200 rounded-lg px-2 py-1 text-sm w-24"
+        />
+      </div>
+      <button
+        onClick={() => addMutation.mutate()}
+        disabled={!model.trim() || alreadyExists || addMutation.isPending}
+        className="text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 disabled:opacity-40"
+        title={alreadyExists ? 'Modell existiert bereits in der Tabelle' : undefined}
+      >
+        Hinzufügen
+      </button>
+    </div>
+  );
+}
 
 export default function LlmUsageAdmin() {
   const queryClient = useQueryClient();
@@ -100,16 +154,18 @@ export default function LlmUsageAdmin() {
     queryFn: () => fetchLlmUsageBreakdown(days),
   });
   const { data: prices } = useQuery({ queryKey: ['llm-model-prices'], queryFn: fetchLlmModelPrices });
+  const { data: usedModels } = useQuery({ queryKey: ['llm-usage-models'], queryFn: fetchLlmUsageModels });
 
   function refetchAll() {
     queryClient.invalidateQueries({ queryKey: ['llm-model-prices'] });
+    queryClient.invalidateQueries({ queryKey: ['llm-usage-models'] });
     queryClient.invalidateQueries({ queryKey: ['llm-usage-summary'] });
     queryClient.invalidateQueries({ queryKey: ['llm-usage-timeseries', days] });
     queryClient.invalidateQueries({ queryKey: ['llm-usage-breakdown', days] });
   }
 
   const priceByModel = new Map((prices ?? []).map((p) => [p.model, p]));
-  const allModels = Array.from(new Set([...KNOWN_MODELS, ...(prices ?? []).map((p) => p.model)]));
+  const allModels = Array.from(new Set([...(usedModels ?? []), ...(prices ?? []).map((p) => p.model)]));
 
   return (
     <div className="p-6 max-w-5xl space-y-6">
@@ -208,6 +264,7 @@ export default function LlmUsageAdmin() {
             })}
           </tbody>
         </table>
+        <AddModelPriceForm existingModels={allModels} onSaved={refetchAll} />
       </div>
     </div>
   );
