@@ -13,4 +13,4 @@ node_modules/
 node-compile-cache/
 .superpowers/
 .worktrees/
-.worktrees/
+.playwright-cli/

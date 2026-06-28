@@ -59,17 +59,17 @@ function SearchRunRow({ run }: { run: SearchRun }) {
         onClick={() => setExpanded(!expanded)}
       >
         {expanded ? <ChevronDown size={16} className="text-ink-muted" /> : <ChevronRight size={16} className="text-ink-muted" />}
-        <span className="text-sm text-ink flex-1">
+        <span className="text-sm text-ink flex-1 min-w-0 truncate">
           {run.query?.query_text ?? run.search_query_id}
         </span>
-        <span className="text-xs text-ink-muted mr-3">
+        <span className="hidden sm:inline text-xs text-ink-muted mr-3">
           {run.query?.search_intent}
         </span>
-        <span className="text-xs text-ink-muted mr-3">
+        <span className="text-xs text-ink-muted mr-3 shrink-0">
           {run.result_count ?? 0} results
         </span>
         <StatusBadge status={run.status} />
-        <span className="text-xs text-ink-muted ml-3">
+        <span className="hidden sm:inline text-xs text-ink-muted ml-3 shrink-0">
           {new Date(run.executed_at).toLocaleDateString()}
         </span>
       </button>

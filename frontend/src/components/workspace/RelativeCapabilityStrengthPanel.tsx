@@ -75,18 +75,18 @@ function ColumnHeaders() {
       </div>
       <div className="w-8 shrink-0" />
       <div className="flex items-center gap-1 text-[10px] text-slate-400 font-medium">
-        Tier <InfoTooltip text={COLUMN_TOOLTIPS.tier} />
+        Tier <InfoTooltip text={COLUMN_TOOLTIPS.tier} side="right" />
       </div>
-      <div className="flex items-center gap-1 text-[10px] text-slate-400 font-medium">
+      <div className="hidden sm:flex items-center gap-1 text-[10px] text-slate-400 font-medium">
         # <InfoTooltip text={COLUMN_TOOLTIPS.rank} />
       </div>
-      <div className="flex items-center gap-1 text-[10px] text-slate-400 font-medium">
+      <div className="hidden sm:flex items-center gap-1 text-[10px] text-slate-400 font-medium">
         Δ <InfoTooltip text={COLUMN_TOOLTIPS.delta} />
       </div>
-      <div className="flex items-center gap-1 text-[10px] text-slate-400 font-medium">
+      <div className="hidden sm:flex items-center gap-1 text-[10px] text-slate-400 font-medium">
         Conf <InfoTooltip text={COLUMN_TOOLTIPS.conf} />
       </div>
-      <div className="flex items-center gap-1 text-[10px] text-slate-400 font-medium">
+      <div className="hidden sm:flex items-center gap-1 text-[10px] text-slate-400 font-medium">
         Signals <InfoTooltip text={COLUMN_TOOLTIPS.signals} />
       </div>
     </div>
@@ -125,13 +125,13 @@ function CapabilityRow({
       </span>
       <TierBadge tier={detail.tier} size="sm" />
       {detail.peer_rank ? (
-        <span className="text-xs text-slate-400 shrink-0 w-5 text-right">#{detail.peer_rank}</span>
+        <span className="hidden sm:inline text-xs text-slate-400 shrink-0 w-5 text-right">#{detail.peer_rank}</span>
       ) : (
-        <span className="w-5" />
+        <span className="hidden sm:inline w-5" />
       )}
-      <StrengthDeltaIndicator delta={detail.strength_delta} />
-      <ConfidenceIndicator confidence={detail.confidence} />
-      <span className="text-[11px] text-slate-400 shrink-0 w-12 text-right">
+      <span className="hidden sm:block"><StrengthDeltaIndicator delta={detail.strength_delta} /></span>
+      <span className="hidden sm:block"><ConfidenceIndicator confidence={detail.confidence} /></span>
+      <span className="hidden sm:inline text-[11px] text-slate-400 shrink-0 w-12 text-right">
         {detail.source_signal_count > 0 ? `${detail.source_signal_count}` : '—'}
       </span>
     </div>

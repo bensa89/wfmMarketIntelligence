@@ -78,9 +78,9 @@ export default function CompetitorWorkspacePage() {
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="h-full overflow-auto">
       {/* Header */}
-      <div className="bg-white border-b border-slate-200 px-4 md:px-6 py-4 flex-shrink-0">
+      <div className="bg-white border-b border-slate-200 px-4 md:px-6 py-4">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
           <div className="flex items-center gap-3 min-w-0">
             <CompanyLogo
@@ -194,7 +194,7 @@ export default function CompetitorWorkspacePage() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto px-4 md:px-6 py-5 space-y-5">
+      <div className="px-4 md:px-6 py-5 space-y-5">
 
         {/* Row 1: Strategic posture + Dimension scores (KPIs) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -207,7 +207,7 @@ export default function LlmUsageAdminPage() {
         <h2 className="text-sm font-semibold text-slate-700 uppercase tracking-wider mb-3">
           Aufschlüsselung nach Caller / Provider / Modell
         </h2>
-        <table className="w-full text-sm">
+        <table className="w-full min-w-[500px] text-sm">
           <thead>
             <tr className="text-left text-xs text-slate-400 border-b border-slate-200">
               <th className="py-2">Caller</th>
@@ -240,7 +240,7 @@ export default function LlmUsageAdminPage() {
         <h2 className="text-sm font-semibold text-slate-700 uppercase tracking-wider mb-3">
           Preistabelle ($ pro 1M Tokens)
         </h2>
-        <table className="w-full text-sm">
+        <table className="w-full min-w-[400px] text-sm">
           <thead>
             <tr className="text-left text-xs text-slate-400 border-b border-slate-200">
               <th className="py-2">Modell</th>

@@ -101,7 +101,7 @@ function EventsCalendarSection({ upcoming, newly_discovered }: {
 function DigestRisksOpportunities({ risks, opportunities }: { risks: RiskItem[]; opportunities: RiskItem[] }) {
   if (!risks.length && !opportunities.length) return null;
   return (
-    <div className="grid grid-cols-2 gap-3 mb-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
       {risks.length > 0 && (
         <div className="bg-red-50 border border-red-100 rounded-xl p-3">
           <p className="text-[11px] font-semibold text-red-600 uppercase tracking-wide mb-2">Emerging Risks</p>

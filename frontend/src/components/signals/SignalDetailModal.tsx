@@ -88,10 +88,10 @@ export default function SignalDetailModal({ item, onClose }: Props) {
 
         {/* Two-column body */}
         <div className="flex-1 overflow-y-auto">
-          <div className="grid grid-cols-3 gap-0 min-h-full">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-0 min-h-full">
 
             {/* Left — 2/3: textual content */}
-            <div className="col-span-2 p-5 space-y-5 border-r border-slate-100">
+            <div className="md:col-span-2 p-5 space-y-5 border-b border-slate-100 md:border-b-0 md:border-r">
               {item.topic && (
                 <div className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">{item.topic}</div>
               )}
@@ -241,7 +241,7 @@ export default function SignalDetailModal({ item, onClose }: Props) {
             </div>
 
             {/* Right — 1/3: metadata */}
-            <div className="col-span-1 p-5 space-y-5 bg-slate-50">
+            <div className="md:col-span-1 p-5 space-y-5 bg-slate-50">
               {/* Competitor + Relevanz */}
               <div className="flex gap-8">
                 <section>

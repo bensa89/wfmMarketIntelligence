@@ -478,7 +478,7 @@ export default function SourcesAdminPage() {
                           {company.type === 'competitor' ? 'Competitor' : company.type === 'own_company' ? 'Own Company' : 'Market Source'}
                         </span>
                         <span className="text-xs text-ink-muted">{results.length} Treffer</span>
-                        {company.website && <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-xs text-accent-blue hover:underline truncate max-w-xs">{company.website}</a>}
+                        {company.website && <a href={company.website} target="_blank" rel="noopener noreferrer" className="hidden sm:inline text-xs text-accent-blue hover:underline truncate max-w-xs">{company.website}</a>}
                       </div>
                       <div className="flex items-center gap-2">
                         <button onClick={() => crawl.startCompany(company.slug)} disabled={crawl.isRunning} className="text-accent-blue hover:text-accent-blue/80 p-1 disabled:opacity-40" title="Alle aktiven Sources crawlen"><RefreshCw size={16} /></button>
@@ -587,16 +587,16 @@ export default function SourcesAdminPage() {
                  <div className="flex items-center justify-between">
                    <button
                      onClick={() => setExpandedCompanyIds((prev) => { const next = new Set(prev); next.has(company.id) ? next.delete(company.id) : next.add(company.id); return next; })}
-                     className="flex items-center gap-3 flex-1 text-left"
+                     className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0 text-left"
                    >
                      {isExpanded ? <ChevronDown size={18} className="text-ink-muted flex-shrink-0" /> : <ChevronRight size={18} className="text-ink-muted flex-shrink-0" />}
                      <CompanyLogo name={company.name} slug={company.slug} logo_path={company.logo_path} size="sm" companyId={company.id} />
-                     <h2 className="text-lg font-semibold">{company.name}</h2>
-                     <span className={`text-xs px-2 py-0.5 rounded ${company.type === 'competitor' ? 'bg-type-product_update/20 text-type-product_update' : company.type === 'own_company' ? 'bg-emerald-100 text-emerald-700' : 'bg-type-ai_announcement/20 text-type-ai_announcement'}`}>
+                     <h2 className="text-lg font-semibold truncate">{company.name}</h2>
+                     <span className={`hidden sm:inline text-xs px-2 py-0.5 rounded flex-shrink-0 ${company.type === 'competitor' ? 'bg-type-product_update/20 text-type-product_update' : company.type === 'own_company' ? 'bg-emerald-100 text-emerald-700' : 'bg-type-ai_announcement/20 text-type-ai_announcement'}`}>
                        {company.type === 'competitor' ? 'Competitor' : company.type === 'own_company' ? 'Own Company' : 'Market Source'}
                      </span>
-                      <span className="text-xs text-ink-muted">{companySources.length} Source{companySources.length !== 1 ? 's' : ''}</span>
-                      {company.website && <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-xs text-accent-blue hover:underline truncate max-w-xs" onClick={(e) => e.stopPropagation()}>{company.website}</a>}
+                      <span className="hidden sm:inline text-xs text-ink-muted flex-shrink-0">{companySources.length} Source{companySources.length !== 1 ? 's' : ''}</span>
+                      {company.website && <a href={company.website} target="_blank" rel="noopener noreferrer" className="hidden sm:inline text-xs text-accent-blue hover:underline truncate max-w-xs" onClick={(e) => e.stopPropagation()}>{company.website}</a>}
                     </button>
                    <div className="flex items-center gap-2">
                      <button
