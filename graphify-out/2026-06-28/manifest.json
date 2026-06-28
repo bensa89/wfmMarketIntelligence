@@ -150,8 +150,8 @@
     "semantic_hash": "721802f740234a60c65722fe7a38a5f0"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/InfoTooltip.tsx": {
-    "mtime": 1782680444.7245312,
-    "ast_hash": "194b1abb9062114fa0d6d4858166ef49",
+    "mtime": 1782334103.1754801,
+    "ast_hash": "dc8f710014a7e7c71792811cf0b6ebb2",
     "semantic_hash": ""
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/DateWithTooltip.tsx": {
@@ -210,8 +210,8 @@
     "semantic_hash": "caba98a9bd9fd347d0bb9eb1dc50f7b4"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/workspace/RelativeCapabilityStrengthPanel.tsx": {
-    "mtime": 1782680454.8461392,
-    "ast_hash": "1fc4f0eb5f91c0efc78aa05764e329dc",
+    "mtime": 1782334140.5953305,
+    "ast_hash": "88c3095953d71cd77add23e18125b6e6",
     "semantic_hash": ""
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/workspace/CapabilityExplainDrawer.tsx": {
@@ -430,18 +430,18 @@
     "semantic_hash": ""
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/pages/SignalsFeedPage.tsx": {
-    "mtime": 1782679910.566239,
-    "ast_hash": "e8c5c5f4610641410e75a21e38ae5ec6",
+    "mtime": 1782333984.273745,
+    "ast_hash": "85c1019d7a6fd9fb17c01c8466319459",
     "semantic_hash": ""
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/pages/SearchPage.tsx": {
-    "mtime": 1782678663.5930638,
-    "ast_hash": "6ea74faa92b77b6455c7ab242b7b5f70",
+    "mtime": 1782337866.7060688,
+    "ast_hash": "9bb85ac1a92224ba6b3bbd89ea484d68",
     "semantic_hash": ""
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/pages/CompetitorWorkspacePage.tsx": {
-    "mtime": 1782679803.6642435,
-    "ast_hash": "f7e55474a7509fcad304a255432068d6",
+    "mtime": 1782337866.7044423,
+    "ast_hash": "663b3ecd8cd3ffc4132ac862aa6e3936",
     "semantic_hash": ""
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/pages/HowItWorksPage.tsx": {
@@ -450,9 +450,9 @@
     "semantic_hash": ""
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/.claude/settings.local.json": {
-    "mtime": 1782680467.1122925,
-    "ast_hash": "0181a6fed9df3421810b62053db2b0f6",
-    "semantic_hash": ""
+    "mtime": 1778146106.8241332,
+    "ast_hash": "524de794872259b8aaf920fa940c0990",
+    "semantic_hash": "524de794872259b8aaf920fa940c0990"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/config.py": {
     "mtime": 1781211687.2306159,
@@ -1775,8 +1775,8 @@
     "semantic_hash": "94692b50ef9f99173f756e8dd0cc0239"
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/pages/EventCalendarPage.tsx": {
-    "mtime": 1782679904.4569473,
-    "ast_hash": "77c1ea7d78aa2ff22be176b4063c6c29",
+    "mtime": 1782337866.7049696,
+    "ast_hash": "3a03c60f1a60457819612ac15f57577c",
     "semantic_hash": ""
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/backend/app/log_stream.py": {
@@ -2135,8 +2135,8 @@
     "semantic_hash": ""
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/signals/SignalDetailModal.tsx": {
-    "mtime": 1782678983.3597941,
-    "ast_hash": "9581aff617be9198821a9230db9dae8e",
+    "mtime": 1782333900.6431592,
+    "ast_hash": "7d42a8d3cbee48d98effd50d5cc9ad7f",
     "semantic_hash": ""
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/components/scorecard/ScorecardSignalModal.tsx": {
@@ -2150,8 +2150,8 @@
     "semantic_hash": ""
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/pages/SourcesAdminPage.tsx": {
-    "mtime": 1782680214.8250062,
-    "ast_hash": "85a4e35939a9f24485ea3a2a90ab471d",
+    "mtime": 1782334489.4016225,
+    "ast_hash": "0bf03a27e9cc301c4ab954d2c0a4f235",
     "semantic_hash": ""
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/pages/CompanyContextPage.tsx": {
@@ -2170,13 +2170,13 @@
     "semantic_hash": ""
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/pages/LlmUsageAdminPage.tsx": {
-    "mtime": 1782678681.021562,
-    "ast_hash": "59f6350d7b7c6efc423bdc46b4d7b63e",
+    "mtime": 1782337866.7051117,
+    "ast_hash": "5b7383af0fbec5d37f9f9479fa02c235",
     "semantic_hash": ""
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/pages/WeeklyDigestPage.tsx": {
-    "mtime": 1782678652.3052979,
-    "ast_hash": "4a4d3ee637d7467541ce5a001d1b1f71",
+    "mtime": 1782334489.3764324,
+    "ast_hash": "5943c6df64967b6a122aac3623a0c6e3",
     "semantic_hash": ""
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/pages/SettingsAdminPage.tsx": {
@@ -2185,8 +2185,8 @@
     "semantic_hash": ""
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/pages/DashboardPage.tsx": {
-    "mtime": 1782679873.680952,
-    "ast_hash": "e5977d511137833521260b4c05adef5f",
+    "mtime": 1782337866.7046878,
+    "ast_hash": "7a0c201483a3fd91414381a977b61d70",
     "semantic_hash": ""
   },
   "/Users/benjaminsaure/dev/wfmMarketIntelligence/frontend/src/pages/CompetitorListPage.tsx": {
