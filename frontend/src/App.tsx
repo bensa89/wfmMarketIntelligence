@@ -20,6 +20,7 @@ import LogsAdminPage from './pages/LogsAdminPage';
 import LlmUsageAdminPage from './pages/LlmUsageAdminPage';
 import SettingsAdminPage from './pages/SettingsAdminPage';
 import EventCalendarPage from './pages/EventCalendarPage';
+import UsersAdminPage from './pages/UsersAdminPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -59,7 +60,7 @@ export default function App() {
             <Route path="digest" element={<WeeklyDigestPage />} />
             <Route path="search" element={<SearchPage />} />
             <Route path="admin/sources" element={<SourcesAdminPage />} />
-            <Route path="admin/users" element={<AdminOnly>{/* UsersAdminPage added in Task 8 */}<div /></AdminOnly>} />
+            <Route path="admin/users" element={<AdminOnly><UsersAdminPage /></AdminOnly>} />
             <Route path="crawl-runs/:id" element={<CrawlRunDetailPage />} />
             <Route path="context" element={<CompanyContextPage />} />
             <Route path="how-it-works" element={<HowItWorksPage />} />
