@@ -7,6 +7,7 @@ from app.database import get_db
 from app.models.source import Source
 from app.models.discovered_page import DiscoveredPage, DiscoveredPageStatus
 from app.schemas.source import SourceCreate, SourceRead, SourceUpdate
+from app.auth import require_admin
 
 
 class SourceSearchResult(BaseModel):
@@ -90,7 +91,7 @@ def list_sources(company_id: Optional[str] = None, db: Session = Depends(get_db)
     return sources_with_summary
 
 
-@router.post("", response_model=SourceRead, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=SourceRead, status_code=status.HTTP_201_CREATED, dependencies=[Depends(require_admin)])
 def create_source(payload: SourceCreate, db: Session = Depends(get_db)):
     existing = db.query(Source).filter(Source.url == payload.url).first()
     if existing:
@@ -104,7 +105,7 @@ def create_source(payload: SourceCreate, db: Session = Depends(get_db)):
     return result
 
 
-@router.put("/{source_id}", response_model=SourceRead)
+@router.put("/{source_id}", response_model=SourceRead, dependencies=[Depends(require_admin)])
 def update_source(source_id: str, payload: SourceUpdate, db: Session = Depends(get_db)):
     source = db.query(Source).filter(Source.id == source_id).first()
     if not source:
@@ -118,7 +119,7 @@ def update_source(source_id: str, payload: SourceUpdate, db: Session = Depends(g
     return result
 
 
-@router.delete("/{source_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{source_id}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(require_admin)])
 def delete_source(source_id: str, db: Session = Depends(get_db)):
     source = db.query(Source).filter(Source.id == source_id).first()
     if not source:

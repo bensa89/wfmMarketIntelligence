@@ -5,6 +5,7 @@ from typing import List
 from app.database import get_db
 from app.models.company import Company
 from app.schemas.company import CompanyCreate, CompanyRead, CompanyUpdate
+from app.auth import require_admin
 
 router = APIRouter()
 
@@ -24,7 +25,7 @@ def list_companies(db: Session = Depends(get_db)):
     return db.query(Company).all()
 
 
-@router.post("", response_model=CompanyRead, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=CompanyRead, status_code=status.HTTP_201_CREATED, dependencies=[Depends(require_admin)])
 def create_company(payload: CompanyCreate, db: Session = Depends(get_db)):
     existing = db.query(Company).filter(Company.slug == payload.slug).first()
     if existing:
@@ -44,7 +45,7 @@ def get_company(slug: str, db: Session = Depends(get_db)):
     return company
 
 
-@router.put("/{slug}", response_model=CompanyRead)
+@router.put("/{slug}", response_model=CompanyRead, dependencies=[Depends(require_admin)])
 def update_company(slug: str, payload: CompanyUpdate, db: Session = Depends(get_db)):
     company = db.query(Company).filter(Company.slug == slug).first()
     if not company:
@@ -56,7 +57,7 @@ def update_company(slug: str, payload: CompanyUpdate, db: Session = Depends(get_
     return company
 
 
-@router.delete("/{slug}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{slug}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(require_admin)])
 def delete_company(slug: str, db: Session = Depends(get_db)):
     company = db.query(Company).filter(Company.slug == slug).first()
     if not company:
@@ -65,7 +66,7 @@ def delete_company(slug: str, db: Session = Depends(get_db)):
     db.commit()
 
 
-@router.post("/{slug}/logo", response_model=CompanyRead)
+@router.post("/{slug}/logo", response_model=CompanyRead, dependencies=[Depends(require_admin)])
 async def upload_logo(
     slug: str,
     file: UploadFile = File(...),

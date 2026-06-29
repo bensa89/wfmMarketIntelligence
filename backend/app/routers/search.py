@@ -15,6 +15,7 @@ from app.schemas.search import (
     SourceCandidateApprove,
 )
 from app.searcher.pipeline import run_search_all_companies, run_search_for_company
+from app.auth import require_admin
 
 search_router = APIRouter()
 candidates_router = APIRouter()
@@ -71,7 +72,7 @@ def list_source_candidates(
     return q.order_by(SourceCandidate.created_at.desc()).all()
 
 
-@candidates_router.post("/{candidate_id}/approve/")
+@candidates_router.post("/{candidate_id}/approve/", dependencies=[Depends(require_admin)])
 def approve_source_candidate(
     candidate_id: str,
     body: SourceCandidateApprove,
@@ -98,7 +99,7 @@ def approve_source_candidate(
     return {"status": "approved", "source_id": source.id}
 
 
-@candidates_router.post("/{candidate_id}/reject/")
+@candidates_router.post("/{candidate_id}/reject/", dependencies=[Depends(require_admin)])
 def reject_source_candidate(
     candidate_id: str,
     db: Session = Depends(get_db),

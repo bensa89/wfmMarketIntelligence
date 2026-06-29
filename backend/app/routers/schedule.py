@@ -5,6 +5,7 @@ from app.database import get_db
 from app.models.schedule import ScheduleConfig
 from app.schemas.schedule import ScheduleConfigUpdate, ScheduleConfigRead, ScheduleStatusRead
 from app.scheduler import apply_schedule, get_next_run
+from app.auth import require_admin
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -30,7 +31,7 @@ def get_schedule(db: Session = Depends(get_db)):
     )
 
 
-@router.put("", response_model=ScheduleStatusRead)
+@router.put("", response_model=ScheduleStatusRead, dependencies=[Depends(require_admin)])
 def update_schedule(payload: ScheduleConfigUpdate, db: Session = Depends(get_db)):
     config = _get_or_create_config(db)
     for field, value in payload.model_dump().items():
@@ -47,7 +48,7 @@ def update_schedule(payload: ScheduleConfigUpdate, db: Session = Depends(get_db)
     )
 
 
-@router.post("/test-email")
+@router.post("/test-email", dependencies=[Depends(require_admin)])
 def test_email(db: Session = Depends(get_db)):
     from app.notifications.email import send_crawl_report
 
@@ -82,7 +83,7 @@ def test_email(db: Session = Depends(get_db)):
     return {"status": "sent", "recipients": config.email_recipients}
 
 
-@router.post("/test-digest-email")
+@router.post("/test-digest-email", dependencies=[Depends(require_admin)])
 def test_digest_email(db: Session = Depends(get_db)):
     from app.notifications.email import send_digest_email
     from app.models.digest import WeeklyDigest

@@ -9,12 +9,13 @@ from app.database import get_db
 from app.models.app_setting import AppSetting
 from app.schemas.settings_admin import AppSettingRead, AppSettingUpdate
 from app.settings_overrides import OVERRIDABLE_FIELDS, apply_override, default_value, reset_override
+from app.auth import require_admin
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.get("", response_model=List[AppSettingRead])
+@router.get("", response_model=List[AppSettingRead], dependencies=[Depends(require_admin)])
 def list_settings(db: Session = Depends(get_db)):
     overridden_keys = {row.key for row in db.query(AppSetting.key).all()}
     return [
@@ -28,7 +29,7 @@ def list_settings(db: Session = Depends(get_db)):
     ]
 
 
-@router.put("/{key}", response_model=AppSettingRead)
+@router.put("/{key}", response_model=AppSettingRead, dependencies=[Depends(require_admin)])
 def update_setting(key: str, payload: AppSettingUpdate, db: Session = Depends(get_db)):
     if key not in OVERRIDABLE_FIELDS:
         raise HTTPException(status_code=404, detail=f"Unknown setting: {key}")
@@ -51,7 +52,7 @@ def update_setting(key: str, payload: AppSettingUpdate, db: Session = Depends(ge
     )
 
 
-@router.delete("/{key}", response_model=AppSettingRead)
+@router.delete("/{key}", response_model=AppSettingRead, dependencies=[Depends(require_admin)])
 def delete_setting(key: str, db: Session = Depends(get_db)):
     if key not in OVERRIDABLE_FIELDS:
         raise HTTPException(status_code=404, detail=f"Unknown setting: {key}")

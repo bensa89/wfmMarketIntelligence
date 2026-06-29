@@ -7,6 +7,7 @@ from app.database import get_db
 from app.models.digest import WeeklyDigest
 from app.models.signal import Signal
 from app.schemas.digest import DigestRead, DigestSignalRead, DigestSection
+from app.auth import require_admin
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -75,7 +76,7 @@ def get_digest(digest_id: str, db: Session = Depends(get_db)):
 
 
 @router.post(
-    "/generate", response_model=DigestRead, status_code=status.HTTP_201_CREATED
+    "/generate", response_model=DigestRead, status_code=status.HTTP_201_CREATED, dependencies=[Depends(require_admin)]
 )
 def generate_digest(db: Session = Depends(get_db)):
     from app.digester.pipeline import generate_digest as run_pipeline

@@ -6,6 +6,7 @@ from app.models.context import InternalCompanyContext
 from app.models.external_company_view import ExternalCompanyView
 from app.schemas.context import ContextRead, ContextUpdate
 from app.schemas.external_company_view import ExternalCompanyViewRead
+from app.auth import require_admin
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -26,7 +27,7 @@ def get_context(db: Session = Depends(get_db)):
     return _get_or_create_context(db)
 
 
-@router.put("", response_model=ContextRead)
+@router.put("", response_model=ContextRead, dependencies=[Depends(require_admin)])
 def update_context(payload: ContextUpdate, db: Session = Depends(get_db)):
     ctx = _get_or_create_context(db)
     for field, value in payload.model_dump(exclude_unset=True).items():
