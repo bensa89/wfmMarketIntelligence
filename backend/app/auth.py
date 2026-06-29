@@ -16,6 +16,9 @@ def _verify_password(plain: str, hashed: str) -> bool:
     return _bcrypt.checkpw(plain.encode(), hashed.encode())
 
 
+verify_password = _verify_password
+
+
 def verify_credentials(
     credentials: HTTPBasicCredentials = Depends(security),
     db: Session = Depends(get_db),

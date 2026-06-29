@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime
 from app.models.user import UserRole
 
@@ -14,7 +14,7 @@ class UserRead(BaseModel):
 
 class UserCreate(BaseModel):
     username: str
-    password: str
+    password: str = Field(..., min_length=8)
     role: UserRole = UserRole.user
 
 
@@ -25,7 +25,7 @@ class UserUpdate(BaseModel):
 
 class PasswordChange(BaseModel):
     current_password: str
-    new_password: str
+    new_password: str = Field(..., min_length=8)
 
 
 class MeResponse(BaseModel):

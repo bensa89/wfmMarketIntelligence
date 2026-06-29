@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
 from app.database import get_db
-from app.auth import get_current_user, require_admin, hash_password, _verify_password
+from app.auth import get_current_user, require_admin, hash_password, verify_password
 from app.models.user import User, UserRole
 from app.schemas.user import UserRead, UserCreate, UserUpdate, PasswordChange, MeResponse
 
@@ -20,7 +20,7 @@ def change_own_password(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    if not _verify_password(payload.current_password, current_user.hashed_password):
+    if not verify_password(payload.current_password, current_user.hashed_password):
         raise HTTPException(status_code=400, detail="Current password is incorrect")
     current_user.hashed_password = hash_password(payload.new_password)
     db.commit()
