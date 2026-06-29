@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { setCredentials, clearCredentials } from '../api/client';
+import { setCredentials, clearCredentials, setCurrentUser } from '../api/client';
 import { useQueryClient } from '@tanstack/react-query';
 
 export default function LoginPage() {
@@ -25,6 +25,17 @@ export default function LoginPage() {
         },
       });
       if (res.ok) {
+        try {
+          const me = await fetch('/api/users/me', {
+            headers: { Authorization: `Basic ${btoa(`${username}:${password}`)}` },
+          });
+          if (me.ok) {
+            const userData = await me.json();
+            setCurrentUser(userData);
+          }
+        } catch {
+          // non-fatal: role-based UI will degrade gracefully
+        }
         qc.invalidateQueries();
         navigate('/');
       } else {

@@ -140,6 +140,32 @@ export function setCredentials(username: string, password: string): void {
 
 export function clearCredentials(): void {
   localStorage.removeItem('wfm_credentials');
+  clearCurrentUser();
+}
+
+export interface CurrentUser {
+  id: number;
+  username: string;
+  role: 'admin' | 'user';
+}
+
+export function setCurrentUser(user: CurrentUser): void {
+  localStorage.setItem('wfm_user', JSON.stringify(user));
+}
+
+export function clearCurrentUser(): void {
+  localStorage.removeItem('wfm_user');
+}
+
+export function getCurrentUser(): CurrentUser | null {
+  const stored = localStorage.getItem('wfm_user');
+  if (!stored) return null;
+  try {
+    return JSON.parse(stored) as CurrentUser;
+  } catch {
+    localStorage.removeItem('wfm_user');
+    return null;
+  }
 }
 
 export function hasCredentials(): boolean {
