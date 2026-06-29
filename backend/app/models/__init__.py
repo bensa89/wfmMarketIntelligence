@@ -1,3 +1,4 @@
+from app.models.user import User, UserRole  # noqa: F401
 from app.models.company import Company, CompanyType
 from app.models.source import Source, SourceType
 from app.models.document import Document
@@ -34,6 +35,8 @@ from app.models.llm_model_price import LlmModelPrice  # noqa: F401
 from app.models.app_setting import AppSetting  # noqa: F401
 
 __all__ = [
+    "User",
+    "UserRole",
     "Company",
     "CompanyType",
     "Source",
