@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import {
   LayoutDashboard, Users, TrendingUp, FileText, Settings, Search,
-  Globe, LogOut, Zap, BookOpen, Clock, Terminal, Menu, X, GitCommit, Calendar, Coins,
+  Globe, Zap, BookOpen, Clock, Terminal, Menu, X, GitCommit, Calendar, Coins,
   SlidersHorizontal,
 } from 'lucide-react';
 import { hasCredentials, clearCredentials } from '../api/client';
 import { useNavigate } from 'react-router-dom';
+import ProfilePopover from './ProfilePopover';
+import { useCurrentUser } from '../hooks/useCurrentUser';
 
 const navSections = [
   {
@@ -34,6 +36,7 @@ const navSections = [
       { to: '/admin/logs', label: 'Logs', icon: Terminal },
       { to: '/admin/llm-usage', label: 'LLM-Nutzung', icon: Coins },
       { to: '/admin/settings', label: 'Runtime-Settings', icon: SlidersHorizontal },
+      { to: '/admin/users', label: 'Benutzer', icon: Users },
       { to: '/context', label: 'Kontext', icon: Globe },
       { to: '/how-it-works', label: "Wie funktioniert's?", icon: BookOpen },
     ],
@@ -62,41 +65,45 @@ function SidebarLogo() {
   );
 }
 
-function NavItems({ onNavClick }: { onNavClick?: () => void }) {
+const ADMIN_ONLY_PATHS = ['/admin/sources', '/admin/schedule', '/admin/logs', '/admin/llm-usage', '/admin/settings', '/admin/users'];
+
+function NavItems({ onNavClick, isAdmin }: { onNavClick?: () => void; isAdmin: boolean }) {
   return (
     <div className="flex-1 overflow-y-auto">
-      {navSections.map((section) => (
-        <div key={section.label} className="pt-3.5 pb-1 px-2">
-          <p
-            className="text-[9px] font-semibold uppercase px-2 mb-1 tracking-widest"
-            style={{ color: 'rgba(248,250,252,0.20)' }}
-          >
-            {section.label}
-          </p>
-          {section.items.map(({ to, label, icon: Icon }) => (
-            <NavLink
-              key={to}
-              to={to}
-              end={to === '/'}
-              onClick={onNavClick}
-              className={({ isActive }) =>
-                `flex items-center gap-2 px-2 py-[7px] rounded-[7px] text-[13px] font-medium mb-px transition-colors ${
-                  isActive
-                    ? 'text-[#93c5fd]'
-                    : 'hover:bg-white/5 hover:text-slate-200'
-                }`
-              }
-              style={({ isActive }) => ({
-                background: isActive ? 'rgba(37,99,235,0.18)' : undefined,
-                color: isActive ? '#93c5fd' : 'rgba(248,250,252,0.45)',
-              })}
-            >
-              <Icon size={15} className="flex-shrink-0" />
-              {label}
-            </NavLink>
-          ))}
-        </div>
-      ))}
+      {navSections.map((section) => {
+        const items = section.label === 'Admin'
+          ? section.items.filter(item => isAdmin || !ADMIN_ONLY_PATHS.includes(item.to))
+          : section.items;
+        if (items.length === 0) return null;
+        return (
+          <div key={section.label} className="pt-3.5 pb-1 px-2">
+            <p className="text-[9px] font-semibold uppercase px-2 mb-1 tracking-widest"
+              style={{ color: 'rgba(248,250,252,0.20)' }}>
+              {section.label}
+            </p>
+            {items.map(({ to, label, icon: Icon }) => (
+              <NavLink
+                key={to}
+                to={to}
+                end={to === '/'}
+                onClick={onNavClick}
+                className={({ isActive }) =>
+                  `flex items-center gap-2 px-2 py-[7px] rounded-[7px] text-[13px] font-medium mb-px transition-colors ${
+                    isActive ? 'text-[#93c5fd]' : 'hover:bg-white/5 hover:text-slate-200'
+                  }`
+                }
+                style={({ isActive }) => ({
+                  background: isActive ? 'rgba(37,99,235,0.18)' : undefined,
+                  color: isActive ? '#93c5fd' : 'rgba(248,250,252,0.45)',
+                })}
+              >
+                <Icon size={15} className="flex-shrink-0" />
+                {label}
+              </NavLink>
+            ))}
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -125,24 +132,11 @@ function VersionBadge() {
   );
 }
 
-function LogoutButton({ onLogout }: { onLogout: () => void }) {
-  return (
-    <div className="px-2 py-3" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-      <button
-        onClick={onLogout}
-        className="flex items-center gap-2 w-full px-2 py-[7px] rounded-[7px] text-[12px] font-medium transition-colors hover:bg-white/5"
-        style={{ color: 'rgba(248,250,252,0.35)' }}
-      >
-        <LogOut size={14} />
-        Logout
-      </button>
-    </div>
-  );
-}
-
 export default function Layout() {
   const navigate = useNavigate();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const currentUser = useCurrentUser();
+  const isAdmin = currentUser?.isAdmin ?? false;
 
   function handleLogout() {
     clearCredentials();
@@ -162,8 +156,8 @@ export default function Layout() {
         style={{ background: '#0f172a' }}
       >
         <SidebarLogo />
-        <NavItems />
-        <LogoutButton onLogout={handleLogout} />
+        <NavItems isAdmin={isAdmin} />
+        <ProfilePopover onLogout={handleLogout} />
         <VersionBadge />
       </nav>
 
@@ -231,8 +225,8 @@ export default function Layout() {
             <X size={18} />
           </button>
         </div>
-        <NavItems onNavClick={() => setDrawerOpen(false)} />
-        <LogoutButton onLogout={handleLogout} />
+        <NavItems isAdmin={isAdmin} onNavClick={() => setDrawerOpen(false)} />
+        <ProfilePopover onLogout={handleLogout} />
         <VersionBadge />
       </nav>
 
