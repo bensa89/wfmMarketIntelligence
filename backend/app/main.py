@@ -2,12 +2,11 @@ import logging
 import pathlib
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Depends, HTTPException, status
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-import secrets
-from app.config import settings
+
+from app.auth import verify_credentials, hash_password
 
 logging.basicConfig(
     level=logging.INFO,
@@ -16,23 +15,24 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-security = HTTPBasic()
 
-
-def verify_credentials(credentials: HTTPBasicCredentials = Depends(security)):
-    correct_username = secrets.compare_digest(
-        credentials.username, settings.auth_username
-    )
-    correct_password = secrets.compare_digest(
-        credentials.password, settings.auth_password
-    )
-    if not (correct_username and correct_password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid credentials",
-            headers={"WWW-Authenticate": "Basic"},
-        )
-    return credentials.username
+def _seed_initial_admin():
+    from app.database import SessionLocal
+    from app.models.user import User, UserRole
+    db = SessionLocal()
+    try:
+        if not db.query(User).first():
+            admin = User(
+                username="admin",
+                hashed_password=hash_password("changeme"),
+                role=UserRole.admin,
+                is_active=True,
+            )
+            db.add(admin)
+            db.commit()
+            logger.info("Seeded initial admin user (admin/changeme)")
+    finally:
+        db.close()
 
 
 @asynccontextmanager
@@ -44,6 +44,7 @@ async def lifespan(app: FastAPI):
     from app.settings_overrides import load_overrides_from_db
 
     log_stream.install()
+    _seed_initial_admin()
 
     try:
         sched_module.startup_scheduler(engine)

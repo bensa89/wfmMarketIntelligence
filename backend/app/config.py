@@ -5,8 +5,6 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", env_ignore_empty=True)
 
     database_url: str = "postgresql://wfm:wfm@localhost:5432/wfmintel"
-    auth_username: str = "admin"
-    auth_password: str = "changeme"
     llm_provider: str = "claude"
     anthropic_api_key: str = ""
     claude_model: str = "claude-haiku-4-5-20251001"

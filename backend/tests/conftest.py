@@ -1,8 +1,6 @@
 import base64
 import os
 
-os.environ["AUTH_USERNAME"] = "testuser"
-os.environ["AUTH_PASSWORD"] = "testpass"
 os.environ["DATABASE_URL"] = "sqlite:///./test_app.db"
 
 import pytest
@@ -18,6 +16,9 @@ TEST_DATABASE_URL = f"sqlite:///{TEST_DB_PATH}"
 
 AUTH_HEADER = {
     "Authorization": "Basic " + base64.b64encode(b"testuser:testpass").decode()
+}
+USER_AUTH_HEADER = {
+    "Authorization": "Basic " + base64.b64encode(b"regularuser:userpass").decode()
 }
 
 
@@ -51,8 +52,17 @@ def db_engine():
 
 @pytest.fixture(scope="function")
 def db_session(db_engine):
+    from app.models.user import User, UserRole
+    from app.auth import hash_password
+
     Session = sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
     session = Session()
+
+    admin = User(username="testuser", hashed_password=hash_password("testpass"), role=UserRole.admin, is_active=True)
+    regular = User(username="regularuser", hashed_password=hash_password("userpass"), role=UserRole.user, is_active=True)
+    session.add_all([admin, regular])
+    session.commit()
+
     yield session
     session.close()
 
@@ -70,6 +80,25 @@ def client(db_session):
          patch("app.scheduler.shutdown_scheduler", lambda: None), \
          patch("app.scheduler.apply_schedule", lambda config: None):
         with TestClient(app, headers=AUTH_HEADER) as c:
+            yield c
+
+    app.dependency_overrides.clear()
+
+
+@pytest.fixture(scope="function")
+def user_client(db_session):
+    """TestClient authenticated as a regular (non-admin) user."""
+    from app.main import app
+
+    def override_get_db():
+        yield db_session
+
+    app.dependency_overrides[get_db] = override_get_db
+
+    with patch("app.scheduler.startup_scheduler", lambda engine: None), \
+         patch("app.scheduler.shutdown_scheduler", lambda: None), \
+         patch("app.scheduler.apply_schedule", lambda config: None):
+        with TestClient(app, headers=USER_AUTH_HEADER) as c:
             yield c
 
     app.dependency_overrides.clear()
