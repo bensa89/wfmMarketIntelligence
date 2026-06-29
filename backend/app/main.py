@@ -112,6 +112,7 @@ from app.routers import (
     logs,
     llm_usage,
     settings_admin,
+    users,
 )  # noqa: E402
 
 app.include_router(companies.router, prefix="/api/companies", tags=["companies"])
@@ -141,6 +142,7 @@ app.include_router(schedule.router, prefix="/api/schedule", tags=["schedule"])
 app.include_router(logs.router, prefix="/api/logs", tags=["logs"])
 app.include_router(llm_usage.router, prefix="/api/llm-usage", tags=["llm-usage"])
 app.include_router(settings_admin.router, prefix="/api/admin/settings", tags=["settings-admin"])
+app.include_router(users.router, prefix="/api/users", tags=["users"])
 
 
 @app.get("/api/health")
