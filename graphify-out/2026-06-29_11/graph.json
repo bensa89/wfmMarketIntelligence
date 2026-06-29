@@ -162,364 +162,94 @@
   },
   "nodes": [
     {
-      "label": "auth.py",
-      "file_type": "code",
-      "source_file": "app/auth.py",
-      "source_location": "L1",
-      "id": "app_auth_py",
-      "community": 47,
-      "norm_label": "auth.py"
-    },
-    {
-      "label": "hash_password()",
-      "file_type": "code",
-      "source_file": "app/auth.py",
-      "source_location": "L11",
-      "id": "app_auth_hash_password",
-      "community": 47,
-      "norm_label": "hash_password()"
-    },
-    {
-      "label": "_verify_password()",
-      "file_type": "code",
-      "source_file": "app/auth.py",
-      "source_location": "L15",
-      "id": "app_auth_verify_password",
-      "community": 47,
-      "norm_label": "_verify_password()"
-    },
-    {
-      "label": "verify_credentials()",
-      "file_type": "code",
-      "source_file": "app/auth.py",
-      "source_location": "L22",
-      "id": "app_auth_verify_credentials",
-      "community": 47,
-      "norm_label": "verify_credentials()"
-    },
-    {
-      "label": "require_admin()",
-      "file_type": "code",
-      "source_file": "app/auth.py",
-      "source_location": "L45",
-      "id": "app_auth_require_admin",
-      "community": 47,
-      "norm_label": "require_admin()"
-    },
-    {
-      "label": "users.py",
-      "file_type": "code",
-      "source_file": "app/routers/users.py",
-      "source_location": "L1",
-      "id": "app_routers_users_py",
-      "community": 47,
-      "norm_label": "users.py"
-    },
-    {
-      "label": "get_me()",
-      "file_type": "code",
-      "source_file": "app/routers/users.py",
-      "source_location": "L13",
-      "id": "routers_users_get_me",
-      "community": 47,
-      "norm_label": "get_me()"
-    },
-    {
-      "label": "change_own_password()",
-      "file_type": "code",
-      "source_file": "app/routers/users.py",
-      "source_location": "L18",
-      "id": "routers_users_change_own_password",
-      "community": 47,
-      "norm_label": "change_own_password()"
-    },
-    {
-      "label": "list_users()",
-      "file_type": "code",
-      "source_file": "app/routers/users.py",
-      "source_location": "L32",
-      "id": "routers_users_list_users",
-      "community": 47,
-      "norm_label": "list_users()"
-    },
-    {
-      "label": "create_user()",
-      "file_type": "code",
-      "source_file": "app/routers/users.py",
-      "source_location": "L37",
-      "id": "routers_users_create_user",
-      "community": 47,
-      "norm_label": "create_user()"
-    },
-    {
-      "label": "update_user()",
-      "file_type": "code",
-      "source_file": "app/routers/users.py",
-      "source_location": "L53",
-      "id": "routers_users_update_user",
-      "community": 47,
-      "norm_label": "update_user()"
-    },
-    {
-      "label": "delete_user()",
-      "file_type": "code",
-      "source_file": "app/routers/users.py",
-      "source_location": "L65",
-      "id": "routers_users_delete_user",
-      "community": 47,
-      "norm_label": "delete_user()"
-    },
-    {
-      "label": "user.py",
-      "file_type": "code",
-      "source_file": "app/schemas/user.py",
-      "source_location": "L1",
-      "id": "app_schemas_user_py",
-      "community": 88,
-      "norm_label": "user.py"
-    },
-    {
-      "label": "UserRead",
-      "file_type": "code",
-      "source_file": "app/schemas/user.py",
-      "source_location": "L6",
-      "id": "schemas_user_userread",
-      "community": 88,
-      "norm_label": "userread"
-    },
-    {
-      "label": "BaseModel",
-      "file_type": "code",
-      "source_file": "",
-      "source_location": "",
-      "id": "basemodel",
-      "community": 16,
-      "norm_label": "basemodel"
-    },
-    {
-      "label": "UserCreate",
-      "file_type": "code",
-      "source_file": "app/schemas/user.py",
-      "source_location": "L15",
-      "id": "schemas_user_usercreate",
-      "community": 88,
-      "norm_label": "usercreate"
-    },
-    {
-      "label": "UserUpdate",
-      "file_type": "code",
-      "source_file": "app/schemas/user.py",
-      "source_location": "L21",
-      "id": "schemas_user_userupdate",
-      "community": 88,
-      "norm_label": "userupdate"
-    },
-    {
-      "label": "PasswordChange",
-      "file_type": "code",
-      "source_file": "app/schemas/user.py",
-      "source_location": "L26",
-      "id": "schemas_user_passwordchange",
-      "community": 88,
-      "norm_label": "passwordchange"
-    },
-    {
-      "label": "MeResponse",
-      "file_type": "code",
-      "source_file": "app/schemas/user.py",
-      "source_location": "L31",
-      "id": "schemas_user_meresponse",
-      "community": 88,
-      "norm_label": "meresponse"
-    },
-    {
-      "label": "test_users.py",
-      "file_type": "code",
-      "source_file": "tests/test_users.py",
-      "source_location": "L1",
-      "id": "tests_test_users_py",
-      "community": 80,
-      "norm_label": "test_users.py"
-    },
-    {
-      "label": "test_me_returns_current_user()",
-      "file_type": "code",
-      "source_file": "tests/test_users.py",
-      "source_location": "L1",
-      "id": "tests_test_users_test_me_returns_current_user",
-      "community": 80,
-      "norm_label": "test_me_returns_current_user()"
-    },
-    {
-      "label": "test_list_users_admin_only()",
-      "file_type": "code",
-      "source_file": "tests/test_users.py",
-      "source_location": "L9",
-      "id": "tests_test_users_test_list_users_admin_only",
-      "community": 80,
-      "norm_label": "test_list_users_admin_only()"
-    },
-    {
-      "label": "test_create_user()",
-      "file_type": "code",
-      "source_file": "tests/test_users.py",
-      "source_location": "L14",
-      "id": "tests_test_users_test_create_user",
-      "community": 80,
-      "norm_label": "test_create_user()"
-    },
-    {
-      "label": "test_create_duplicate_username_fails()",
-      "file_type": "code",
-      "source_file": "tests/test_users.py",
-      "source_location": "L21",
-      "id": "tests_test_users_test_create_duplicate_username_fails",
-      "community": 80,
-      "norm_label": "test_create_duplicate_username_fails()"
-    },
-    {
-      "label": "test_create_user_requires_admin()",
-      "file_type": "code",
-      "source_file": "tests/test_users.py",
-      "source_location": "L27",
-      "id": "tests_test_users_test_create_user_requires_admin",
-      "community": 80,
-      "norm_label": "test_create_user_requires_admin()"
-    },
-    {
-      "label": "test_update_user_role()",
-      "file_type": "code",
-      "source_file": "tests/test_users.py",
-      "source_location": "L32",
-      "id": "tests_test_users_test_update_user_role",
-      "community": 80,
-      "norm_label": "test_update_user_role()"
-    },
-    {
-      "label": "test_delete_last_admin_blocked()",
-      "file_type": "code",
-      "source_file": "tests/test_users.py",
-      "source_location": "L40",
-      "id": "tests_test_users_test_delete_last_admin_blocked",
-      "community": 80,
-      "norm_label": "test_delete_last_admin_blocked()"
-    },
-    {
-      "label": "test_delete_user()",
-      "file_type": "code",
-      "source_file": "tests/test_users.py",
-      "source_location": "L47",
-      "id": "tests_test_users_test_delete_user",
-      "community": 80,
-      "norm_label": "test_delete_user()"
-    },
-    {
-      "label": "test_change_own_password()",
-      "file_type": "code",
-      "source_file": "tests/test_users.py",
-      "source_location": "L53",
-      "id": "tests_test_users_test_change_own_password",
-      "community": 80,
-      "norm_label": "test_change_own_password()"
-    },
-    {
-      "label": "test_change_own_password_wrong_current()",
-      "file_type": "code",
-      "source_file": "tests/test_users.py",
-      "source_location": "L58",
-      "id": "tests_test_users_test_change_own_password_wrong_current",
-      "community": 80,
-      "norm_label": "test_change_own_password_wrong_current()"
-    },
-    {
       "label": "App.tsx",
       "file_type": "code",
       "source_file": "App.tsx",
       "source_location": "L1",
+      "id": "app_tsx",
       "community": 1,
-      "norm_label": "app.tsx",
-      "id": "app_tsx"
+      "norm_label": "app.tsx"
     },
     {
       "label": "queryClient",
       "file_type": "code",
       "source_file": "App.tsx",
       "source_location": "L25",
+      "id": "src_app_queryclient",
       "community": 1,
-      "norm_label": "queryclient",
-      "id": "src_app_queryclient"
+      "norm_label": "queryclient"
     },
     {
       "label": "AdminOnly()",
       "file_type": "code",
       "source_file": "App.tsx",
       "source_location": "L35",
+      "id": "src_app_adminonly",
       "community": 1,
-      "norm_label": "adminonly()",
-      "id": "src_app_adminonly"
+      "norm_label": "adminonly()"
     },
     {
       "label": "App()",
       "file_type": "code",
       "source_file": "App.tsx",
       "source_location": "L41",
+      "id": "src_app_app",
       "community": 1,
-      "norm_label": "app()",
-      "id": "src_app_app"
+      "norm_label": "app()"
     },
     {
       "label": "UsersAdminPage.tsx",
       "file_type": "code",
       "source_file": "pages/UsersAdminPage.tsx",
       "source_location": "L1",
+      "id": "pages_usersadminpage_tsx",
       "community": 1,
-      "norm_label": "usersadminpage.tsx",
-      "id": "pages_usersadminpage_tsx"
+      "norm_label": "usersadminpage.tsx"
     },
     {
       "label": "User",
       "file_type": "code",
       "source_file": "pages/UsersAdminPage.tsx",
       "source_location": "L6",
+      "id": "pages_usersadminpage_user",
       "community": 1,
-      "norm_label": "user",
-      "id": "pages_usersadminpage_user"
+      "norm_label": "user"
     },
     {
       "label": "CreateUserPayload",
       "file_type": "code",
       "source_file": "pages/UsersAdminPage.tsx",
       "source_location": "L14",
+      "id": "pages_usersadminpage_createuserpayload",
       "community": 1,
-      "norm_label": "createuserpayload",
-      "id": "pages_usersadminpage_createuserpayload"
+      "norm_label": "createuserpayload"
     },
     {
       "label": "useUsers()",
       "file_type": "code",
       "source_file": "pages/UsersAdminPage.tsx",
       "source_location": "L20",
+      "id": "pages_usersadminpage_useusers",
       "community": 1,
-      "norm_label": "useusers()",
-      "id": "pages_usersadminpage_useusers"
+      "norm_label": "useusers()"
     },
     {
       "label": "CreateUserModal()",
       "file_type": "code",
       "source_file": "pages/UsersAdminPage.tsx",
       "source_location": "L24",
+      "id": "pages_usersadminpage_createusermodal",
       "community": 1,
-      "norm_label": "createusermodal()",
-      "id": "pages_usersadminpage_createusermodal"
+      "norm_label": "createusermodal()"
     },
     {
       "label": "UsersAdminPage()",
       "file_type": "code",
       "source_file": "pages/UsersAdminPage.tsx",
       "source_location": "L74",
+      "id": "pages_usersadminpage_usersadminpage",
       "community": 1,
-      "norm_label": "usersadminpage()",
-      "id": "pages_usersadminpage_usersadminpage"
+      "norm_label": "usersadminpage()"
     },
     {
       "label": "SearchPage.tsx",
@@ -1354,7 +1084,7 @@
       "file_type": "code",
       "source_file": "app/routers/sources.py",
       "source_location": "L1",
-      "community": 24,
+      "community": 182,
       "norm_label": "sources.py",
       "id": "app_routers_sources_py"
     },
@@ -1363,16 +1093,25 @@
       "file_type": "code",
       "source_file": "app/routers/sources.py",
       "source_location": "L13",
-      "community": 24,
+      "community": 182,
       "norm_label": "sourcesearchresult",
       "id": "routers_sources_sourcesearchresult"
+    },
+    {
+      "label": "BaseModel",
+      "file_type": "code",
+      "source_file": "",
+      "source_location": "",
+      "community": 16,
+      "norm_label": "basemodel",
+      "id": "basemodel"
     },
     {
       "label": "_attach_summary()",
       "file_type": "code",
       "source_file": "app/routers/sources.py",
       "source_location": "L21",
-      "community": 24,
+      "community": 182,
       "norm_label": "_attach_summary()",
       "id": "routers_sources_attach_summary"
     },
@@ -1381,7 +1120,7 @@
       "file_type": "code",
       "source_file": "app/routers/sources.py",
       "source_location": "L36",
-      "community": 24,
+      "community": 182,
       "norm_label": "search_sources()",
       "id": "routers_sources_search_sources"
     },
@@ -1390,7 +1129,7 @@
       "file_type": "code",
       "source_file": "app/routers/sources.py",
       "source_location": "L81",
-      "community": 24,
+      "community": 182,
       "norm_label": "list_sources()",
       "id": "routers_sources_list_sources"
     },
@@ -1399,7 +1138,7 @@
       "file_type": "code",
       "source_file": "app/routers/sources.py",
       "source_location": "L95",
-      "community": 24,
+      "community": 182,
       "norm_label": "create_source()",
       "id": "routers_sources_create_source"
     },
@@ -1408,7 +1147,7 @@
       "file_type": "code",
       "source_file": "app/routers/sources.py",
       "source_location": "L109",
-      "community": 24,
+      "community": 182,
       "norm_label": "update_source()",
       "id": "routers_sources_update_source"
     },
@@ -1417,7 +1156,7 @@
       "file_type": "code",
       "source_file": "app/routers/sources.py",
       "source_location": "L123",
-      "community": 24,
+      "community": 182,
       "norm_label": "delete_source()",
       "id": "routers_sources_delete_source"
     },
@@ -1507,7 +1246,7 @@
       "file_type": "code",
       "source_file": "app/main.py",
       "source_location": "L1",
-      "community": 47,
+      "community": 214,
       "norm_label": "main.py",
       "id": "app_main_py"
     },
@@ -1516,7 +1255,7 @@
       "file_type": "code",
       "source_file": "app/main.py",
       "source_location": "L19",
-      "community": 47,
+      "community": 214,
       "norm_label": "_seed_initial_admin()",
       "id": "app_main_seed_initial_admin"
     },
@@ -1525,7 +1264,7 @@
       "file_type": "code",
       "source_file": "app/main.py",
       "source_location": "L39",
-      "community": 47,
+      "community": 214,
       "norm_label": "lifespan()",
       "id": "app_main_lifespan"
     },
@@ -1534,9 +1273,216 @@
       "file_type": "code",
       "source_file": "app/main.py",
       "source_location": "L149",
-      "community": 47,
+      "community": 214,
       "norm_label": "health()",
       "id": "app_main_health"
+    },
+    {
+      "label": "users.py",
+      "file_type": "code",
+      "source_file": "app/routers/users.py",
+      "source_location": "L1",
+      "community": 216,
+      "norm_label": "users.py",
+      "id": "app_routers_users_py"
+    },
+    {
+      "label": "get_me()",
+      "file_type": "code",
+      "source_file": "app/routers/users.py",
+      "source_location": "L13",
+      "community": 216,
+      "norm_label": "get_me()",
+      "id": "routers_users_get_me"
+    },
+    {
+      "label": "change_own_password()",
+      "file_type": "code",
+      "source_file": "app/routers/users.py",
+      "source_location": "L18",
+      "community": 216,
+      "norm_label": "change_own_password()",
+      "id": "routers_users_change_own_password"
+    },
+    {
+      "label": "list_users()",
+      "file_type": "code",
+      "source_file": "app/routers/users.py",
+      "source_location": "L32",
+      "community": 216,
+      "norm_label": "list_users()",
+      "id": "routers_users_list_users"
+    },
+    {
+      "label": "create_user()",
+      "file_type": "code",
+      "source_file": "app/routers/users.py",
+      "source_location": "L37",
+      "community": 216,
+      "norm_label": "create_user()",
+      "id": "routers_users_create_user"
+    },
+    {
+      "label": "update_user()",
+      "file_type": "code",
+      "source_file": "app/routers/users.py",
+      "source_location": "L53",
+      "community": 216,
+      "norm_label": "update_user()",
+      "id": "routers_users_update_user"
+    },
+    {
+      "label": "delete_user()",
+      "file_type": "code",
+      "source_file": "app/routers/users.py",
+      "source_location": "L65",
+      "community": 216,
+      "norm_label": "delete_user()",
+      "id": "routers_users_delete_user"
+    },
+    {
+      "label": "test_users.py",
+      "file_type": "code",
+      "source_file": "tests/test_users.py",
+      "source_location": "L1",
+      "community": 80,
+      "norm_label": "test_users.py",
+      "id": "tests_test_users_py"
+    },
+    {
+      "label": "test_me_returns_current_user()",
+      "file_type": "code",
+      "source_file": "tests/test_users.py",
+      "source_location": "L1",
+      "community": 80,
+      "norm_label": "test_me_returns_current_user()",
+      "id": "tests_test_users_test_me_returns_current_user"
+    },
+    {
+      "label": "test_list_users_admin_only()",
+      "file_type": "code",
+      "source_file": "tests/test_users.py",
+      "source_location": "L9",
+      "community": 80,
+      "norm_label": "test_list_users_admin_only()",
+      "id": "tests_test_users_test_list_users_admin_only"
+    },
+    {
+      "label": "test_create_user()",
+      "file_type": "code",
+      "source_file": "tests/test_users.py",
+      "source_location": "L14",
+      "community": 80,
+      "norm_label": "test_create_user()",
+      "id": "tests_test_users_test_create_user"
+    },
+    {
+      "label": "test_create_duplicate_username_fails()",
+      "file_type": "code",
+      "source_file": "tests/test_users.py",
+      "source_location": "L21",
+      "community": 80,
+      "norm_label": "test_create_duplicate_username_fails()",
+      "id": "tests_test_users_test_create_duplicate_username_fails"
+    },
+    {
+      "label": "test_create_user_requires_admin()",
+      "file_type": "code",
+      "source_file": "tests/test_users.py",
+      "source_location": "L27",
+      "community": 80,
+      "norm_label": "test_create_user_requires_admin()",
+      "id": "tests_test_users_test_create_user_requires_admin"
+    },
+    {
+      "label": "test_update_user_role()",
+      "file_type": "code",
+      "source_file": "tests/test_users.py",
+      "source_location": "L32",
+      "community": 80,
+      "norm_label": "test_update_user_role()",
+      "id": "tests_test_users_test_update_user_role"
+    },
+    {
+      "label": "test_delete_last_admin_blocked()",
+      "file_type": "code",
+      "source_file": "tests/test_users.py",
+      "source_location": "L40",
+      "community": 80,
+      "norm_label": "test_delete_last_admin_blocked()",
+      "id": "tests_test_users_test_delete_last_admin_blocked"
+    },
+    {
+      "label": "test_delete_user()",
+      "file_type": "code",
+      "source_file": "tests/test_users.py",
+      "source_location": "L47",
+      "community": 80,
+      "norm_label": "test_delete_user()",
+      "id": "tests_test_users_test_delete_user"
+    },
+    {
+      "label": "test_change_own_password()",
+      "file_type": "code",
+      "source_file": "tests/test_users.py",
+      "source_location": "L53",
+      "community": 80,
+      "norm_label": "test_change_own_password()",
+      "id": "tests_test_users_test_change_own_password"
+    },
+    {
+      "label": "test_change_own_password_wrong_current()",
+      "file_type": "code",
+      "source_file": "tests/test_users.py",
+      "source_location": "L58",
+      "community": 80,
+      "norm_label": "test_change_own_password_wrong_current()",
+      "id": "tests_test_users_test_change_own_password_wrong_current"
+    },
+    {
+      "label": "auth.py",
+      "file_type": "code",
+      "source_file": "app/auth.py",
+      "source_location": "L1",
+      "community": 58,
+      "norm_label": "auth.py",
+      "id": "app_auth_py"
+    },
+    {
+      "label": "hash_password()",
+      "file_type": "code",
+      "source_file": "app/auth.py",
+      "source_location": "L11",
+      "community": 58,
+      "norm_label": "hash_password()",
+      "id": "app_auth_hash_password"
+    },
+    {
+      "label": "_verify_password()",
+      "file_type": "code",
+      "source_file": "app/auth.py",
+      "source_location": "L15",
+      "community": 58,
+      "norm_label": "_verify_password()",
+      "id": "app_auth_verify_password"
+    },
+    {
+      "label": "verify_credentials()",
+      "file_type": "code",
+      "source_file": "app/auth.py",
+      "source_location": "L19",
+      "community": 58,
+      "norm_label": "verify_credentials()",
+      "id": "app_auth_verify_credentials"
+    },
+    {
+      "label": "require_admin()",
+      "file_type": "code",
+      "source_file": "app/auth.py",
+      "source_location": "L42",
+      "community": 58,
+      "norm_label": "require_admin()",
+      "id": "app_auth_require_admin"
     },
     {
       "label": "config.py",
@@ -1597,7 +1543,7 @@
       "file_type": "code",
       "source_file": "tests/conftest.py",
       "source_location": "L71",
-      "community": 58,
+      "community": 53,
       "norm_label": "client()",
       "id": "tests_conftest_client"
     },
@@ -1741,7 +1687,7 @@
       "file_type": "code",
       "source_file": "",
       "source_location": "",
-      "community": 13,
+      "community": 69,
       "norm_label": "str",
       "id": "str"
     },
@@ -1762,6 +1708,60 @@
       "community": 69,
       "norm_label": "base",
       "id": "base"
+    },
+    {
+      "label": "user.py",
+      "file_type": "code",
+      "source_file": "app/schemas/user.py",
+      "source_location": "L1",
+      "community": 88,
+      "norm_label": "user.py",
+      "id": "app_schemas_user_py"
+    },
+    {
+      "label": "UserRead",
+      "file_type": "code",
+      "source_file": "app/schemas/user.py",
+      "source_location": "L6",
+      "community": 88,
+      "norm_label": "userread",
+      "id": "schemas_user_userread"
+    },
+    {
+      "label": "UserCreate",
+      "file_type": "code",
+      "source_file": "app/schemas/user.py",
+      "source_location": "L15",
+      "community": 88,
+      "norm_label": "usercreate",
+      "id": "schemas_user_usercreate"
+    },
+    {
+      "label": "UserUpdate",
+      "file_type": "code",
+      "source_file": "app/schemas/user.py",
+      "source_location": "L21",
+      "community": 88,
+      "norm_label": "userupdate",
+      "id": "schemas_user_userupdate"
+    },
+    {
+      "label": "PasswordChange",
+      "file_type": "code",
+      "source_file": "app/schemas/user.py",
+      "source_location": "L26",
+      "community": 88,
+      "norm_label": "passwordchange",
+      "id": "schemas_user_passwordchange"
+    },
+    {
+      "label": "MeResponse",
+      "file_type": "code",
+      "source_file": "app/schemas/user.py",
+      "source_location": "L31",
+      "community": 88,
+      "norm_label": "meresponse",
+      "id": "schemas_user_meresponse"
     },
     {
       "label": "2026-06-29-user-management.md",
@@ -2452,7 +2452,7 @@
       "file_type": "code",
       "source_file": "components/InfoTooltip.tsx",
       "source_location": "L1",
-      "community": 38,
+      "community": 43,
       "norm_label": "infotooltip.tsx",
       "id": "components_infotooltip_tsx"
     },
@@ -2461,7 +2461,7 @@
       "file_type": "code",
       "source_file": "components/InfoTooltip.tsx",
       "source_location": "L3",
-      "community": 38,
+      "community": 43,
       "norm_label": "props",
       "id": "components_infotooltip_props"
     },
@@ -2470,7 +2470,7 @@
       "file_type": "code",
       "source_file": "components/InfoTooltip.tsx",
       "source_location": "L9",
-      "community": 38,
+      "community": 43,
       "norm_label": "infotooltip()",
       "id": "components_infotooltip_infotooltip"
     },
@@ -2596,7 +2596,7 @@
       "file_type": "code",
       "source_file": "components/workspace/RelativeCapabilityStrengthPanel.tsx",
       "source_location": "L141",
-      "community": 43,
+      "community": 90,
       "norm_label": "relativecapabilitystrengthpanel()",
       "id": "workspace_relativecapabilitystrengthpanel_relativecapabilitystrengthpanel"
     },
@@ -2605,7 +2605,7 @@
       "file_type": "code",
       "source_file": "pages/CompetitorWorkspacePage.tsx",
       "source_location": "L1",
-      "community": 43,
+      "community": 90,
       "norm_label": "competitorworkspacepage.tsx",
       "id": "pages_competitorworkspacepage_tsx"
     },
@@ -2623,7 +2623,7 @@
       "file_type": "code",
       "source_file": "pages/CompetitorWorkspacePage.tsx",
       "source_location": "L30",
-      "community": 43,
+      "community": 90,
       "norm_label": "competitorworkspacepage()",
       "id": "pages_competitorworkspacepage_competitorworkspacepage"
     },
@@ -2830,7 +2830,7 @@
       "file_type": "code",
       "source_file": "DashboardKPIRow.tsx",
       "source_location": "L1",
-      "community": 35,
+      "community": 231,
       "norm_label": "dashboardkpirow.tsx",
       "id": "dashboardkpirow_tsx"
     },
@@ -2839,7 +2839,7 @@
       "file_type": "code",
       "source_file": "DashboardKPIRow.tsx",
       "source_location": "L5",
-      "community": 35,
+      "community": 231,
       "norm_label": "props",
       "id": "overview_dashboardkpirow_props"
     },
@@ -2848,7 +2848,7 @@
       "file_type": "code",
       "source_file": "DashboardKPIRow.tsx",
       "source_location": "L10",
-      "community": 35,
+      "community": 231,
       "norm_label": "dashboardkpirow()",
       "id": "overview_dashboardkpirow_dashboardkpirow"
     },
@@ -3154,7 +3154,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/workspace/CapabilityExplainDrawer.tsx",
       "source_location": "L286",
-      "community": 43,
+      "community": 90,
       "norm_label": "capabilityexplaindrawer()",
       "id": "workspace_capabilityexplaindrawer_capabilityexplaindrawer"
     },
@@ -3217,7 +3217,7 @@
       "file_type": "code",
       "source_file": "frontend/src/pages/CompetitorListPage.tsx",
       "source_location": "L1",
-      "community": 5,
+      "community": 29,
       "norm_label": "competitorlistpage.tsx",
       "id": "frontend_src_pages_competitorlistpage_tsx"
     },
@@ -3226,7 +3226,7 @@
       "file_type": "code",
       "source_file": "frontend/src/pages/CompetitorListPage.tsx",
       "source_location": "L16",
-      "community": 5,
+      "community": 29,
       "norm_label": "competitorlistpage()",
       "id": "pages_competitorlistpage_competitorlistpage"
     },
@@ -3361,7 +3361,7 @@
       "file_type": "code",
       "source_file": "frontend/src/pages/ScheduleAdminPage.tsx",
       "source_location": "L37",
-      "community": 47,
+      "community": 214,
       "norm_label": "scheduleconfig",
       "id": "pages_scheduleadminpage_scheduleconfig"
     },
@@ -3586,7 +3586,7 @@
       "file_type": "code",
       "source_file": "backend/app/models/signal_assessment.py",
       "source_location": "L1",
-      "community": 13,
+      "community": 69,
       "norm_label": "signal_assessment.py",
       "id": "backend_app_models_signal_assessment_py"
     },
@@ -3595,7 +3595,7 @@
       "file_type": "code",
       "source_file": "backend/app/models/signal_assessment.py",
       "source_location": "L9",
-      "community": 13,
+      "community": 69,
       "norm_label": "signalclass",
       "id": "models_signal_assessment_signalclass"
     },
@@ -3604,7 +3604,7 @@
       "file_type": "code",
       "source_file": "backend/app/models/signal_assessment.py",
       "source_location": "L19",
-      "community": 13,
+      "community": 69,
       "norm_label": "visibilityimpact",
       "id": "models_signal_assessment_visibilityimpact"
     },
@@ -3613,7 +3613,7 @@
       "file_type": "code",
       "source_file": "backend/app/models/signal_assessment.py",
       "source_location": "L25",
-      "community": 13,
+      "community": 69,
       "norm_label": "movementstrength",
       "id": "models_signal_assessment_movementstrength"
     },
@@ -3748,7 +3748,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/signals/SignalDetailDrawer.tsx",
       "source_location": "L1",
-      "community": 209,
+      "community": 13,
       "norm_label": "signaldetaildrawer.tsx",
       "id": "frontend_src_components_signals_signaldetaildrawer_tsx"
     },
@@ -3757,7 +3757,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/signals/SignalDetailDrawer.tsx",
       "source_location": "L16",
-      "community": 209,
+      "community": 13,
       "norm_label": "props",
       "id": "signals_signaldetaildrawer_props"
     },
@@ -3766,7 +3766,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/signals/SignalDetailDrawer.tsx",
       "source_location": "L22",
-      "community": 209,
+      "community": 13,
       "norm_label": "visibility_labels",
       "id": "signals_signaldetaildrawer_visibility_labels"
     },
@@ -3775,7 +3775,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/signals/SignalDetailDrawer.tsx",
       "source_location": "L28",
-      "community": 209,
+      "community": 13,
       "norm_label": "signaldetaildrawer()",
       "id": "signals_signaldetaildrawer_signaldetaildrawer"
     },
@@ -3784,7 +3784,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/signals/SignalFeedTable.tsx",
       "source_location": "L1",
-      "community": 231,
+      "community": 209,
       "norm_label": "signalfeedtable.tsx",
       "id": "frontend_src_components_signals_signalfeedtable_tsx"
     },
@@ -3793,7 +3793,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/signals/SignalFeedTable.tsx",
       "source_location": "L9",
-      "community": 231,
+      "community": 209,
       "norm_label": "rendercapabilityicon()",
       "id": "signals_signalfeedtable_rendercapabilityicon"
     },
@@ -3802,7 +3802,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/signals/SignalFeedTable.tsx",
       "source_location": "L15",
-      "community": 231,
+      "community": 209,
       "norm_label": "props",
       "id": "signals_signalfeedtable_props"
     },
@@ -3811,7 +3811,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/signals/SignalFeedTable.tsx",
       "source_location": "L25",
-      "community": 231,
+      "community": 209,
       "norm_label": "newbadge()",
       "id": "signals_signalfeedtable_newbadge"
     },
@@ -3820,7 +3820,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/signals/SignalFeedTable.tsx",
       "source_location": "L33",
-      "community": 231,
+      "community": 209,
       "norm_label": "pagination()",
       "id": "signals_signalfeedtable_pagination"
     },
@@ -3829,7 +3829,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/signals/SignalFeedTable.tsx",
       "source_location": "L60",
-      "community": 231,
+      "community": 209,
       "norm_label": "signalfeedtable()",
       "id": "signals_signalfeedtable_signalfeedtable"
     },
@@ -3838,7 +3838,7 @@
       "file_type": "code",
       "source_file": "frontend/src/hooks/useAssessSignal.ts",
       "source_location": "L1",
-      "community": 209,
+      "community": 13,
       "norm_label": "useassesssignal.ts",
       "id": "frontend_src_hooks_useassesssignal_ts"
     },
@@ -3847,7 +3847,7 @@
       "file_type": "code",
       "source_file": "frontend/src/hooks/useAssessSignal.ts",
       "source_location": "L5",
-      "community": 209,
+      "community": 13,
       "norm_label": "useassesssignal()",
       "id": "hooks_useassesssignal_useassesssignal"
     },
@@ -3892,7 +3892,7 @@
       "file_type": "code",
       "source_file": "frontend/src/types/intelligence.ts",
       "source_location": "L5",
-      "community": 209,
+      "community": 13,
       "norm_label": "visibilityimpact",
       "id": "types_intelligence_visibilityimpact"
     },
@@ -3919,7 +3919,7 @@
       "file_type": "code",
       "source_file": "frontend/src/types/intelligence.ts",
       "source_location": "L16",
-      "community": 209,
+      "community": 13,
       "norm_label": "signalassessment",
       "id": "types_intelligence_signalassessment"
     },
@@ -3955,7 +3955,7 @@
       "file_type": "code",
       "source_file": "frontend/src/types/intelligence.ts",
       "source_location": "L82",
-      "community": 35,
+      "community": 231,
       "norm_label": "overviewresponse",
       "id": "types_intelligence_overviewresponse"
     },
@@ -3964,7 +3964,7 @@
       "file_type": "code",
       "source_file": "frontend/src/types/intelligence.ts",
       "source_location": "L95",
-      "community": 43,
+      "community": 90,
       "norm_label": "capabilitycount",
       "id": "types_intelligence_capabilitycount"
     },
@@ -5350,7 +5350,7 @@
       "file_type": "code",
       "source_file": "frontend/src/types/index.ts",
       "source_location": "L1",
-      "community": 11,
+      "community": 204,
       "norm_label": "companytype",
       "id": "types_index_companytype"
     },
@@ -5359,7 +5359,7 @@
       "file_type": "code",
       "source_file": "frontend/src/types/index.ts",
       "source_location": "L13",
-      "community": 3,
+      "community": 11,
       "norm_label": "companycreate",
       "id": "types_index_companycreate"
     },
@@ -5368,7 +5368,7 @@
       "file_type": "code",
       "source_file": "frontend/src/types/index.ts",
       "source_location": "L21",
-      "community": 3,
+      "community": 11,
       "norm_label": "companyupdate",
       "id": "types_index_companyupdate"
     },
@@ -5386,7 +5386,7 @@
       "file_type": "code",
       "source_file": "frontend/src/types/index.ts",
       "source_location": "L48",
-      "community": 3,
+      "community": 11,
       "norm_label": "sourcecreate",
       "id": "types_index_sourcecreate"
     },
@@ -5395,7 +5395,7 @@
       "file_type": "code",
       "source_file": "frontend/src/types/index.ts",
       "source_location": "L57",
-      "community": 3,
+      "community": 11,
       "norm_label": "sourceupdate",
       "id": "types_index_sourceupdate"
     },
@@ -5791,7 +5791,7 @@
       "file_type": "code",
       "source_file": "frontend/src/types/benchmark.ts",
       "source_location": "L2",
-      "community": 38,
+      "community": 29,
       "norm_label": "benchmarkperiodtype",
       "id": "types_benchmark_benchmarkperiodtype"
     },
@@ -5845,7 +5845,7 @@
       "file_type": "code",
       "source_file": "frontend/src/constants/capabilities.ts",
       "source_location": "L10",
-      "community": 52,
+      "community": 57,
       "norm_label": "capabilities",
       "id": "constants_capabilities_capabilities"
     },
@@ -5854,7 +5854,7 @@
       "file_type": "code",
       "source_file": "frontend/src/constants/capabilities.ts",
       "source_location": "L29",
-      "community": 52,
+      "community": 57,
       "norm_label": "capability_keys",
       "id": "constants_capabilities_capability_keys"
     },
@@ -6007,7 +6007,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/MarkdownViewer.tsx",
       "source_location": "L4",
-      "community": 216,
+      "community": 37,
       "norm_label": "markdownviewerprops",
       "id": "components_markdownviewer_markdownviewerprops"
     },
@@ -6016,7 +6016,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/MarkdownViewer.tsx",
       "source_location": "L9",
-      "community": 216,
+      "community": 37,
       "norm_label": "markdownviewer()",
       "id": "components_markdownviewer_markdownviewer"
     },
@@ -6052,7 +6052,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/CrawlProgressPanel.tsx",
       "source_location": "L61",
-      "community": 74,
+      "community": 11,
       "norm_label": "discoveredpagesexpander()",
       "id": "components_crawlprogresspanel_discoveredpagesexpander"
     },
@@ -6475,7 +6475,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/dashboard/BriefingPanel.tsx",
       "source_location": "L6",
-      "community": 216,
+      "community": 37,
       "norm_label": "formattimeago()",
       "id": "dashboard_briefingpanel_formattimeago"
     },
@@ -6484,7 +6484,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/dashboard/BriefingPanel.tsx",
       "source_location": "L18",
-      "community": 216,
+      "community": 37,
       "norm_label": "briefingpanel()",
       "id": "dashboard_briefingpanel_briefingpanel"
     },
@@ -6556,7 +6556,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/dashboard/TopSignalsPanel.tsx",
       "source_location": "L5",
-      "community": 37,
+      "community": 204,
       "norm_label": "topsignalspanelprops",
       "id": "dashboard_topsignalspanel_topsignalspanelprops"
     },
@@ -6565,7 +6565,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/dashboard/TopSignalsPanel.tsx",
       "source_location": "L12",
-      "community": 37,
+      "community": 204,
       "norm_label": "topsignalspanel()",
       "id": "dashboard_topsignalspanel_topsignalspanel"
     },
@@ -6700,7 +6700,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/overview/RisksOpportunitiesPanel.tsx",
       "source_location": "L1",
-      "community": 50,
+      "community": 52,
       "norm_label": "props",
       "id": "overview_risksopportunitiespanel_props"
     },
@@ -6709,7 +6709,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/overview/RisksOpportunitiesPanel.tsx",
       "source_location": "L6",
-      "community": 50,
+      "community": 52,
       "norm_label": "risksopportunitiespanel()",
       "id": "overview_risksopportunitiespanel_risksopportunitiespanel"
     },
@@ -7042,7 +7042,7 @@
       "file_type": "code",
       "source_file": "frontend/src/hooks/useDocuments.ts",
       "source_location": "L13",
-      "community": 204,
+      "community": 74,
       "norm_label": "usedocument()",
       "id": "hooks_usedocuments_usedocument"
     },
@@ -7096,7 +7096,7 @@
       "file_type": "code",
       "source_file": "frontend/src/hooks/useDiscoveredPages.ts",
       "source_location": "L1",
-      "community": 74,
+      "community": 11,
       "norm_label": "usediscoveredpages.ts",
       "id": "frontend_src_hooks_usediscoveredpages_ts"
     },
@@ -7294,7 +7294,7 @@
       "file_type": "code",
       "source_file": "frontend/src/hooks/useCrawl.ts",
       "source_location": "L29",
-      "community": 11,
+      "community": 3,
       "norm_label": "useanalysesource()",
       "id": "hooks_usecrawl_useanalysesource"
     },
@@ -7303,7 +7303,7 @@
       "file_type": "code",
       "source_file": "frontend/src/hooks/useBriefing.ts",
       "source_location": "L1",
-      "community": 216,
+      "community": 37,
       "norm_label": "usebriefing.ts",
       "id": "frontend_src_hooks_usebriefing_ts"
     },
@@ -7312,7 +7312,7 @@
       "file_type": "code",
       "source_file": "frontend/src/hooks/useBriefing.ts",
       "source_location": "L6",
-      "community": 216,
+      "community": 37,
       "norm_label": "uselatestbriefing()",
       "id": "hooks_usebriefing_uselatestbriefing"
     },
@@ -7321,7 +7321,7 @@
       "file_type": "code",
       "source_file": "frontend/src/hooks/useBriefing.ts",
       "source_location": "L20",
-      "community": 216,
+      "community": 37,
       "norm_label": "usegeneratebriefing()",
       "id": "hooks_usebriefing_usegeneratebriefing"
     },
@@ -7654,7 +7654,7 @@
       "file_type": "code",
       "source_file": "frontend/src/pages/CompetitorDetail.tsx",
       "source_location": "L333",
-      "community": 204,
+      "community": 74,
       "norm_label": "documentviewer()",
       "id": "pages_competitordetail_documentviewer"
     },
@@ -7744,7 +7744,7 @@
       "file_type": "code",
       "source_file": "backend/app/database.py",
       "source_location": "L1",
-      "community": 58,
+      "community": 53,
       "norm_label": "database.py",
       "id": "backend_app_database_py"
     },
@@ -7753,7 +7753,7 @@
       "file_type": "code",
       "source_file": "backend/app/database.py",
       "source_location": "L10",
-      "community": 58,
+      "community": 53,
       "norm_label": "get_db()",
       "id": "app_database_get_db"
     },
@@ -8491,7 +8491,7 @@
       "file_type": "code",
       "source_file": "backend/app/assessor/capabilities.py",
       "source_location": "L4",
-      "community": 52,
+      "community": 57,
       "norm_label": "capabilitymeta",
       "id": "assessor_capabilities_capabilitymeta"
     },
@@ -8500,7 +8500,7 @@
       "file_type": "code",
       "source_file": "",
       "source_location": "",
-      "community": 52,
+      "community": 57,
       "norm_label": "typeddict",
       "id": "typeddict"
     },
@@ -8554,7 +8554,7 @@
       "file_type": "code",
       "source_file": "backend/app/models/source_candidate.py",
       "source_location": "L1",
-      "community": 69,
+      "community": 64,
       "norm_label": "source_candidate.py",
       "id": "backend_app_models_source_candidate_py"
     },
@@ -8572,7 +8572,7 @@
       "file_type": "code",
       "source_file": "backend/app/models/source_candidate.py",
       "source_location": "L17",
-      "community": 69,
+      "community": 64,
       "norm_label": "sourcecandidate",
       "id": "models_source_candidate_sourcecandidate"
     },
@@ -8590,7 +8590,7 @@
       "file_type": "code",
       "source_file": "backend/app/models/crawl_run.py",
       "source_location": "L1",
-      "community": 13,
+      "community": 69,
       "norm_label": "crawl_run.py",
       "id": "backend_app_models_crawl_run_py"
     },
@@ -8599,7 +8599,7 @@
       "file_type": "code",
       "source_file": "backend/app/models/crawl_run.py",
       "source_location": "L9",
-      "community": 13,
+      "community": 69,
       "norm_label": "crawlrunstatus",
       "id": "models_crawl_run_crawlrunstatus"
     },
@@ -8608,7 +8608,7 @@
       "file_type": "code",
       "source_file": "backend/app/models/crawl_run.py",
       "source_location": "L26",
-      "community": 13,
+      "community": 69,
       "norm_label": "crawlrunstep",
       "id": "models_crawl_run_crawlrunstep"
     },
@@ -8617,7 +8617,7 @@
       "file_type": "code",
       "source_file": "backend/app/models/crawl_run.py",
       "source_location": "L33",
-      "community": 13,
+      "community": 69,
       "norm_label": "crawlrun",
       "id": "models_crawl_run_crawlrun"
     },
@@ -8743,7 +8743,7 @@
       "file_type": "code",
       "source_file": "backend/app/models/source.py",
       "source_location": "L1",
-      "community": 13,
+      "community": 64,
       "norm_label": "source.py",
       "id": "backend_app_models_source_py"
     },
@@ -8977,7 +8977,7 @@
       "file_type": "code",
       "source_file": "backend/app/schemas/stats.py",
       "source_location": "L1",
-      "community": 207,
+      "community": 206,
       "norm_label": "stats.py",
       "id": "backend_app_schemas_stats_py"
     },
@@ -9049,7 +9049,7 @@
       "file_type": "code",
       "source_file": "backend/app/schemas/source.py",
       "source_location": "L1",
-      "community": 13,
+      "community": 64,
       "norm_label": "source.py",
       "id": "backend_app_schemas_source_py"
     },
@@ -9058,7 +9058,7 @@
       "file_type": "code",
       "source_file": "backend/app/schemas/source.py",
       "source_location": "L7",
-      "community": 13,
+      "community": 64,
       "norm_label": "sourcecreate",
       "id": "schemas_source_sourcecreate"
     },
@@ -9067,7 +9067,7 @@
       "file_type": "code",
       "source_file": "backend/app/schemas/source.py",
       "source_location": "L17",
-      "community": 13,
+      "community": 64,
       "norm_label": "sourceupdate",
       "id": "schemas_source_sourceupdate"
     },
@@ -9076,7 +9076,7 @@
       "file_type": "code",
       "source_file": "backend/app/schemas/source.py",
       "source_location": "L25",
-      "community": 13,
+      "community": 64,
       "norm_label": "sourceread",
       "id": "schemas_source_sourceread"
     },
@@ -10372,7 +10372,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovered_pages_router.py",
       "source_location": "L1",
-      "community": 24,
+      "community": 71,
       "norm_label": "test_discovered_pages_router.py",
       "id": "backend_tests_test_discovered_pages_router_py"
     },
@@ -10381,7 +10381,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovered_pages_router.py",
       "source_location": "L9",
-      "community": 24,
+      "community": 71,
       "norm_label": "company_and_source()",
       "id": "tests_test_discovered_pages_router_company_and_source"
     },
@@ -10390,7 +10390,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovered_pages_router.py",
       "source_location": "L46",
-      "community": 24,
+      "community": 71,
       "norm_label": "test_list_discovered_pages_empty()",
       "id": "tests_test_discovered_pages_router_test_list_discovered_pages_empty"
     },
@@ -10399,7 +10399,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovered_pages_router.py",
       "source_location": "L53",
-      "community": 24,
+      "community": 71,
       "norm_label": "test_list_discovered_pages_returns_pages()",
       "id": "tests_test_discovered_pages_router_test_list_discovered_pages_returns_pages"
     },
@@ -10408,7 +10408,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovered_pages_router.py",
       "source_location": "L66",
-      "community": 24,
+      "community": 71,
       "norm_label": "test_list_discovered_pages_requires_source_id()",
       "id": "tests_test_discovered_pages_router_test_list_discovered_pages_requires_source_id"
     },
@@ -10417,7 +10417,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovered_pages_router.py",
       "source_location": "L81",
-      "community": 24,
+      "community": 71,
       "norm_label": "test_patch_discovered_page_activate()",
       "id": "tests_test_discovered_pages_router_test_patch_discovered_page_activate"
     },
@@ -10426,7 +10426,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovered_pages_router.py",
       "source_location": "L96",
-      "community": 24,
+      "community": 71,
       "norm_label": "test_patch_discovered_page_not_found()",
       "id": "tests_test_discovered_pages_router_test_patch_discovered_page_not_found"
     },
@@ -10435,7 +10435,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovered_pages_router.py",
       "source_location": "L104",
-      "community": 24,
+      "community": 71,
       "norm_label": "test_delete_discovered_page()",
       "id": "tests_test_discovered_pages_router_test_delete_discovered_page"
     },
@@ -10777,7 +10777,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_intelligence_router.py",
       "source_location": "L1",
-      "community": 48,
+      "community": 33,
       "norm_label": "test_intelligence_router.py",
       "id": "backend_tests_test_intelligence_router_py"
     },
@@ -10786,7 +10786,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_intelligence_router.py",
       "source_location": "L13",
-      "community": 48,
+      "community": 33,
       "norm_label": "test_signals_feed_returns_paginated_response()",
       "id": "tests_test_intelligence_router_test_signals_feed_returns_paginated_response"
     },
@@ -10795,7 +10795,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_intelligence_router.py",
       "source_location": "L23",
-      "community": 48,
+      "community": 33,
       "norm_label": "test_competitor_workspace_404_for_unknown_slug()",
       "id": "tests_test_intelligence_router_test_competitor_workspace_404_for_unknown_slug"
     },
@@ -10804,7 +10804,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_intelligence_router.py",
       "source_location": "L28",
-      "community": 48,
+      "community": 33,
       "norm_label": "test_assess_signal_endpoint_404_for_unknown_id()",
       "id": "tests_test_intelligence_router_test_assess_signal_endpoint_404_for_unknown_id"
     },
@@ -11020,7 +11020,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovery.py",
       "source_location": "L1",
-      "community": 48,
+      "community": 10,
       "norm_label": "test_discovery.py",
       "id": "backend_tests_test_discovery_py"
     },
@@ -11029,7 +11029,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovery.py",
       "source_location": "L24",
-      "community": 48,
+      "community": 10,
       "norm_label": "test_is_article_url_content_prefix_news()",
       "id": "tests_test_discovery_test_is_article_url_content_prefix_news"
     },
@@ -11038,7 +11038,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovery.py",
       "source_location": "L28",
-      "community": 48,
+      "community": 10,
       "norm_label": "test_is_article_url_content_prefix_blog()",
       "id": "tests_test_discovery_test_is_article_url_content_prefix_blog"
     },
@@ -11047,7 +11047,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovery.py",
       "source_location": "L36",
-      "community": 48,
+      "community": 10,
       "norm_label": "test_is_article_url_deep_path()",
       "id": "tests_test_discovery_test_is_article_url_deep_path"
     },
@@ -11056,7 +11056,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovery.py",
       "source_location": "L40",
-      "community": 48,
+      "community": 10,
       "norm_label": "test_is_article_url_rejects_root()",
       "id": "tests_test_discovery_test_is_article_url_rejects_root"
     },
@@ -11065,7 +11065,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovery.py",
       "source_location": "L48",
-      "community": 48,
+      "community": 10,
       "norm_label": "test_is_article_url_rejects_two_segments()",
       "id": "tests_test_discovery_test_is_article_url_rejects_two_segments"
     },
@@ -11074,7 +11074,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovery.py",
       "source_location": "L52",
-      "community": 48,
+      "community": 10,
       "norm_label": "test_is_article_url_locale_prefix_ignored()",
       "id": "tests_test_discovery_test_is_article_url_locale_prefix_ignored"
     },
@@ -11083,7 +11083,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovery.py",
       "source_location": "L56",
-      "community": 48,
+      "community": 10,
       "norm_label": "test_is_article_url_locale_prefix_with_deep_path()",
       "id": "tests_test_discovery_test_is_article_url_locale_prefix_with_deep_path"
     },
@@ -11092,7 +11092,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovery.py",
       "source_location": "L63",
-      "community": 48,
+      "community": 10,
       "norm_label": "test_is_article_url_child_path_of_seed()",
       "id": "tests_test_discovery_test_is_article_url_child_path_of_seed"
     },
@@ -11101,7 +11101,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovery.py",
       "source_location": "L83",
-      "community": 48,
+      "community": 10,
       "norm_label": "test_is_child_path_direct_child()",
       "id": "tests_test_discovery_test_is_child_path_direct_child"
     },
@@ -11110,7 +11110,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovery.py",
       "source_location": "L93",
-      "community": 48,
+      "community": 10,
       "norm_label": "test_is_child_path_not_child()",
       "id": "tests_test_discovery_test_is_child_path_not_child"
     },
@@ -11119,7 +11119,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovery.py",
       "source_location": "L103",
-      "community": 48,
+      "community": 10,
       "norm_label": "test_is_child_path_deeper_child()",
       "id": "tests_test_discovery_test_is_child_path_deeper_child"
     },
@@ -11128,7 +11128,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovery.py",
       "source_location": "L113",
-      "community": 48,
+      "community": 207,
       "norm_label": "test_is_article_content_with_article_tag()",
       "id": "tests_test_discovery_test_is_article_content_with_article_tag"
     },
@@ -11137,7 +11137,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovery.py",
       "source_location": "L118",
-      "community": 48,
+      "community": 207,
       "norm_label": "test_is_article_content_high_word_count()",
       "id": "tests_test_discovery_test_is_article_content_high_word_count"
     },
@@ -11146,7 +11146,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovery.py",
       "source_location": "L124",
-      "community": 48,
+      "community": 207,
       "norm_label": "test_is_article_content_rejects_low_word_count()",
       "id": "tests_test_discovery_test_is_article_content_rejects_low_word_count"
     },
@@ -11155,7 +11155,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovery.py",
       "source_location": "L129",
-      "community": 48,
+      "community": 207,
       "norm_label": "test_is_article_content_rejects_empty()",
       "id": "tests_test_discovery_test_is_article_content_rejects_empty"
     },
@@ -11164,7 +11164,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovery.py",
       "source_location": "L141",
-      "community": 48,
+      "community": 93,
       "norm_label": "test_extract_internal_links_absolute()",
       "id": "tests_test_discovery_test_extract_internal_links_absolute"
     },
@@ -11173,7 +11173,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovery.py",
       "source_location": "L153",
-      "community": 48,
+      "community": 93,
       "norm_label": "test_extract_internal_links_relative()",
       "id": "tests_test_discovery_test_extract_internal_links_relative"
     },
@@ -11182,7 +11182,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovery.py",
       "source_location": "L159",
-      "community": 48,
+      "community": 93,
       "norm_label": "test_extract_internal_links_strips_fragment()",
       "id": "tests_test_discovery_test_extract_internal_links_strips_fragment"
     },
@@ -11191,7 +11191,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovery.py",
       "source_location": "L166",
-      "community": 48,
+      "community": 93,
       "norm_label": "test_extract_internal_links_ignores_mailto()",
       "id": "tests_test_discovery_test_extract_internal_links_ignores_mailto"
     },
@@ -11236,7 +11236,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovery.py",
       "source_location": "L267",
-      "community": 48,
+      "community": 24,
       "norm_label": "test_discover_marks_changed_page()",
       "id": "tests_test_discovery_test_discover_marks_changed_page"
     },
@@ -11272,7 +11272,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovery.py",
       "source_location": "L403",
-      "community": 48,
+      "community": 10,
       "norm_label": "_make_signal()",
       "id": "tests_test_discovery_make_signal"
     },
@@ -12640,7 +12640,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_benchmark_queries.py",
       "source_location": "L1",
-      "community": 214,
+      "community": 16,
       "norm_label": "test_benchmark_queries.py",
       "id": "backend_tests_test_benchmark_queries_py"
     },
@@ -12649,7 +12649,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_benchmark_queries.py",
       "source_location": "L16",
-      "community": 214,
+      "community": 16,
       "norm_label": "db()",
       "id": "tests_test_benchmark_queries_db"
     },
@@ -12658,7 +12658,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_benchmark_queries.py",
       "source_location": "L27",
-      "community": 214,
+      "community": 16,
       "norm_label": "seeded_db()",
       "id": "tests_test_benchmark_queries_seeded_db"
     },
@@ -12667,7 +12667,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_benchmark_queries.py",
       "source_location": "L50",
-      "community": 214,
+      "community": 16,
       "norm_label": "test_get_capability_assessments_returns_matching_assessments()",
       "id": "tests_test_benchmark_queries_test_get_capability_assessments_returns_matching_assessments"
     },
@@ -12676,7 +12676,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_benchmark_queries.py",
       "source_location": "L65",
-      "community": 214,
+      "community": 16,
       "norm_label": "test_get_capability_assessments_wrong_capability_returns_empty()",
       "id": "tests_test_benchmark_queries_test_get_capability_assessments_wrong_capability_returns_empty"
     },
@@ -12685,7 +12685,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_benchmark_queries.py",
       "source_location": "L73",
-      "community": 214,
+      "community": 16,
       "norm_label": "test_get_capability_assessments_unknown_slug_raises()",
       "id": "tests_test_benchmark_queries_test_get_capability_assessments_unknown_slug_raises"
     },
@@ -12694,7 +12694,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_benchmark_queries.py",
       "source_location": "L79",
-      "community": 214,
+      "community": 16,
       "norm_label": "test_get_capability_assessments_ordered_by_movement_score_desc()",
       "id": "tests_test_benchmark_queries_test_get_capability_assessments_ordered_by_movement_score_desc"
     },
@@ -12793,7 +12793,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_analyser_client.py",
       "source_location": "L1",
-      "community": 235,
+      "community": 30,
       "norm_label": "test_analyser_client.py",
       "id": "backend_tests_test_analyser_client_py"
     },
@@ -12802,7 +12802,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_analyser_client.py",
       "source_location": "L5",
-      "community": 235,
+      "community": 30,
       "norm_label": "test_anthropic_client_reused_across_calls()",
       "id": "tests_test_analyser_client_test_anthropic_client_reused_across_calls"
     },
@@ -12811,7 +12811,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_analyser_client.py",
       "source_location": "L21",
-      "community": 235,
+      "community": 30,
       "norm_label": "test_opencode_client_reused_across_calls()",
       "id": "tests_test_analyser_client_test_opencode_client_reused_across_calls"
     },
@@ -12820,7 +12820,7 @@
       "file_type": "rationale",
       "source_file": "backend/tests/test_analyser_client.py",
       "source_location": "L6",
-      "community": 235,
+      "community": 30,
       "norm_label": "same client instance should be returned on repeated calls.",
       "id": "tests_test_analyser_client_rationale_6"
     },
@@ -14251,7 +14251,7 @@
       "captured_at": "2026-05-21",
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 0,
       "norm_label": "capability strength explainability & panel consolidation plan",
       "id": "plans_capability_explainability"
     },
@@ -14407,7 +14407,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 0,
       "norm_label": "capabilityexplaindrawer component",
       "id": "concept_capability_explain_drawer"
     },
@@ -14888,7 +14888,7 @@
       "captured_at": "2026-05-21",
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 0,
       "norm_label": "get /api/benchmark/capability-assessments backend endpoint",
       "id": "specs_capability_assessments_endpoint"
     },
@@ -14901,7 +14901,7 @@
       "captured_at": "2026-05-21",
       "author": null,
       "contributor": null,
-      "community": 38,
+      "community": 43,
       "norm_label": "infotooltip",
       "id": "specs_info_tooltip"
     },
@@ -15409,7 +15409,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/CompanyLogo.tsx",
       "source_location": "L4",
-      "community": 50,
+      "community": 52,
       "norm_label": "companylogoprops",
       "id": "components_companylogo_companylogoprops"
     },
@@ -15418,7 +15418,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/CompanyLogo.tsx",
       "source_location": "L12",
-      "community": 50,
+      "community": 52,
       "norm_label": "size_px",
       "id": "components_companylogo_size_px"
     },
@@ -15427,7 +15427,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/CompanyLogo.tsx",
       "source_location": "L18",
-      "community": 50,
+      "community": 52,
       "norm_label": "font_size",
       "id": "components_companylogo_font_size"
     },
@@ -15544,7 +15544,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/workspace/MovesPanel.tsx",
       "source_location": "L36",
-      "community": 52,
+      "community": 4,
       "norm_label": "props",
       "id": "workspace_movespanel_props"
     },
@@ -15580,7 +15580,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/overview/RisksOpportunitiesPanel.tsx",
       "source_location": "L11",
-      "community": 50,
+      "community": 52,
       "norm_label": "columnprops",
       "id": "overview_risksopportunitiespanel_columnprops"
     },
@@ -15589,7 +15589,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/overview/RisksOpportunitiesPanel.tsx",
       "source_location": "L21",
-      "community": 50,
+      "community": 52,
       "norm_label": "riskcolumn()",
       "id": "overview_risksopportunitiespanel_riskcolumn"
     },
@@ -15814,7 +15814,7 @@
       "file_type": "code",
       "source_file": "frontend/src/pages/WeeklyDigest.tsx",
       "source_location": "L36",
-      "community": 33,
+      "community": 53,
       "norm_label": "formateventdate()",
       "id": "pages_weeklydigest_formateventdate"
     },
@@ -15850,7 +15850,7 @@
       "file_type": "code",
       "source_file": "backend/app/scheduler.py",
       "source_location": "L1",
-      "community": 93,
+      "community": 53,
       "norm_label": "scheduler.py",
       "id": "backend_app_scheduler_py"
     },
@@ -15868,7 +15868,7 @@
       "file_type": "rationale",
       "source_file": "backend/app/crawler/discovery.py",
       "source_location": "L89",
-      "community": 48,
+      "community": 10,
       "norm_label": "return true if url looks like a category/listing page rather than an article.",
       "id": "crawler_discovery_rationale_89"
     },
@@ -16093,7 +16093,7 @@
       "file_type": "code",
       "source_file": "backend/app/notifications/email.py",
       "source_location": "L1",
-      "community": 33,
+      "community": 53,
       "norm_label": "email.py",
       "id": "backend_app_notifications_email_py"
     },
@@ -16138,7 +16138,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_email.py",
       "source_location": "L46",
-      "community": 182,
+      "community": 53,
       "norm_label": "test_send_crawl_report_calls_smtp()",
       "id": "tests_test_email_test_send_crawl_report_calls_smtp"
     },
@@ -16147,7 +16147,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_email.py",
       "source_location": "L67",
-      "community": 182,
+      "community": 53,
       "norm_label": "test_send_crawl_report_message_contains_stats()",
       "id": "tests_test_email_test_send_crawl_report_message_contains_stats"
     },
@@ -16156,7 +16156,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_email.py",
       "source_location": "L91",
-      "community": 182,
+      "community": 53,
       "norm_label": "test_send_crawl_report_includes_digest_line_when_generated()",
       "id": "tests_test_email_test_send_crawl_report_includes_digest_line_when_generated"
     },
@@ -16165,7 +16165,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_email.py",
       "source_location": "L111",
-      "community": 182,
+      "community": 53,
       "norm_label": "test_send_crawl_report_skips_login_when_no_credentials()",
       "id": "tests_test_email_test_send_crawl_report_skips_login_when_no_credentials"
     },
@@ -16174,7 +16174,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_email.py",
       "source_location": "L129",
-      "community": 182,
+      "community": 53,
       "norm_label": "test_send_crawl_report_raises_on_smtp_failure()",
       "id": "tests_test_email_test_send_crawl_report_raises_on_smtp_failure"
     },
@@ -16264,7 +16264,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_intelligence_router.py",
       "source_location": "L45",
-      "community": 48,
+      "community": 33,
       "norm_label": "_make_signal_with_date()",
       "id": "tests_test_intelligence_router_make_signal_with_date"
     },
@@ -16273,7 +16273,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_intelligence_router.py",
       "source_location": "L68",
-      "community": 48,
+      "community": 33,
       "norm_label": "test_signals_feed_created_from_excludes_older_signals()",
       "id": "tests_test_intelligence_router_test_signals_feed_created_from_excludes_older_signals"
     },
@@ -16282,7 +16282,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_intelligence_router.py",
       "source_location": "L81",
-      "community": 48,
+      "community": 33,
       "norm_label": "test_signals_feed_created_to_excludes_newer_signals()",
       "id": "tests_test_intelligence_router_test_signals_feed_created_to_excludes_newer_signals"
     },
@@ -16291,7 +16291,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_intelligence_router.py",
       "source_location": "L93",
-      "community": 48,
+      "community": 33,
       "norm_label": "test_signals_feed_created_range_returns_only_matching()",
       "id": "tests_test_intelligence_router_test_signals_feed_created_range_returns_only_matching"
     },
@@ -16363,7 +16363,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_scheduler.py",
       "source_location": "L1",
-      "community": 71,
+      "community": 53,
       "norm_label": "test_scheduler.py",
       "id": "backend_tests_test_scheduler_py"
     },
@@ -16372,7 +16372,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_scheduler.py",
       "source_location": "L6",
-      "community": 71,
+      "community": 53,
       "norm_label": "_make_config()",
       "id": "tests_test_scheduler_make_config"
     },
@@ -16381,7 +16381,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_scheduler.py",
       "source_location": "L28",
-      "community": 71,
+      "community": 53,
       "norm_label": "test_apply_schedule_adds_crawl_job_when_enabled()",
       "id": "tests_test_scheduler_test_apply_schedule_adds_crawl_job_when_enabled"
     },
@@ -16390,7 +16390,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_scheduler.py",
       "source_location": "L44",
-      "community": 71,
+      "community": 53,
       "norm_label": "test_apply_schedule_no_jobs_when_all_disabled()",
       "id": "tests_test_scheduler_test_apply_schedule_no_jobs_when_all_disabled"
     },
@@ -16399,7 +16399,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_scheduler.py",
       "source_location": "L58",
-      "community": 71,
+      "community": 53,
       "norm_label": "test_apply_schedule_adds_digest_job_when_independent_schedule()",
       "id": "tests_test_scheduler_test_apply_schedule_adds_digest_job_when_independent_schedule"
     },
@@ -16408,7 +16408,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_scheduler.py",
       "source_location": "L80",
-      "community": 71,
+      "community": 53,
       "norm_label": "test_apply_schedule_removes_existing_jobs_before_readding()",
       "id": "tests_test_scheduler_test_apply_schedule_removes_existing_jobs_before_readding"
     },
@@ -16417,7 +16417,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_scheduler.py",
       "source_location": "L96",
-      "community": 71,
+      "community": 53,
       "norm_label": "test_apply_schedule_no_op_when_scheduler_not_running()",
       "id": "tests_test_scheduler_test_apply_schedule_no_op_when_scheduler_not_running"
     },
@@ -16426,7 +16426,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_scheduler.py",
       "source_location": "L109",
-      "community": 71,
+      "community": 53,
       "norm_label": "test_apply_schedule_no_op_when_scheduler_is_none()",
       "id": "tests_test_scheduler_test_apply_schedule_no_op_when_scheduler_is_none"
     },
@@ -16989,7 +16989,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 5,
+      "community": 4,
       "norm_label": "benchmarkscorecarditem",
       "id": "scorecard_benchmarkscorecarditem"
     },
@@ -17275,7 +17275,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 52,
+      "community": 57,
       "norm_label": "capabilitymeta",
       "id": "capabilities_capabilitymeta"
     },
@@ -17288,7 +17288,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 52,
+      "community": 57,
       "norm_label": "capabilities constant",
       "id": "capabilities_capabilities"
     },
@@ -17340,7 +17340,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 50,
+      "community": 52,
       "norm_label": "companylogo",
       "id": "companylogo_companylogo"
     },
@@ -17444,7 +17444,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 52,
+      "community": 4,
       "norm_label": "movespanel",
       "id": "movespanel_movespanel"
     },
@@ -17457,7 +17457,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 52,
+      "community": 4,
       "norm_label": "scorebadge",
       "id": "movespanel_scorebadge"
     },
@@ -17470,7 +17470,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 52,
+      "community": 4,
       "norm_label": "class_labels",
       "id": "movespanel_class_labels"
     },
@@ -17535,7 +17535,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 29,
+      "community": 38,
       "norm_label": "fetchcapabilityassessments",
       "id": "benchmark_fetchcapabilityassessments"
     },
@@ -17613,7 +17613,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 71,
+      "community": 53,
       "norm_label": "scheduleconfig (interface)",
       "id": "scheduleadmin_scheduleconfig"
     },
@@ -17860,7 +17860,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 58,
+      "community": 53,
       "norm_label": "startup_scheduler",
       "id": "scheduler_startup_scheduler"
     },
@@ -17873,7 +17873,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 93,
+      "community": 53,
       "norm_label": "shutdown_scheduler",
       "id": "scheduler_shutdown_scheduler"
     },
@@ -17886,7 +17886,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 71,
+      "community": 53,
       "norm_label": "apply_schedule",
       "id": "scheduler_apply_schedule"
     },
@@ -17899,7 +17899,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 93,
+      "community": 53,
       "norm_label": "get_next_run",
       "id": "scheduler_get_next_run"
     },
@@ -17912,7 +17912,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 93,
+      "community": 53,
       "norm_label": "scheduled_crawl_job",
       "id": "scheduler_scheduled_crawl_job"
     },
@@ -17925,7 +17925,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 93,
+      "community": 53,
       "norm_label": "scheduled_digest_job",
       "id": "scheduler_scheduled_digest_job"
     },
@@ -17938,7 +17938,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 93,
+      "community": 53,
       "norm_label": "_build_digest_email_extras",
       "id": "scheduler_build_digest_email_extras"
     },
@@ -17951,7 +17951,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 93,
+      "community": 53,
       "norm_label": "_build_crawl_stats",
       "id": "scheduler_build_crawl_stats"
     },
@@ -18133,7 +18133,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 29,
+      "community": 38,
       "norm_label": "benchmarkqueryservice.get_capability_assessments",
       "id": "queries_get_capability_assessments"
     },
@@ -18471,7 +18471,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 29,
+      "community": 4,
       "norm_label": "get_benchmark",
       "id": "scorecards_get_benchmark"
     },
@@ -18590,7 +18590,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Background thread pool crawls active sources concurrently, then analyses new/pending documents, generates a crawl briefing, and optionally runs post-processing: competitor summaries, intelligence briefing curation, and ExternalCompanyView synthesis for own-company signals.",
-      "community": 93,
+      "community": 53,
       "norm_label": "crawl + post-processing pipeline",
       "id": "crawl_pipeline_concept"
     },
@@ -19228,7 +19228,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 13,
+      "community": 64,
       "norm_label": "source",
       "id": "source_source"
     },
@@ -19241,7 +19241,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 13,
+      "community": 64,
       "norm_label": "sourcetype",
       "id": "source_sourcetype"
     },
@@ -19254,7 +19254,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 13,
+      "community": 64,
       "norm_label": "crawlstatus",
       "id": "source_crawlstatus"
     },
@@ -19267,7 +19267,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 13,
+      "community": 64,
       "norm_label": "analysisstatus",
       "id": "source_analysisstatus"
     },
@@ -19566,7 +19566,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 207,
+      "community": 206,
       "norm_label": "signalovertimepoint",
       "id": "stats_signalovertimepoint"
     },
@@ -19579,7 +19579,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 207,
+      "community": 206,
       "norm_label": "signaltypecount",
       "id": "stats_signaltypecount"
     },
@@ -19592,7 +19592,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 207,
+      "community": 206,
       "norm_label": "companysignaltypecount",
       "id": "stats_companysignaltypecount"
     },
@@ -19605,7 +19605,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 207,
+      "community": 206,
       "norm_label": "signaldistribution",
       "id": "stats_signaldistribution"
     },
@@ -19618,7 +19618,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 207,
+      "community": 206,
       "norm_label": "lastcrawlruninfo",
       "id": "stats_lastcrawlruninfo"
     },
@@ -19631,7 +19631,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 207,
+      "community": 206,
       "norm_label": "lastcrawlsummary",
       "id": "stats_lastcrawlsummary"
     },
@@ -20489,7 +20489,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 182,
+      "community": 53,
       "norm_label": "send_crawl_report",
       "id": "email_send_crawl_report"
     },
@@ -20515,7 +20515,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 182,
+      "community": 53,
       "norm_label": "_smtp_send",
       "id": "email_smtp_send"
     },
@@ -20528,7 +20528,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 33,
+      "community": 53,
       "norm_label": "_build_plain_text",
       "id": "email_build_plain_text"
     },
@@ -20541,7 +20541,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 33,
+      "community": 53,
       "norm_label": "_build_html",
       "id": "email_build_html"
     },
@@ -20554,7 +20554,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 33,
+      "community": 53,
       "norm_label": "_render_items",
       "id": "email_render_items"
     },
@@ -20567,7 +20567,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 33,
+      "community": 53,
       "norm_label": "_render_event_items",
       "id": "email_render_event_items"
     },
@@ -20580,7 +20580,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 33,
+      "community": 53,
       "norm_label": "_render_event_calendar_section",
       "id": "email_render_event_calendar_section"
     },
@@ -20593,7 +20593,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 33,
+      "community": 53,
       "norm_label": "_render_risks_opportunities",
       "id": "email_render_risks_opportunities"
     },
@@ -20606,7 +20606,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 33,
+      "community": 53,
       "norm_label": "_render_own_company_section",
       "id": "email_render_own_company_section"
     },
@@ -20619,7 +20619,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 33,
+      "community": 53,
       "norm_label": "_render_sections",
       "id": "email_render_sections"
     },
@@ -20645,7 +20645,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 182,
+      "community": 53,
       "norm_label": "test_send_crawl_report_* suite",
       "id": "test_email_send_crawl_report"
     },
@@ -20684,7 +20684,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 48,
+      "community": 33,
       "norm_label": "test_overview_endpoint_returns_expected_keys",
       "id": "test_intelligence_router_overview"
     },
@@ -20814,7 +20814,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 237,
+      "community": 53,
       "norm_label": "add risks and opportunities to weekly_digests",
       "id": "migration_e9d3c7f1b5a2"
     },
@@ -20866,7 +20866,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 237,
+      "community": 53,
       "norm_label": "add_curated_fields_to_intelligence_briefings",
       "id": "migration_b3f1a9c2d8e7"
     },
@@ -20879,7 +20879,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 237,
+      "community": 53,
       "norm_label": "merge_heads",
       "id": "migration_ce52950e1e40"
     },
@@ -21126,7 +21126,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 93,
+      "community": 53,
       "norm_label": "send_crawl_report() email function",
       "id": "automation_scheduling_send_crawl_report"
     },
@@ -22019,7 +22019,7 @@
       "file_type": "code",
       "source_file": "backend/app/routers/llm_usage.py",
       "source_location": "L1",
-      "community": 10,
+      "community": 2,
       "norm_label": "llm_usage.py",
       "id": "backend_app_routers_llm_usage_py"
     },
@@ -22028,7 +22028,7 @@
       "file_type": "code",
       "source_file": "backend/app/routers/llm_usage.py",
       "source_location": "L53",
-      "community": 10,
+      "community": 2,
       "norm_label": "get_summary()",
       "id": "routers_llm_usage_get_summary"
     },
@@ -22037,7 +22037,7 @@
       "file_type": "code",
       "source_file": "backend/app/routers/llm_usage.py",
       "source_location": "L66",
-      "community": 10,
+      "community": 2,
       "norm_label": "get_timeseries()",
       "id": "routers_llm_usage_get_timeseries"
     },
@@ -22046,7 +22046,7 @@
       "file_type": "code",
       "source_file": "backend/app/routers/llm_usage.py",
       "source_location": "L94",
-      "community": 10,
+      "community": 2,
       "norm_label": "get_breakdown()",
       "id": "routers_llm_usage_get_breakdown"
     },
@@ -22055,7 +22055,7 @@
       "file_type": "code",
       "source_file": "backend/app/routers/llm_usage.py",
       "source_location": "L124",
-      "community": 10,
+      "community": 2,
       "norm_label": "get_prices()",
       "id": "routers_llm_usage_get_prices"
     },
@@ -22064,7 +22064,7 @@
       "file_type": "code",
       "source_file": "backend/app/routers/llm_usage.py",
       "source_location": "L129",
-      "community": 10,
+      "community": 2,
       "norm_label": "upsert_price()",
       "id": "routers_llm_usage_upsert_price"
     },
@@ -22154,7 +22154,7 @@
       "file_type": "code",
       "source_file": "backend/app/schemas/llm_usage.py",
       "source_location": "L1",
-      "community": 10,
+      "community": 2,
       "norm_label": "llm_usage.py",
       "id": "backend_app_schemas_llm_usage_py"
     },
@@ -22163,7 +22163,7 @@
       "file_type": "code",
       "source_file": "backend/app/schemas/llm_usage.py",
       "source_location": "L6",
-      "community": 10,
+      "community": 2,
       "norm_label": "llmusagetotals",
       "id": "schemas_llm_usage_llmusagetotals"
     },
@@ -22172,7 +22172,7 @@
       "file_type": "code",
       "source_file": "backend/app/schemas/llm_usage.py",
       "source_location": "L13",
-      "community": 10,
+      "community": 2,
       "norm_label": "llmusagesummary",
       "id": "schemas_llm_usage_llmusagesummary"
     },
@@ -22181,7 +22181,7 @@
       "file_type": "code",
       "source_file": "backend/app/schemas/llm_usage.py",
       "source_location": "L20",
-      "community": 10,
+      "community": 2,
       "norm_label": "llmusagetimeseriespoint",
       "id": "schemas_llm_usage_llmusagetimeseriespoint"
     },
@@ -22190,7 +22190,7 @@
       "file_type": "code",
       "source_file": "backend/app/schemas/llm_usage.py",
       "source_location": "L28",
-      "community": 10,
+      "community": 2,
       "norm_label": "llmusagebreakdownrow",
       "id": "schemas_llm_usage_llmusagebreakdownrow"
     },
@@ -22199,7 +22199,7 @@
       "file_type": "code",
       "source_file": "backend/app/schemas/llm_usage.py",
       "source_location": "L44",
-      "community": 10,
+      "community": 2,
       "norm_label": "config",
       "id": "schemas_llm_usage_config"
     },
@@ -22208,7 +22208,7 @@
       "file_type": "code",
       "source_file": "backend/app/schemas/llm_usage.py",
       "source_location": "L48",
-      "community": 10,
+      "community": 2,
       "norm_label": "llmmodelpriceupdate",
       "id": "schemas_llm_usage_llmmodelpriceupdate"
     },
@@ -22478,7 +22478,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovery.py",
       "source_location": "L114",
-      "community": 48,
+      "community": 10,
       "norm_label": "test_is_listing_page_true_for_root()",
       "id": "tests_test_discovery_test_is_listing_page_true_for_root"
     },
@@ -22487,7 +22487,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovery.py",
       "source_location": "L118",
-      "community": 48,
+      "community": 10,
       "norm_label": "test_is_listing_page_true_for_content_segment()",
       "id": "tests_test_discovery_test_is_listing_page_true_for_content_segment"
     },
@@ -22496,7 +22496,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovery.py",
       "source_location": "L123",
-      "community": 48,
+      "community": 10,
       "norm_label": "test_is_listing_page_true_for_navigation_segment()",
       "id": "tests_test_discovery_test_is_listing_page_true_for_navigation_segment"
     },
@@ -22505,7 +22505,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovery.py",
       "source_location": "L130",
-      "community": 48,
+      "community": 10,
       "norm_label": "test_is_listing_page_false_for_article_like_path()",
       "id": "tests_test_discovery_test_is_listing_page_false_for_article_like_path"
     },
@@ -23320,7 +23320,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 10,
+      "community": 2,
       "norm_label": "_price_map",
       "id": "llm_usage_price_map"
     },
@@ -23333,7 +23333,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 10,
+      "community": 2,
       "norm_label": "_cost_usd",
       "id": "llm_usage_cost_usd"
     },
@@ -23346,7 +23346,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 10,
+      "community": 2,
       "norm_label": "_totals_since",
       "id": "llm_usage_totals_since"
     },
@@ -23359,7 +23359,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 10,
+      "community": 2,
       "norm_label": "get_summary endpoint",
       "id": "llm_usage_get_summary"
     },
@@ -23372,7 +23372,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 10,
+      "community": 2,
       "norm_label": "get_timeseries endpoint",
       "id": "llm_usage_get_timeseries"
     },
@@ -23385,7 +23385,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 10,
+      "community": 2,
       "norm_label": "get_breakdown endpoint",
       "id": "llm_usage_get_breakdown"
     },
@@ -23411,7 +23411,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 10,
+      "community": 2,
       "norm_label": "upsert_price endpoint",
       "id": "llm_usage_upsert_price"
     },
@@ -23424,7 +23424,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 48,
+      "community": 10,
       "norm_label": "_is_child_path",
       "id": "discovery_is_child_path"
     },
@@ -23437,7 +23437,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 48,
+      "community": 10,
       "norm_label": "_is_article_url",
       "id": "discovery_is_article_url"
     },
@@ -23450,7 +23450,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 48,
+      "community": 10,
       "norm_label": "_is_listing_page",
       "id": "discovery_is_listing_page"
     },
@@ -23463,7 +23463,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 48,
+      "community": 207,
       "norm_label": "_is_article_content",
       "id": "discovery_is_article_content"
     },
@@ -23489,7 +23489,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 48,
+      "community": 93,
       "norm_label": "_extract_internal_links",
       "id": "discovery_extract_internal_links"
     },
@@ -23840,7 +23840,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 48,
+      "community": 10,
       "norm_label": "_is_listing_page tests",
       "id": "tests_test_discovery_is_listing_page"
     },
@@ -23964,1151 +23964,6 @@
   ],
   "links": [
     {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/auth.py",
-      "source_location": "L11",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "app_auth_py",
-      "target": "app_auth_hash_password"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/auth.py",
-      "source_location": "L15",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "app_auth_py",
-      "target": "app_auth_verify_password"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/auth.py",
-      "source_location": "L19",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "app_auth_py",
-      "target": "app_auth_verify_credentials"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/auth.py",
-      "source_location": "L42",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "app_auth_py",
-      "target": "app_auth_require_admin"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "source_file": "app/routers/users.py",
-      "source_location": "L25",
-      "weight": 1.0,
-      "source": "routers_users_change_own_password",
-      "target": "app_auth_hash_password"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "source_file": "app/routers/users.py",
-      "source_location": "L42",
-      "weight": 1.0,
-      "source": "routers_users_create_user",
-      "target": "app_auth_hash_password"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "source_file": "app/main.py",
-      "source_location": "L27",
-      "weight": 1.0,
-      "source": "app_main_seed_initial_admin",
-      "target": "app_auth_hash_password"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "source_file": "tests/conftest.py",
-      "source_location": "L61",
-      "weight": 1.0,
-      "source": "tests_conftest_db_session",
-      "target": "app_auth_hash_password"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "app/auth.py",
-      "source_location": "L24",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "app_auth_verify_credentials",
-      "target": "app_auth_verify_password"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/routers/users.py",
-      "source_location": "L13",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "app_routers_users_py",
-      "target": "routers_users_get_me"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/routers/users.py",
-      "source_location": "L18",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "app_routers_users_py",
-      "target": "routers_users_change_own_password"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/routers/users.py",
-      "source_location": "L32",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "app_routers_users_py",
-      "target": "routers_users_list_users"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/routers/users.py",
-      "source_location": "L37",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "app_routers_users_py",
-      "target": "routers_users_create_user"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/routers/users.py",
-      "source_location": "L53",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "app_routers_users_py",
-      "target": "routers_users_update_user"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/routers/users.py",
-      "source_location": "L65",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "app_routers_users_py",
-      "target": "routers_users_delete_user"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/schemas/user.py",
-      "source_location": "L6",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "app_schemas_user_py",
-      "target": "schemas_user_userread"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/schemas/user.py",
-      "source_location": "L15",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "app_schemas_user_py",
-      "target": "schemas_user_usercreate"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/schemas/user.py",
-      "source_location": "L21",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "app_schemas_user_py",
-      "target": "schemas_user_userupdate"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/schemas/user.py",
-      "source_location": "L26",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "app_schemas_user_py",
-      "target": "schemas_user_passwordchange"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/schemas/user.py",
-      "source_location": "L31",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "app_schemas_user_py",
-      "target": "schemas_user_meresponse"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "app/schemas/user.py",
-      "source_location": "L6",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_user_userread",
-      "target": "basemodel"
-    },
-    {
-      "relation": "uses",
-      "confidence": "INFERRED",
-      "source_file": "app/schemas/user.py",
-      "source_location": "L3",
-      "weight": 0.8,
-      "confidence_score": 0.5,
-      "source": "schemas_user_userread",
-      "target": "models_user_userrole"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "app/schemas/user.py",
-      "source_location": "L15",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_user_usercreate",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "app/schemas/user.py",
-      "source_location": "L21",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_user_userupdate",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "app/schemas/user.py",
-      "source_location": "L26",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_user_passwordchange",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "app/schemas/user.py",
-      "source_location": "L31",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_user_meresponse",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/routers/sources.py",
-      "source_location": "L12",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "routers_sources_sourcesearchresult",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/signal_assessment.py",
-      "source_location": "L6",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_signal_assessment_signalassessmentread",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/signal_assessment.py",
-      "source_location": "L31",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_signal_assessment_assesssignalrequest",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/crawl_run.py",
-      "source_location": "L61",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "types_index_crawlstatusqueuedrun",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/search.py",
-      "source_location": "L10",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "types_index_searchquery",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/crawl_briefing.py",
-      "source_location": "L7",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "types_index_crawlbriefing",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/assessor/parser.py",
-      "source_location": "L12",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "parser_assessmentllmoutput",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/assessor/parser.py",
-      "source_location": "L80",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "parser_summaryllmoutput",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/digest.py",
-      "source_location": "L6",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "digest_digestsignalread",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/digest.py",
-      "source_location": "L54",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "digest_digestsection",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/digest.py",
-      "source_location": "L64",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "digest_digestread",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/company.py",
-      "source_location": "L7",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "company_companycreate",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/company.py",
-      "source_location": "L15",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "company_companyupdate",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/company.py",
-      "source_location": "L22",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "company_companyread",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/signal.py",
-      "source_location": "L7",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "signal_signalread",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/signal.py",
-      "source_location": "L28",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "signal_dedupresult",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/benchmark.py",
-      "source_location": "L9",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "benchmark_benchmarksubscores",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/benchmark.py",
-      "source_location": "L17",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "benchmark_benchmarkread",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/benchmark.py",
-      "source_location": "L44",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "benchmark_competitorbrief",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/benchmark.py",
-      "source_location": "L52",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_benchmark_benchmarkmatrixcell",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/benchmark.py",
-      "source_location": "L61",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_benchmark_benchmarkoverviewresponse",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/benchmark.py",
-      "source_location": "L70",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_benchmark_competitorbenchmarkdetail",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/benchmark.py",
-      "source_location": "L87",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_benchmark_competitorbenchmarkresponse",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/benchmark.py",
-      "source_location": "L95",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "benchmark_leaderboardentry",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/benchmark.py",
-      "source_location": "L108",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_benchmark_capabilityleaderboardresponse",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/benchmark.py",
-      "source_location": "L117",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "benchmark_capabilityassessmentitem",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/benchmark.py",
-      "source_location": "L126",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_benchmark_capabilityassessmentsresponse",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/crawl_run.py",
-      "source_location": "L6",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_crawl_run_crawlrunsourceread",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/crawl_run.py",
-      "source_location": "L34",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_crawl_run_crawlrunread",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/crawl_run.py",
-      "source_location": "L48",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_crawl_run_crawlrunlistread",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/crawl_run.py",
-      "source_location": "L66",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_crawl_run_crawlstatusresponse",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/crawl_briefing.py",
-      "source_location": "L16",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_crawl_briefing_crawlbriefingcreate",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/scorecard.py",
-      "source_location": "L7",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "scorecard_scorecardkpivalue",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/scorecard.py",
-      "source_location": "L12",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_scorecard_scorecarddimension",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/scorecard.py",
-      "source_location": "L18",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_scorecard_scorecardtopmove",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/scorecard.py",
-      "source_location": "L27",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "scorecard_scorecardriskflag",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/scorecard.py",
-      "source_location": "L34",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "scorecard_scorecardbenchmarkposition",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/scorecard.py",
-      "source_location": "L40",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "scorecard_scorecardread",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/scorecard.py",
-      "source_location": "L63",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "scorecard_scorecardhistoryitem",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/scorecard.py",
-      "source_location": "L73",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "scorecard_scorecardexplainassessment",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/scorecard.py",
-      "source_location": "L81",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "scorecard_scorecardexplaindimension",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/scorecard.py",
-      "source_location": "L92",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_scorecard_scorecardexplain",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/scorecard.py",
-      "source_location": "L101",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_scorecard_scorecardrecomputeack",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/scorecard.py",
-      "source_location": "L121",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "scorecard_benchmarkscorecarditem",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/context.py",
-      "source_location": "L6",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_context_contextupdate",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/context.py",
-      "source_location": "L18",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_context_contextread",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/stats.py",
-      "source_location": "L6",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "stats_signalovertimepoint",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/stats.py",
-      "source_location": "L13",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "stats_signaltypecount",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/stats.py",
-      "source_location": "L18",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "stats_companysignaltypecount",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/stats.py",
-      "source_location": "L25",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "stats_signaldistribution",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/document.py",
-      "source_location": "L6",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_document_documentread",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/discovered_page.py",
-      "source_location": "L29",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "index_discoveredpage",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/discovered_page.py",
-      "source_location": "L25",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_discovered_page_discoveredpageupdate",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/search.py",
-      "source_location": "L20",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_search_searchrunread",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/search.py",
-      "source_location": "L31",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_search_searchresultread",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/search.py",
-      "source_location": "L45",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "index_sourcecandidate",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/search.py",
-      "source_location": "L60",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_search_sourcecandidateapprove",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/source.py",
-      "source_location": "L7",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_source_sourcecreate",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/source.py",
-      "source_location": "L17",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_source_sourceupdate",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/source.py",
-      "source_location": "L25",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_source_sourceread",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/digest.py",
-      "source_location": "L41",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "digest_eventcalendaritem",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/stats.py",
-      "source_location": "L30",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "stats_lastcrawlruninfo",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/stats.py",
-      "source_location": "L41",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "stats_lastcrawlsummary",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/external_company_view.py",
-      "source_location": "L6",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "concept_external_company_view",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/schedule.py",
-      "source_location": "L6",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schedule_scheduleconfig",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/schedule.py",
-      "source_location": "L28",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schedule_schedulestatusread",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/settings_admin.py",
-      "source_location": "L4",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_settings_admin_appsettingread",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/settings_admin.py",
-      "source_location": "L11",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_settings_admin_appsettingupdate",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/llm_usage.py",
-      "source_location": "L6",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_llm_usage_llmusagetotals",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/llm_usage.py",
-      "source_location": "L13",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_llm_usage_llmusagesummary",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/llm_usage.py",
-      "source_location": "L20",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_llm_usage_llmusagetimeseriespoint",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/llm_usage.py",
-      "source_location": "L28",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_llm_usage_llmusagebreakdownrow",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/llm_usage.py",
-      "source_location": "L39",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "types_llmusage_llmmodelprice",
-      "target": "basemodel"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "backend/app/schemas/llm_usage.py",
-      "source_location": "L48",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "schemas_llm_usage_llmmodelpriceupdate",
-      "target": "basemodel"
-    },
-    {
-      "relation": "uses",
-      "confidence": "INFERRED",
-      "source_file": "app/schemas/user.py",
-      "source_location": "L3",
-      "weight": 0.8,
-      "confidence_score": 0.5,
-      "source": "schemas_user_usercreate",
-      "target": "models_user_userrole"
-    },
-    {
-      "relation": "uses",
-      "confidence": "INFERRED",
-      "source_file": "app/schemas/user.py",
-      "source_location": "L3",
-      "weight": 0.8,
-      "confidence_score": 0.5,
-      "source": "schemas_user_userupdate",
-      "target": "models_user_userrole"
-    },
-    {
-      "relation": "uses",
-      "confidence": "INFERRED",
-      "source_file": "app/schemas/user.py",
-      "source_location": "L3",
-      "weight": 0.8,
-      "confidence_score": 0.5,
-      "source": "schemas_user_passwordchange",
-      "target": "models_user_userrole"
-    },
-    {
-      "relation": "uses",
-      "confidence": "INFERRED",
-      "source_file": "app/schemas/user.py",
-      "source_location": "L3",
-      "weight": 0.8,
-      "confidence_score": 0.5,
-      "source": "schemas_user_meresponse",
-      "target": "models_user_userrole"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tests/test_users.py",
-      "source_location": "L1",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "tests_test_users_py",
-      "target": "tests_test_users_test_me_returns_current_user"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tests/test_users.py",
-      "source_location": "L9",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "tests_test_users_py",
-      "target": "tests_test_users_test_list_users_admin_only"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tests/test_users.py",
-      "source_location": "L14",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "tests_test_users_py",
-      "target": "tests_test_users_test_create_user"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tests/test_users.py",
-      "source_location": "L21",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "tests_test_users_py",
-      "target": "tests_test_users_test_create_duplicate_username_fails"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tests/test_users.py",
-      "source_location": "L27",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "tests_test_users_py",
-      "target": "tests_test_users_test_create_user_requires_admin"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tests/test_users.py",
-      "source_location": "L32",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "tests_test_users_py",
-      "target": "tests_test_users_test_update_user_role"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tests/test_users.py",
-      "source_location": "L40",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "tests_test_users_py",
-      "target": "tests_test_users_test_delete_last_admin_blocked"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tests/test_users.py",
-      "source_location": "L47",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "tests_test_users_py",
-      "target": "tests_test_users_test_delete_user"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tests/test_users.py",
-      "source_location": "L53",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "tests_test_users_py",
-      "target": "tests_test_users_test_change_own_password"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tests/test_users.py",
-      "source_location": "L58",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "tests_test_users_py",
-      "target": "tests_test_users_test_change_own_password_wrong_current"
-    },
-    {
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
@@ -25126,9 +23981,9 @@
       "source_file": "App.tsx",
       "source_location": "L23",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "app_tsx",
-      "target": "pages_usersadminpage_tsx"
+      "target": "pages_usersadminpage_tsx",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -25189,9 +24044,9 @@
       "source_file": "pages/UsersAdminPage.tsx",
       "source_location": "L4",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "pages_usersadminpage_tsx",
-      "target": "api_client_apiget"
+      "target": "api_client_apiget",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -25200,9 +24055,9 @@
       "source_file": "pages/UsersAdminPage.tsx",
       "source_location": "L4",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "pages_usersadminpage_tsx",
-      "target": "api_client_apipost"
+      "target": "api_client_apipost",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -25211,9 +24066,9 @@
       "source_file": "pages/UsersAdminPage.tsx",
       "source_location": "L4",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "pages_usersadminpage_tsx",
-      "target": "api_client_apiput"
+      "target": "api_client_apiput",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -25222,9 +24077,9 @@
       "source_file": "pages/UsersAdminPage.tsx",
       "source_location": "L4",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "pages_usersadminpage_tsx",
-      "target": "api_client_apidelete"
+      "target": "api_client_apidelete",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -25232,9 +24087,9 @@
       "source_file": "pages/UsersAdminPage.tsx",
       "source_location": "L6",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "pages_usersadminpage_tsx",
-      "target": "pages_usersadminpage_user"
+      "target": "pages_usersadminpage_user",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -25242,9 +24097,9 @@
       "source_file": "pages/UsersAdminPage.tsx",
       "source_location": "L14",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "pages_usersadminpage_tsx",
-      "target": "pages_usersadminpage_createuserpayload"
+      "target": "pages_usersadminpage_createuserpayload",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -25252,9 +24107,9 @@
       "source_file": "pages/UsersAdminPage.tsx",
       "source_location": "L20",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "pages_usersadminpage_tsx",
-      "target": "pages_usersadminpage_useusers"
+      "target": "pages_usersadminpage_useusers",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -25262,9 +24117,9 @@
       "source_file": "pages/UsersAdminPage.tsx",
       "source_location": "L24",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "pages_usersadminpage_tsx",
-      "target": "pages_usersadminpage_createusermodal"
+      "target": "pages_usersadminpage_createusermodal",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -25272,9 +24127,9 @@
       "source_file": "pages/UsersAdminPage.tsx",
       "source_location": "L74",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "pages_usersadminpage_tsx",
-      "target": "pages_usersadminpage_usersadminpage"
+      "target": "pages_usersadminpage_usersadminpage",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -25283,9 +24138,9 @@
       "source_file": "pages/UsersAdminPage.tsx",
       "source_location": "L75",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "pages_usersadminpage_usersadminpage",
-      "target": "pages_usersadminpage_useusers"
+      "target": "pages_usersadminpage_useusers",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -27009,6 +25864,16 @@
       "target": "routers_sources_delete_source"
     },
     {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/routers/sources.py",
+      "source_location": "L12",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "routers_sources_sourcesearchresult",
+      "target": "basemodel"
+    },
+    {
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
@@ -27048,6 +25913,786 @@
       "confidence_score": 0.5,
       "source": "routers_sources_sourcesearchresult",
       "target": "models_discovered_page_discoveredpagestatus"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "app/schemas/user.py",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_user_userread",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "app/schemas/user.py",
+      "source_location": "L15",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_user_usercreate",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "app/schemas/user.py",
+      "source_location": "L21",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_user_userupdate",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "app/schemas/user.py",
+      "source_location": "L26",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_user_passwordchange",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "app/schemas/user.py",
+      "source_location": "L31",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_user_meresponse",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/signal_assessment.py",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_signal_assessment_signalassessmentread",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/signal_assessment.py",
+      "source_location": "L31",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_signal_assessment_assesssignalrequest",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/crawl_run.py",
+      "source_location": "L61",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "types_index_crawlstatusqueuedrun",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/search.py",
+      "source_location": "L10",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "types_index_searchquery",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/crawl_briefing.py",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "types_index_crawlbriefing",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/assessor/parser.py",
+      "source_location": "L12",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "parser_assessmentllmoutput",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/assessor/parser.py",
+      "source_location": "L80",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "parser_summaryllmoutput",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/digest.py",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "digest_digestsignalread",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/digest.py",
+      "source_location": "L54",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "digest_digestsection",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/digest.py",
+      "source_location": "L64",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "digest_digestread",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/company.py",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "company_companycreate",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/company.py",
+      "source_location": "L15",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "company_companyupdate",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/company.py",
+      "source_location": "L22",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "company_companyread",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/signal.py",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "signal_signalread",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/signal.py",
+      "source_location": "L28",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "signal_dedupresult",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/benchmark.py",
+      "source_location": "L9",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "benchmark_benchmarksubscores",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/benchmark.py",
+      "source_location": "L17",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "benchmark_benchmarkread",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/benchmark.py",
+      "source_location": "L44",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "benchmark_competitorbrief",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/benchmark.py",
+      "source_location": "L52",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_benchmark_benchmarkmatrixcell",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/benchmark.py",
+      "source_location": "L61",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_benchmark_benchmarkoverviewresponse",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/benchmark.py",
+      "source_location": "L70",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_benchmark_competitorbenchmarkdetail",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/benchmark.py",
+      "source_location": "L87",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_benchmark_competitorbenchmarkresponse",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/benchmark.py",
+      "source_location": "L95",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "benchmark_leaderboardentry",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/benchmark.py",
+      "source_location": "L108",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_benchmark_capabilityleaderboardresponse",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/benchmark.py",
+      "source_location": "L117",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "benchmark_capabilityassessmentitem",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/benchmark.py",
+      "source_location": "L126",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_benchmark_capabilityassessmentsresponse",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/crawl_run.py",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_crawl_run_crawlrunsourceread",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/crawl_run.py",
+      "source_location": "L34",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_crawl_run_crawlrunread",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/crawl_run.py",
+      "source_location": "L48",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_crawl_run_crawlrunlistread",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/crawl_run.py",
+      "source_location": "L66",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_crawl_run_crawlstatusresponse",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/crawl_briefing.py",
+      "source_location": "L16",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_crawl_briefing_crawlbriefingcreate",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/scorecard.py",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "scorecard_scorecardkpivalue",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/scorecard.py",
+      "source_location": "L12",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_scorecard_scorecarddimension",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/scorecard.py",
+      "source_location": "L18",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_scorecard_scorecardtopmove",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/scorecard.py",
+      "source_location": "L27",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "scorecard_scorecardriskflag",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/scorecard.py",
+      "source_location": "L34",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "scorecard_scorecardbenchmarkposition",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/scorecard.py",
+      "source_location": "L40",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "scorecard_scorecardread",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/scorecard.py",
+      "source_location": "L63",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "scorecard_scorecardhistoryitem",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/scorecard.py",
+      "source_location": "L73",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "scorecard_scorecardexplainassessment",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/scorecard.py",
+      "source_location": "L81",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "scorecard_scorecardexplaindimension",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/scorecard.py",
+      "source_location": "L92",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_scorecard_scorecardexplain",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/scorecard.py",
+      "source_location": "L101",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_scorecard_scorecardrecomputeack",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/scorecard.py",
+      "source_location": "L121",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "scorecard_benchmarkscorecarditem",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/context.py",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_context_contextupdate",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/context.py",
+      "source_location": "L18",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_context_contextread",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/stats.py",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "stats_signalovertimepoint",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/stats.py",
+      "source_location": "L13",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "stats_signaltypecount",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/stats.py",
+      "source_location": "L18",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "stats_companysignaltypecount",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/stats.py",
+      "source_location": "L25",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "stats_signaldistribution",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/document.py",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_document_documentread",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/discovered_page.py",
+      "source_location": "L29",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "index_discoveredpage",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/discovered_page.py",
+      "source_location": "L25",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_discovered_page_discoveredpageupdate",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/search.py",
+      "source_location": "L20",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_search_searchrunread",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/search.py",
+      "source_location": "L31",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_search_searchresultread",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/search.py",
+      "source_location": "L45",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "index_sourcecandidate",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/search.py",
+      "source_location": "L60",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_search_sourcecandidateapprove",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/source.py",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_source_sourcecreate",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/source.py",
+      "source_location": "L17",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_source_sourceupdate",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/source.py",
+      "source_location": "L25",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_source_sourceread",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/digest.py",
+      "source_location": "L41",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "digest_eventcalendaritem",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/stats.py",
+      "source_location": "L30",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "stats_lastcrawlruninfo",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/stats.py",
+      "source_location": "L41",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "stats_lastcrawlsummary",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/external_company_view.py",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "concept_external_company_view",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/schedule.py",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schedule_scheduleconfig",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/schedule.py",
+      "source_location": "L28",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schedule_schedulestatusread",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/settings_admin.py",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_settings_admin_appsettingread",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/settings_admin.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_settings_admin_appsettingupdate",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/llm_usage.py",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_llm_usage_llmusagetotals",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/llm_usage.py",
+      "source_location": "L13",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_llm_usage_llmusagesummary",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/llm_usage.py",
+      "source_location": "L20",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_llm_usage_llmusagetimeseriespoint",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/llm_usage.py",
+      "source_location": "L28",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_llm_usage_llmusagebreakdownrow",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/llm_usage.py",
+      "source_location": "L39",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "types_llmusage_llmmodelprice",
+      "target": "basemodel"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "backend/app/schemas/llm_usage.py",
+      "source_location": "L48",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "schemas_llm_usage_llmmodelpriceupdate",
+      "target": "basemodel"
     },
     {
       "relation": "calls",
@@ -27208,11 +26853,244 @@
       "context": "call",
       "confidence": "INFERRED",
       "confidence_score": 0.8,
+      "source_file": "app/main.py",
+      "source_location": "L27",
+      "weight": 1.0,
+      "source": "app_main_seed_initial_admin",
+      "target": "app_auth_hash_password"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
       "source_file": "backend/app/main.py",
       "source_location": "L56",
       "weight": 1.0,
       "source": "app_main_lifespan",
       "target": "pages_scheduleadminpage_scheduleconfig"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/routers/users.py",
+      "source_location": "L13",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_routers_users_py",
+      "target": "routers_users_get_me"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/routers/users.py",
+      "source_location": "L18",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_routers_users_py",
+      "target": "routers_users_change_own_password"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/routers/users.py",
+      "source_location": "L32",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_routers_users_py",
+      "target": "routers_users_list_users"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/routers/users.py",
+      "source_location": "L37",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_routers_users_py",
+      "target": "routers_users_create_user"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/routers/users.py",
+      "source_location": "L53",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_routers_users_py",
+      "target": "routers_users_update_user"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/routers/users.py",
+      "source_location": "L65",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_routers_users_py",
+      "target": "routers_users_delete_user"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_users.py",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_users_py",
+      "target": "tests_test_users_test_me_returns_current_user"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_users.py",
+      "source_location": "L9",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_users_py",
+      "target": "tests_test_users_test_list_users_admin_only"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_users.py",
+      "source_location": "L14",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_users_py",
+      "target": "tests_test_users_test_create_user"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_users.py",
+      "source_location": "L21",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_users_py",
+      "target": "tests_test_users_test_create_duplicate_username_fails"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_users.py",
+      "source_location": "L27",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_users_py",
+      "target": "tests_test_users_test_create_user_requires_admin"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_users.py",
+      "source_location": "L32",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_users_py",
+      "target": "tests_test_users_test_update_user_role"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_users.py",
+      "source_location": "L40",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_users_py",
+      "target": "tests_test_users_test_delete_last_admin_blocked"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_users.py",
+      "source_location": "L47",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_users_py",
+      "target": "tests_test_users_test_delete_user"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_users.py",
+      "source_location": "L53",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_users_py",
+      "target": "tests_test_users_test_change_own_password"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/test_users.py",
+      "source_location": "L58",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tests_test_users_py",
+      "target": "tests_test_users_test_change_own_password_wrong_current"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/auth.py",
+      "source_location": "L11",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_auth_py",
+      "target": "app_auth_hash_password"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/auth.py",
+      "source_location": "L15",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_auth_py",
+      "target": "app_auth_verify_password"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/auth.py",
+      "source_location": "L19",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_auth_py",
+      "target": "app_auth_verify_credentials"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/auth.py",
+      "source_location": "L42",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_auth_py",
+      "target": "app_auth_require_admin"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "tests/conftest.py",
+      "source_location": "L61",
+      "weight": 1.0,
+      "source": "tests_conftest_db_session",
+      "target": "app_auth_hash_password"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app/auth.py",
+      "source_location": "L24",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_auth_verify_credentials",
+      "target": "app_auth_verify_password"
     },
     {
       "relation": "contains",
@@ -27545,6 +27423,56 @@
       "confidence_score": 1.0,
       "source": "models_user_userrole",
       "target": "str"
+    },
+    {
+      "relation": "uses",
+      "confidence": "INFERRED",
+      "source_file": "app/schemas/user.py",
+      "source_location": "L3",
+      "weight": 0.8,
+      "confidence_score": 0.5,
+      "source": "schemas_user_userread",
+      "target": "models_user_userrole"
+    },
+    {
+      "relation": "uses",
+      "confidence": "INFERRED",
+      "source_file": "app/schemas/user.py",
+      "source_location": "L3",
+      "weight": 0.8,
+      "confidence_score": 0.5,
+      "source": "schemas_user_usercreate",
+      "target": "models_user_userrole"
+    },
+    {
+      "relation": "uses",
+      "confidence": "INFERRED",
+      "source_file": "app/schemas/user.py",
+      "source_location": "L3",
+      "weight": 0.8,
+      "confidence_score": 0.5,
+      "source": "schemas_user_userupdate",
+      "target": "models_user_userrole"
+    },
+    {
+      "relation": "uses",
+      "confidence": "INFERRED",
+      "source_file": "app/schemas/user.py",
+      "source_location": "L3",
+      "weight": 0.8,
+      "confidence_score": 0.5,
+      "source": "schemas_user_passwordchange",
+      "target": "models_user_userrole"
+    },
+    {
+      "relation": "uses",
+      "confidence": "INFERRED",
+      "source_file": "app/schemas/user.py",
+      "source_location": "L3",
+      "weight": 0.8,
+      "confidence_score": 0.5,
+      "source": "schemas_user_meresponse",
+      "target": "models_user_userrole"
     },
     {
       "relation": "inherits",
@@ -27945,6 +27873,56 @@
       "confidence_score": 1.0,
       "source": "models_llm_model_price_llmmodelprice",
       "target": "base"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/schemas/user.py",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_schemas_user_py",
+      "target": "schemas_user_userread"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/schemas/user.py",
+      "source_location": "L15",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_schemas_user_py",
+      "target": "schemas_user_usercreate"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/schemas/user.py",
+      "source_location": "L21",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_schemas_user_py",
+      "target": "schemas_user_userupdate"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/schemas/user.py",
+      "source_location": "L26",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_schemas_user_py",
+      "target": "schemas_user_passwordchange"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/schemas/user.py",
+      "source_location": "L31",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_schemas_user_py",
+      "target": "schemas_user_meresponse"
     },
     {
       "relation": "contains",
@@ -62742,5 +62720,5 @@
       "source_file": "backend/app/crawler/pipeline.py"
     }
   ],
-  "built_at_commit": "a04337986274a503c5dbc169a28749dd7f02400d"
+  "built_at_commit": "c43fb1b21d19bd6fb5dd570c247700684542928d"
 }

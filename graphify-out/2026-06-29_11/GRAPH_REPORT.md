@@ -1,16 +1,16 @@
 # Graph Report - wfmMarketIntelligence  (2026-06-29)
 
 ## Corpus Check
-- 441 files · ~318,729 words
+- 441 files · ~318,719 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 2372 nodes · 3739 edges · 243 communities (202 shown, 41 thin omitted)
-- Extraction: 86% EXTRACTED · 14% INFERRED · 0% AMBIGUOUS · INFERRED: 523 edges (avg confidence: 0.77)
+- 2372 nodes · 3737 edges · 241 communities (200 shown, 41 thin omitted)
+- Extraction: 86% EXTRACTED · 14% INFERRED · 0% AMBIGUOUS · INFERRED: 521 edges (avg confidence: 0.77)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `a0433798`
+- Built from commit: `c43fb1b2`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -86,7 +86,6 @@
 - [[_COMMUNITY_Capability Benchmark Plans|Capability Benchmark Plans]]
 - [[_COMMUNITY_Crawl Run & Signal Assessment Models|Crawl Run & Signal Assessment Models]]
 - [[_COMMUNITY_Frontend Dependencies (package.json)|Frontend Dependencies (package.json)]]
-- [[_COMMUNITY_Scheduler Apply Tests|Scheduler Apply Tests]]
 - [[_COMMUNITY_Discovered Page Auto-Ignore Feature|Discovered Page Auto-Ignore Feature]]
 - [[_COMMUNITY_Scorecard Router Tests|Scorecard Router Tests]]
 - [[_COMMUNITY_Per-Source Discovery Depth Plans|Per-Source Discovery Depth Plans]]
@@ -158,7 +157,6 @@
 - [[_COMMUNITY_Community 213|Community 213]]
 - [[_COMMUNITY_Community 214|Community 214]]
 - [[_COMMUNITY_Community 215|Community 215]]
-- [[_COMMUNITY_Community 216|Community 216]]
 - [[_COMMUNITY_Community 217|Community 217]]
 - [[_COMMUNITY_Community 218|Community 218]]
 - [[_COMMUNITY_Community 219|Community 219]]
@@ -174,9 +172,7 @@
 - [[_COMMUNITY_Community 232|Community 232]]
 - [[_COMMUNITY_Community 233|Community 233]]
 - [[_COMMUNITY_Community 234|Community 234]]
-- [[_COMMUNITY_Community 235|Community 235]]
 - [[_COMMUNITY_Community 236|Community 236]]
-- [[_COMMUNITY_Community 237|Community 237]]
 - [[_COMMUNITY_Community 239|Community 239]]
 - [[_COMMUNITY_Community 243|Community 243]]
 - [[_COMMUNITY_Community 244|Community 244]]
@@ -196,10 +192,10 @@
 ## Surprising Connections (you probably didn't know these)
 - `CapabilityStrengthVsMovement` --semantically_similar_to--> `RelativeCapabilityStrengthPanel`  [INFERRED] [semantically similar]
   frontend/src/components/benchmark/CapabilityStrengthVsMovement.tsx → docs/superpowers/specs/2026-05-21-capability-explainability-design.md
-- `CapabilityExplainDrawer Component` --conceptually_related_to--> `ScorecardBuilder.build`  [INFERRED]
-  docs/superpowers/plans/2026-05-21-capability-explainability.md → backend/app/scorecard/builder.py
 - `useCrawlStatus Hook` --shares_data_with--> `useLastCompletedCrawl()`  [INFERRED]
   docs/superpowers/specs/2026-05-07-crawl-status-polling-design.md → frontend/src/hooks/useCrawlRuns.ts
+- `CapabilityExplainDrawer Component` --conceptually_related_to--> `ScorecardBuilder.build`  [INFERRED]
+  docs/superpowers/plans/2026-05-21-capability-explainability.md → backend/app/scorecard/builder.py
 - `Clickable Digest Signals Design Spec` --references--> `WeeklyDigest`  [INFERRED]
   docs/superpowers/specs/2026-04-17-clickable-digest-signals-design.md → backend/app/models/digest.py
 - `generate_intelligence_briefing` --semantically_similar_to--> `CAPABILITIES constant`  [INFERRED] [semantically similar]
@@ -218,31 +214,31 @@
 - **hyperedge_discovery_to_signal_autoignore** — crawler_discovery_discover_and_crawl, models_discovered_page_discoveredpage, models_signal_signal, models_source_analysisstatus [INFERRED 0.80]
 - **hyperedge_crawl_analyse_pipeline** — crawler_pipeline_run_crawl_source, crawler_pipeline_analyse_unanalysed_for_source, analyser_pipeline_analyse_document, models_document_document [INFERRED 0.85]
 
-## Communities (243 total, 41 thin omitted)
+## Communities (241 total, 41 thin omitted)
 
 ### Community 0 - "Competitor Scorecard Builder"
-Cohesion: 0.06
-Nodes (66): ScorecardBuilder._benchmark_position, ScorecardBuilder.build, ScorecardBuilder._compute_overall, ScorecardBuilder._decay_weights, ScorecardBuilder._risk_flags, ScorecardBuilder._to_kpi_inputs, ScorecardBuilder._top_capabilities, ScorecardBuilder._watchpoints (+58 more)
+Cohesion: 0.05
+Nodes (69): ScorecardBuilder._benchmark_position, ScorecardBuilder.build, ScorecardBuilder._compute_overall, ScorecardBuilder._decay_weights, ScorecardBuilder._risk_flags, ScorecardBuilder._to_kpi_inputs, ScorecardBuilder._top_capabilities, ScorecardBuilder._watchpoints (+61 more)
 
 ### Community 1 - "Discovery & Crawl Heuristics"
 Cohesion: 0.05
 Nodes (34): apiDelete(), ApiError, apiGet(), apiPatch(), apiPost(), apiPostFormData(), apiPut(), authHeader() (+26 more)
 
 ### Community 2 - "Settings & LLM Usage API Client"
-Cohesion: 0.09
-Nodes (36): fetchAppSettings, fetchLlmModelPrices, fetchLlmUsageBreakdown, fetchLlmUsageSummary, fetchLlmUsageTimeseries, resetAppSetting, updateAppSetting, updateLlmModelPrice (+28 more)
+Cohesion: 0.06
+Nodes (52): fetchAppSettings, fetchLlmModelPrices, fetchLlmUsageBreakdown, fetchLlmUsageSummary, fetchLlmUsageTimeseries, resetAppSetting, updateAppSetting, updateLlmModelPrice (+44 more)
 
 ### Community 3 - "Capability Heatmap Frontend"
-Cohesion: 0.05
-Nodes (38): get_crawl_status, CrawlStatusResponse, useCrawlStatus Hook, CompanyCreate, CompanyUpdate, CrawlAnalysisDoneEvent, CrawlAnalysisPhaseStartEvent, CrawlAnalysisProgressEvent (+30 more)
+Cohesion: 0.06
+Nodes (35): get_crawl_status, useAnalyseSource(), CrawlStatusResponse, useCrawlStatus Hook, CrawlAnalysisDoneEvent, CrawlAnalysisPhaseStartEvent, CrawlAnalysisProgressEvent, CrawlAnalysisStartEvent (+27 more)
 
 ### Community 4 - "Scorecard Recompute Pipeline"
 Cohesion: 0.06
-Nodes (45): CompetitorScorecard, _get_company(), _get_current_scorecard(), recompute_all(), ScorecardDimension, ScorecardExplain, ScorecardRecomputeAck, ScorecardTopMove (+37 more)
+Nodes (51): CompetitorScorecard, CLASS_LABELS, MovesPanel, ScoreBadge, _get_company(), _get_current_scorecard(), recompute_all(), ScorecardDimension (+43 more)
 
 ### Community 5 - "Competitor Workspace & Overview Pages"
-Cohesion: 0.25
-Nodes (6): BenchmarkScorecardItem, DIM_LABELS, Props, ScorecardSummaryStrip(), TOP_DIMENSIONS, TREND_ICONS
+Cohesion: 0.40
+Nodes (5): DIM_LABELS, Props, ScorecardSummaryStrip(), TOP_DIMENSIONS, TREND_ICONS
 
 ### Community 6 - "Frontend Dependencies"
 Cohesion: 0.05
@@ -261,20 +257,20 @@ Cohesion: 0.09
 Nodes (30): Settings, AppSetting model, BaseSettings, AppSetting, DELETE /api/admin/settings/{key}, GET /api/admin/settings, PUT /api/admin/settings/{key}, list_settings() (+22 more)
 
 ### Community 10 - "Analyser Pipeline & Movement Score"
-Cohesion: 0.16
-Nodes (16): _cost_usd, get_breakdown endpoint, get_summary endpoint, get_timeseries endpoint, _price_map, _totals_since, upsert_price endpoint, get_breakdown() (+8 more)
+Cohesion: 0.15
+Nodes (20): Return True if URL looks like a category/listing page rather than an article., _is_article_url, _is_child_path, _is_listing_page, _is_listing_page tests, test_is_article_url_child_path_of_seed(), test_is_article_url_content_prefix_blog(), test_is_article_url_content_prefix_news() (+12 more)
 
 ### Community 11 - "Frontend API Client Helpers"
-Cohesion: 0.11
-Nodes (18): useCompanies(), useCreateCompany(), useDeleteCompany(), useUpdateCompanyDynamic(), useUploadCompanyLogo(), useAnalyseSource(), useDeleteDiscoveredPage(), useToggleDiscoveredPage() (+10 more)
+Cohesion: 0.10
+Nodes (21): DiscoveredPagesExpander(), useCompanies(), useCreateCompany(), useDeleteCompany(), useUpdateCompanyDynamic(), useUploadCompanyLogo(), useDeleteDiscoveredPage(), useToggleDiscoveredPage() (+13 more)
 
 ### Community 12 - "Company/Source/Signal CRUD Tests"
 Cohesion: 0.06
 Nodes (5): _make_png(), test_upload_logo_png(), test_upload_logo_replaces_old_file(), test_filter_by_company(), test_create_duplicate_url_fails()
 
 ### Community 13 - "Intelligence Briefing Panel UI"
-Cohesion: 0.20
-Nodes (14): CrawlRun, CrawlRunStatus, CrawlRunStep, MovementStrength, SignalClass, VisibilityImpact, SourceCreate, SourceRead (+6 more)
+Cohesion: 0.32
+Nodes (6): useAssessSignal(), Props, SignalDetailDrawer(), VISIBILITY_LABELS, SignalAssessment, VisibilityImpact
 
 ### Community 14 - "Signal Card & Confidence UI"
 Cohesion: 0.13
@@ -285,8 +281,8 @@ Cohesion: 0.23
 Nodes (17): useApproveCandidate(), useRejectCandidate(), useRunSearchAll(), useSearchResults(), useSearchRuns(), useSourceCandidates(), ApproveCandidateDialog(), CandidatesTab() (+9 more)
 
 ### Community 16 - "Benchmark Query Schemas"
-Cohesion: 0.10
-Nodes (26): BaseModel, BenchmarkRead, BenchmarkSubScores, CapabilityAssessmentItem, CompetitorBrief, get_overview (router), LeaderboardEntry, CompetitorCapabilityBenchmark (+18 more)
+Cohesion: 0.08
+Nodes (30): BaseModel, BenchmarkRead, BenchmarkSubScores, CapabilityAssessmentItem, CompetitorBrief, get_overview (router), LeaderboardEntry, CompetitorCapabilityBenchmark (+22 more)
 
 ### Community 17 - "Capability Benchmark Concepts"
 Cohesion: 0.10
@@ -317,8 +313,8 @@ Cohesion: 0.18
 Nodes (9): code:typescript (import { Navigate } from 'react-router-dom';), code:tsx (function AdminOnly({ children }: { children: React.ReactNode), code:tsx (<Route path="admin/users" element={<AdminOnly><UsersAdminPag), code:typescript (import { useCurrentUser } from '../hooks/useCurrentUser';), code:typescript (const currentUser = useCurrentUser();), code:typescript (import { useCurrentUser } from '../hooks/useCurrentUser';), code:typescript (const currentUser = useCurrentUser();), code:bash (git add frontend/src/App.tsx frontend/src/pages/WeeklyDigest) (+1 more)
 
 ### Community 24 - "Discovered Pages Router & Heuristics"
-Cohesion: 0.11
-Nodes (11): Discovery Heuristics, DiscoveredPage, DiscoveredPageStatus, Intelligent Crawling & Discovery Implementation Plan, _attach_summary(), list_sources(), search_sources(), SourceSearchResult (+3 more)
+Cohesion: 0.27
+Nodes (7): Discovery Heuristics, DiscoveredPage, DiscoveredPageStatus, Intelligent Crawling & Discovery Implementation Plan, DiscoveredPageUpdate, Intelligent Discovery Design Spec, test_discover_marks_changed_page()
 
 ### Community 25 - "Events Crawl Parsing Tests"
 Cohesion: 0.17
@@ -329,12 +325,12 @@ Cohesion: 0.13
 Nodes (16): POST /api/crawl/enqueue/{source_id} Endpoint, CrawlProgressPanel Component, Crawl Progress & Performance Design, Crawl Queue Design, crawl_run_sources Table, crawl_runs Table, GET /api/crawl/status Endpoint, Polling-Based Crawl/Analyse Status System (+8 more)
 
 ### Community 29 - "Benchmark Frontend API"
-Cohesion: 0.15
-Nodes (21): recomputeCompanyBenchmark(), BenchmarkTier, CapabilityAssessmentsResponse, CapabilityLeaderboardResponse, fetchBenchmarkOverview, fetchCapabilityAssessments, fetchCapabilityLeaderboard, fetchCompetitorBenchmark (+13 more)
+Cohesion: 0.16
+Nodes (19): recomputeCompanyBenchmark(), BenchmarkTier, CapabilityAssessmentsResponse, CapabilityLeaderboardResponse, fetchBenchmarkOverview, fetchCapabilityLeaderboard, fetchCompetitorBenchmark, recomputeAllBenchmarks (+11 more)
 
 ### Community 30 - "App Bootstrap & DB Session"
-Cohesion: 0.22
-Nodes (13): _anthropic_client, _opencode_client, Stream the response to avoid Cloudflare's 120-second proxy timeout (error 524)., _call_claude, call_llm, _call_ollama, _call_opencode, _get_anthropic_client (+5 more)
+Cohesion: 0.16
+Nodes (16): _anthropic_client, _opencode_client, Stream the response to avoid Cloudflare's 120-second proxy timeout (error 524)., _call_claude, call_llm, _call_ollama, _call_opencode, _get_anthropic_client (+8 more)
 
 ### Community 31 - "TS Compiler Options (App)"
 Cohesion: 0.11
@@ -345,28 +341,28 @@ Cohesion: 0.13
 Nodes (15): _parse_date_str(), Parse an HTML events listing page and return one dict per event section.     Eac, Parse an ISO-8601 date string into a naive UTC datetime., _extract_published_at, _parse_date_from_text, split_event_sections, main(), One-off backfill: extract published_at from stored HTML for all Documents, then (+7 more)
 
 ### Community 33 - "LLM Call & Usage Models"
-Cohesion: 0.40
-Nodes (9): _build_html, _build_plain_text, _render_event_calendar_section, _render_event_items, _render_items, _render_own_company_section, _render_risks_opportunities, _render_sections (+1 more)
+Cohesion: 0.31
+Nodes (5): test_overview_endpoint_returns_expected_keys, _make_signal_with_date(), test_signals_feed_created_from_excludes_older_signals(), test_signals_feed_created_range_returns_only_matching(), test_signals_feed_created_to_excludes_newer_signals()
 
 ### Community 34 - "TS Compiler Options (Node)"
 Cohesion: 0.11
 Nodes (17): compilerOptions, allowImportingTsExtensions, erasableSyntaxOnly, lib, module, moduleDetection, moduleResolution, noEmit (+9 more)
 
 ### Community 35 - "Scheduler & Email Config"
-Cohesion: 0.09
-Nodes (17): Props, SummaryPeriod, BriefingRecommendation, CompetitorMover, CompetitorSummary, EventAttendee, EventCalendarResponse, IntelligenceBriefing (+9 more)
+Cohesion: 0.11
+Nodes (15): SummaryPeriod, BriefingRecommendation, CompetitorMover, CompetitorSummary, EventAttendee, EventCalendarResponse, IntelligenceBriefing, PeriodType (+7 more)
 
 ### Community 36 - "Movement Score Rules"
 Cohesion: 0.08
 Nodes (22): normalize_cited_items(), _normalize_items(), compute_movement_score(), compute_movement_strength(), map_signal_type_to_class(), _extract_json, AssessmentLLMOutput, parse_assessment_response (+14 more)
 
 ### Community 37 - "Benchmark Confidence Scoring Tests"
-Cohesion: 0.14
-Nodes (14): CrawlSummaryCard(), CrawlSummaryCardProps, ACCENT_COLORS, DeltaKpiCard(), DeltaKpiCardProps, TopSignalsPanel(), TopSignalsPanelProps, useCrawlRuns() (+6 more)
+Cohesion: 0.11
+Nodes (17): MarkdownViewer(), MarkdownViewerProps, BriefingPanel(), CrawlSummaryCard(), CrawlSummaryCardProps, ACCENT_COLORS, DeltaKpiCard(), DeltaKpiCardProps (+9 more)
 
 ### Community 38 - "Capability Leaderboard Drawer UI"
-Cohesion: 0.13
-Nodes (18): Props, CapabilityExplainDrawer Component, useCapabilityAssessments(), Capability Strength Explainability & Panel Consolidation Plan, GET /api/benchmark/capability-assessments Backend Endpoint, CapabilityExplainDrawer, CapabilityRadar (Removed), InfoTooltip (+10 more)
+Cohesion: 0.18
+Nodes (14): fetchCapabilityAssessments, useCapabilityAssessments(), BenchmarkQueryService.get_capability_assessments, CapabilityExplainDrawer, CapabilityRadar (Removed), CapabilityExplainDrawerProps, CapabilityModeContent(), CapabilityModeContentProps (+6 more)
 
 ### Community 39 - "Risks/Opportunities Dashboard Redesign"
 Cohesion: 0.09
@@ -385,8 +381,8 @@ Cohesion: 0.15
 Nodes (13): WeeklyDigest, useDigest(), useGenerateDigest(), Digest, EventItem(), MOVEMENT_COLOURS, Clickable Digest Signals Design Spec, Weekly Digest Redesign Spec (+5 more)
 
 ### Community 43 - "Capability Benchmark Detail UI"
-Cohesion: 0.14
-Nodes (17): CapabilityLeaderboardDrawerProps, ConfidenceIndicator(), StrengthDeltaIndicator(), TIER_CONFIG, TierBadge(), TierBadgeProps, RelativeCapabilityStrengthPanel, CapabilityCount (+9 more)
+Cohesion: 0.15
+Nodes (16): CapabilityLeaderboardDrawerProps, ConfidenceIndicator(), StrengthDeltaIndicator(), TIER_CONFIG, TierBadge(), TierBadgeProps, Props, InfoTooltip (+8 more)
 
 ### Community 44 - "Event Document Extraction Pipeline"
 Cohesion: 0.17
@@ -401,32 +397,32 @@ Cohesion: 0.20
 Nodes (13): build_candidate_dict, build_own_company_signal_dict, query_own_company_signals, call_llm() (patched in curator), generate_digest, _get_context_summary (digester), _get_prev_sections, _get_week_range (+5 more)
 
 ### Community 47 - "Build Version Badge & Deploy"
-Cohesion: 0.08
-Nodes (14): hash_password(), verify_credentials(), _verify_password(), lifespan(), _seed_initial_admin(), DAYS, DEFAULT_CONFIG, ReanalysisJob (+6 more)
+Cohesion: 0.17
+Nodes (6): DAYS, DEFAULT_CONFIG, ReanalysisJob, ScheduleStatus, SIGNAL_TYPES, TIMEZONES
 
 ### Community 48 - "Risks/Opportunities Curation Logic"
-Cohesion: 0.06
-Nodes (59): Extract links only from the main content area, ignoring nav/header/footer/aside., Return True if URL looks like a category/listing page rather than an article., discover_and_crawl, _extract_content_area_links, _extract_internal_links, _get_robot_parser, _is_article_content, _is_article_url (+51 more)
+Cohesion: 0.14
+Nodes (23): Extract links only from the main content area, ignoring nav/header/footer/aside., discover_and_crawl, _extract_content_area_links, _get_robot_parser, _save_document_only, Company model, Document, Signal model (+15 more)
 
 ### Community 49 - "Company CRUD Router"
 Cohesion: 0.31
 Nodes (8): External Company View (Bonus), ExternalCompanyView, CompanyType.own_company enum value, SignalData, build_analysis_prompt, build_self_analysis_prompt, test_parse_valid_llm_response(), Migration: add own_company type and external_company_view table
 
 ### Community 50 - "External View & Search Run Models"
-Cohesion: 0.11
-Nodes (19): CompanyLogo, CompanyLogoProps, FONT_SIZE, SIZE_PX, colorMap, COMPANY_COLORS, getCompanyColor(), CompanySignalHeatmap() (+11 more)
+Cohesion: 0.16
+Nodes (11): colorMap, COMPANY_COLORS, getCompanyColor(), CompanySignalHeatmap(), TYPE_KEYS, DAY_OPTIONS, SignalsOverTimeChartProps, LastCrawlSummary (+3 more)
 
 ### Community 51 - "Assessment Routing Tests"
 Cohesion: 0.28
 Nodes (12): _a(), Build a minimal assessment-like object for routing tests., test_high_visibility_adds_market_impact_kpis(), test_hiring_overrides_base_activity_weight(), test_hiring_signal_routes_to_activity_and_momentum_with_correct_modifiers(), test_market_expansion_with_strong_evidence_adds_capability_at_reduced_weight(), test_market_expansion_without_strong_evidence_no_capability(), test_product_capability_move_routes_to_capability_and_market() (+4 more)
 
 ### Community 52 - "Company Logo UI"
-Cohesion: 0.12
-Nodes (18): CapabilityMeta, CAPABILITIES constant, CapabilityMeta, getCapabilityLabel, CAPABILITIES, CAPABILITY_KEYS, CLASS_LABELS, MovesPanel (+10 more)
+Cohesion: 0.13
+Nodes (16): getCapabilityLabel, CompanyLogo, CompanyLogoProps, FONT_SIZE, SIZE_PX, CapabilityActivityInfoDrawer, COLOR_TIERS, ColumnProps (+8 more)
 
 ### Community 53 - "Digest Email Rendering"
-Cohesion: 0.15
-Nodes (13): APP_BASE_URL config field, iCloud SMTP configuration (App-specific password), Weekly Digest HTML email template preview, send_digest_email, test_send_digest_email_html_contains_events_calendar, test_send_digest_email_* suite, test_test_digest_email_* suite, _call_send_digest_email() (+5 more)
+Cohesion: 0.05
+Nodes (48): get_db(), send_crawl_report() email function, Crawl + Post-Processing Pipeline, APP_BASE_URL config field, iCloud SMTP configuration (App-specific password), Weekly Digest HTML email template preview, _build_html, _build_plain_text (+40 more)
 
 ### Community 54 - "Schedule Router Tests"
 Cohesion: 0.22
@@ -441,12 +437,12 @@ Cohesion: 0.31
 Nodes (6): _update_page_relevance, DedupResult, Signal, SignalRead, SignalType, TSVectorType
 
 ### Community 57 - "LLM Client Streaming"
-Cohesion: 0.15
-Nodes (9): PERIOD_OPTIONS, Props, TIER_COLORS, TIER_LABELS, CompetitorBenchmarkDetail, CompetitorBenchmarkResponse, CapabilityExplainDrawer (existing, reused), strength_delta as movement-score proxy (+1 more)
+Cohesion: 0.11
+Nodes (15): CapabilityMeta, PERIOD_OPTIONS, Props, TIER_COLORS, TIER_LABELS, CompetitorBenchmarkDetail, CompetitorBenchmarkResponse, CAPABILITIES constant (+7 more)
 
 ### Community 58 - "Digester Section Candidates"
-Cohesion: 0.19
-Nodes (11): Base (declarative base), get_db(), app.database.SessionLocal, _record_llm_call, LlmCall model, startup_scheduler, client(), db_engine() (+3 more)
+Cohesion: 0.18
+Nodes (11): hash_password(), verify_credentials(), _verify_password(), Base (declarative base), app.database.SessionLocal, _record_llm_call, LlmCall model, db_engine() (+3 more)
 
 ### Community 59 - "Benchmark Matrix Cell UI"
 Cohesion: 0.19
@@ -469,8 +465,8 @@ Cohesion: 0.24
 Nodes (10): query_candidates, SectionDef, test_build_candidate_dict_structure(), test_query_candidates_competitor_news_uses_source_type(), test_query_candidates_competitors_section_excludes_market_source(), test_query_candidates_competitors_section_uses_source_type_or_filter(), test_query_candidates_excludes_given_signal_ids(), test_query_candidates_excludes_signal_outside_week() (+2 more)
 
 ### Community 64 - "Source Candidate Search Models"
-Cohesion: 0.24
-Nodes (14): SourceCandidate, SearchResult, SearchResultStatus, SearchRunStatus, SourceCandidateStatus, SearchResultRead, SearchRunRead, SourceCandidateApprove (+6 more)
+Cohesion: 0.15
+Nodes (22): SourceCandidate, SearchResult, SearchResultStatus, SearchRunStatus, SourceCandidate, SourceCandidateStatus, SearchResultRead, SearchRunRead (+14 more)
 
 ### Community 65 - "Signal Stats Chart UI"
 Cohesion: 0.18
@@ -489,16 +485,12 @@ Cohesion: 0.17
 Nodes (11): 1. Data Model, 2. Backend Auth Module, 3. API Endpoints, 4. Frontend Role Awareness, 5. User Management UI, 6. Profile Button (Navigation), New router: `backend/app/routers/users.py`, Out of Scope (+3 more)
 
 ### Community 69 - "Crawl Run & Signal Assessment Models"
-Cohesion: 0.14
-Nodes (12): Base, CompetitorSummary, PeriodType, CrawlBriefing, SearchQuery, SearchRun, SignalAssessment, SourceCandidate (+4 more)
+Cohesion: 0.12
+Nodes (18): Base, CompetitorSummary, PeriodType, CrawlBriefing, CrawlRun, CrawlRunStatus, CrawlRunStep, SearchQuery (+10 more)
 
 ### Community 70 - "Frontend Dependencies (package.json)"
 Cohesion: 0.18
 Nodes (10): dependencies, lucide-react, react-markdown, react-router-dom, @tanstack/react-query, devDependencies, autoprefixer, postcss (+2 more)
-
-### Community 71 - "Scheduler Apply Tests"
-Cohesion: 0.44
-Nodes (9): ScheduleConfig (interface), apply_schedule, _make_config(), test_apply_schedule_adds_crawl_job_when_enabled(), test_apply_schedule_adds_digest_job_when_independent_schedule(), test_apply_schedule_no_jobs_when_all_disabled(), test_apply_schedule_no_op_when_scheduler_is_none(), test_apply_schedule_no_op_when_scheduler_not_running() (+1 more)
 
 ### Community 72 - "Discovered Page Auto-Ignore Feature"
 Cohesion: 0.20
@@ -510,7 +502,7 @@ Nodes (5): _make_company_with_scorecard(), test_get_benchmark_returns_paginated(
 
 ### Community 74 - "Per-Source Discovery Depth Plans"
 Cohesion: 0.32
-Nodes (6): AllNewDocsSection(), DiscoveredPagesExpander(), formatMs(), Props, SourceRow(), CrawlStatusSource
+Nodes (7): AllNewDocsSection(), formatMs(), Props, SourceRow(), useDocument(), DocumentViewer(), CrawlStatusSource
 
 ### Community 76 - "Digest Schemas & Event Calendar"
 Cohesion: 0.27
@@ -561,12 +553,12 @@ Cohesion: 0.33
 Nodes (6): code:python (def test_me_returns_current_user(client):), code:python (from fastapi import APIRouter, Depends, HTTPException, statu), code:python (from app.routers import users), code:bash (docker compose -f /Users/benjaminsaure/dev/wfmMarketIntellig), code:bash (git add backend/app/routers/users.py backend/tests/test_user), Task 3: Users router
 
 ### Community 90 - "Community 90"
-Cohesion: 0.27
-Nodes (9): fetchBenchmarkScorecard(), fetchScorecard(), fetchScorecardExplain(), fetchScorecardHistory(), useBenchmarkScorecard(), useRecomputeScorecard(), useScorecard(), useScorecardExplain() (+1 more)
+Cohesion: 0.18
+Nodes (12): fetchBenchmarkScorecard(), fetchScorecard(), fetchScorecardExplain(), fetchScorecardHistory(), useBenchmarkScorecard(), useRecomputeScorecard(), useScorecard(), useScorecardExplain() (+4 more)
 
 ### Community 93 - "Community 93"
-Cohesion: 0.33
-Nodes (8): send_crawl_report() email function, Crawl + Post-Processing Pipeline, _build_crawl_stats, _build_digest_email_extras, get_next_run, scheduled_crawl_job, scheduled_digest_job, shutdown_scheduler
+Cohesion: 0.40
+Nodes (5): _extract_internal_links, test_extract_internal_links_absolute(), test_extract_internal_links_ignores_mailto(), test_extract_internal_links_relative(), test_extract_internal_links_strips_fragment()
 
 ### Community 94 - "Signal Dedup & Search Plans"
 Cohesion: 0.33
@@ -601,8 +593,8 @@ Cohesion: 0.22
 Nodes (12): analyse_document, _build_context_dict, test_analyse_unanalysed_for_source_* suite, _assessment_json(), test_analyse_document_creates_signal(), test_analyse_document_proceeds_if_published_at_recent(), test_analyse_document_skips_if_published_at_older_than_1_year(), test_analyse_document_skips_if_signal_already_exists() (+4 more)
 
 ### Community 182 - "Playwright Dependency"
-Cohesion: 0.25
-Nodes (3): send_crawl_report, _smtp_send, test_send_crawl_report_* suite
+Cohesion: 0.39
+Nodes (5): _attach_summary(), list_sources(), search_sources(), SourceSearchResult, update_source()
 
 ### Community 198 - "Health Check Endpoint"
 Cohesion: 0.28
@@ -617,28 +609,28 @@ Cohesion: 0.28
 Nodes (7): HeatmapCell(), HeatmapCellProps, Props, renderIcon(), scoreToColor(), VISIBLE_CAPABILITIES, HeatmapRow
 
 ### Community 204 - "Community 204"
-Cohesion: 0.12
-Nodes (24): FilterBarProps, relevanceLevels, SignalCardProps, chipStyles, iconMap, labelMap, SignalTypeDistribution(), TYPE_COLORS (+16 more)
+Cohesion: 0.11
+Nodes (25): FilterBarProps, relevanceLevels, SignalCardProps, chipStyles, iconMap, labelMap, SignalTypeDistribution(), TYPE_COLORS (+17 more)
 
 ### Community 205 - "Community 205"
 Cohesion: 0.40
 Nodes (5): code:python (def test_user_cannot_create_company(user_client):), code:python (@router.post("", response_model=CompanyRead, status_code=sta), code:bash (docker compose -f /Users/benjaminsaure/dev/wfmMarketIntellig), code:bash (git add backend/app/routers/companies.py backend/app/routers), Task 4: Role enforcement on existing routers
 
 ### Community 206 - "Community 206"
-Cohesion: 0.43
-Nodes (5): Company, CompanyCreate, CompanyRead, CompanyType, CompanyUpdate
+Cohesion: 0.20
+Nodes (11): Company, CompanyCreate, CompanyRead, CompanyType, CompanyUpdate, CompanySignalTypeCount, LastCrawlRunInfo, LastCrawlSummary (+3 more)
 
 ### Community 207 - "Community 207"
-Cohesion: 0.38
-Nodes (6): CompanySignalTypeCount, LastCrawlRunInfo, LastCrawlSummary, SignalDistribution, SignalOverTimePoint, SignalTypeCount
+Cohesion: 0.40
+Nodes (5): _is_article_content, test_is_article_content_high_word_count(), test_is_article_content_rejects_empty(), test_is_article_content_rejects_low_word_count(), test_is_article_content_with_article_tag()
 
 ### Community 208 - "Community 208"
 Cohesion: 0.40
 Nodes (5): code:tsx (import { useState } from 'react';), code:typescript (import UsersAdminPage from './pages/UsersAdminPage';), code:bash (docker compose -f /Users/benjaminsaure/dev/wfmMarketIntellig), code:bash (git add frontend/src/pages/UsersAdminPage.tsx frontend/src/A), Task 8: UsersAdminPage
 
 ### Community 209 - "Community 209"
-Cohesion: 0.14
-Nodes (11): useAssessSignal(), DEFAULT_FILTERS, Props, SignalDetailDrawer(), VISIBILITY_LABELS, Props, VISIBILITY_LABELS, SignalAssessment (+3 more)
+Cohesion: 0.13
+Nodes (6): DEFAULT_FILTERS, Props, VISIBILITY_LABELS, Props, SignalFeedItem, SignalsFeedFilters
 
 ### Community 210 - "Community 210"
 Cohesion: 0.50
@@ -649,16 +641,12 @@ Cohesion: 0.32
 Nodes (4): SECTIONS, test_competitors_section_uses_source_type_filter_and_is_competitor_only(), test_events_section_signal_types(), test_sections_has_five_entries()
 
 ### Community 214 - "Community 214"
-Cohesion: 0.29
-Nodes (4): test_get_capability_assessments_ordered_by_movement_score_desc(), test_get_capability_assessments_returns_matching_assessments(), test_get_capability_assessments_unknown_slug_raises(), test_get_capability_assessments_wrong_capability_returns_empty()
+Cohesion: 0.50
+Nodes (3): lifespan(), _seed_initial_admin(), ScheduleConfig
 
 ### Community 215 - "Community 215"
 Cohesion: 0.33
 Nodes (7): DigestRead, DigestSection, DigestSignalRead, EventCalendarItem, build_event_calendar_section, _build_event_item, EventCalendarItem
-
-### Community 216 - "Community 216"
-Cohesion: 0.38
-Nodes (5): MarkdownViewer(), MarkdownViewerProps, BriefingPanel(), useGenerateBriefing(), useLatestBriefing()
 
 ### Community 217 - "Community 217"
 Cohesion: 0.32
@@ -700,17 +688,9 @@ Nodes (4): build_analysis_prompt() external_view parameter, ExternalCompanyView 
 Cohesion: 0.67
 Nodes (3): Movement Score Formula, Signal Intelligence Pipeline, Wardley Evolution Band
 
-### Community 235 - "Community 235"
-Cohesion: 0.50
-Nodes (3): Same client instance should be returned on repeated calls., test_anthropic_client_reused_across_calls(), test_opencode_client_reused_across_calls()
-
 ### Community 236 - "Community 236"
 Cohesion: 0.50
 Nodes (4): CrawlStatus enum, Test that crawl_status is set to 'changed' when content changes.      Note: This, Test that crawl_status is set to 'changed' (and the document content updated), test_run_crawl_source_sets_crawl_status_changed_on_content_change()
-
-### Community 237 - "Community 237"
-Cohesion: 0.67
-Nodes (3): add_curated_fields_to_intelligence_briefings, merge_heads, add risks and opportunities to weekly_digests
 
 ### Community 239 - "Community 239"
 Cohesion: 0.40
@@ -746,7 +726,7 @@ _Questions this graph is uniquely positioned to answer:_
   _Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low._
 - **What is the exact relationship between `_is_child_path` and `_is_article_url`?**
   _Edge tagged AMBIGUOUS (relation: calls) - confidence is low._
-- **Why does `DiscoveredPage` connect `Discovered Pages Router & Heuristics` to `Capability Heatmap Frontend`, `Crawl Run & Signal Assessment Models`, `Per-Source Discovery Depth Plans`, `Frontend API Client Helpers`, `Benchmark Query Schemas`, `Risks/Opportunities Curation Logic`?**
-  _High betweenness centrality (0.055) - this node is a cross-community bridge._
-- **Why does `WeeklyDigest` connect `Weekly Digest Frontend` to `LLM Call & Usage Models`, `Capability Heatmap Frontend`, `Scheduler & Email Config`, `Crawl Run & Signal Assessment Models`, `Signal Card & Confidence UI`, `Digester Candidate Pipeline`, `Community 215`, `Community 93`?**
-  _High betweenness centrality (0.054) - this node is a cross-community bridge._
+- **Why does `DiscoveredPage` connect `Discovered Pages Router & Heuristics` to `Capability Heatmap Frontend`, `Crawl Run & Signal Assessment Models`, `Scheduler Apply Tests`, `Frontend API Client Helpers`, `Benchmark Query Schemas`, `Risks/Opportunities Curation Logic`, `Playwright Dependency`?**
+  _High betweenness centrality (0.060) - this node is a cross-community bridge._
+- **Why does `WeeklyDigest` connect `Weekly Digest Frontend` to `Capability Heatmap Frontend`, `Scheduler & Email Config`, `Crawl Run & Signal Assessment Models`, `Signal Card & Confidence UI`, `Digester Candidate Pipeline`, `Digest Email Rendering`, `Community 215`?**
+  _High betweenness centrality (0.056) - this node is a cross-community bridge._
