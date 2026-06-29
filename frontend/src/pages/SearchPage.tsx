@@ -9,6 +9,7 @@ import {
   useRejectCandidate,
 } from '../hooks/useSearch';
 import { useCompanies } from '../hooks/useCompanies';
+import { useCurrentUser } from '../hooks/useCurrentUser';
 import type { SearchRun, SourceCandidate, SourceType } from '../types';
 
 type Tab = 'runs' | 'candidates';
@@ -182,6 +183,7 @@ function CandidatesTab() {
   const [minRelevance, setMinRelevance] = useState<number>(0);
   const [approving, setApproving] = useState<SourceCandidate | null>(null);
   const [expandedCompanies, setExpandedCompanies] = useState<Set<string>>(new Set());
+  const currentUser = useCurrentUser();
 
   const { data: candidates, isLoading } = useSourceCandidates(statusFilter || undefined);
   const { data: companies } = useCompanies();
@@ -325,7 +327,7 @@ function CandidatesTab() {
                           <p className="text-xs text-ink-muted/60 mt-1">via: {c.found_via_query}</p>
                         )}
                       </div>
-                      {c.status === 'candidate' && (
+                      {c.status === 'candidate' && currentUser?.isAdmin && (
                         <div className="flex gap-2 shrink-0">
                           <button
                             onClick={() => setApproving(c)}

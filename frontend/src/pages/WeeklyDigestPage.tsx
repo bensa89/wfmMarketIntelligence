@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useDigests, useGenerateDigest } from '../hooks/useDigests';
+import { useCurrentUser } from '../hooks/useCurrentUser';
 import { Calendar, RefreshCw } from 'lucide-react';
 import type { RiskItem } from '../types/intelligence';
 import type { Digest, DigestSectionItem, EventCalendarItem } from '../types';
@@ -222,6 +223,7 @@ function SectionItems({ items }: { items: DigestSectionItem[] }) {
 export default function WeeklyDigestPage() {
   const { data: digests, isLoading } = useDigests();
   const generateDigest = useGenerateDigest();
+  const currentUser = useCurrentUser();
   const [selectedDigestId, setSelectedDigestId] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
@@ -320,17 +322,19 @@ export default function WeeklyDigestPage() {
         <h1 className="text-2xl font-bold flex items-center gap-2">
           <Calendar size={24} /> Weekly Digest
         </h1>
-        <button
-          onClick={() => generateDigest.mutate()}
-          disabled={generateDigest.isPending}
-          className="btn-primary flex items-center gap-2 flex-shrink-0"
-        >
-          <RefreshCw size={16} className={generateDigest.isPending ? 'animate-spin' : ''} />
-          {generateDigest.isPending ? 'Generating...' : 'Generate New Digest'}
-        </button>
+        {currentUser?.isAdmin && (
+          <button
+            onClick={() => generateDigest.mutate()}
+            disabled={generateDigest.isPending}
+            className="btn-primary flex items-center gap-2 flex-shrink-0"
+          >
+            <RefreshCw size={16} className={generateDigest.isPending ? 'animate-spin' : ''} />
+            {generateDigest.isPending ? 'Generating...' : 'Generate New Digest'}
+          </button>
+        )}
       </div>
 
-      {generateDigest.isError && (
+      {currentUser?.isAdmin && generateDigest.isError && (
         <div className="mb-4 p-3 rounded bg-signal-low/10 text-signal-low text-sm">
           Failed to generate digest. Try again.
         </div>

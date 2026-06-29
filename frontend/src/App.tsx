@@ -1,5 +1,6 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { getCurrentUser } from './api/client';
 import Layout from './components/Layout';
 import AuthGate from './components/AuthGate';
 import LoginPage from './pages/LoginPage';
@@ -30,6 +31,12 @@ const queryClient = new QueryClient({
   },
 });
 
+function AdminOnly({ children }: { children: React.ReactNode }) {
+  const user = getCurrentUser();
+  if (!user || user.role !== 'admin') return <Navigate to="/" replace />;
+  return <>{children}</>;
+}
+
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -52,6 +59,7 @@ export default function App() {
             <Route path="digest" element={<WeeklyDigestPage />} />
             <Route path="search" element={<SearchPage />} />
             <Route path="admin/sources" element={<SourcesAdminPage />} />
+            <Route path="admin/users" element={<AdminOnly>{/* UsersAdminPage added in Task 8 */}<div /></AdminOnly>} />
             <Route path="crawl-runs/:id" element={<CrawlRunDetailPage />} />
             <Route path="context" element={<CompanyContextPage />} />
             <Route path="how-it-works" element={<HowItWorksPage />} />
