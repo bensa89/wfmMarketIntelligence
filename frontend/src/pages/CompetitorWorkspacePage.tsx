@@ -15,6 +15,8 @@ import type { CompetitorBenchmarkDetail } from '../types/benchmark';
 import { MovesPanel } from '../components/workspace/MovesPanel';
 import { CapabilityStrengthVsMovement } from '../components/benchmark/CapabilityStrengthVsMovement';
 import RisksOpportunitiesCards from '../components/workspace/RisksOpportunitiesCards';
+import SignalTimelinePanel from '../components/workspace/SignalTimelinePanel';
+import SignalCategoryPanel from '../components/workspace/SignalCategoryPanel';
 import SignalDetailModal from '../components/signals/SignalDetailModal';
 import type { SignalFeedItem, CapabilityCount, SignalsFeedFilters } from '../types/intelligence';
 import { useScorecard, useScorecardExplain, useRecomputeScorecard } from '../hooks/useScorecard';
@@ -72,6 +74,7 @@ export default function CompetitorWorkspacePage() {
   }
 
   const activeSummary = activePeriod === '30d' ? data.summary_30d : data.summary_90d;
+  const statsDays: 30 | 90 = activePeriod === '30d' ? 30 : 90;
 
   function handleSignalSelect(signalId: string) {
     setSelectedScorecardSignalId(signalId);
@@ -271,6 +274,12 @@ export default function CompetitorWorkspacePage() {
           scorecardWatchpoints={scorecard?.watchpoints}
           onSelectSignal={handleSignalSelect}
         />
+
+        {/* Row 4.5: Signal activity over time + by category */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <SignalTimelinePanel slug={slug ?? ''} days={statsDays} />
+          <SignalCategoryPanel slug={slug ?? ''} days={statsDays} />
+        </div>
 
         {/* Row 5: All signals for this competitor */}
         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
