@@ -1,19 +1,16 @@
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { useCompetitorSignalStats } from '../../hooks/useCompetitorSignalStats';
+import { labelMap } from '../SignalTypeIcon';
 
 interface Props {
   slug: string;
   days: 30 | 90;
 }
 
-function categoryLabel(signalType: string): string {
-  return signalType.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
 export default function SignalCategoryPanel({ slug, days }: Props) {
   const { data, isLoading, error } = useCompetitorSignalStats(slug, days);
   const nonZero = data?.by_category.filter((c) => c.count > 0) ?? [];
-  const chartData = nonZero.map((c) => ({ label: categoryLabel(c.signal_type), count: c.count }));
+  const chartData = nonZero.map((c) => ({ label: labelMap[c.signal_type], count: c.count }));
 
   return (
     <div className="bg-white border border-slate-200 rounded-xl p-4">
