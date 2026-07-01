@@ -157,6 +157,24 @@ export interface WorkspaceResponse {
   timeline_of_moves: TimelineEntry[];
 }
 
+export interface SignalStatsTimelinePoint {
+  bucket: string;
+  count: number;
+}
+
+export interface SignalStatsCategoryCount {
+  signal_type: SignalType;
+  count: number;
+}
+
+export interface SignalStatsResponse {
+  total: number;
+  period_days: 30 | 90;
+  granularity: 'day' | 'week';
+  timeline: SignalStatsTimelinePoint[];
+  by_category: SignalStatsCategoryCount[];
+}
+
 export interface SignalsFeedResponse {
   items: SignalFeedItem[];
   total: number;
