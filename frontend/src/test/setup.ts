@@ -24,25 +24,55 @@ Object.defineProperty(HTMLElement.prototype, 'offsetHeight', {
 // which ticks fit and should be shown. Give that element a size based on
 // its text content so measurements stay proportional instead of reporting
 // a fixed size for every string (which would make all labels look
-// oversized and get hidden). All other elements fall back to the fixed
-// container size stubbed above.
+// oversized and get hidden).
+//
+// Separately, ResponsiveContainer itself measures its own wrapper div
+// (class "recharts-responsive-container") via getBoundingClientRect (not
+// offsetWidth/offsetHeight as the stub above might suggest) to size the
+// chart on mount, before ResizeObserver ever fires. Give that element the
+// same fixed size as the offsetWidth/offsetHeight stub above so charts
+// still render.
+//
+// Every other element falls through to the real (jsdom) implementation,
+// so tests that assert genuine layout/visibility via getBoundingClientRect
+// aren't given a fabricated non-zero value.
+const realGetBoundingClientRect = HTMLElement.prototype.getBoundingClientRect;
 HTMLElement.prototype.getBoundingClientRect = function getBoundingClientRect() {
-  const isMeasurementSpan = this.id === 'recharts_measurement_span';
-  const width = isMeasurementSpan ? (this.textContent?.length ?? 0) * 6 : 400;
-  const height = isMeasurementSpan ? 14 : 300;
-  return {
-    width,
-    height,
-    top: 0,
-    left: 0,
-    bottom: height,
-    right: width,
-    x: 0,
-    y: 0,
-    toJSON() {
-      return this;
-    },
-  } as DOMRect;
+  if (this.id === 'recharts_measurement_span') {
+    const width = (this.textContent?.length ?? 0) * 6;
+    const height = 14;
+    return {
+      width,
+      height,
+      top: 0,
+      left: 0,
+      bottom: height,
+      right: width,
+      x: 0,
+      y: 0,
+      toJSON() {
+        return this;
+      },
+    } as DOMRect;
+  }
+  if (this.classList?.contains('recharts-responsive-container')) {
+    const width = 400;
+    const height = 300;
+    return {
+      width,
+      height,
+      top: 0,
+      left: 0,
+      bottom: height,
+      right: width,
+      x: 0,
+      y: 0,
+      toJSON() {
+        return this;
+      },
+    } as DOMRect;
+  }
+  return realGetBoundingClientRect.call(this);
 };
 
 if (typeof globalThis.ResizeObserver === 'undefined') {
