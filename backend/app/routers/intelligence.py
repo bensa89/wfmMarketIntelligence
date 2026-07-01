@@ -485,32 +485,12 @@ def get_competitor_signal_stats(
         raise HTTPException(status_code=404, detail="Competitor not found")
 
     now = datetime.now(timezone.utc)
-    period_start = now - timedelta(days=days)
     granularity = "day" if days == 30 else "week"
-
-    rows = (
-        db.query(Signal.signal_type, Signal.published_at, Signal.created_at)
-        .filter(Signal.company_id == company.id)
-        .all()
-    )
-
-    def _effective_date(row) -> date:
-        dt = row.published_at or row.created_at
-        if dt.tzinfo is None:
-            dt = dt.replace(tzinfo=timezone.utc)
-        return dt.date()
-
-    in_range = [row for row in rows if _effective_date(row) >= period_start.date()]
 
     def _bucket_key(d: date) -> date:
         if granularity == "day":
             return d
         return d - timedelta(days=d.weekday())  # Monday of that ISO week
-
-    bucket_counts: dict[date, int] = {}
-    for row in in_range:
-        key = _bucket_key(_effective_date(row))
-        bucket_counts[key] = bucket_counts.get(key, 0) + 1
 
     # Build a fixed-length, deterministic bucket list ending at "today"'s bucket,
     # rather than aligning both ends to week boundaries — aligning both ends
@@ -524,6 +504,28 @@ def get_competitor_signal_stats(
 
     range_end = _bucket_key(now.date())
     range_start = range_end - step * (num_buckets - 1)
+
+    rows = (
+        db.query(Signal.signal_type, Signal.published_at, Signal.created_at)
+        .filter(Signal.company_id == company.id)
+        .all()
+    )
+
+    def _effective_date(row) -> date:
+        dt = row.published_at or row.created_at
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.date()
+
+    # Filter using the same range_start that the timeline buckets cover, so
+    # total/by_category always match the sum of the timeline counts.
+    in_range = [row for row in rows if _effective_date(row) >= range_start]
+
+    bucket_counts: dict[date, int] = {}
+    for row in in_range:
+        key = _bucket_key(_effective_date(row))
+        bucket_counts[key] = bucket_counts.get(key, 0) + 1
+
     timeline = []
     cursor = range_start
     while cursor <= range_end:

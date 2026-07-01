@@ -222,3 +222,31 @@ def test_signal_stats_falls_back_to_created_at_when_published_at_missing(client,
     data = resp.json()
     assert data["total"] == 1
     assert sum(row["count"] for row in data["timeline"]) == 1
+
+
+def test_signal_stats_total_matches_timeline_sum_30d(client, db_session):
+    now = datetime.now(timezone.utc)
+    company = _make_company(db_session, "Stats Co Invariant Daily")
+    _make_signal(db_session, company, created_at=now - timedelta(days=1), published_at=now - timedelta(days=1))
+    _make_signal(db_session, company, created_at=now - timedelta(days=15), published_at=now - timedelta(days=15))
+    _make_signal(db_session, company, created_at=now - timedelta(days=29), published_at=now - timedelta(days=29))
+
+    resp = client.get(f"/api/intelligence/competitors/{company.slug}/signals/stats?days=30")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert sum(row["count"] for row in data["timeline"]) == data["total"]
+
+
+def test_signal_stats_total_matches_timeline_sum_90d(client, db_session):
+    # Includes signals near the weekly bucket boundary (85-90 days out), which
+    # is exactly the range where a fixed period_start cutoff and the timeline's
+    # deterministic weekly range_start could previously disagree.
+    now = datetime.now(timezone.utc)
+    company = _make_company(db_session, "Stats Co Invariant Weekly")
+    for d in (1, 10, 40, 85, 89, 90):
+        _make_signal(db_session, company, created_at=now - timedelta(days=d), published_at=now - timedelta(days=d))
+
+    resp = client.get(f"/api/intelligence/competitors/{company.slug}/signals/stats?days=90")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert sum(row["count"] for row in data["timeline"]) == data["total"]
