@@ -162,274 +162,175 @@
   },
   "nodes": [
     {
-      "label": "SignalTypeIcon.tsx",
-      "file_type": "code",
-      "source_file": "SignalTypeIcon.tsx",
-      "source_location": "L1",
-      "id": "signaltypeicon_tsx",
-      "community": 204,
-      "norm_label": "signaltypeicon.tsx"
-    },
-    {
-      "label": "iconMap",
-      "file_type": "code",
-      "source_file": "SignalTypeIcon.tsx",
-      "source_location": "L13",
-      "id": "components_signaltypeicon_iconmap",
-      "community": 204,
-      "norm_label": "iconmap"
-    },
-    {
-      "label": "labelMap",
-      "file_type": "code",
-      "source_file": "SignalTypeIcon.tsx",
-      "source_location": "L24",
-      "id": "components_signaltypeicon_labelmap",
-      "community": 204,
-      "norm_label": "labelmap"
-    },
-    {
-      "label": "chipStyles",
-      "file_type": "code",
-      "source_file": "SignalTypeIcon.tsx",
-      "source_location": "L36",
-      "id": "components_signaltypeicon_chipstyles",
-      "community": 204,
-      "norm_label": "chipstyles"
-    },
-    {
-      "label": "SignalTypeIconProps",
-      "file_type": "code",
-      "source_file": "SignalTypeIcon.tsx",
-      "source_location": "L47",
-      "id": "components_signaltypeicon_signaltypeiconprops",
-      "community": 204,
-      "norm_label": "signaltypeiconprops"
-    },
-    {
-      "label": "SignalTypeIcon()",
-      "file_type": "code",
-      "source_file": "SignalTypeIcon.tsx",
-      "source_location": "L54",
-      "id": "components_signaltypeicon_signaltypeicon",
-      "community": 204,
-      "norm_label": "signaltypeicon()"
-    },
-    {
       "label": "SignalCategoryPanel.tsx",
       "file_type": "code",
-      "source_file": "workspace/SignalCategoryPanel.tsx",
+      "source_file": "components/workspace/SignalCategoryPanel.tsx",
       "source_location": "L1",
-      "id": "workspace_signalcategorypanel_tsx",
+      "id": "components_workspace_signalcategorypanel_tsx",
       "community": 230,
       "norm_label": "signalcategorypanel.tsx"
     },
     {
       "label": "Props",
       "file_type": "code",
-      "source_file": "workspace/SignalCategoryPanel.tsx",
-      "source_location": "L5",
+      "source_file": "components/workspace/SignalCategoryPanel.tsx",
+      "source_location": "L4",
       "id": "workspace_signalcategorypanel_props",
       "community": 230,
       "norm_label": "props"
-    },
-    {
-      "label": "SignalCategoryPanel()",
-      "file_type": "code",
-      "source_file": "workspace/SignalCategoryPanel.tsx",
-      "source_location": "L10",
-      "id": "workspace_signalcategorypanel_signalcategorypanel",
-      "community": 230,
-      "norm_label": "signalcategorypanel()"
-    },
-    {
-      "label": "CompetitorWorkspacePage.tsx",
-      "file_type": "code",
-      "source_file": "CompetitorWorkspacePage.tsx",
-      "source_location": "L1",
-      "community": 245,
-      "norm_label": "competitorworkspacepage.tsx",
-      "id": "competitorworkspacepage_tsx"
-    },
-    {
-      "label": "SummaryPeriod",
-      "file_type": "code",
-      "source_file": "CompetitorWorkspacePage.tsx",
-      "source_location": "L30",
-      "community": 245,
-      "norm_label": "summaryperiod",
-      "id": "pages_competitorworkspacepage_summaryperiod"
-    },
-    {
-      "label": "CompetitorWorkspacePage()",
-      "file_type": "code",
-      "source_file": "CompetitorWorkspacePage.tsx",
-      "source_location": "L32",
-      "community": 245,
-      "norm_label": "competitorworkspacepage()",
-      "id": "pages_competitorworkspacepage_competitorworkspacepage"
-    },
-    {
-      "label": "setup.ts",
-      "file_type": "code",
-      "source_file": "setup.ts",
-      "source_location": "L1",
-      "community": 259,
-      "norm_label": "setup.ts",
-      "id": "setup_ts"
-    },
-    {
-      "label": "toJSON()",
-      "file_type": "code",
-      "source_file": "setup.ts",
-      "source_location": "L53",
-      "community": 259,
-      "norm_label": "tojson()",
-      "id": "test_setup_tojson"
-    },
-    {
-      "label": "observe()",
-      "file_type": "code",
-      "source_file": "setup.ts",
-      "source_location": "L80",
-      "community": 259,
-      "norm_label": "observe()",
-      "id": "test_setup_observe"
-    },
-    {
-      "label": "unobserve()",
-      "file_type": "code",
-      "source_file": "setup.ts",
-      "source_location": "L81",
-      "community": 259,
-      "norm_label": "unobserve()",
-      "id": "test_setup_unobserve"
-    },
-    {
-      "label": "disconnect()",
-      "file_type": "code",
-      "source_file": "setup.ts",
-      "source_location": "L82",
-      "community": 259,
-      "norm_label": "disconnect()",
-      "id": "test_setup_disconnect"
-    },
-    {
-      "label": "SignalCategoryPanel.tsx",
-      "file_type": "code",
-      "source_file": "components/workspace/SignalCategoryPanel.tsx",
-      "source_location": "L1",
-      "community": 230,
-      "norm_label": "signalcategorypanel.tsx",
-      "id": "components_workspace_signalcategorypanel_tsx"
     },
     {
       "label": "categoryLabel()",
       "file_type": "code",
       "source_file": "components/workspace/SignalCategoryPanel.tsx",
       "source_location": "L9",
+      "id": "workspace_signalcategorypanel_categorylabel",
       "community": 230,
-      "norm_label": "categorylabel()",
-      "id": "workspace_signalcategorypanel_categorylabel"
+      "norm_label": "categorylabel()"
+    },
+    {
+      "label": "SignalCategoryPanel()",
+      "file_type": "code",
+      "source_file": "components/workspace/SignalCategoryPanel.tsx",
+      "source_location": "L13",
+      "id": "workspace_signalcategorypanel_signalcategorypanel",
+      "community": 230,
+      "norm_label": "signalcategorypanel()"
     },
     {
       "label": "SignalTimelinePanel.tsx",
       "file_type": "code",
       "source_file": "components/workspace/SignalTimelinePanel.tsx",
       "source_location": "L1",
-      "community": 219,
-      "norm_label": "signaltimelinepanel.tsx",
-      "id": "components_workspace_signaltimelinepanel_tsx"
+      "id": "components_workspace_signaltimelinepanel_tsx",
+      "community": 252,
+      "norm_label": "signaltimelinepanel.tsx"
     },
     {
       "label": "Props",
       "file_type": "code",
       "source_file": "components/workspace/SignalTimelinePanel.tsx",
       "source_location": "L5",
-      "community": 219,
-      "norm_label": "props",
-      "id": "workspace_signaltimelinepanel_props"
+      "id": "workspace_signaltimelinepanel_props",
+      "community": 252,
+      "norm_label": "props"
     },
     {
       "label": "formatBucketLabel()",
       "file_type": "code",
       "source_file": "components/workspace/SignalTimelinePanel.tsx",
       "source_location": "L10",
-      "community": 219,
-      "norm_label": "formatbucketlabel()",
-      "id": "workspace_signaltimelinepanel_formatbucketlabel"
+      "id": "workspace_signaltimelinepanel_formatbucketlabel",
+      "community": 252,
+      "norm_label": "formatbucketlabel()"
     },
     {
       "label": "SignalTimelinePanel()",
       "file_type": "code",
       "source_file": "components/workspace/SignalTimelinePanel.tsx",
       "source_location": "L20",
-      "community": 219,
-      "norm_label": "signaltimelinepanel()",
-      "id": "workspace_signaltimelinepanel_signaltimelinepanel"
+      "id": "workspace_signaltimelinepanel_signaltimelinepanel",
+      "community": 252,
+      "norm_label": "signaltimelinepanel()"
     },
     {
       "label": "SignalCategoryPanel.test.tsx",
       "file_type": "code",
       "source_file": "components/workspace/__tests__/SignalCategoryPanel.test.tsx",
       "source_location": "L1",
+      "id": "components_workspace_tests_signalcategorypanel_test_tsx",
       "community": 230,
-      "norm_label": "signalcategorypanel.test.tsx",
-      "id": "components_workspace_tests_signalcategorypanel_test_tsx"
+      "norm_label": "signalcategorypanel.test.tsx"
     },
     {
       "label": "renderWithClient()",
       "file_type": "code",
       "source_file": "components/workspace/__tests__/SignalCategoryPanel.test.tsx",
       "source_location": "L8",
+      "id": "tests_signalcategorypanel_test_renderwithclient",
       "community": 230,
-      "norm_label": "renderwithclient()",
-      "id": "tests_signalcategorypanel_test_renderwithclient"
+      "norm_label": "renderwithclient()"
     },
     {
       "label": "data",
       "file_type": "code",
       "source_file": "components/workspace/__tests__/SignalCategoryPanel.test.tsx",
       "source_location": "L15",
+      "id": "tests_signalcategorypanel_test_data",
       "community": 230,
-      "norm_label": "data",
-      "id": "tests_signalcategorypanel_test_data"
+      "norm_label": "data"
     },
     {
       "label": "SignalTimelinePanel.test.tsx",
       "file_type": "code",
       "source_file": "components/workspace/__tests__/SignalTimelinePanel.test.tsx",
       "source_location": "L1",
-      "community": 219,
-      "norm_label": "signaltimelinepanel.test.tsx",
-      "id": "components_workspace_tests_signaltimelinepanel_test_tsx"
+      "id": "components_workspace_tests_signaltimelinepanel_test_tsx",
+      "community": 252,
+      "norm_label": "signaltimelinepanel.test.tsx"
     },
     {
       "label": "renderWithClient()",
       "file_type": "code",
       "source_file": "components/workspace/__tests__/SignalTimelinePanel.test.tsx",
       "source_location": "L8",
-      "community": 219,
-      "norm_label": "renderwithclient()",
-      "id": "tests_signaltimelinepanel_test_renderwithclient"
+      "id": "tests_signaltimelinepanel_test_renderwithclient",
+      "community": 252,
+      "norm_label": "renderwithclient()"
     },
     {
       "label": "data",
       "file_type": "code",
       "source_file": "components/workspace/__tests__/SignalTimelinePanel.test.tsx",
       "source_location": "L15",
-      "community": 219,
-      "norm_label": "data",
-      "id": "tests_signaltimelinepanel_test_data"
+      "id": "tests_signaltimelinepanel_test_data",
+      "community": 252,
+      "norm_label": "data"
     },
     {
       "label": "setup.ts",
       "file_type": "code",
       "source_file": "test/setup.ts",
       "source_location": "L1",
+      "id": "test_setup_ts",
       "community": 259,
-      "norm_label": "setup.ts",
-      "id": "test_setup_ts"
+      "norm_label": "setup.ts"
+    },
+    {
+      "label": "toJSON()",
+      "file_type": "code",
+      "source_file": "test/setup.ts",
+      "source_location": "L42",
+      "id": "test_setup_tojson",
+      "community": 259,
+      "norm_label": "tojson()"
+    },
+    {
+      "label": "observe()",
+      "file_type": "code",
+      "source_file": "test/setup.ts",
+      "source_location": "L50",
+      "id": "test_setup_observe",
+      "community": 259,
+      "norm_label": "observe()"
+    },
+    {
+      "label": "unobserve()",
+      "file_type": "code",
+      "source_file": "test/setup.ts",
+      "source_location": "L51",
+      "id": "test_setup_unobserve",
+      "community": 259,
+      "norm_label": "unobserve()"
+    },
+    {
+      "label": "disconnect()",
+      "file_type": "code",
+      "source_file": "test/setup.ts",
+      "source_location": "L52",
+      "id": "test_setup_disconnect",
+      "community": 259,
+      "norm_label": "disconnect()"
     },
     {
       "label": "package.json",
@@ -841,7 +742,7 @@
       "file_type": "code",
       "source_file": "src/types/intelligence.ts",
       "source_location": "L4",
-      "community": 198,
+      "community": 35,
       "norm_label": "movementstrength",
       "id": "types_intelligence_movementstrength"
     },
@@ -859,7 +760,7 @@
       "file_type": "code",
       "source_file": "src/types/intelligence.ts",
       "source_location": "L6",
-      "community": 249,
+      "community": 251,
       "norm_label": "periodtype",
       "id": "types_intelligence_periodtype"
     },
@@ -877,7 +778,7 @@
       "file_type": "code",
       "source_file": "src/types/intelligence.ts",
       "source_location": "L16",
-      "community": 209,
+      "community": 181,
       "norm_label": "signalassessment",
       "id": "types_intelligence_signalassessment"
     },
@@ -886,7 +787,7 @@
       "file_type": "code",
       "source_file": "src/types/intelligence.ts",
       "source_location": "L39",
-      "community": 245,
+      "community": 209,
       "norm_label": "signalfeeditem",
       "id": "types_intelligence_signalfeeditem"
     },
@@ -904,7 +805,7 @@
       "file_type": "code",
       "source_file": "src/types/intelligence.ts",
       "source_location": "L74",
-      "community": 67,
+      "community": 203,
       "norm_label": "heatmaprow",
       "id": "types_intelligence_heatmaprow"
     },
@@ -913,7 +814,7 @@
       "file_type": "code",
       "source_file": "src/types/intelligence.ts",
       "source_location": "L82",
-      "community": 248,
+      "community": 49,
       "norm_label": "overviewresponse",
       "id": "types_intelligence_overviewresponse"
     },
@@ -940,7 +841,7 @@
       "file_type": "code",
       "source_file": "src/types/intelligence.ts",
       "source_location": "L112",
-      "community": 14,
+      "community": 161,
       "norm_label": "riskitem",
       "id": "types_intelligence_riskitem"
     },
@@ -967,7 +868,7 @@
       "file_type": "code",
       "source_file": "src/types/intelligence.ts",
       "source_location": "L160",
-      "community": 219,
+      "community": 252,
       "norm_label": "signalstatstimelinepoint",
       "id": "types_intelligence_signalstatstimelinepoint"
     },
@@ -1003,7 +904,7 @@
       "file_type": "code",
       "source_file": "src/types/intelligence.ts",
       "source_location": "L185",
-      "community": 245,
+      "community": 209,
       "norm_label": "signalsfeedfilters",
       "id": "types_intelligence_signalsfeedfilters"
     },
@@ -1021,7 +922,7 @@
       "file_type": "code",
       "source_file": "src/types/intelligence.ts",
       "source_location": "L211",
-      "community": 35,
+      "community": 248,
       "norm_label": "intelligencebriefing",
       "id": "types_intelligence_intelligencebriefing"
     },
@@ -1705,7 +1606,7 @@
       "file_type": "code",
       "source_file": "App.tsx",
       "source_location": "L1",
-      "community": 85,
+      "community": 233,
       "norm_label": "app.tsx",
       "id": "app_tsx"
     },
@@ -1714,7 +1615,7 @@
       "file_type": "code",
       "source_file": "App.tsx",
       "source_location": "L25",
-      "community": 85,
+      "community": 233,
       "norm_label": "queryclient",
       "id": "src_app_queryclient"
     },
@@ -1723,7 +1624,7 @@
       "file_type": "code",
       "source_file": "App.tsx",
       "source_location": "L35",
-      "community": 85,
+      "community": 233,
       "norm_label": "adminonly()",
       "id": "src_app_adminonly"
     },
@@ -1732,7 +1633,7 @@
       "file_type": "code",
       "source_file": "App.tsx",
       "source_location": "L41",
-      "community": 85,
+      "community": 233,
       "norm_label": "app()",
       "id": "src_app_app"
     },
@@ -1741,7 +1642,7 @@
       "file_type": "code",
       "source_file": "pages/UsersAdminPage.tsx",
       "source_location": "L1",
-      "community": 49,
+      "community": 258,
       "norm_label": "usersadminpage.tsx",
       "id": "pages_usersadminpage_tsx"
     },
@@ -1750,7 +1651,7 @@
       "file_type": "code",
       "source_file": "pages/UsersAdminPage.tsx",
       "source_location": "L6",
-      "community": 49,
+      "community": 258,
       "norm_label": "user",
       "id": "pages_usersadminpage_user"
     },
@@ -1759,7 +1660,7 @@
       "file_type": "code",
       "source_file": "pages/UsersAdminPage.tsx",
       "source_location": "L14",
-      "community": 49,
+      "community": 258,
       "norm_label": "createuserpayload",
       "id": "pages_usersadminpage_createuserpayload"
     },
@@ -1768,7 +1669,7 @@
       "file_type": "code",
       "source_file": "pages/UsersAdminPage.tsx",
       "source_location": "L20",
-      "community": 49,
+      "community": 258,
       "norm_label": "useusers()",
       "id": "pages_usersadminpage_useusers"
     },
@@ -1777,7 +1678,7 @@
       "file_type": "code",
       "source_file": "pages/UsersAdminPage.tsx",
       "source_location": "L24",
-      "community": 49,
+      "community": 258,
       "norm_label": "createusermodal()",
       "id": "pages_usersadminpage_createusermodal"
     },
@@ -1786,7 +1687,7 @@
       "file_type": "code",
       "source_file": "pages/UsersAdminPage.tsx",
       "source_location": "L74",
-      "community": 49,
+      "community": 258,
       "norm_label": "usersadminpage()",
       "id": "pages_usersadminpage_usersadminpage"
     },
@@ -1867,7 +1768,7 @@
       "file_type": "code",
       "source_file": "pages/WeeklyDigestPage.tsx",
       "source_location": "L1",
-      "community": 14,
+      "community": 161,
       "norm_label": "weeklydigestpage.tsx",
       "id": "pages_weeklydigestpage_tsx"
     },
@@ -1876,7 +1777,7 @@
       "file_type": "code",
       "source_file": "pages/WeeklyDigestPage.tsx",
       "source_location": "L8",
-      "community": 14,
+      "community": 161,
       "norm_label": "movement_colours",
       "id": "pages_weeklydigestpage_movement_colours"
     },
@@ -1885,7 +1786,7 @@
       "file_type": "code",
       "source_file": "pages/WeeklyDigestPage.tsx",
       "source_location": "L15",
-      "community": 14,
+      "community": 161,
       "norm_label": "movementbadge()",
       "id": "pages_weeklydigestpage_movementbadge"
     },
@@ -1894,7 +1795,7 @@
       "file_type": "code",
       "source_file": "pages/WeeklyDigestPage.tsx",
       "source_location": "L25",
-      "community": 14,
+      "community": 161,
       "norm_label": "getisoweek()",
       "id": "pages_weeklydigestpage_getisoweek"
     },
@@ -1903,7 +1804,7 @@
       "file_type": "code",
       "source_file": "pages/WeeklyDigestPage.tsx",
       "source_location": "L33",
-      "community": 14,
+      "community": 161,
       "norm_label": "formatdatede()",
       "id": "pages_weeklydigestpage_formatdatede"
     },
@@ -1912,7 +1813,7 @@
       "file_type": "code",
       "source_file": "pages/WeeklyDigestPage.tsx",
       "source_location": "L37",
-      "community": 14,
+      "community": 161,
       "norm_label": "formateventdate()",
       "id": "pages_weeklydigestpage_formateventdate"
     },
@@ -1921,7 +1822,7 @@
       "file_type": "code",
       "source_file": "pages/WeeklyDigestPage.tsx",
       "source_location": "L42",
-      "community": 14,
+      "community": 161,
       "norm_label": "eventitem()",
       "id": "pages_weeklydigestpage_eventitem"
     },
@@ -1930,7 +1831,7 @@
       "file_type": "code",
       "source_file": "pages/WeeklyDigestPage.tsx",
       "source_location": "L76",
-      "community": 14,
+      "community": 161,
       "norm_label": "eventscalendarsection()",
       "id": "pages_weeklydigestpage_eventscalendarsection"
     },
@@ -1939,7 +1840,7 @@
       "file_type": "code",
       "source_file": "pages/WeeklyDigestPage.tsx",
       "source_location": "L102",
-      "community": 14,
+      "community": 161,
       "norm_label": "digestrisksopportunities()",
       "id": "pages_weeklydigestpage_digestrisksopportunities"
     },
@@ -1948,7 +1849,7 @@
       "file_type": "code",
       "source_file": "pages/WeeklyDigestPage.tsx",
       "source_location": "L146",
-      "community": 14,
+      "community": 161,
       "norm_label": "owncompanysection()",
       "id": "pages_weeklydigestpage_owncompanysection"
     },
@@ -1957,7 +1858,7 @@
       "file_type": "code",
       "source_file": "pages/WeeklyDigestPage.tsx",
       "source_location": "L183",
-      "community": 14,
+      "community": 161,
       "norm_label": "sectionitems()",
       "id": "pages_weeklydigestpage_sectionitems"
     },
@@ -1966,7 +1867,7 @@
       "file_type": "code",
       "source_file": "pages/WeeklyDigestPage.tsx",
       "source_location": "L223",
-      "community": 14,
+      "community": 161,
       "norm_label": "weeklydigestpage()",
       "id": "pages_weeklydigestpage_weeklydigestpage"
     },
@@ -1975,7 +1876,7 @@
       "file_type": "code",
       "source_file": "Layout.tsx",
       "source_location": "L1",
-      "community": 10,
+      "community": 198,
       "norm_label": "layout.tsx",
       "id": "layout_tsx"
     },
@@ -1984,7 +1885,7 @@
       "file_type": "code",
       "source_file": "Layout.tsx",
       "source_location": "L13",
-      "community": 10,
+      "community": 198,
       "norm_label": "navsections",
       "id": "components_layout_navsections"
     },
@@ -1993,7 +1894,7 @@
       "file_type": "code",
       "source_file": "Layout.tsx",
       "source_location": "L46",
-      "community": 10,
+      "community": 198,
       "norm_label": "sidebarlogo()",
       "id": "components_layout_sidebarlogo"
     },
@@ -2002,7 +1903,7 @@
       "file_type": "code",
       "source_file": "Layout.tsx",
       "source_location": "L68",
-      "community": 10,
+      "community": 198,
       "norm_label": "admin_only_paths",
       "id": "components_layout_admin_only_paths"
     },
@@ -2011,7 +1912,7 @@
       "file_type": "code",
       "source_file": "Layout.tsx",
       "source_location": "L70",
-      "community": 10,
+      "community": 198,
       "norm_label": "navitems()",
       "id": "components_layout_navitems"
     },
@@ -2020,7 +1921,7 @@
       "file_type": "code",
       "source_file": "Layout.tsx",
       "source_location": "L111",
-      "community": 10,
+      "community": 198,
       "norm_label": "versionbadge()",
       "id": "components_layout_versionbadge"
     },
@@ -2029,7 +1930,7 @@
       "file_type": "code",
       "source_file": "Layout.tsx",
       "source_location": "L135",
-      "community": 10,
+      "community": 198,
       "norm_label": "layout()",
       "id": "components_layout_layout"
     },
@@ -2038,7 +1939,7 @@
       "file_type": "code",
       "source_file": "ProfilePopover.tsx",
       "source_location": "L1",
-      "community": 10,
+      "community": 198,
       "norm_label": "profilepopover.tsx",
       "id": "profilepopover_tsx"
     },
@@ -2047,7 +1948,7 @@
       "file_type": "code",
       "source_file": "ProfilePopover.tsx",
       "source_location": "L6",
-      "community": 10,
+      "community": 198,
       "norm_label": "props",
       "id": "components_profilepopover_props"
     },
@@ -2056,7 +1957,7 @@
       "file_type": "code",
       "source_file": "ProfilePopover.tsx",
       "source_location": "L10",
-      "community": 10,
+      "community": 198,
       "norm_label": "changepasswordmodal()",
       "id": "components_profilepopover_changepasswordmodal"
     },
@@ -2065,7 +1966,7 @@
       "file_type": "code",
       "source_file": "ProfilePopover.tsx",
       "source_location": "L76",
-      "community": 10,
+      "community": 198,
       "norm_label": "profilepopover()",
       "id": "components_profilepopover_profilepopover"
     },
@@ -2146,7 +2047,7 @@
       "file_type": "code",
       "source_file": "api/client.ts",
       "source_location": "L77",
-      "community": 10,
+      "community": 198,
       "norm_label": "apiput()",
       "id": "api_client_apiput"
     },
@@ -2200,7 +2101,7 @@
       "file_type": "code",
       "source_file": "api/client.ts",
       "source_location": "L146",
-      "community": 85,
+      "community": 233,
       "norm_label": "currentuser",
       "id": "api_client_currentuser"
     },
@@ -2227,7 +2128,7 @@
       "file_type": "code",
       "source_file": "api/client.ts",
       "source_location": "L160",
-      "community": 85,
+      "community": 233,
       "norm_label": "getcurrentuser()",
       "id": "api_client_getcurrentuser"
     },
@@ -2245,7 +2146,7 @@
       "file_type": "code",
       "source_file": "hooks/useCurrentUser.ts",
       "source_location": "L1",
-      "community": 85,
+      "community": 233,
       "norm_label": "usecurrentuser.ts",
       "id": "hooks_usecurrentuser_ts"
     },
@@ -2254,7 +2155,7 @@
       "file_type": "code",
       "source_file": "hooks/useCurrentUser.ts",
       "source_location": "L3",
-      "community": 85,
+      "community": 233,
       "norm_label": "currentuserstate",
       "id": "hooks_usecurrentuser_currentuserstate"
     },
@@ -2263,7 +2164,7 @@
       "file_type": "code",
       "source_file": "hooks/useCurrentUser.ts",
       "source_location": "L10",
-      "community": 85,
+      "community": 233,
       "norm_label": "usecurrentuser()",
       "id": "hooks_usecurrentuser_usecurrentuser"
     },
@@ -2623,7 +2524,7 @@
       "file_type": "code",
       "source_file": "app/routers/sources.py",
       "source_location": "L1",
-      "community": 213,
+      "community": 24,
       "norm_label": "sources.py",
       "id": "app_routers_sources_py"
     },
@@ -2632,7 +2533,7 @@
       "file_type": "code",
       "source_file": "app/routers/sources.py",
       "source_location": "L13",
-      "community": 213,
+      "community": 24,
       "norm_label": "sourcesearchresult",
       "id": "routers_sources_sourcesearchresult"
     },
@@ -2641,7 +2542,7 @@
       "file_type": "code",
       "source_file": "app/routers/sources.py",
       "source_location": "L21",
-      "community": 213,
+      "community": 24,
       "norm_label": "_attach_summary()",
       "id": "routers_sources_attach_summary"
     },
@@ -2650,7 +2551,7 @@
       "file_type": "code",
       "source_file": "app/routers/sources.py",
       "source_location": "L36",
-      "community": 213,
+      "community": 24,
       "norm_label": "search_sources()",
       "id": "routers_sources_search_sources"
     },
@@ -2659,7 +2560,7 @@
       "file_type": "code",
       "source_file": "app/routers/sources.py",
       "source_location": "L81",
-      "community": 213,
+      "community": 24,
       "norm_label": "list_sources()",
       "id": "routers_sources_list_sources"
     },
@@ -2668,7 +2569,7 @@
       "file_type": "code",
       "source_file": "app/routers/sources.py",
       "source_location": "L95",
-      "community": 213,
+      "community": 24,
       "norm_label": "create_source()",
       "id": "routers_sources_create_source"
     },
@@ -2677,7 +2578,7 @@
       "file_type": "code",
       "source_file": "app/routers/sources.py",
       "source_location": "L109",
-      "community": 213,
+      "community": 24,
       "norm_label": "update_source()",
       "id": "routers_sources_update_source"
     },
@@ -2686,7 +2587,7 @@
       "file_type": "code",
       "source_file": "app/routers/sources.py",
       "source_location": "L123",
-      "community": 213,
+      "community": 24,
       "norm_label": "delete_source()",
       "id": "routers_sources_delete_source"
     },
@@ -2866,7 +2767,7 @@
       "file_type": "code",
       "source_file": "tests/conftest.py",
       "source_location": "L71",
-      "community": 58,
+      "community": 93,
       "norm_label": "client()",
       "id": "tests_conftest_client"
     },
@@ -2992,7 +2893,7 @@
       "file_type": "code",
       "source_file": "app/models/user.py",
       "source_location": "L1",
-      "community": 207,
+      "community": 88,
       "norm_label": "user.py",
       "id": "app_models_user_py"
     },
@@ -3019,7 +2920,7 @@
       "file_type": "code",
       "source_file": "app/models/user.py",
       "source_location": "L12",
-      "community": 207,
+      "community": 88,
       "norm_label": "user",
       "id": "models_user_user"
     },
@@ -3879,11 +3780,29 @@
       "id": "pages_competitorworkspacepage_tsx"
     },
     {
+      "label": "SummaryPeriod",
+      "file_type": "code",
+      "source_file": "pages/CompetitorWorkspacePage.tsx",
+      "source_location": "L28",
+      "community": 245,
+      "norm_label": "summaryperiod",
+      "id": "pages_competitorworkspacepage_summaryperiod"
+    },
+    {
+      "label": "CompetitorWorkspacePage()",
+      "file_type": "code",
+      "source_file": "pages/CompetitorWorkspacePage.tsx",
+      "source_location": "L30",
+      "community": 245,
+      "norm_label": "competitorworkspacepage()",
+      "id": "pages_competitorworkspacepage_competitorworkspacepage"
+    },
+    {
       "label": "DashboardPage.tsx",
       "file_type": "code",
       "source_file": "pages/DashboardPage.tsx",
       "source_location": "L1",
-      "community": 245,
+      "community": 209,
       "norm_label": "dashboardpage.tsx",
       "id": "pages_dashboardpage_tsx"
     },
@@ -3892,7 +3811,7 @@
       "file_type": "code",
       "source_file": "pages/DashboardPage.tsx",
       "source_location": "L23",
-      "community": 245,
+      "community": 209,
       "norm_label": "dashboardpage()",
       "id": "pages_dashboardpage_dashboardpage"
     },
@@ -3991,7 +3910,7 @@
       "file_type": "code",
       "source_file": "pages/SignalsFeedPage.tsx",
       "source_location": "L1",
-      "community": 245,
+      "community": 209,
       "norm_label": "signalsfeedpage.tsx",
       "id": "pages_signalsfeedpage_tsx"
     },
@@ -4000,7 +3919,7 @@
       "file_type": "code",
       "source_file": "pages/SignalsFeedPage.tsx",
       "source_location": "L11",
-      "community": 245,
+      "community": 209,
       "norm_label": "default_filters",
       "id": "pages_signalsfeedpage_default_filters"
     },
@@ -4009,7 +3928,7 @@
       "file_type": "code",
       "source_file": "pages/SignalsFeedPage.tsx",
       "source_location": "L17",
-      "community": 245,
+      "community": 209,
       "norm_label": "signalsfeedpage()",
       "id": "pages_signalsfeedpage_signalsfeedpage"
     },
@@ -4081,7 +4000,7 @@
       "file_type": "code",
       "source_file": "DashboardKPIRow.tsx",
       "source_location": "L1",
-      "community": 248,
+      "community": 49,
       "norm_label": "dashboardkpirow.tsx",
       "id": "dashboardkpirow_tsx"
     },
@@ -4090,7 +4009,7 @@
       "file_type": "code",
       "source_file": "DashboardKPIRow.tsx",
       "source_location": "L5",
-      "community": 248,
+      "community": 49,
       "norm_label": "props",
       "id": "overview_dashboardkpirow_props"
     },
@@ -4099,7 +4018,7 @@
       "file_type": "code",
       "source_file": "DashboardKPIRow.tsx",
       "source_location": "L10",
-      "community": 248,
+      "community": 49,
       "norm_label": "dashboardkpirow()",
       "id": "overview_dashboardkpirow_dashboardkpirow"
     },
@@ -4279,7 +4198,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/scorecard/ScorecardSignalModal.tsx",
       "source_location": "L1",
-      "community": 235,
+      "community": 245,
       "norm_label": "scorecardsignalmodal.tsx",
       "id": "frontend_src_components_scorecard_scorecardsignalmodal_tsx"
     },
@@ -4288,7 +4207,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/scorecard/ScorecardSignalModal.tsx",
       "source_location": "L4",
-      "community": 235,
+      "community": 245,
       "norm_label": "props",
       "id": "scorecard_scorecardsignalmodal_props"
     },
@@ -4405,7 +4324,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/workspace/CapabilityExplainDrawer.tsx",
       "source_location": "L286",
-      "community": 245,
+      "community": 38,
       "norm_label": "capabilityexplaindrawer()",
       "id": "workspace_capabilityexplaindrawer_capabilityexplaindrawer"
     },
@@ -4414,7 +4333,7 @@
       "file_type": "code",
       "source_file": "frontend/src/hooks/useIntelligenceBriefing.ts",
       "source_location": "L1",
-      "community": 35,
+      "community": 248,
       "norm_label": "useintelligencebriefing.ts",
       "id": "frontend_src_hooks_useintelligencebriefing_ts"
     },
@@ -4423,7 +4342,7 @@
       "file_type": "code",
       "source_file": "frontend/src/hooks/useIntelligenceBriefing.ts",
       "source_location": "L5",
-      "community": 35,
+      "community": 248,
       "norm_label": "uselatestintelligencebriefing()",
       "id": "hooks_useintelligencebriefing_uselatestintelligencebriefing"
     },
@@ -4432,7 +4351,7 @@
       "file_type": "code",
       "source_file": "frontend/src/hooks/useIntelligenceBriefing.ts",
       "source_location": "L19",
-      "community": 35,
+      "community": 248,
       "norm_label": "usegenerateintelligencebriefing()",
       "id": "hooks_useintelligencebriefing_usegenerateintelligencebriefing"
     },
@@ -4909,7 +4828,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/signals/SignalDetailDrawer.tsx",
       "source_location": "L1",
-      "community": 209,
+      "community": 181,
       "norm_label": "signaldetaildrawer.tsx",
       "id": "frontend_src_components_signals_signaldetaildrawer_tsx"
     },
@@ -4918,7 +4837,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/signals/SignalDetailDrawer.tsx",
       "source_location": "L16",
-      "community": 209,
+      "community": 181,
       "norm_label": "props",
       "id": "signals_signaldetaildrawer_props"
     },
@@ -4927,7 +4846,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/signals/SignalDetailDrawer.tsx",
       "source_location": "L22",
-      "community": 209,
+      "community": 181,
       "norm_label": "visibility_labels",
       "id": "signals_signaldetaildrawer_visibility_labels"
     },
@@ -4936,7 +4855,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/signals/SignalDetailDrawer.tsx",
       "source_location": "L28",
-      "community": 209,
+      "community": 181,
       "norm_label": "signaldetaildrawer()",
       "id": "signals_signaldetaildrawer_signaldetaildrawer"
     },
@@ -4945,7 +4864,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/signals/SignalFeedTable.tsx",
       "source_location": "L1",
-      "community": 67,
+      "community": 247,
       "norm_label": "signalfeedtable.tsx",
       "id": "frontend_src_components_signals_signalfeedtable_tsx"
     },
@@ -4954,7 +4873,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/signals/SignalFeedTable.tsx",
       "source_location": "L9",
-      "community": 67,
+      "community": 247,
       "norm_label": "rendercapabilityicon()",
       "id": "signals_signalfeedtable_rendercapabilityicon"
     },
@@ -4963,7 +4882,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/signals/SignalFeedTable.tsx",
       "source_location": "L15",
-      "community": 67,
+      "community": 247,
       "norm_label": "props",
       "id": "signals_signalfeedtable_props"
     },
@@ -4972,7 +4891,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/signals/SignalFeedTable.tsx",
       "source_location": "L25",
-      "community": 67,
+      "community": 247,
       "norm_label": "newbadge()",
       "id": "signals_signalfeedtable_newbadge"
     },
@@ -4981,7 +4900,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/signals/SignalFeedTable.tsx",
       "source_location": "L33",
-      "community": 67,
+      "community": 247,
       "norm_label": "pagination()",
       "id": "signals_signalfeedtable_pagination"
     },
@@ -4990,7 +4909,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/signals/SignalFeedTable.tsx",
       "source_location": "L60",
-      "community": 67,
+      "community": 247,
       "norm_label": "signalfeedtable()",
       "id": "signals_signalfeedtable_signalfeedtable"
     },
@@ -4999,7 +4918,7 @@
       "file_type": "code",
       "source_file": "frontend/src/hooks/useAssessSignal.ts",
       "source_location": "L1",
-      "community": 209,
+      "community": 181,
       "norm_label": "useassesssignal.ts",
       "id": "frontend_src_hooks_useassesssignal_ts"
     },
@@ -5008,7 +4927,7 @@
       "file_type": "code",
       "source_file": "frontend/src/hooks/useAssessSignal.ts",
       "source_location": "L5",
-      "community": 209,
+      "community": 181,
       "norm_label": "useassesssignal()",
       "id": "hooks_useassesssignal_useassesssignal"
     },
@@ -5035,7 +4954,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/overview/CapabilityHeatmapV2.tsx",
       "source_location": "L1",
-      "community": 67,
+      "community": 203,
       "norm_label": "capabilityheatmapv2.tsx",
       "id": "frontend_src_components_overview_capabilityheatmapv2_tsx"
     },
@@ -5044,7 +4963,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/overview/CapabilityHeatmapV2.tsx",
       "source_location": "L10",
-      "community": 67,
+      "community": 203,
       "norm_label": "props",
       "id": "overview_capabilityheatmapv2_props"
     },
@@ -5053,7 +4972,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/overview/CapabilityHeatmapV2.tsx",
       "source_location": "L15",
-      "community": 67,
+      "community": 203,
       "norm_label": "visible_capabilities",
       "id": "overview_capabilityheatmapv2_visible_capabilities"
     },
@@ -5062,7 +4981,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/overview/CapabilityHeatmapV2.tsx",
       "source_location": "L20",
-      "community": 67,
+      "community": 203,
       "norm_label": "rendericon()",
       "id": "overview_capabilityheatmapv2_rendericon"
     },
@@ -5071,7 +4990,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/overview/CapabilityHeatmapV2.tsx",
       "source_location": "L26",
-      "community": 67,
+      "community": 203,
       "norm_label": "scoretocolor()",
       "id": "overview_capabilityheatmapv2_scoretocolor"
     },
@@ -5080,7 +4999,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/overview/CapabilityHeatmapV2.tsx",
       "source_location": "L34",
-      "community": 67,
+      "community": 203,
       "norm_label": "heatmapcellprops",
       "id": "overview_capabilityheatmapv2_heatmapcellprops"
     },
@@ -5089,7 +5008,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/overview/CapabilityHeatmapV2.tsx",
       "source_location": "L41",
-      "community": 67,
+      "community": 203,
       "norm_label": "heatmapcell()",
       "id": "overview_capabilityheatmapv2_heatmapcell"
     },
@@ -5098,7 +5017,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/overview/CapabilityHeatmapV2.tsx",
       "source_location": "L84",
-      "community": 67,
+      "community": 203,
       "norm_label": "capabilityheatmapv2()",
       "id": "overview_capabilityheatmapv2_capabilityheatmapv2"
     },
@@ -5107,7 +5026,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/signals/SignalFeedFilters.tsx",
       "source_location": "L1",
-      "community": 198,
+      "community": 239,
       "norm_label": "signalfeedfilters.tsx",
       "id": "frontend_src_components_signals_signalfeedfilters_tsx"
     },
@@ -5116,7 +5035,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/signals/SignalFeedFilters.tsx",
       "source_location": "L5",
-      "community": 204,
+      "community": 239,
       "norm_label": "props",
       "id": "signals_signalfeedfilters_props"
     },
@@ -5125,7 +5044,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/signals/SignalFeedFilters.tsx",
       "source_location": "L14",
-      "community": 198,
+      "community": 239,
       "norm_label": "lastmonthcutoff()",
       "id": "signals_signalfeedfilters_lastmonthcutoff"
     },
@@ -5134,7 +5053,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/signals/SignalFeedFilters.tsx",
       "source_location": "L20",
-      "community": 198,
+      "community": 239,
       "norm_label": "signal_types",
       "id": "signals_signalfeedfilters_signal_types"
     },
@@ -5143,7 +5062,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/signals/SignalFeedFilters.tsx",
       "source_location": "L25",
-      "community": 198,
+      "community": 239,
       "norm_label": "movement_strengths",
       "id": "signals_signalfeedfilters_movement_strengths"
     },
@@ -5152,7 +5071,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/signals/SignalFeedFilters.tsx",
       "source_location": "L27",
-      "community": 204,
+      "community": 239,
       "norm_label": "sort_options",
       "id": "signals_signalfeedfilters_sort_options"
     },
@@ -5161,7 +5080,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/signals/SignalFeedFilters.tsx",
       "source_location": "L33",
-      "community": 198,
+      "community": 239,
       "norm_label": "signalfeedfilters()",
       "id": "signals_signalfeedfilters_signalfeedfilters"
     },
@@ -5818,7 +5737,7 @@
       "file_type": "code",
       "source_file": "frontend/src/types/search.ts",
       "source_location": "L1",
-      "community": 234,
+      "community": 216,
       "norm_label": "search.ts",
       "id": "frontend_src_types_search_ts"
     },
@@ -5827,7 +5746,7 @@
       "file_type": "code",
       "source_file": "frontend/src/types/search.ts",
       "source_location": "L1",
-      "community": 234,
+      "community": 216,
       "norm_label": "searchrunstatus",
       "id": "types_search_searchrunstatus"
     },
@@ -5836,7 +5755,7 @@
       "file_type": "code",
       "source_file": "frontend/src/types/search.ts",
       "source_location": "L2",
-      "community": 234,
+      "community": 216,
       "norm_label": "searchresultstatus",
       "id": "types_search_searchresultstatus"
     },
@@ -5845,7 +5764,7 @@
       "file_type": "code",
       "source_file": "frontend/src/types/search.ts",
       "source_location": "L3",
-      "community": 234,
+      "community": 216,
       "norm_label": "sourcecandidatestatus",
       "id": "types_search_sourcecandidatestatus"
     },
@@ -5854,7 +5773,7 @@
       "file_type": "code",
       "source_file": "frontend/src/types/search.ts",
       "source_location": "L51",
-      "community": 234,
+      "community": 216,
       "norm_label": "searchrunallresult",
       "id": "types_search_searchrunallresult"
     },
@@ -5872,7 +5791,7 @@
       "file_type": "code",
       "source_file": "frontend/src/types/scorecard.ts",
       "source_location": "L24",
-      "community": 4,
+      "community": 14,
       "norm_label": "scorecardriskflag",
       "id": "types_scorecard_scorecardriskflag"
     },
@@ -6295,7 +6214,7 @@
       "file_type": "code",
       "source_file": "frontend/src/types/index.ts",
       "source_location": "L470",
-      "community": 234,
+      "community": 216,
       "norm_label": "searchresult",
       "id": "types_index_searchresult"
     },
@@ -6322,7 +6241,7 @@
       "file_type": "code",
       "source_file": "frontend/src/types/index.ts",
       "source_location": "L509",
-      "community": 5,
+      "community": 50,
       "norm_label": "signalovertimepoint",
       "id": "types_index_signalovertimepoint"
     },
@@ -6340,7 +6259,7 @@
       "file_type": "code",
       "source_file": "frontend/src/types/index.ts",
       "source_location": "L521",
-      "community": 5,
+      "community": 50,
       "norm_label": "companysignaltypecount",
       "id": "types_index_companysignaltypecount"
     },
@@ -6349,7 +6268,7 @@
       "file_type": "code",
       "source_file": "frontend/src/types/index.ts",
       "source_location": "L533",
-      "community": 63,
+      "community": 14,
       "norm_label": "dedupresult",
       "id": "types_index_dedupresult"
     },
@@ -6358,7 +6277,7 @@
       "file_type": "code",
       "source_file": "frontend/src/types/index.ts",
       "source_location": "L546",
-      "community": 16,
+      "community": 207,
       "norm_label": "crawlbriefing",
       "id": "types_index_crawlbriefing"
     },
@@ -6412,7 +6331,7 @@
       "file_type": "code",
       "source_file": "frontend/src/constants/capabilities.ts",
       "source_location": "L10",
-      "community": 67,
+      "community": 239,
       "norm_label": "capabilities",
       "id": "constants_capabilities_capabilities"
     },
@@ -6421,7 +6340,7 @@
       "file_type": "code",
       "source_file": "frontend/src/constants/capabilities.ts",
       "source_location": "L29",
-      "community": 67,
+      "community": 239,
       "norm_label": "capability_keys",
       "id": "constants_capabilities_capability_keys"
     },
@@ -6502,7 +6421,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/TagList.tsx",
       "source_location": "L1",
-      "community": 21,
+      "community": 260,
       "norm_label": "taglist.tsx",
       "id": "frontend_src_components_taglist_tsx"
     },
@@ -6511,7 +6430,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/TagList.tsx",
       "source_location": "L1",
-      "community": 21,
+      "community": 260,
       "norm_label": "taglistprops",
       "id": "components_taglist_taglistprops"
     },
@@ -6520,7 +6439,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/TagList.tsx",
       "source_location": "L6",
-      "community": 21,
+      "community": 260,
       "norm_label": "taglist()",
       "id": "components_taglist_taglist"
     },
@@ -6541,6 +6460,33 @@
       "community": 238,
       "norm_label": "authgate()",
       "id": "components_authgate_authgate"
+    },
+    {
+      "label": "iconMap",
+      "file_type": "code",
+      "source_file": "frontend/src/components/SignalTypeIcon.tsx",
+      "source_location": "L13",
+      "community": 204,
+      "norm_label": "iconmap",
+      "id": "components_signaltypeicon_iconmap"
+    },
+    {
+      "label": "labelMap",
+      "file_type": "code",
+      "source_file": "frontend/src/components/SignalTypeIcon.tsx",
+      "source_location": "L24",
+      "community": 204,
+      "norm_label": "labelmap",
+      "id": "components_signaltypeicon_labelmap"
+    },
+    {
+      "label": "chipStyles",
+      "file_type": "code",
+      "source_file": "frontend/src/components/SignalTypeIcon.tsx",
+      "source_location": "L36",
+      "community": 204,
+      "norm_label": "chipstyles",
+      "id": "components_signaltypeicon_chipstyles"
     },
     {
       "label": "MarkdownViewerProps",
@@ -6583,7 +6529,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/CrawlProgressPanel.tsx",
       "source_location": "L13",
-      "community": 74,
+      "community": 181,
       "norm_label": "allnewdocssection()",
       "id": "components_crawlprogresspanel_allnewdocssection"
     },
@@ -6637,7 +6583,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/benchmark/TierBadge.tsx",
       "source_location": "L3",
-      "community": 38,
+      "community": 43,
       "norm_label": "tier_config",
       "id": "benchmark_tierbadge_tier_config"
     },
@@ -6646,7 +6592,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/benchmark/TierBadge.tsx",
       "source_location": "L10",
-      "community": 38,
+      "community": 43,
       "norm_label": "tierbadgeprops",
       "id": "benchmark_tierbadge_tierbadgeprops"
     },
@@ -6655,7 +6601,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/benchmark/TierBadge.tsx",
       "source_location": "L15",
-      "community": 38,
+      "community": 43,
       "norm_label": "tierbadge()",
       "id": "benchmark_tierbadge_tierbadge"
     },
@@ -6664,7 +6610,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/benchmark/CapabilityLeaderboardDrawer.tsx",
       "source_location": "L1",
-      "community": 29,
+      "community": 43,
       "norm_label": "capabilityleaderboarddrawer.tsx",
       "id": "frontend_src_components_benchmark_capabilityleaderboarddrawer_tsx"
     },
@@ -6673,7 +6619,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/benchmark/CapabilityLeaderboardDrawer.tsx",
       "source_location": "L9",
-      "community": 29,
+      "community": 43,
       "norm_label": "capabilityleaderboarddrawerprops",
       "id": "benchmark_capabilityleaderboarddrawer_capabilityleaderboarddrawerprops"
     },
@@ -6799,7 +6745,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/workspace/StrategicPostureCard.tsx",
       "source_location": "L4",
-      "community": 67,
+      "community": 239,
       "norm_label": "props",
       "id": "workspace_strategicposturecard_props"
     },
@@ -6808,7 +6754,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/workspace/StrategicPostureCard.tsx",
       "source_location": "L8",
-      "community": 67,
+      "community": 239,
       "norm_label": "posturelabel()",
       "id": "workspace_strategicposturecard_posturelabel"
     },
@@ -6817,7 +6763,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/workspace/StrategicPostureCard.tsx",
       "source_location": "L13",
-      "community": 67,
+      "community": 239,
       "norm_label": "posturecolor()",
       "id": "workspace_strategicposturecard_posturecolor"
     },
@@ -6835,7 +6781,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/workspace/CompetitorHeader.tsx",
       "source_location": "L5",
-      "community": 249,
+      "community": 251,
       "norm_label": "props",
       "id": "workspace_competitorheader_props"
     },
@@ -6844,7 +6790,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/workspace/CompetitorHeader.tsx",
       "source_location": "L9",
-      "community": 249,
+      "community": 251,
       "norm_label": "competitorheader()",
       "id": "workspace_competitorheader_competitorheader"
     },
@@ -6880,7 +6826,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/docs/ExpandablePanel.tsx",
       "source_location": "L4",
-      "community": 50,
+      "community": 85,
       "norm_label": "props",
       "id": "docs_expandablepanel_props"
     },
@@ -6889,7 +6835,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/docs/ExpandablePanel.tsx",
       "source_location": "L10",
-      "community": 50,
+      "community": 85,
       "norm_label": "expandablepanel()",
       "id": "docs_expandablepanel_expandablepanel"
     },
@@ -6898,7 +6844,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/docs/PipelineSection.tsx",
       "source_location": "L1",
-      "community": 50,
+      "community": 85,
       "norm_label": "props",
       "id": "docs_pipelinesection_props"
     },
@@ -6907,7 +6853,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/docs/PipelineSection.tsx",
       "source_location": "L10",
-      "community": 50,
+      "community": 85,
       "norm_label": "pipelinesection()",
       "id": "docs_pipelinesection_pipelinesection"
     },
@@ -6916,7 +6862,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/docs/PipelineFlow.tsx",
       "source_location": "L1",
-      "community": 50,
+      "community": 85,
       "norm_label": "pipelineflow.tsx",
       "id": "frontend_src_components_docs_pipelineflow_tsx"
     },
@@ -6925,7 +6871,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/docs/PipelineFlow.tsx",
       "source_location": "L1",
-      "community": 50,
+      "community": 85,
       "norm_label": "pipelinestep",
       "id": "docs_pipelineflow_pipelinestep"
     },
@@ -6934,7 +6880,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/docs/PipelineFlow.tsx",
       "source_location": "L8",
-      "community": 50,
+      "community": 85,
       "norm_label": "props",
       "id": "docs_pipelineflow_props"
     },
@@ -6943,7 +6889,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/docs/PipelineFlow.tsx",
       "source_location": "L14",
-      "community": 50,
+      "community": 85,
       "norm_label": "pipelineflow()",
       "id": "docs_pipelineflow_pipelineflow"
     },
@@ -6952,7 +6898,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/docs/__tests__/PipelineFlow.test.tsx",
       "source_location": "L1",
-      "community": 50,
+      "community": 85,
       "norm_label": "pipelineflow.test.tsx",
       "id": "frontend_src_components_docs_tests_pipelineflow_test_tsx"
     },
@@ -6961,7 +6907,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/docs/__tests__/PipelineFlow.test.tsx",
       "source_location": "L6",
-      "community": 50,
+      "community": 85,
       "norm_label": "steps",
       "id": "tests_pipelineflow_test_steps"
     },
@@ -6970,7 +6916,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/docs/__tests__/PipelineFlow.test.tsx",
       "source_location": "L21",
-      "community": 50,
+      "community": 85,
       "norm_label": "onclick",
       "id": "tests_pipelineflow_test_onclick"
     },
@@ -6979,7 +6925,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/docs/__tests__/PipelineFlow.test.tsx",
       "source_location": "L29",
-      "community": 50,
+      "community": 85,
       "norm_label": "activebtn",
       "id": "tests_pipelineflow_test_activebtn"
     },
@@ -6988,7 +6934,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/dashboard/CompanySignalHeatmap.tsx",
       "source_location": "L5",
-      "community": 5,
+      "community": 50,
       "norm_label": "type_keys",
       "id": "dashboard_companysignalheatmap_type_keys"
     },
@@ -6997,7 +6943,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/dashboard/CompanySignalHeatmap.tsx",
       "source_location": "L12",
-      "community": 5,
+      "community": 50,
       "norm_label": "getcellbg()",
       "id": "dashboard_companysignalheatmap_getcellbg"
     },
@@ -7006,7 +6952,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/dashboard/CompanySignalHeatmap.tsx",
       "source_location": "L20",
-      "community": 5,
+      "community": 50,
       "norm_label": "companysignalheatmap()",
       "id": "dashboard_companysignalheatmap_companysignalheatmap"
     },
@@ -7033,7 +6979,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/dashboard/SignalsOverTimeChart.tsx",
       "source_location": "L14",
-      "community": 5,
+      "community": 50,
       "norm_label": "signalsovertimechartprops",
       "id": "dashboard_signalsovertimechart_signalsovertimechartprops"
     },
@@ -7042,7 +6988,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/dashboard/SignalsOverTimeChart.tsx",
       "source_location": "L18",
-      "community": 5,
+      "community": 50,
       "norm_label": "day_options",
       "id": "dashboard_signalsovertimechart_day_options"
     },
@@ -7051,7 +6997,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/dashboard/CompanyColorMap.tsx",
       "source_location": "L1",
-      "community": 5,
+      "community": 50,
       "norm_label": "companycolormap.tsx",
       "id": "frontend_src_components_dashboard_companycolormap_tsx"
     },
@@ -7060,7 +7006,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/dashboard/CompanyColorMap.tsx",
       "source_location": "L1",
-      "community": 5,
+      "community": 50,
       "norm_label": "company_colors",
       "id": "dashboard_companycolormap_company_colors"
     },
@@ -7069,7 +7015,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/dashboard/CompanyColorMap.tsx",
       "source_location": "L12",
-      "community": 5,
+      "community": 50,
       "norm_label": "colormap",
       "id": "dashboard_companycolormap_colormap"
     },
@@ -7078,7 +7024,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/dashboard/CompanyColorMap.tsx",
       "source_location": "L14",
-      "community": 5,
+      "community": 50,
       "norm_label": "getcompanycolor()",
       "id": "dashboard_companycolormap_getcompanycolor"
     },
@@ -7087,7 +7033,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/dashboard/CompanyColorMap.tsx",
       "source_location": "L22",
-      "community": 5,
+      "community": 50,
       "norm_label": "resetcompanycolors()",
       "id": "dashboard_companycolormap_resetcompanycolors"
     },
@@ -7222,7 +7168,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/overview/TopMoversList.tsx",
       "source_location": "L1",
-      "community": 67,
+      "community": 239,
       "norm_label": "topmoverslist.tsx",
       "id": "frontend_src_components_overview_topmoverslist_tsx"
     },
@@ -7231,7 +7177,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/overview/TopMoversList.tsx",
       "source_location": "L6",
-      "community": 67,
+      "community": 239,
       "norm_label": "props",
       "id": "overview_topmoverslist_props"
     },
@@ -7240,7 +7186,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/overview/RisksOpportunitiesPanel.tsx",
       "source_location": "L1",
-      "community": 5,
+      "community": 69,
       "norm_label": "props",
       "id": "overview_risksopportunitiespanel_props"
     },
@@ -7249,7 +7195,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/overview/RisksOpportunitiesPanel.tsx",
       "source_location": "L6",
-      "community": 5,
+      "community": 69,
       "norm_label": "risksopportunitiespanel()",
       "id": "overview_risksopportunitiespanel_risksopportunitiespanel"
     },
@@ -7285,7 +7231,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/scorecard/TopMovesTimeline.tsx",
       "source_location": "L4",
-      "community": 203,
+      "community": 241,
       "norm_label": "class_labels",
       "id": "scorecard_topmovestimeline_class_labels"
     },
@@ -7294,7 +7240,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/scorecard/TopMovesTimeline.tsx",
       "source_location": "L14",
-      "community": 203,
+      "community": 241,
       "norm_label": "scorebadge()",
       "id": "scorecard_topmovestimeline_scorebadge"
     },
@@ -7303,7 +7249,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/scorecard/TopMovesTimeline.tsx",
       "source_location": "L32",
-      "community": 203,
+      "community": 241,
       "norm_label": "props",
       "id": "scorecard_topmovestimeline_props"
     },
@@ -7312,7 +7258,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/scorecard/TopMovesTimeline.tsx",
       "source_location": "L38",
-      "community": 203,
+      "community": 241,
       "norm_label": "topmovestimeline()",
       "id": "scorecard_topmovestimeline_topmovestimeline"
     },
@@ -7321,7 +7267,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/scorecard/RiskFlagsPanel.tsx",
       "source_location": "L4",
-      "community": 4,
+      "community": 14,
       "norm_label": "props",
       "id": "scorecard_riskflagspanel_props"
     },
@@ -7330,7 +7276,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/scorecard/RiskFlagsPanel.tsx",
       "source_location": "L10",
-      "community": 4,
+      "community": 14,
       "norm_label": "riskflagspanel()",
       "id": "scorecard_riskflagspanel_riskflagspanel"
     },
@@ -7339,7 +7285,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/scorecard/WatchpointsPanel.tsx",
       "source_location": "L1",
-      "community": 63,
+      "community": 14,
       "norm_label": "props",
       "id": "scorecard_watchpointspanel_props"
     },
@@ -7348,7 +7294,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/scorecard/WatchpointsPanel.tsx",
       "source_location": "L6",
-      "community": 63,
+      "community": 14,
       "norm_label": "watchpointspanel()",
       "id": "scorecard_watchpointspanel_watchpointspanel"
     },
@@ -7384,7 +7330,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/scorecard/ScorecardSignalDrawer.tsx",
       "source_location": "L4",
-      "community": 235,
+      "community": 245,
       "norm_label": "props",
       "id": "scorecard_scorecardsignaldrawer_props"
     },
@@ -7393,7 +7339,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/scorecard/ScorecardSignalDrawer.tsx",
       "source_location": "L9",
-      "community": 235,
+      "community": 245,
       "norm_label": "scorecardsignaldrawer()",
       "id": "scorecard_scorecardsignaldrawer_scorecardsignaldrawer"
     },
@@ -7402,7 +7348,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/scorecard/CapabilityStrengthPanel.tsx",
       "source_location": "L3",
-      "community": 203,
+      "community": 241,
       "norm_label": "props",
       "id": "scorecard_capabilitystrengthpanel_props"
     },
@@ -7411,7 +7357,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/scorecard/CapabilityStrengthPanel.tsx",
       "source_location": "L8",
-      "community": 203,
+      "community": 241,
       "norm_label": "capabilitystrengthpanel()",
       "id": "scorecard_capabilitystrengthpanel_capabilitystrengthpanel"
     },
@@ -7420,7 +7366,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/scorecard/ExplainabilityDrawer.tsx",
       "source_location": "L4",
-      "community": 255,
+      "community": 257,
       "norm_label": "dim_labels",
       "id": "scorecard_explainabilitydrawer_dim_labels"
     },
@@ -7429,7 +7375,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/scorecard/ExplainabilityDrawer.tsx",
       "source_location": "L12",
-      "community": 255,
+      "community": 257,
       "norm_label": "props",
       "id": "scorecard_explainabilitydrawer_props"
     },
@@ -7438,7 +7384,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/scorecard/ExplainabilityDrawer.tsx",
       "source_location": "L21",
-      "community": 255,
+      "community": 257,
       "norm_label": "explainabilitydrawer()",
       "id": "scorecard_explainabilitydrawer_explainabilitydrawer"
     },
@@ -7447,7 +7393,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/scorecard/ScorecardSummaryStrip.tsx",
       "source_location": "L4",
-      "community": 242,
+      "community": 5,
       "norm_label": "trend_icons",
       "id": "scorecard_scorecardsummarystrip_trend_icons"
     },
@@ -7456,7 +7402,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/scorecard/ScorecardSummaryStrip.tsx",
       "source_location": "L10",
-      "community": 242,
+      "community": 5,
       "norm_label": "top_dimensions",
       "id": "scorecard_scorecardsummarystrip_top_dimensions"
     },
@@ -7465,7 +7411,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/scorecard/ScorecardSummaryStrip.tsx",
       "source_location": "L11",
-      "community": 242,
+      "community": 5,
       "norm_label": "dim_labels",
       "id": "scorecard_scorecardsummarystrip_dim_labels"
     },
@@ -7474,7 +7420,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/scorecard/ScorecardSummaryStrip.tsx",
       "source_location": "L19",
-      "community": 242,
+      "community": 5,
       "norm_label": "props",
       "id": "scorecard_scorecardsummarystrip_props"
     },
@@ -7483,7 +7429,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/scorecard/ScorecardSummaryStrip.tsx",
       "source_location": "L24",
-      "community": 242,
+      "community": 5,
       "norm_label": "scorecardsummarystrip()",
       "id": "scorecard_scorecardsummarystrip_scorecardsummarystrip"
     },
@@ -7492,7 +7438,7 @@
       "file_type": "code",
       "source_file": "frontend/src/hooks/useDeduplicate.ts",
       "source_location": "L5",
-      "community": 63,
+      "community": 14,
       "norm_label": "usededuplicate()",
       "id": "hooks_usededuplicate_usededuplicate"
     },
@@ -7519,7 +7465,7 @@
       "file_type": "code",
       "source_file": "frontend/src/hooks/useBenchmark.ts",
       "source_location": "L19",
-      "community": 43,
+      "community": 29,
       "norm_label": "usecompetitorbenchmark()",
       "id": "hooks_usebenchmark_usecompetitorbenchmark"
     },
@@ -7555,7 +7501,7 @@
       "file_type": "code",
       "source_file": "frontend/src/hooks/useBenchmark.ts",
       "source_location": "L56",
-      "community": 38,
+      "community": 29,
       "norm_label": "usecapabilityassessments()",
       "id": "hooks_usebenchmark_usecapabilityassessments"
     },
@@ -7582,7 +7528,7 @@
       "file_type": "code",
       "source_file": "frontend/src/hooks/useDocuments.ts",
       "source_location": "L13",
-      "community": 74,
+      "community": 181,
       "norm_label": "usedocument()",
       "id": "hooks_usedocuments_usedocument"
     },
@@ -7663,7 +7609,7 @@
       "file_type": "code",
       "source_file": "frontend/src/hooks/useCrawlRuns.ts",
       "source_location": "L5",
-      "community": 3,
+      "community": 37,
       "norm_label": "usecrawlruns()",
       "id": "hooks_usecrawlruns_usecrawlruns"
     },
@@ -7672,7 +7618,7 @@
       "file_type": "code",
       "source_file": "frontend/src/hooks/useCrawlRuns.ts",
       "source_location": "L16",
-      "community": 245,
+      "community": 37,
       "norm_label": "uselastcompletedcrawl()",
       "id": "hooks_usecrawlruns_uselastcompletedcrawl"
     },
@@ -7870,7 +7816,7 @@
       "file_type": "code",
       "source_file": "frontend/src/hooks/useSignalsFeed.ts",
       "source_location": "L5",
-      "community": 235,
+      "community": 245,
       "norm_label": "usesignalsfeed()",
       "id": "hooks_usesignalsfeed_usesignalsfeed"
     },
@@ -7879,7 +7825,7 @@
       "file_type": "code",
       "source_file": "frontend/src/hooks/useSignalsFeed.ts",
       "source_location": "L25",
-      "community": 235,
+      "community": 245,
       "norm_label": "usesignalfeeditem()",
       "id": "hooks_usesignalsfeed_usesignalfeeditem"
     },
@@ -7915,7 +7861,7 @@
       "file_type": "code",
       "source_file": "frontend/src/hooks/useScorecard.ts",
       "source_location": "L34",
-      "community": 245,
+      "community": 234,
       "norm_label": "userecomputescorecard()",
       "id": "hooks_usescorecard_userecomputescorecard"
     },
@@ -7942,7 +7888,7 @@
       "file_type": "code",
       "source_file": "frontend/src/hooks/useSummarizeCompetitor.ts",
       "source_location": "L1",
-      "community": 249,
+      "community": 251,
       "norm_label": "usesummarizecompetitor.ts",
       "id": "frontend_src_hooks_usesummarizecompetitor_ts"
     },
@@ -7960,7 +7906,7 @@
       "file_type": "code",
       "source_file": "frontend/src/hooks/useCompanies.ts",
       "source_location": "L16",
-      "community": 63,
+      "community": 14,
       "norm_label": "usecompany()",
       "id": "hooks_usecompanies_usecompany"
     },
@@ -8041,7 +7987,7 @@
       "file_type": "code",
       "source_file": "frontend/src/hooks/useSignals.ts",
       "source_location": "L5",
-      "community": 204,
+      "community": 239,
       "norm_label": "signalsfilters",
       "id": "hooks_usesignals_signalsfilters"
     },
@@ -8158,7 +8104,7 @@
       "file_type": "code",
       "source_file": "frontend/src/pages/CrawlRunDetailPage.tsx",
       "source_location": "L1",
-      "community": 3,
+      "community": 100,
       "norm_label": "crawlrundetailpage.tsx",
       "id": "frontend_src_pages_crawlrundetailpage_tsx"
     },
@@ -8167,7 +8113,7 @@
       "file_type": "code",
       "source_file": "frontend/src/pages/CrawlRunDetailPage.tsx",
       "source_location": "L6",
-      "community": 3,
+      "community": 100,
       "norm_label": "formatms()",
       "id": "pages_crawlrundetailpage_formatms"
     },
@@ -8176,7 +8122,7 @@
       "file_type": "code",
       "source_file": "frontend/src/pages/CrawlRunDetailPage.tsx",
       "source_location": "L13",
-      "community": 3,
+      "community": 100,
       "norm_label": "timingbar()",
       "id": "pages_crawlrundetailpage_timingbar"
     },
@@ -8185,7 +8131,7 @@
       "file_type": "code",
       "source_file": "frontend/src/pages/CompetitorDetail.tsx",
       "source_location": "L1",
-      "community": 63,
+      "community": 14,
       "norm_label": "competitordetail.tsx",
       "id": "frontend_src_pages_competitordetail_tsx"
     },
@@ -8194,7 +8140,7 @@
       "file_type": "code",
       "source_file": "frontend/src/pages/CompetitorDetail.tsx",
       "source_location": "L333",
-      "community": 74,
+      "community": 181,
       "norm_label": "documentviewer()",
       "id": "pages_competitordetail_documentviewer"
     },
@@ -8212,7 +8158,7 @@
       "file_type": "code",
       "source_file": "frontend/src/pages/HowItWorksPage.tsx",
       "source_location": "L7",
-      "community": 50,
+      "community": 85,
       "norm_label": "steps",
       "id": "pages_howitworkspage_steps"
     },
@@ -8284,7 +8230,7 @@
       "file_type": "code",
       "source_file": "backend/app/database.py",
       "source_location": "L1",
-      "community": 58,
+      "community": 93,
       "norm_label": "database.py",
       "id": "backend_app_database_py"
     },
@@ -8293,7 +8239,7 @@
       "file_type": "code",
       "source_file": "backend/app/database.py",
       "source_location": "L10",
-      "community": 58,
+      "community": 93,
       "norm_label": "get_db()",
       "id": "app_database_get_db"
     },
@@ -8446,7 +8392,7 @@
       "file_type": "code",
       "source_file": "backend/app/benchmark/queries.py",
       "source_location": "L1",
-      "community": 206,
+      "community": 16,
       "norm_label": "queries.py",
       "id": "backend_app_benchmark_queries_py"
     },
@@ -8455,7 +8401,7 @@
       "file_type": "code",
       "source_file": "backend/app/benchmark/queries.py",
       "source_location": "L27",
-      "community": 206,
+      "community": 16,
       "norm_label": ".__init__()",
       "id": "benchmark_queries_benchmarkqueryservice_init"
     },
@@ -8473,7 +8419,7 @@
       "file_type": "code",
       "source_file": "backend/app/benchmark/queries.py",
       "source_location": "L77",
-      "community": 206,
+      "community": 16,
       "norm_label": ".get_competitor_strengths()",
       "id": "benchmark_queries_benchmarkqueryservice_get_competitor_strengths"
     },
@@ -8608,7 +8554,7 @@
       "file_type": "code",
       "source_file": "backend/app/routers/scorecards.py",
       "source_location": "L34",
-      "community": 4,
+      "community": 234,
       "norm_label": "_get_company()",
       "id": "routers_scorecards_get_company"
     },
@@ -8617,7 +8563,7 @@
       "file_type": "code",
       "source_file": "backend/app/routers/scorecards.py",
       "source_location": "L41",
-      "community": 4,
+      "community": 234,
       "norm_label": "_get_current_scorecard()",
       "id": "routers_scorecards_get_current_scorecard"
     },
@@ -8689,7 +8635,7 @@
       "file_type": "code",
       "source_file": "backend/app/routers/stats.py",
       "source_location": "L1",
-      "community": 3,
+      "community": 100,
       "norm_label": "stats.py",
       "id": "backend_app_routers_stats_py"
     },
@@ -9031,7 +8977,7 @@
       "file_type": "code",
       "source_file": "backend/app/assessor/capabilities.py",
       "source_location": "L4",
-      "community": 67,
+      "community": 239,
       "norm_label": "capabilitymeta",
       "id": "assessor_capabilities_capabilitymeta"
     },
@@ -9040,7 +8986,7 @@
       "file_type": "code",
       "source_file": "",
       "source_location": "",
-      "community": 67,
+      "community": 239,
       "norm_label": "typeddict",
       "id": "typeddict"
     },
@@ -9049,7 +8995,7 @@
       "file_type": "code",
       "source_file": "backend/app/assessor/summarizer.py",
       "source_location": "L1",
-      "community": 36,
+      "community": 13,
       "norm_label": "summarizer.py",
       "id": "backend_app_assessor_summarizer_py"
     },
@@ -9076,7 +9022,7 @@
       "file_type": "code",
       "source_file": "backend/app/models/signal.py",
       "source_location": "L1",
-      "community": 22,
+      "community": 56,
       "norm_label": "signal.py",
       "id": "backend_app_models_signal_py"
     },
@@ -9085,7 +9031,7 @@
       "file_type": "code",
       "source_file": "backend/app/models/signal.py",
       "source_location": "L23",
-      "community": 22,
+      "community": 56,
       "norm_label": ".load_dialect_impl()",
       "id": "models_signal_tsvectortype_load_dialect_impl"
     },
@@ -9094,7 +9040,7 @@
       "file_type": "code",
       "source_file": "backend/app/models/source_candidate.py",
       "source_location": "L1",
-      "community": 207,
+      "community": 64,
       "norm_label": "source_candidate.py",
       "id": "backend_app_models_source_candidate_py"
     },
@@ -9112,7 +9058,7 @@
       "file_type": "code",
       "source_file": "backend/app/models/source_candidate.py",
       "source_location": "L17",
-      "community": 207,
+      "community": 64,
       "norm_label": "sourcecandidate",
       "id": "models_source_candidate_sourcecandidate"
     },
@@ -9184,7 +9130,7 @@
       "file_type": "code",
       "source_file": "backend/app/models/search_result.py",
       "source_location": "L16",
-      "community": 234,
+      "community": 216,
       "norm_label": "searchresult",
       "id": "models_search_result_searchresult"
     },
@@ -9193,7 +9139,7 @@
       "file_type": "code",
       "source_file": "backend/app/models/crawl_briefing.py",
       "source_location": "L7",
-      "community": 16,
+      "community": 207,
       "norm_label": "crawlbriefing",
       "id": "models_crawl_briefing_crawlbriefing"
     },
@@ -9274,7 +9220,7 @@
       "file_type": "code",
       "source_file": "backend/app/models/competitor_scorecard.py",
       "source_location": "L8",
-      "community": 203,
+      "community": 241,
       "norm_label": "competitorscorecard",
       "id": "models_competitor_scorecard_competitorscorecard"
     },
@@ -9283,7 +9229,7 @@
       "file_type": "code",
       "source_file": "backend/app/models/source.py",
       "source_location": "L1",
-      "community": 168,
+      "community": 64,
       "norm_label": "source.py",
       "id": "backend_app_models_source_py"
     },
@@ -9310,7 +9256,7 @@
       "file_type": "code",
       "source_file": "backend/app/schemas/signal.py",
       "source_location": "L1",
-      "community": 22,
+      "community": 56,
       "norm_label": "signal.py",
       "id": "backend_app_schemas_signal_py"
     },
@@ -9427,7 +9373,7 @@
       "file_type": "code",
       "source_file": "backend/app/schemas/crawl_briefing.py",
       "source_location": "L16",
-      "community": 16,
+      "community": 207,
       "norm_label": "crawlbriefingcreate",
       "id": "schemas_crawl_briefing_crawlbriefingcreate"
     },
@@ -9517,7 +9463,7 @@
       "file_type": "code",
       "source_file": "backend/app/schemas/stats.py",
       "source_location": "L1",
-      "community": 56,
+      "community": 206,
       "norm_label": "stats.py",
       "id": "backend_app_schemas_stats_py"
     },
@@ -9589,7 +9535,7 @@
       "file_type": "code",
       "source_file": "backend/app/schemas/source.py",
       "source_location": "L1",
-      "community": 168,
+      "community": 64,
       "norm_label": "source.py",
       "id": "backend_app_schemas_source_py"
     },
@@ -9598,7 +9544,7 @@
       "file_type": "code",
       "source_file": "backend/app/schemas/source.py",
       "source_location": "L7",
-      "community": 168,
+      "community": 64,
       "norm_label": "sourcecreate",
       "id": "schemas_source_sourcecreate"
     },
@@ -9607,7 +9553,7 @@
       "file_type": "code",
       "source_file": "backend/app/schemas/source.py",
       "source_location": "L17",
-      "community": 168,
+      "community": 64,
       "norm_label": "sourceupdate",
       "id": "schemas_source_sourceupdate"
     },
@@ -9616,7 +9562,7 @@
       "file_type": "code",
       "source_file": "backend/app/schemas/source.py",
       "source_location": "L25",
-      "community": 168,
+      "community": 64,
       "norm_label": "sourceread",
       "id": "schemas_source_sourceread"
     },
@@ -9625,7 +9571,7 @@
       "file_type": "code",
       "source_file": "backend/app/digester/sections.py",
       "source_location": "L1",
-      "community": 52,
+      "community": 91,
       "norm_label": "sections.py",
       "id": "backend_app_digester_sections_py"
     },
@@ -9643,7 +9589,7 @@
       "file_type": "code",
       "source_file": "backend/app/digester/prompts.py",
       "source_location": "L1",
-      "community": 161,
+      "community": 218,
       "norm_label": "prompts.py",
       "id": "backend_app_digester_prompts_py"
     },
@@ -9652,7 +9598,7 @@
       "file_type": "code",
       "source_file": "backend/app/digester/dedup.py",
       "source_location": "L1",
-      "community": 77,
+      "community": 46,
       "norm_label": "dedup.py",
       "id": "backend_app_digester_dedup_py"
     },
@@ -9661,7 +9607,7 @@
       "file_type": "code",
       "source_file": "backend/app/digester/dedup.py",
       "source_location": "L11",
-      "community": 77,
+      "community": 46,
       "norm_label": "get_prev_signal_index()",
       "id": "digester_dedup_get_prev_signal_index"
     },
@@ -9670,7 +9616,7 @@
       "file_type": "code",
       "source_file": "backend/app/digester/dedup.py",
       "source_location": "L22",
-      "community": 77,
+      "community": 46,
       "norm_label": "should_include()",
       "id": "digester_dedup_should_include"
     },
@@ -9679,7 +9625,7 @@
       "file_type": "rationale",
       "source_file": "backend/app/digester/dedup.py",
       "source_location": "L12",
-      "community": 77,
+      "community": 46,
       "norm_label": "returns {signal_id: item_dict} for all items in previous digest sections.",
       "id": "digester_dedup_rationale_12"
     },
@@ -9688,7 +9634,7 @@
       "file_type": "rationale",
       "source_file": "backend/app/digester/dedup.py",
       "source_location": "L23",
-      "community": 77,
+      "community": 46,
       "norm_label": "true if signal is new or has improved movement_strength since last digest.",
       "id": "digester_dedup_rationale_23"
     },
@@ -9697,7 +9643,7 @@
       "file_type": "code",
       "source_file": "backend/app/digester/pipeline.py",
       "source_location": "L1",
-      "community": 46,
+      "community": 77,
       "norm_label": "pipeline.py",
       "id": "backend_app_digester_pipeline_py"
     },
@@ -9706,7 +9652,7 @@
       "file_type": "code",
       "source_file": "backend/app/digester/candidates.py",
       "source_location": "L1",
-      "community": 46,
+      "community": 77,
       "norm_label": "candidates.py",
       "id": "backend_app_digester_candidates_py"
     },
@@ -9742,7 +9688,7 @@
       "file_type": "code",
       "source_file": "backend/app/analyser/prompts.py",
       "source_location": "L1",
-      "community": 91,
+      "community": 168,
       "norm_label": "prompts.py",
       "id": "backend_app_analyser_prompts_py"
     },
@@ -9751,7 +9697,7 @@
       "file_type": "code",
       "source_file": "backend/app/analyser/parser.py",
       "source_location": "L1",
-      "community": 236,
+      "community": 48,
       "norm_label": "parser.py",
       "id": "backend_app_analyser_parser_py"
     },
@@ -9769,7 +9715,7 @@
       "file_type": "code",
       "source_file": "backend/app/analyser/pipeline.py",
       "source_location": "L1",
-      "community": 48,
+      "community": 213,
       "norm_label": "pipeline.py",
       "id": "backend_app_analyser_pipeline_py"
     },
@@ -10210,7 +10156,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digester_pipeline.py",
       "source_location": "L1",
-      "community": 46,
+      "community": 77,
       "norm_label": "test_digester_pipeline.py",
       "id": "backend_tests_test_digester_pipeline_py"
     },
@@ -10228,7 +10174,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digester_pipeline.py",
       "source_location": "L50",
-      "community": 46,
+      "community": 77,
       "norm_label": "test_generate_digest_creates_record()",
       "id": "tests_test_digester_pipeline_test_generate_digest_creates_record"
     },
@@ -10237,7 +10183,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digester_pipeline.py",
       "source_location": "L77",
-      "community": 46,
+      "community": 77,
       "norm_label": "test_generate_digest_sections_contain_item()",
       "id": "tests_test_digester_pipeline_test_generate_digest_sections_contain_item"
     },
@@ -10246,7 +10192,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digester_pipeline.py",
       "source_location": "L128",
-      "community": 46,
+      "community": 77,
       "norm_label": "test_generate_digest_empty_week_produces_no_sections()",
       "id": "tests_test_digester_pipeline_test_generate_digest_empty_week_produces_no_sections"
     },
@@ -10552,7 +10498,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digester_candidates.py",
       "source_location": "L1",
-      "community": 52,
+      "community": 91,
       "norm_label": "test_digester_candidates.py",
       "id": "backend_tests_test_digester_candidates_py"
     },
@@ -10561,7 +10507,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digester_candidates.py",
       "source_location": "L13",
-      "community": 52,
+      "community": 91,
       "norm_label": "seeded()",
       "id": "tests_test_digester_candidates_seeded"
     },
@@ -10570,7 +10516,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digester_candidates.py",
       "source_location": "L51",
-      "community": 52,
+      "community": 91,
       "norm_label": "test_query_candidates_returns_signal_in_week()",
       "id": "tests_test_digester_candidates_test_query_candidates_returns_signal_in_week"
     },
@@ -10579,7 +10525,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digester_candidates.py",
       "source_location": "L58",
-      "community": 52,
+      "community": 91,
       "norm_label": "test_query_candidates_excludes_signal_outside_week()",
       "id": "tests_test_digester_candidates_test_query_candidates_excludes_signal_outside_week"
     },
@@ -10588,7 +10534,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digester_candidates.py",
       "source_location": "L64",
-      "community": 52,
+      "community": 91,
       "norm_label": "test_query_candidates_filters_by_signal_type()",
       "id": "tests_test_digester_candidates_test_query_candidates_filters_by_signal_type"
     },
@@ -10597,7 +10543,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digester_candidates.py",
       "source_location": "L73",
-      "community": 52,
+      "community": 91,
       "norm_label": "test_query_candidates_excludes_given_signal_ids()",
       "id": "tests_test_digester_candidates_test_query_candidates_excludes_given_signal_ids"
     },
@@ -10606,7 +10552,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digester_candidates.py",
       "source_location": "L80",
-      "community": 52,
+      "community": 91,
       "norm_label": "test_query_candidates_competitor_news_uses_source_type()",
       "id": "tests_test_digester_candidates_test_query_candidates_competitor_news_uses_source_type"
     },
@@ -10615,7 +10561,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digester_candidates.py",
       "source_location": "L88",
-      "community": 52,
+      "community": 91,
       "norm_label": "test_build_candidate_dict_structure()",
       "id": "tests_test_digester_candidates_test_build_candidate_dict_structure"
     },
@@ -10813,7 +10759,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_assessor_pipeline.py",
       "source_location": "L169",
-      "community": 36,
+      "community": 13,
       "norm_label": "test_generate_competitor_summary_creates_record()",
       "id": "tests_test_assessor_pipeline_test_generate_competitor_summary_creates_record"
     },
@@ -10912,7 +10858,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovered_pages_router.py",
       "source_location": "L1",
-      "community": 218,
+      "community": 250,
       "norm_label": "test_discovered_pages_router.py",
       "id": "backend_tests_test_discovered_pages_router_py"
     },
@@ -10921,7 +10867,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovered_pages_router.py",
       "source_location": "L9",
-      "community": 218,
+      "community": 250,
       "norm_label": "company_and_source()",
       "id": "tests_test_discovered_pages_router_company_and_source"
     },
@@ -10930,7 +10876,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovered_pages_router.py",
       "source_location": "L46",
-      "community": 218,
+      "community": 250,
       "norm_label": "test_list_discovered_pages_empty()",
       "id": "tests_test_discovered_pages_router_test_list_discovered_pages_empty"
     },
@@ -10939,7 +10885,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovered_pages_router.py",
       "source_location": "L53",
-      "community": 218,
+      "community": 250,
       "norm_label": "test_list_discovered_pages_returns_pages()",
       "id": "tests_test_discovered_pages_router_test_list_discovered_pages_returns_pages"
     },
@@ -10948,7 +10894,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovered_pages_router.py",
       "source_location": "L66",
-      "community": 218,
+      "community": 250,
       "norm_label": "test_list_discovered_pages_requires_source_id()",
       "id": "tests_test_discovered_pages_router_test_list_discovered_pages_requires_source_id"
     },
@@ -10957,7 +10903,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovered_pages_router.py",
       "source_location": "L81",
-      "community": 218,
+      "community": 250,
       "norm_label": "test_patch_discovered_page_activate()",
       "id": "tests_test_discovered_pages_router_test_patch_discovered_page_activate"
     },
@@ -10966,7 +10912,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovered_pages_router.py",
       "source_location": "L96",
-      "community": 218,
+      "community": 250,
       "norm_label": "test_patch_discovered_page_not_found()",
       "id": "tests_test_discovered_pages_router_test_patch_discovered_page_not_found"
     },
@@ -10975,7 +10921,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_discovered_pages_router.py",
       "source_location": "L104",
-      "community": 218,
+      "community": 250,
       "norm_label": "test_delete_discovered_page()",
       "id": "tests_test_discovered_pages_router_test_delete_discovered_page"
     },
@@ -10984,7 +10930,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digester_prompts.py",
       "source_location": "L1",
-      "community": 161,
+      "community": 218,
       "norm_label": "test_digester_prompts.py",
       "id": "backend_tests_test_digester_prompts_py"
     },
@@ -10993,7 +10939,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digester_prompts.py",
       "source_location": "L27",
-      "community": 161,
+      "community": 218,
       "norm_label": "test_section_curation_prompt_contains_company()",
       "id": "tests_test_digester_prompts_test_section_curation_prompt_contains_company"
     },
@@ -11002,7 +10948,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digester_prompts.py",
       "source_location": "L48",
-      "community": 161,
+      "community": 218,
       "norm_label": "test_section_curation_prompt_includes_prev_items()",
       "id": "tests_test_digester_prompts_test_section_curation_prompt_includes_prev_items"
     },
@@ -11011,7 +10957,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digester_prompts.py",
       "source_location": "L56",
-      "community": 161,
+      "community": 218,
       "norm_label": "test_intro_summary_prompt_contains_section_title()",
       "id": "tests_test_digester_prompts_test_intro_summary_prompt_contains_section_title"
     },
@@ -11020,7 +10966,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digester_prompts.py",
       "source_location": "L65",
-      "community": 161,
+      "community": 218,
       "norm_label": "test_intro_summary_prompt_requests_summary_key()",
       "id": "tests_test_digester_prompts_test_intro_summary_prompt_requests_summary_key"
     },
@@ -11839,7 +11785,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digester_sections.py",
       "source_location": "L1",
-      "community": 214,
+      "community": 10,
       "norm_label": "test_digester_sections.py",
       "id": "backend_tests_test_digester_sections_py"
     },
@@ -11848,7 +11794,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digester_sections.py",
       "source_location": "L4",
-      "community": 214,
+      "community": 10,
       "norm_label": "test_sections_has_five_entries()",
       "id": "tests_test_digester_sections_test_sections_has_five_entries"
     },
@@ -11857,7 +11803,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digester_sections.py",
       "source_location": "L8",
-      "community": 214,
+      "community": 10,
       "norm_label": "test_section_keys_are_unique()",
       "id": "tests_test_digester_sections_test_section_keys_are_unique"
     },
@@ -11866,7 +11812,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digester_sections.py",
       "source_location": "L13",
-      "community": 214,
+      "community": 10,
       "norm_label": "test_all_sections_have_required_fields()",
       "id": "tests_test_digester_sections_test_all_sections_have_required_fields"
     },
@@ -11875,7 +11821,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digester_sections.py",
       "source_location": "L22",
-      "community": 214,
+      "community": 10,
       "norm_label": "test_competitor_news_uses_source_type_filter()",
       "id": "tests_test_digester_sections_test_competitor_news_uses_source_type_filter"
     },
@@ -11884,7 +11830,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digester_sections.py",
       "source_location": "L28",
-      "community": 214,
+      "community": 10,
       "norm_label": "test_events_section_signal_types()",
       "id": "tests_test_digester_sections_test_events_section_signal_types"
     },
@@ -12019,7 +11965,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_analyser.py",
       "source_location": "L8",
-      "community": 48,
+      "community": 168,
       "norm_label": "test_build_prompt_includes_markdown_and_context()",
       "id": "tests_test_analyser_test_build_prompt_includes_markdown_and_context"
     },
@@ -12028,7 +11974,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_analyser.py",
       "source_location": "L25",
-      "community": 91,
+      "community": 48,
       "norm_label": "test_parse_valid_llm_response()",
       "id": "tests_test_analyser_test_parse_valid_llm_response"
     },
@@ -12055,7 +12001,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_analyser.py",
       "source_location": "L69",
-      "community": 236,
+      "community": 48,
       "norm_label": "test_parse_unable_to_analyze_returns_none()",
       "id": "tests_test_analyser_test_parse_unable_to_analyze_returns_none"
     },
@@ -12064,7 +12010,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_analyser.py",
       "source_location": "L82",
-      "community": 236,
+      "community": 48,
       "norm_label": "test_is_unable_to_analyze()",
       "id": "tests_test_analyser_test_is_unable_to_analyze"
     },
@@ -12073,7 +12019,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_analyser.py",
       "source_location": "L90",
-      "community": 48,
+      "community": 213,
       "norm_label": "test_analyse_document_skips_short_content()",
       "id": "tests_test_analyser_test_analyse_document_skips_short_content"
     },
@@ -12091,7 +12037,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_analyser.py",
       "source_location": "L169",
-      "community": 48,
+      "community": 213,
       "norm_label": "test_analyse_document_skips_if_signal_already_exists()",
       "id": "tests_test_analyser_test_analyse_document_skips_if_signal_already_exists"
     },
@@ -12100,7 +12046,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_analyser.py",
       "source_location": "L216",
-      "community": 48,
+      "community": 213,
       "norm_label": "test_analyse_document_skips_if_published_at_older_than_1_year()",
       "id": "tests_test_analyser_test_analyse_document_skips_if_published_at_older_than_1_year"
     },
@@ -12118,7 +12064,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digests.py",
       "source_location": "L1",
-      "community": 216,
+      "community": 235,
       "norm_label": "test_digests.py",
       "id": "backend_tests_test_digests_py"
     },
@@ -12127,7 +12073,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digests.py",
       "source_location": "L11",
-      "community": 216,
+      "community": 235,
       "norm_label": "seed_company_and_signals()",
       "id": "tests_test_digests_seed_company_and_signals"
     },
@@ -12136,7 +12082,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digests.py",
       "source_location": "L49",
-      "community": 216,
+      "community": 235,
       "norm_label": "seed_digest()",
       "id": "tests_test_digests_seed_digest"
     },
@@ -12145,7 +12091,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digests.py",
       "source_location": "L63",
-      "community": 216,
+      "community": 235,
       "norm_label": "test_list_digests()",
       "id": "tests_test_digests_test_list_digests"
     },
@@ -12154,7 +12100,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digests.py",
       "source_location": "L69",
-      "community": 216,
+      "community": 235,
       "norm_label": "test_get_digest_by_id()",
       "id": "tests_test_digests_test_get_digest_by_id"
     },
@@ -12163,7 +12109,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digests.py",
       "source_location": "L83",
-      "community": 216,
+      "community": 235,
       "norm_label": "test_digest_key_signals_have_source_url()",
       "id": "tests_test_digests_test_digest_key_signals_have_source_url"
     },
@@ -12172,7 +12118,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digests.py",
       "source_location": "L91",
-      "community": 46,
+      "community": 77,
       "norm_label": "test_generate_digest()",
       "id": "tests_test_digests_test_generate_digest"
     },
@@ -12181,7 +12127,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digests.py",
       "source_location": "L100",
-      "community": 216,
+      "community": 235,
       "norm_label": "test_generate_digest_returns_sections_field()",
       "id": "tests_test_digests_test_generate_digest_returns_sections_field"
     },
@@ -12190,7 +12136,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digests.py",
       "source_location": "L108",
-      "community": 216,
+      "community": 235,
       "norm_label": "test_digest_read_has_sections_field()",
       "id": "tests_test_digests_test_digest_read_has_sections_field"
     },
@@ -12694,7 +12640,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_analyser_pipeline.py",
       "source_location": "L1",
-      "community": 241,
+      "community": 213,
       "norm_label": "test_analyser_pipeline.py",
       "id": "backend_tests_test_analyser_pipeline_py"
     },
@@ -12703,7 +12649,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_analyser_pipeline.py",
       "source_location": "L7",
-      "community": 241,
+      "community": 213,
       "norm_label": "_make_ctx()",
       "id": "tests_test_analyser_pipeline_make_ctx"
     },
@@ -12712,7 +12658,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_analyser_pipeline.py",
       "source_location": "L28",
-      "community": 241,
+      "community": 213,
       "norm_label": "test_build_context_dict_with_none()",
       "id": "tests_test_analyser_pipeline_test_build_context_dict_with_none"
     },
@@ -12721,7 +12667,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_analyser_pipeline.py",
       "source_location": "L33",
-      "community": 241,
+      "community": 213,
       "norm_label": "test_analyse_document_uses_preloaded_context()",
       "id": "tests_test_analyser_pipeline_test_analyse_document_uses_preloaded_context"
     },
@@ -12730,7 +12676,7 @@
       "file_type": "rationale",
       "source_file": "backend/tests/test_analyser_pipeline.py",
       "source_location": "L34",
-      "community": 241,
+      "community": 213,
       "norm_label": "when preloaded_context is passed, no db query for internalcompanycontext.",
       "id": "tests_test_analyser_pipeline_rationale_34"
     },
@@ -12802,7 +12748,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digester_dedup.py",
       "source_location": "L1",
-      "community": 77,
+      "community": 46,
       "norm_label": "test_digester_dedup.py",
       "id": "backend_tests_test_digester_dedup_py"
     },
@@ -12811,7 +12757,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digester_dedup.py",
       "source_location": "L6",
-      "community": 77,
+      "community": 46,
       "norm_label": "make_signal()",
       "id": "tests_test_digester_dedup_make_signal"
     },
@@ -12820,7 +12766,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digester_dedup.py",
       "source_location": "L19",
-      "community": 77,
+      "community": 46,
       "norm_label": "test_get_prev_signal_index_empty()",
       "id": "tests_test_digester_dedup_test_get_prev_signal_index_empty"
     },
@@ -12829,7 +12775,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digester_dedup.py",
       "source_location": "L23",
-      "community": 77,
+      "community": 46,
       "norm_label": "test_get_prev_signal_index_builds_lookup()",
       "id": "tests_test_digester_dedup_test_get_prev_signal_index_builds_lookup"
     },
@@ -12838,7 +12784,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digester_dedup.py",
       "source_location": "L33",
-      "community": 77,
+      "community": 46,
       "norm_label": "test_should_include_new_signal()",
       "id": "tests_test_digester_dedup_test_should_include_new_signal"
     },
@@ -12847,7 +12793,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digester_dedup.py",
       "source_location": "L38",
-      "community": 77,
+      "community": 46,
       "norm_label": "test_should_include_same_strength_excluded()",
       "id": "tests_test_digester_dedup_test_should_include_same_strength_excluded"
     },
@@ -12856,7 +12802,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digester_dedup.py",
       "source_location": "L44",
-      "community": 77,
+      "community": 46,
       "norm_label": "test_should_include_improved_strength()",
       "id": "tests_test_digester_dedup_test_should_include_improved_strength"
     },
@@ -12865,7 +12811,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digester_dedup.py",
       "source_location": "L50",
-      "community": 77,
+      "community": 46,
       "norm_label": "test_should_include_degraded_strength_excluded()",
       "id": "tests_test_digester_dedup_test_should_include_degraded_strength_excluded"
     },
@@ -12874,7 +12820,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digester_dedup.py",
       "source_location": "L56",
-      "community": 77,
+      "community": 46,
       "norm_label": "test_should_include_no_assessment_excluded_if_in_prev()",
       "id": "tests_test_digester_dedup_test_should_include_no_assessment_excluded_if_in_prev"
     },
@@ -12883,7 +12829,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digester_dedup.py",
       "source_location": "L62",
-      "community": 77,
+      "community": 46,
       "norm_label": "test_should_include_market_shaping_beats_strong()",
       "id": "tests_test_digester_dedup_test_should_include_market_shaping_beats_strong"
     },
@@ -13009,7 +12955,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_crawler.py",
       "source_location": "L337",
-      "community": 250,
+      "community": 236,
       "norm_label": "test_run_crawl_source_sets_crawl_status_changed_on_content_change()",
       "id": "tests_test_crawler_test_run_crawl_source_sets_crawl_status_changed_on_content_change"
     },
@@ -13135,7 +13081,7 @@
       "file_type": "rationale",
       "source_file": "backend/tests/test_crawler.py",
       "source_location": "L338",
-      "community": 250,
+      "community": 236,
       "norm_label": "test that crawl_status is set to 'changed' when content changes.      note: this",
       "id": "tests_test_crawler_rationale_338"
     },
@@ -13144,7 +13090,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_benchmark_queries.py",
       "source_location": "L1",
-      "community": 206,
+      "community": 256,
       "norm_label": "test_benchmark_queries.py",
       "id": "backend_tests_test_benchmark_queries_py"
     },
@@ -13153,7 +13099,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_benchmark_queries.py",
       "source_location": "L16",
-      "community": 206,
+      "community": 256,
       "norm_label": "db()",
       "id": "tests_test_benchmark_queries_db"
     },
@@ -13162,7 +13108,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_benchmark_queries.py",
       "source_location": "L27",
-      "community": 206,
+      "community": 256,
       "norm_label": "seeded_db()",
       "id": "tests_test_benchmark_queries_seeded_db"
     },
@@ -13171,7 +13117,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_benchmark_queries.py",
       "source_location": "L50",
-      "community": 206,
+      "community": 256,
       "norm_label": "test_get_capability_assessments_returns_matching_assessments()",
       "id": "tests_test_benchmark_queries_test_get_capability_assessments_returns_matching_assessments"
     },
@@ -13180,7 +13126,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_benchmark_queries.py",
       "source_location": "L65",
-      "community": 206,
+      "community": 256,
       "norm_label": "test_get_capability_assessments_wrong_capability_returns_empty()",
       "id": "tests_test_benchmark_queries_test_get_capability_assessments_wrong_capability_returns_empty"
     },
@@ -13189,7 +13135,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_benchmark_queries.py",
       "source_location": "L73",
-      "community": 206,
+      "community": 256,
       "norm_label": "test_get_capability_assessments_unknown_slug_raises()",
       "id": "tests_test_benchmark_queries_test_get_capability_assessments_unknown_slug_raises"
     },
@@ -13198,7 +13144,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_benchmark_queries.py",
       "source_location": "L79",
-      "community": 206,
+      "community": 256,
       "norm_label": "test_get_capability_assessments_ordered_by_movement_score_desc()",
       "id": "tests_test_benchmark_queries_test_get_capability_assessments_ordered_by_movement_score_desc"
     },
@@ -13297,7 +13243,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_analyser_client.py",
       "source_location": "L1",
-      "community": 247,
+      "community": 30,
       "norm_label": "test_analyser_client.py",
       "id": "backend_tests_test_analyser_client_py"
     },
@@ -13306,7 +13252,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_analyser_client.py",
       "source_location": "L5",
-      "community": 247,
+      "community": 30,
       "norm_label": "test_anthropic_client_reused_across_calls()",
       "id": "tests_test_analyser_client_test_anthropic_client_reused_across_calls"
     },
@@ -13315,7 +13261,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_analyser_client.py",
       "source_location": "L21",
-      "community": 247,
+      "community": 30,
       "norm_label": "test_opencode_client_reused_across_calls()",
       "id": "tests_test_analyser_client_test_opencode_client_reused_across_calls"
     },
@@ -13324,7 +13270,7 @@
       "file_type": "rationale",
       "source_file": "backend/tests/test_analyser_client.py",
       "source_location": "L6",
-      "community": 247,
+      "community": 30,
       "norm_label": "same client instance should be returned on repeated calls.",
       "id": "tests_test_analyser_client_rationale_6"
     },
@@ -14664,7 +14610,7 @@
       "captured_at": "2026-05-18",
       "author": null,
       "contributor": null,
-      "community": 233,
+      "community": 254,
       "norm_label": "competitor logos implementation plan",
       "id": "plans_competitor_logos"
     },
@@ -14677,7 +14623,7 @@
       "captured_at": "2026-05-03",
       "author": null,
       "contributor": null,
-      "community": 233,
+      "community": 254,
       "norm_label": "capability benchmark implementation plan",
       "id": "plans_capability_benchmark"
     },
@@ -14755,7 +14701,7 @@
       "captured_at": "2026-05-21",
       "author": null,
       "contributor": null,
-      "community": 233,
+      "community": 254,
       "norm_label": "capability strength explainability & panel consolidation plan",
       "id": "plans_capability_explainability"
     },
@@ -14833,7 +14779,7 @@
       "captured_at": "2026-05-18",
       "author": null,
       "contributor": null,
-      "community": 233,
+      "community": 254,
       "norm_label": "competitor scorecard backend implementation plan",
       "id": "plans_competitor_scorecard_backend"
     },
@@ -14898,7 +14844,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 233,
+      "community": 254,
       "norm_label": "dimensionscorecard / dimensionscoregrid components",
       "id": "concept_dimension_score_card"
     },
@@ -14911,7 +14857,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 233,
+      "community": 254,
       "norm_label": "capabilityexplaindrawer component",
       "id": "concept_capability_explain_drawer"
     },
@@ -14963,7 +14909,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 233,
+      "community": 254,
       "norm_label": "scorecard dimensions (capability_strength, market_impact, activity, customer_proof, momentum)",
       "id": "concept_scorecard_dimensions"
     },
@@ -15392,7 +15338,7 @@
       "captured_at": "2026-05-21",
       "author": null,
       "contributor": null,
-      "community": 233,
+      "community": 254,
       "norm_label": "get /api/benchmark/capability-assessments backend endpoint",
       "id": "specs_capability_assessments_endpoint"
     },
@@ -15769,7 +15715,7 @@
       "captured_at": "2026-04-19",
       "author": null,
       "contributor": null,
-      "community": 3,
+      "community": 100,
       "norm_label": "crawl_run_sources table",
       "id": "specs_crawl_run_sources_table"
     },
@@ -15913,7 +15859,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/CompanyLogo.tsx",
       "source_location": "L4",
-      "community": 5,
+      "community": 69,
       "norm_label": "companylogoprops",
       "id": "components_companylogo_companylogoprops"
     },
@@ -15922,7 +15868,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/CompanyLogo.tsx",
       "source_location": "L12",
-      "community": 5,
+      "community": 69,
       "norm_label": "size_px",
       "id": "components_companylogo_size_px"
     },
@@ -15931,7 +15877,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/CompanyLogo.tsx",
       "source_location": "L18",
-      "community": 5,
+      "community": 69,
       "norm_label": "font_size",
       "id": "components_companylogo_font_size"
     },
@@ -16048,7 +15994,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/workspace/MovesPanel.tsx",
       "source_location": "L36",
-      "community": 67,
+      "community": 239,
       "norm_label": "props",
       "id": "workspace_movespanel_props"
     },
@@ -16084,7 +16030,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/overview/RisksOpportunitiesPanel.tsx",
       "source_location": "L11",
-      "community": 5,
+      "community": 69,
       "norm_label": "columnprops",
       "id": "overview_risksopportunitiespanel_columnprops"
     },
@@ -16093,7 +16039,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/overview/RisksOpportunitiesPanel.tsx",
       "source_location": "L21",
-      "community": 5,
+      "community": 69,
       "norm_label": "riskcolumn()",
       "id": "overview_risksopportunitiespanel_riskcolumn"
     },
@@ -16489,7 +16435,7 @@
       "file_type": "code",
       "source_file": "backend/app/schemas/schedule.py",
       "source_location": "L1",
-      "community": 16,
+      "community": 207,
       "norm_label": "schedule.py",
       "id": "backend_app_schemas_schedule_py"
     },
@@ -16507,7 +16453,7 @@
       "file_type": "code",
       "source_file": "backend/app/synthesizer/prompts.py",
       "source_location": "L1",
-      "community": 239,
+      "community": 249,
       "norm_label": "prompts.py",
       "id": "backend_app_synthesizer_prompts_py"
     },
@@ -16516,7 +16462,7 @@
       "file_type": "code",
       "source_file": "backend/app/synthesizer/prompts.py",
       "source_location": "L4",
-      "community": 239,
+      "community": 249,
       "norm_label": "build_synthesis_prompt()",
       "id": "synthesizer_prompts_build_synthesis_prompt"
     },
@@ -16525,7 +16471,7 @@
       "file_type": "code",
       "source_file": "backend/app/synthesizer/pipeline.py",
       "source_location": "L1",
-      "community": 239,
+      "community": 249,
       "norm_label": "pipeline.py",
       "id": "backend_app_synthesizer_pipeline_py"
     },
@@ -17379,7 +17325,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 63,
+      "community": 59,
       "norm_label": "scorecardperiodtype",
       "id": "scorecard_scorecardperiodtype"
     },
@@ -17405,7 +17351,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 203,
+      "community": 241,
       "norm_label": "scorecardtopmove",
       "id": "scorecard_scorecardtopmove"
     },
@@ -17418,7 +17364,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 203,
+      "community": 241,
       "norm_label": "competitorscorecard",
       "id": "scorecard_competitorscorecard"
     },
@@ -17431,7 +17377,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 255,
+      "community": 257,
       "norm_label": "scorecardexplain",
       "id": "scorecard_scorecardexplain"
     },
@@ -17587,7 +17533,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 3,
+      "community": 100,
       "norm_label": "crawlrun",
       "id": "index_crawlrun"
     },
@@ -17600,7 +17546,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 3,
+      "community": 100,
       "norm_label": "crawlstatusresponse",
       "id": "index_crawlstatusresponse"
     },
@@ -17626,7 +17572,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 3,
+      "community": 100,
       "norm_label": "lastcrawlsummary",
       "id": "index_lastcrawlsummary"
     },
@@ -17652,7 +17598,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 63,
+      "community": 59,
       "norm_label": "benchmarkoverviewresponse",
       "id": "benchmark_benchmarkoverviewresponse"
     },
@@ -17665,7 +17611,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 57,
+      "community": 29,
       "norm_label": "competitorbenchmarkdetail",
       "id": "benchmark_competitorbenchmarkdetail"
     },
@@ -17678,7 +17624,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 57,
+      "community": 29,
       "norm_label": "competitorbenchmarkresponse",
       "id": "benchmark_competitorbenchmarkresponse"
     },
@@ -17730,7 +17676,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 67,
+      "community": 239,
       "norm_label": "capabilitymeta",
       "id": "capabilities_capabilitymeta"
     },
@@ -17743,7 +17689,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 67,
+      "community": 239,
       "norm_label": "capabilities constant",
       "id": "capabilities_capabilities"
     },
@@ -17756,7 +17702,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 67,
+      "community": 239,
       "norm_label": "getcapabilitylabel",
       "id": "capabilities_getcapabilitylabel"
     },
@@ -17795,7 +17741,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 5,
+      "community": 69,
       "norm_label": "companylogo",
       "id": "companylogo_companylogo"
     },
@@ -17860,7 +17806,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 67,
+      "community": 239,
       "norm_label": "strategicposturecard",
       "id": "strategicposturecard_strategicposturecard"
     },
@@ -17899,7 +17845,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 67,
+      "community": 239,
       "norm_label": "movespanel",
       "id": "movespanel_movespanel"
     },
@@ -17912,7 +17858,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 67,
+      "community": 239,
       "norm_label": "scorebadge",
       "id": "movespanel_scorebadge"
     },
@@ -17925,7 +17871,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 67,
+      "community": 239,
       "norm_label": "class_labels",
       "id": "movespanel_class_labels"
     },
@@ -18315,7 +18261,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 58,
+      "community": 93,
       "norm_label": "startup_scheduler",
       "id": "scheduler_startup_scheduler"
     },
@@ -18328,7 +18274,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 58,
+      "community": 93,
       "norm_label": "shutdown_scheduler",
       "id": "scheduler_shutdown_scheduler"
     },
@@ -18549,7 +18495,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 206,
+      "community": 16,
       "norm_label": "benchmarkqueryservice.get_overview",
       "id": "queries_get_overview"
     },
@@ -18692,7 +18638,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 3,
+      "community": 100,
       "norm_label": "enqueue_source",
       "id": "crawl_enqueue_source"
     },
@@ -18874,7 +18820,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 206,
+      "community": 16,
       "norm_label": "get_overview (router)",
       "id": "benchmark_get_overview"
     },
@@ -18952,7 +18898,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 4,
+      "community": 234,
       "norm_label": "get_scorecard",
       "id": "scorecards_get_scorecard"
     },
@@ -18965,7 +18911,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 4,
+      "community": 234,
       "norm_label": "get_scorecard_history",
       "id": "scorecards_get_scorecard_history"
     },
@@ -18978,7 +18924,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 4,
+      "community": 234,
       "norm_label": "get_scorecard_explain",
       "id": "scorecards_get_scorecard_explain"
     },
@@ -18991,7 +18937,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 4,
+      "community": 234,
       "norm_label": "recompute_scorecard",
       "id": "scorecards_recompute_scorecard"
     },
@@ -19004,7 +18950,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 4,
+      "community": 234,
       "norm_label": "recompute_all (scorecards router)",
       "id": "scorecards_recompute_all"
     },
@@ -19017,7 +18963,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 4,
+      "community": 234,
       "norm_label": "scorecardbuilder",
       "id": "scorecards_scorecardbuilder"
     },
@@ -19111,7 +19057,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 5,
+      "community": 50,
       "norm_label": "signals_over_time",
       "id": "stats_signals_over_time"
     },
@@ -19540,7 +19486,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 36,
+      "community": 13,
       "norm_label": "generate_competitor_summary",
       "id": "summarizer_generate_competitor_summary"
     },
@@ -19592,7 +19538,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 22,
+      "community": 56,
       "norm_label": "signal",
       "id": "signal_signal"
     },
@@ -19605,7 +19551,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 22,
+      "community": 56,
       "norm_label": "signaltype",
       "id": "signal_signaltype"
     },
@@ -19618,7 +19564,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 22,
+      "community": 56,
       "norm_label": "tsvectortype",
       "id": "signal_tsvectortype"
     },
@@ -19631,7 +19577,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 207,
+      "community": 13,
       "norm_label": "competitorsummary",
       "id": "competitor_summary_competitorsummary"
     },
@@ -19644,7 +19590,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 207,
+      "community": 13,
       "norm_label": "periodtype",
       "id": "competitor_summary_periodtype"
     },
@@ -19657,7 +19603,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 91,
+      "community": 168,
       "norm_label": "externalcompanyview",
       "id": "external_company_view_externalcompanyview"
     },
@@ -19670,7 +19616,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 16,
+      "community": 207,
       "norm_label": "scheduleconfig",
       "id": "schedule_scheduleconfig"
     },
@@ -19683,7 +19629,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 168,
+      "community": 64,
       "norm_label": "source",
       "id": "source_source"
     },
@@ -19696,7 +19642,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 168,
+      "community": 64,
       "norm_label": "sourcetype",
       "id": "source_sourcetype"
     },
@@ -19709,7 +19655,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 168,
+      "community": 64,
       "norm_label": "crawlstatus",
       "id": "source_crawlstatus"
     },
@@ -19722,7 +19668,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 168,
+      "community": 64,
       "norm_label": "analysisstatus",
       "id": "source_analysisstatus"
     },
@@ -19839,7 +19785,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 22,
+      "community": 56,
       "norm_label": "signalread",
       "id": "signal_signalread"
     },
@@ -19852,7 +19798,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 22,
+      "community": 56,
       "norm_label": "dedupresult",
       "id": "signal_dedupresult"
     },
@@ -19930,7 +19876,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 255,
+      "community": 257,
       "norm_label": "scorecardkpivalue",
       "id": "scorecard_scorecardkpivalue"
     },
@@ -19995,7 +19941,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 255,
+      "community": 257,
       "norm_label": "scorecardexplainassessment",
       "id": "scorecard_scorecardexplainassessment"
     },
@@ -20008,7 +19954,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 255,
+      "community": 257,
       "norm_label": "scorecardexplaindimension",
       "id": "scorecard_scorecardexplaindimension"
     },
@@ -20021,7 +19967,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 5,
+      "community": 50,
       "norm_label": "signalovertimepoint",
       "id": "stats_signalovertimepoint"
     },
@@ -20034,7 +19980,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 56,
+      "community": 206,
       "norm_label": "signaltypecount",
       "id": "stats_signaltypecount"
     },
@@ -20047,7 +19993,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 56,
+      "community": 206,
       "norm_label": "companysignaltypecount",
       "id": "stats_companysignaltypecount"
     },
@@ -20060,7 +20006,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 56,
+      "community": 206,
       "norm_label": "signaldistribution",
       "id": "stats_signaldistribution"
     },
@@ -20073,7 +20019,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 56,
+      "community": 206,
       "norm_label": "lastcrawlruninfo",
       "id": "stats_lastcrawlruninfo"
     },
@@ -20086,7 +20032,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 56,
+      "community": 206,
       "norm_label": "lastcrawlsummary",
       "id": "stats_lastcrawlsummary"
     },
@@ -20099,7 +20045,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 16,
+      "community": 207,
       "norm_label": "schedulestatusread",
       "id": "schedule_schedulestatusread"
     },
@@ -20112,7 +20058,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 239,
+      "community": 249,
       "norm_label": "build_synthesis_prompt (synthesizer)",
       "id": "prompts_build_synthesis_prompt"
     },
@@ -20125,7 +20071,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 239,
+      "community": 249,
       "norm_label": "run_synthesis",
       "id": "pipeline_run_synthesis"
     },
@@ -20138,7 +20084,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 52,
+      "community": 91,
       "norm_label": "sectiondef",
       "id": "sections_sectiondef"
     },
@@ -20151,7 +20097,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 46,
+      "community": 77,
       "norm_label": "sections (list of sectiondef)",
       "id": "sections_sections"
     },
@@ -20190,7 +20136,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 161,
+      "community": 218,
       "norm_label": "build_section_curation_prompt (digester)",
       "id": "prompts_build_section_curation_prompt"
     },
@@ -20203,7 +20149,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 161,
+      "community": 218,
       "norm_label": "build_risks_opportunities_prompt",
       "id": "prompts_build_risks_opportunities_prompt"
     },
@@ -20216,7 +20162,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 161,
+      "community": 218,
       "norm_label": "build_intro_summary_prompt",
       "id": "prompts_build_intro_summary_prompt"
     },
@@ -20229,7 +20175,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 46,
+      "community": 77,
       "norm_label": "_get_week_range",
       "id": "pipeline_get_week_range"
     },
@@ -20242,7 +20188,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 46,
+      "community": 77,
       "norm_label": "_get_context_summary (digester)",
       "id": "pipeline_get_context_summary"
     },
@@ -20255,7 +20201,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 46,
+      "community": 77,
       "norm_label": "_get_prev_sections",
       "id": "pipeline_get_prev_sections"
     },
@@ -20268,7 +20214,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 46,
+      "community": 77,
       "norm_label": "generate_digest",
       "id": "pipeline_generate_digest"
     },
@@ -20281,7 +20227,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 52,
+      "community": 91,
       "norm_label": "query_candidates",
       "id": "candidates_query_candidates"
     },
@@ -20294,7 +20240,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 46,
+      "community": 77,
       "norm_label": "query_own_company_signals",
       "id": "candidates_query_own_company_signals"
     },
@@ -20307,7 +20253,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 46,
+      "community": 77,
       "norm_label": "build_own_company_signal_dict",
       "id": "candidates_build_own_company_signal_dict"
     },
@@ -20450,7 +20396,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 91,
+      "community": 168,
       "norm_label": "build_analysis_prompt",
       "id": "prompts_build_analysis_prompt"
     },
@@ -20463,7 +20409,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 91,
+      "community": 168,
       "norm_label": "build_self_analysis_prompt",
       "id": "prompts_build_self_analysis_prompt"
     },
@@ -20476,7 +20422,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 91,
+      "community": 48,
       "norm_label": "signaldata",
       "id": "parser_signaldata"
     },
@@ -20489,7 +20435,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 236,
+      "community": 48,
       "norm_label": "parse_llm_response",
       "id": "parser_parse_llm_response"
     },
@@ -20502,7 +20448,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 236,
+      "community": 48,
       "norm_label": "_is_unable_to_analyze",
       "id": "parser_is_unable_to_analyze"
     },
@@ -20606,7 +20552,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 48,
+      "community": 213,
       "norm_label": "analyse_document",
       "id": "pipeline_analyse_document"
     },
@@ -20619,7 +20565,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 48,
+      "community": 213,
       "norm_label": "_build_context_dict",
       "id": "pipeline_build_context_dict"
     },
@@ -21139,7 +21085,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 181,
+      "community": 219,
       "norm_label": "test_upload_logo_* suite",
       "id": "test_companies_upload_logo"
     },
@@ -21152,7 +21098,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 181,
+      "community": 219,
       "norm_label": "test_apply_schedule_* suite",
       "id": "test_scheduler_apply_schedule"
     },
@@ -21204,7 +21150,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 48,
+      "community": 213,
       "norm_label": "test_analyse_unanalysed_for_source_* suite",
       "id": "test_crawler_analyse_unanalysed_for_source"
     },
@@ -21217,7 +21163,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 181,
+      "community": 219,
       "norm_label": "test_split_event_sections_* suite",
       "id": "test_crawler_split_event_sections"
     },
@@ -21230,7 +21176,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 181,
+      "community": 219,
       "norm_label": "add what_changed to competitor_summaries",
       "id": "migration_c3bdabd2ba94"
     },
@@ -21256,7 +21202,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 181,
+      "community": 219,
       "norm_label": "add_events_source_type",
       "id": "migration_0099979dff60"
     },
@@ -21269,7 +21215,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 181,
+      "community": 219,
       "norm_label": "add_logo_path_to_companies",
       "id": "migration_22f127a149f8"
     },
@@ -21282,7 +21228,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 181,
+      "community": 219,
       "norm_label": "add_event_date_location_to_signals",
       "id": "migration_a8f3c1e92d47"
     },
@@ -21321,7 +21267,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 181,
+      "community": 219,
       "norm_label": "add_schedule_config",
       "id": "migration_62c18dd583bc"
     },
@@ -21334,7 +21280,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 181,
+      "community": 219,
       "norm_label": "add_momentum_delta_to_benchmark",
       "id": "migration_1a3dc0384956"
     },
@@ -21360,7 +21306,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 91,
+      "community": 168,
       "norm_label": "migration: add own_company type and external_company_view table",
       "id": "versions_bc9bbf2a2b8b_add_own_company_type_and_external_"
     },
@@ -21555,7 +21501,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 53,
+      "community": 93,
       "norm_label": "send_crawl_report() email function",
       "id": "automation_scheduling_send_crawl_report"
     },
@@ -21945,7 +21891,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 91,
+      "community": 168,
       "norm_label": "companytype.own_company enum value",
       "id": "own_company_crawling_design_companytype_own_company"
     },
@@ -21958,7 +21904,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 251,
+      "community": 214,
       "norm_label": "externalcompanyview model (singleton)",
       "id": "own_company_crawling_design_externalcompanyview_model"
     },
@@ -21971,7 +21917,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 251,
+      "community": 214,
       "norm_label": "run_synthesis() pipeline function",
       "id": "own_company_crawling_design_run_synthesis"
     },
@@ -21984,7 +21930,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 251,
+      "community": 214,
       "norm_label": "internalcompanycontext (existing, coexists)",
       "id": "own_company_crawling_design_internalcompanycontext"
     },
@@ -21997,7 +21943,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 251,
+      "community": 214,
       "norm_label": "build_analysis_prompt() external_view parameter",
       "id": "own_company_crawling_design_build_analysis_prompt"
     },
@@ -22376,7 +22322,7 @@
       "file_type": "code",
       "source_file": "frontend/src/components/overview/CapabilityActivityInfoDrawer.tsx",
       "source_location": "L8",
-      "community": 67,
+      "community": 239,
       "norm_label": "color_tiers",
       "id": "overview_capabilityactivityinfodrawer_color_tiers"
     },
@@ -22448,7 +22394,7 @@
       "file_type": "code",
       "source_file": "backend/app/routers/llm_usage.py",
       "source_location": "L1",
-      "community": 2,
+      "community": 52,
       "norm_label": "llm_usage.py",
       "id": "backend_app_routers_llm_usage_py"
     },
@@ -22457,7 +22403,7 @@
       "file_type": "code",
       "source_file": "backend/app/routers/llm_usage.py",
       "source_location": "L53",
-      "community": 2,
+      "community": 52,
       "norm_label": "get_summary()",
       "id": "routers_llm_usage_get_summary"
     },
@@ -22466,7 +22412,7 @@
       "file_type": "code",
       "source_file": "backend/app/routers/llm_usage.py",
       "source_location": "L66",
-      "community": 2,
+      "community": 52,
       "norm_label": "get_timeseries()",
       "id": "routers_llm_usage_get_timeseries"
     },
@@ -22475,7 +22421,7 @@
       "file_type": "code",
       "source_file": "backend/app/routers/llm_usage.py",
       "source_location": "L94",
-      "community": 2,
+      "community": 52,
       "norm_label": "get_breakdown()",
       "id": "routers_llm_usage_get_breakdown"
     },
@@ -22484,7 +22430,7 @@
       "file_type": "code",
       "source_file": "backend/app/routers/llm_usage.py",
       "source_location": "L124",
-      "community": 2,
+      "community": 52,
       "norm_label": "get_prices()",
       "id": "routers_llm_usage_get_prices"
     },
@@ -22493,7 +22439,7 @@
       "file_type": "code",
       "source_file": "backend/app/routers/llm_usage.py",
       "source_location": "L129",
-      "community": 2,
+      "community": 52,
       "norm_label": "upsert_price()",
       "id": "routers_llm_usage_upsert_price"
     },
@@ -22583,7 +22529,7 @@
       "file_type": "code",
       "source_file": "backend/app/schemas/llm_usage.py",
       "source_location": "L1",
-      "community": 2,
+      "community": 242,
       "norm_label": "llm_usage.py",
       "id": "backend_app_schemas_llm_usage_py"
     },
@@ -22592,7 +22538,7 @@
       "file_type": "code",
       "source_file": "backend/app/schemas/llm_usage.py",
       "source_location": "L6",
-      "community": 2,
+      "community": 242,
       "norm_label": "llmusagetotals",
       "id": "schemas_llm_usage_llmusagetotals"
     },
@@ -22601,7 +22547,7 @@
       "file_type": "code",
       "source_file": "backend/app/schemas/llm_usage.py",
       "source_location": "L13",
-      "community": 2,
+      "community": 242,
       "norm_label": "llmusagesummary",
       "id": "schemas_llm_usage_llmusagesummary"
     },
@@ -22610,7 +22556,7 @@
       "file_type": "code",
       "source_file": "backend/app/schemas/llm_usage.py",
       "source_location": "L20",
-      "community": 2,
+      "community": 242,
       "norm_label": "llmusagetimeseriespoint",
       "id": "schemas_llm_usage_llmusagetimeseriespoint"
     },
@@ -22619,7 +22565,7 @@
       "file_type": "code",
       "source_file": "backend/app/schemas/llm_usage.py",
       "source_location": "L28",
-      "community": 2,
+      "community": 242,
       "norm_label": "llmusagebreakdownrow",
       "id": "schemas_llm_usage_llmusagebreakdownrow"
     },
@@ -22628,7 +22574,7 @@
       "file_type": "code",
       "source_file": "backend/app/schemas/llm_usage.py",
       "source_location": "L44",
-      "community": 2,
+      "community": 242,
       "norm_label": "config",
       "id": "schemas_llm_usage_config"
     },
@@ -22637,7 +22583,7 @@
       "file_type": "code",
       "source_file": "backend/app/schemas/llm_usage.py",
       "source_location": "L48",
-      "community": 2,
+      "community": 242,
       "norm_label": "llmmodelpriceupdate",
       "id": "schemas_llm_usage_llmmodelpriceupdate"
     },
@@ -22727,7 +22673,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digester_candidates.py",
       "source_location": "L81",
-      "community": 52,
+      "community": 91,
       "norm_label": "test_query_candidates_competitors_section_uses_source_type_or_filter()",
       "id": "tests_test_digester_candidates_test_query_candidates_competitors_section_uses_source_type_or_filter"
     },
@@ -22736,7 +22682,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digester_candidates.py",
       "source_location": "L90",
-      "community": 52,
+      "community": 91,
       "norm_label": "test_query_candidates_competitors_section_excludes_market_source()",
       "id": "tests_test_digester_candidates_test_query_candidates_competitors_section_excludes_market_source"
     },
@@ -22943,7 +22889,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_digester_sections.py",
       "source_location": "L22",
-      "community": 214,
+      "community": 10,
       "norm_label": "test_competitors_section_uses_source_type_filter_and_is_competitor_only()",
       "id": "tests_test_digester_sections_test_competitors_section_uses_source_type_filter_and_is_competitor_only"
     },
@@ -22961,7 +22907,7 @@
       "file_type": "code",
       "source_file": "backend/tests/test_llm_call_tracking.py",
       "source_location": "L4",
-      "community": 65,
+      "community": 30,
       "norm_label": "test_call_llm_claude_records_exact_token_usage()",
       "id": "tests_test_llm_call_tracking_test_call_llm_claude_records_exact_token_usage"
     },
@@ -23051,7 +22997,7 @@
       "file_type": "rationale",
       "source_file": "backend/tests/test_crawler.py",
       "source_location": "L384",
-      "community": 250,
+      "community": 236,
       "norm_label": "test that crawl_status is set to 'changed' (and the document content updated)",
       "id": "tests_test_crawler_rationale_384"
     },
@@ -23263,7 +23209,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 67,
+      "community": 239,
       "norm_label": "topmoverslist",
       "id": "overview_topmoverslist"
     },
@@ -23276,7 +23222,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 67,
+      "community": 239,
       "norm_label": "capabilityactivityinfodrawer",
       "id": "overview_capabilityactivityinfodrawer"
     },
@@ -23289,7 +23235,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 67,
+      "community": 239,
       "norm_label": "topmoversinfodrawer",
       "id": "overview_topmoversinfodrawer"
     },
@@ -23510,7 +23456,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 50,
+      "community": 85,
       "norm_label": "howitworkspage",
       "id": "pages_howitworkspage"
     },
@@ -23523,7 +23469,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 50,
+      "community": 85,
       "norm_label": "steps (pipeline steps array)",
       "id": "pages_steps"
     },
@@ -23537,7 +23483,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Deterministic weighted formula: Score = (Relevanz\u00d735) + (Confidence\u00d720) + (Evidence\u00d76) + Visibility-Bonus (low=0, medium=8, high=15), minus 10 for thought-leadership signals. Bands: 0-29 weak, 30-59 relevant, 60-79 strong, 80-100 market_shaping. Designed so deterministic scoring (not AI) drives the headline competitive-movement metric, ensuring reproducibility and explainability.",
-      "community": 252,
+      "community": 168,
       "norm_label": "movement score formula",
       "id": "concept_movement_score_formula"
     },
@@ -23550,7 +23496,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 252,
+      "community": 168,
       "norm_label": "wardley evolution band",
       "id": "concept_wardley_evolution_band"
     },
@@ -23563,7 +23509,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 252,
+      "community": 168,
       "norm_label": "signal intelligence pipeline",
       "id": "concept_signal_pipeline"
     },
@@ -23577,7 +23523,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Reuses the same crawl/signal pipeline on the company's own public website (company type own_company) to synthesize how the company is perceived externally, as a reality-check against the internal strategy context profile.",
-      "community": 91,
+      "community": 168,
       "norm_label": "external company view (bonus)",
       "id": "concept_external_company_view"
     },
@@ -23749,7 +23695,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 2,
+      "community": 52,
       "norm_label": "_price_map",
       "id": "llm_usage_price_map"
     },
@@ -23762,7 +23708,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 2,
+      "community": 52,
       "norm_label": "_cost_usd",
       "id": "llm_usage_cost_usd"
     },
@@ -23775,7 +23721,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 2,
+      "community": 52,
       "norm_label": "_totals_since",
       "id": "llm_usage_totals_since"
     },
@@ -23788,7 +23734,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 2,
+      "community": 52,
       "norm_label": "get_summary endpoint",
       "id": "llm_usage_get_summary"
     },
@@ -23801,7 +23747,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 2,
+      "community": 52,
       "norm_label": "get_timeseries endpoint",
       "id": "llm_usage_get_timeseries"
     },
@@ -23814,7 +23760,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 2,
+      "community": 52,
       "norm_label": "get_breakdown endpoint",
       "id": "llm_usage_get_breakdown"
     },
@@ -23840,7 +23786,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 2,
+      "community": 242,
       "norm_label": "upsert_price endpoint",
       "id": "llm_usage_upsert_price"
     },
@@ -23944,7 +23890,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 22,
+      "community": 56,
       "norm_label": "_update_page_relevance",
       "id": "discovery_update_page_relevance"
     },
@@ -24048,7 +23994,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 30,
+      "community": 58,
       "norm_label": "llmcall model",
       "id": "llm_call_llmcall"
     },
@@ -24061,7 +24007,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 30,
+      "community": 58,
       "norm_label": "_record_llm_call",
       "id": "client_record_llm_call"
     },
@@ -24074,7 +24020,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 46,
+      "community": 77,
       "norm_label": "call_llm() (patched in curator)",
       "id": "digester_curator_call_llm"
     },
@@ -24152,7 +24098,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 214,
+      "community": 10,
       "norm_label": "sections",
       "id": "digester_sections_sections"
     },
@@ -24282,7 +24228,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 65,
+      "community": 30,
       "norm_label": "_anthropic_client",
       "id": "analyser_client_anthropic_client"
     },
@@ -24321,7 +24267,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 250,
+      "community": 236,
       "norm_label": "crawlstatus enum",
       "id": "models_source_crawlstatus"
     },
@@ -24393,158 +24339,14 @@
   ],
   "links": [
     {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "SignalTypeIcon.tsx",
-      "source_location": "L13",
-      "weight": 1.0,
-      "source": "signaltypeicon_tsx",
-      "target": "components_signaltypeicon_iconmap",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "SignalTypeIcon.tsx",
-      "source_location": "L24",
-      "weight": 1.0,
-      "source": "signaltypeicon_tsx",
-      "target": "components_signaltypeicon_labelmap",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "SignalTypeIcon.tsx",
-      "source_location": "L36",
-      "weight": 1.0,
-      "source": "signaltypeicon_tsx",
-      "target": "components_signaltypeicon_chipstyles",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "SignalTypeIcon.tsx",
-      "source_location": "L47",
-      "weight": 1.0,
-      "source": "signaltypeicon_tsx",
-      "target": "components_signaltypeicon_signaltypeiconprops",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "SignalTypeIcon.tsx",
-      "source_location": "L54",
-      "weight": 1.0,
-      "source": "signaltypeicon_tsx",
-      "target": "components_signaltypeicon_signaltypeicon",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "workspace/SignalCategoryPanel.tsx",
-      "source_location": "L3",
-      "weight": 1.0,
-      "source": "workspace_signalcategorypanel_tsx",
-      "target": "signaltypeicon_tsx",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "frontend/src/components/SignalTypeIcon.tsx",
-      "source_location": "L13",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "index_signaltype",
-      "target": "components_signaltypeicon_iconmap"
-    },
-    {
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "workspace/SignalCategoryPanel.tsx",
-      "source_location": "L3",
-      "weight": 1.0,
-      "source": "workspace_signalcategorypanel_tsx",
-      "target": "components_signaltypeicon_labelmap",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "frontend/src/components/SignalTypeIcon.tsx",
-      "source_location": "L24",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "index_signaltype",
-      "target": "components_signaltypeicon_labelmap"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "frontend/src/components/dashboard/CompanySignalHeatmap.tsx",
+      "source_file": "components/workspace/SignalCategoryPanel.tsx",
       "source_location": "L2",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "dashboard_companysignalheatmap_companysignalheatmap",
-      "target": "components_signaltypeicon_labelmap"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "frontend/src/components/dashboard/SignalTypeDistribution.tsx",
-      "source_location": "L2",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "dashboard_signaltypedistribution_signaltypedistribution",
-      "target": "components_signaltypeicon_labelmap"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "frontend/src/components/SignalTypeIcon.tsx",
-      "source_location": "L36",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "index_signaltype",
-      "target": "components_signaltypeicon_chipstyles"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "workspace/SignalCategoryPanel.tsx",
-      "source_location": "L2",
-      "weight": 1.0,
-      "source": "workspace_signalcategorypanel_tsx",
+      "source": "components_workspace_signalcategorypanel_tsx",
       "target": "hooks_usecompetitorsignalstats_usecompetitorsignalstats",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "workspace/SignalCategoryPanel.tsx",
-      "source_location": "L5",
-      "weight": 1.0,
-      "source": "workspace_signalcategorypanel_tsx",
-      "target": "workspace_signalcategorypanel_props",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "workspace/SignalCategoryPanel.tsx",
-      "source_location": "L10",
-      "weight": 1.0,
-      "source": "workspace_signalcategorypanel_tsx",
-      "target": "workspace_signalcategorypanel_signalcategorypanel",
       "confidence_score": 1.0
     },
     {
@@ -24553,314 +24355,9 @@
       "source_file": "components/workspace/SignalCategoryPanel.tsx",
       "source_location": "L4",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "components_workspace_signalcategorypanel_tsx",
-      "target": "workspace_signalcategorypanel_props"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "components/workspace/SignalCategoryPanel.tsx",
-      "source_location": "L13",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "components_workspace_signalcategorypanel_tsx",
-      "target": "workspace_signalcategorypanel_signalcategorypanel"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "CompetitorWorkspacePage.tsx",
-      "source_location": "L6",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "competitorworkspacepage_tsx",
-      "target": "hooks_usesignalsfeed_usesignalsfeed"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "CompetitorWorkspacePage.tsx",
-      "source_location": "L9",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "competitorworkspacepage_tsx",
-      "target": "api_client_apierror"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "CompetitorWorkspacePage.tsx",
-      "source_location": "L12",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "competitorworkspacepage_tsx",
-      "target": "workspace_relativecapabilitystrengthpanel_relativecapabilitystrengthpanel"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "CompetitorWorkspacePage.tsx",
-      "source_location": "L13",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "competitorworkspacepage_tsx",
-      "target": "workspace_capabilityexplaindrawer_capabilityexplaindrawer"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "CompetitorWorkspacePage.tsx",
-      "source_location": "L21",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "competitorworkspacepage_tsx",
-      "target": "types_intelligence_signalfeeditem"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "CompetitorWorkspacePage.tsx",
-      "source_location": "L21",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "competitorworkspacepage_tsx",
-      "target": "types_intelligence_capabilitycount"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "CompetitorWorkspacePage.tsx",
-      "source_location": "L21",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "competitorworkspacepage_tsx",
-      "target": "types_intelligence_signalsfeedfilters"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "CompetitorWorkspacePage.tsx",
-      "source_location": "L22",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "competitorworkspacepage_tsx",
-      "target": "hooks_usescorecard_usescorecard"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "CompetitorWorkspacePage.tsx",
-      "source_location": "L22",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "competitorworkspacepage_tsx",
-      "target": "hooks_usescorecard_usescorecardexplain"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "CompetitorWorkspacePage.tsx",
-      "source_location": "L22",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "competitorworkspacepage_tsx",
-      "target": "hooks_usescorecard_userecomputescorecard"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "CompetitorWorkspacePage.tsx",
-      "source_location": "L25",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "competitorworkspacepage_tsx",
-      "target": "hooks_usecrawlruns_uselastcompletedcrawl"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "CompetitorWorkspacePage.tsx",
-      "source_location": "L26",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "competitorworkspacepage_tsx",
-      "target": "scorecard_dimensionscoregrid_dimensionscoregrid"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "CompetitorWorkspacePage.tsx",
-      "source_location": "L27",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "competitorworkspacepage_tsx",
-      "target": "scorecard_explainabilitydrawer_explainabilitydrawer"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "CompetitorWorkspacePage.tsx",
-      "source_location": "L28",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "competitorworkspacepage_tsx",
-      "target": "scorecard_scorecardsignalmodal_scorecardsignalmodal"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "CompetitorWorkspacePage.tsx",
-      "source_location": "L30",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "competitorworkspacepage_tsx",
-      "target": "pages_competitorworkspacepage_summaryperiod"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "CompetitorWorkspacePage.tsx",
-      "source_location": "L32",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "competitorworkspacepage_tsx",
-      "target": "pages_competitorworkspacepage_competitorworkspacepage"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "pages/CompetitorWorkspacePage.tsx",
-      "source_location": "L28",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "pages_competitorworkspacepage_tsx",
-      "target": "pages_competitorworkspacepage_summaryperiod"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "frontend/src/components/workspace/SummaryPeriodTabs.tsx",
-      "source_location": "L3",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "pages_competitorworkspacepage_summaryperiod",
-      "target": "workspace_summaryperiodtabs_props"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "pages/CompetitorWorkspacePage.tsx",
-      "source_location": "L30",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "pages_competitorworkspacepage_tsx",
-      "target": "pages_competitorworkspacepage_competitorworkspacepage"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "setup.ts",
-      "source_location": "L70",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "setup_ts",
-      "target": "test_setup_tojson"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "setup.ts",
-      "source_location": "L80",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "setup_ts",
-      "target": "test_setup_observe"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "setup.ts",
-      "source_location": "L81",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "setup_ts",
-      "target": "test_setup_unobserve"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "setup.ts",
-      "source_location": "L82",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "setup_ts",
-      "target": "test_setup_disconnect"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "test/setup.ts",
-      "source_location": "L42",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "test_setup_ts",
-      "target": "test_setup_tojson"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "test/setup.ts",
-      "source_location": "L50",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "test_setup_ts",
-      "target": "test_setup_observe"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "test/setup.ts",
-      "source_location": "L51",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "test_setup_ts",
-      "target": "test_setup_unobserve"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "test/setup.ts",
-      "source_location": "L52",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "test_setup_ts",
-      "target": "test_setup_disconnect"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "components/workspace/SignalCategoryPanel.tsx",
-      "source_location": "L2",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "components_workspace_signalcategorypanel_tsx",
-      "target": "hooks_usecompetitorsignalstats_usecompetitorsignalstats"
+      "target": "workspace_signalcategorypanel_props",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -24868,9 +24365,19 @@
       "source_file": "components/workspace/SignalCategoryPanel.tsx",
       "source_location": "L9",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "components_workspace_signalcategorypanel_tsx",
-      "target": "workspace_signalcategorypanel_categorylabel"
+      "target": "workspace_signalcategorypanel_categorylabel",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/workspace/SignalCategoryPanel.tsx",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "components_workspace_signalcategorypanel_tsx",
+      "target": "workspace_signalcategorypanel_signalcategorypanel",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports_from",
@@ -24879,9 +24386,9 @@
       "source_file": "components/workspace/__tests__/SignalCategoryPanel.test.tsx",
       "source_location": "L4",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "components_workspace_tests_signalcategorypanel_test_tsx",
-      "target": "components_workspace_signalcategorypanel_tsx"
+      "target": "components_workspace_signalcategorypanel_tsx",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -24890,9 +24397,9 @@
       "source_file": "components/workspace/SignalTimelinePanel.tsx",
       "source_location": "L2",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "components_workspace_signaltimelinepanel_tsx",
-      "target": "hooks_usecompetitorsignalstats_usecompetitorsignalstats"
+      "target": "hooks_usecompetitorsignalstats_usecompetitorsignalstats",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -24901,9 +24408,9 @@
       "source_file": "components/workspace/SignalTimelinePanel.tsx",
       "source_location": "L3",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "components_workspace_signaltimelinepanel_tsx",
-      "target": "types_intelligence_signalstatstimelinepoint"
+      "target": "types_intelligence_signalstatstimelinepoint",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -24911,9 +24418,9 @@
       "source_file": "components/workspace/SignalTimelinePanel.tsx",
       "source_location": "L5",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "components_workspace_signaltimelinepanel_tsx",
-      "target": "workspace_signaltimelinepanel_props"
+      "target": "workspace_signaltimelinepanel_props",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -24921,9 +24428,9 @@
       "source_file": "components/workspace/SignalTimelinePanel.tsx",
       "source_location": "L10",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "components_workspace_signaltimelinepanel_tsx",
-      "target": "workspace_signaltimelinepanel_formatbucketlabel"
+      "target": "workspace_signaltimelinepanel_formatbucketlabel",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -24931,9 +24438,9 @@
       "source_file": "components/workspace/SignalTimelinePanel.tsx",
       "source_location": "L20",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "components_workspace_signaltimelinepanel_tsx",
-      "target": "workspace_signaltimelinepanel_signaltimelinepanel"
+      "target": "workspace_signaltimelinepanel_signaltimelinepanel",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports_from",
@@ -24942,9 +24449,9 @@
       "source_file": "components/workspace/__tests__/SignalTimelinePanel.test.tsx",
       "source_location": "L4",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "components_workspace_tests_signaltimelinepanel_test_tsx",
-      "target": "components_workspace_signaltimelinepanel_tsx"
+      "target": "components_workspace_signaltimelinepanel_tsx",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -24953,9 +24460,9 @@
       "source_file": "components/workspace/__tests__/SignalCategoryPanel.test.tsx",
       "source_location": "L6",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "components_workspace_tests_signalcategorypanel_test_tsx",
-      "target": "types_intelligence_signalstatsresponse"
+      "target": "types_intelligence_signalstatsresponse",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -24963,9 +24470,9 @@
       "source_file": "components/workspace/__tests__/SignalCategoryPanel.test.tsx",
       "source_location": "L8",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "components_workspace_tests_signalcategorypanel_test_tsx",
-      "target": "tests_signalcategorypanel_test_renderwithclient"
+      "target": "tests_signalcategorypanel_test_renderwithclient",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -24973,9 +24480,9 @@
       "source_file": "components/workspace/__tests__/SignalCategoryPanel.test.tsx",
       "source_location": "L34",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "components_workspace_tests_signalcategorypanel_test_tsx",
-      "target": "tests_signalcategorypanel_test_data"
+      "target": "tests_signalcategorypanel_test_data",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -24984,9 +24491,9 @@
       "source_file": "components/workspace/__tests__/SignalTimelinePanel.test.tsx",
       "source_location": "L6",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "components_workspace_tests_signaltimelinepanel_test_tsx",
-      "target": "types_intelligence_signalstatsresponse"
+      "target": "types_intelligence_signalstatsresponse",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -24994,9 +24501,9 @@
       "source_file": "components/workspace/__tests__/SignalTimelinePanel.test.tsx",
       "source_location": "L8",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "components_workspace_tests_signaltimelinepanel_test_tsx",
-      "target": "tests_signaltimelinepanel_test_renderwithclient"
+      "target": "tests_signaltimelinepanel_test_renderwithclient",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -25004,9 +24511,49 @@
       "source_file": "components/workspace/__tests__/SignalTimelinePanel.test.tsx",
       "source_location": "L34",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "components_workspace_tests_signaltimelinepanel_test_tsx",
-      "target": "tests_signaltimelinepanel_test_data"
+      "target": "tests_signaltimelinepanel_test_data",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "test/setup.ts",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "test_setup_ts",
+      "target": "test_setup_tojson",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "test/setup.ts",
+      "source_location": "L50",
+      "weight": 1.0,
+      "source": "test_setup_ts",
+      "target": "test_setup_observe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "test/setup.ts",
+      "source_location": "L51",
+      "weight": 1.0,
+      "source": "test_setup_ts",
+      "target": "test_setup_unobserve",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "test/setup.ts",
+      "source_location": "L52",
+      "weight": 1.0,
+      "source": "test_setup_ts",
+      "target": "test_setup_disconnect",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -31889,6 +31436,36 @@
       "target": "scorecard_scorecardsignalmodal_scorecardsignalmodal"
     },
     {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pages/CompetitorWorkspacePage.tsx",
+      "source_location": "L28",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "pages_competitorworkspacepage_tsx",
+      "target": "pages_competitorworkspacepage_summaryperiod"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pages/CompetitorWorkspacePage.tsx",
+      "source_location": "L30",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "pages_competitorworkspacepage_tsx",
+      "target": "pages_competitorworkspacepage_competitorworkspacepage"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/components/workspace/SummaryPeriodTabs.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "pages_competitorworkspacepage_summaryperiod",
+      "target": "workspace_summaryperiodtabs_props"
+    },
+    {
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
@@ -37101,6 +36678,58 @@
       "confidence_score": 1.0,
       "source": "frontend_src_components_authgate_tsx",
       "target": "components_authgate_authgate"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/components/SignalTypeIcon.tsx",
+      "source_location": "L13",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "index_signaltype",
+      "target": "components_signaltypeicon_iconmap"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/components/SignalTypeIcon.tsx",
+      "source_location": "L24",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "index_signaltype",
+      "target": "components_signaltypeicon_labelmap"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/components/dashboard/CompanySignalHeatmap.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "dashboard_companysignalheatmap_companysignalheatmap",
+      "target": "components_signaltypeicon_labelmap"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/components/dashboard/SignalTypeDistribution.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "dashboard_signaltypedistribution_signaltypedistribution",
+      "target": "components_signaltypeicon_labelmap"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/components/SignalTypeIcon.tsx",
+      "source_location": "L36",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "index_signaltype",
+      "target": "components_signaltypeicon_chipstyles"
     },
     {
       "relation": "contains",
@@ -63834,5 +63463,5 @@
       "source_file": "backend/app/crawler/pipeline.py"
     }
   ],
-  "built_at_commit": "c5049513f4bf3df31891d25e502e381209af8dcd"
+  "built_at_commit": "5213496632ca0d0057c01f372f899f69da8a0a2c"
 }
