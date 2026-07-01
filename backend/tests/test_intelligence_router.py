@@ -103,3 +103,122 @@ def test_signals_feed_created_range_returns_only_matching(client, db_session):
     assert resp.status_code == 200
     ids = [item["id"] for item in resp.json()["items"]]
     assert ids == [target.id]
+
+
+# --- signal stats aggregation ---
+
+def _make_signal(
+    db_session,
+    company,
+    *,
+    signal_type: SignalType = SignalType.other,
+    created_at: datetime,
+    published_at: datetime | None = None,
+) -> Signal:
+    ts = created_at.timestamp()
+    source = Source(company_id=company.id, url=f"https://stats-{ts}-{company.id}.example.com", source_type=SourceType.news)
+    db_session.add(source)
+    db_session.flush()
+    doc = Document(source_id=source.id, url=f"https://stats-{ts}-{company.id}.example.com/1", content_hash=f"h{ts}-{company.id}")
+    db_session.add(doc)
+    db_session.flush()
+    signal = Signal(
+        document_id=doc.id, company_id=company.id,
+        title="Test", signal_type=signal_type, relevance_score=0.5,
+        created_at=created_at, published_at=published_at,
+    )
+    db_session.add(signal)
+    db_session.commit()
+    return signal
+
+
+def _make_company(db_session, name: str) -> Company:
+    company = Company(name=name, slug=name.lower().replace(" ", "-"), type=CompanyType.competitor)
+    db_session.add(company)
+    db_session.flush()
+    db_session.commit()
+    return company
+
+
+def test_signal_stats_404_for_unknown_slug(client):
+    resp = client.get("/api/intelligence/competitors/nonexistent-slug/signals/stats")
+    assert resp.status_code == 404
+
+
+def test_signal_stats_rejects_invalid_days(client, db_session):
+    company = _make_company(db_session, "Stats Co Invalid")
+    resp = client.get(f"/api/intelligence/competitors/{company.slug}/signals/stats?days=45")
+    assert resp.status_code == 422
+
+
+def test_signal_stats_total_and_category_counts(client, db_session):
+    now = datetime.now(timezone.utc)
+    company = _make_company(db_session, "Stats Co Totals")
+    _make_signal(db_session, company, signal_type=SignalType.product_update, created_at=now - timedelta(days=1), published_at=now - timedelta(days=1))
+    _make_signal(db_session, company, signal_type=SignalType.product_update, created_at=now - timedelta(days=2), published_at=now - timedelta(days=2))
+    _make_signal(db_session, company, signal_type=SignalType.hiring_signal, created_at=now - timedelta(days=3), published_at=now - timedelta(days=3))
+
+    resp = client.get(f"/api/intelligence/competitors/{company.slug}/signals/stats?days=30")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["total"] == 3
+    assert data["period_days"] == 30
+    assert data["granularity"] == "day"
+
+    by_cat = {row["signal_type"]: row["count"] for row in data["by_category"]}
+    assert by_cat["product_update"] == 2
+    assert by_cat["hiring_signal"] == 1
+    assert by_cat["other"] == 0
+    assert len(data["by_category"]) == 8
+    counts = [row["count"] for row in data["by_category"]]
+    assert counts == sorted(counts, reverse=True)
+
+
+def test_signal_stats_excludes_other_companies_and_out_of_range_signals(client, db_session):
+    now = datetime.now(timezone.utc)
+    company = _make_company(db_session, "Stats Co Scope")
+    other_company = _make_company(db_session, "Stats Co Other")
+    _make_signal(db_session, company, created_at=now - timedelta(days=1), published_at=now - timedelta(days=1))
+    _make_signal(db_session, company, created_at=now - timedelta(days=40), published_at=now - timedelta(days=40))
+    _make_signal(db_session, other_company, created_at=now - timedelta(days=1), published_at=now - timedelta(days=1))
+
+    resp = client.get(f"/api/intelligence/competitors/{company.slug}/signals/stats?days=30")
+    assert resp.status_code == 200
+    assert resp.json()["total"] == 1
+
+
+def test_signal_stats_timeline_is_gap_free_daily(client, db_session):
+    now = datetime.now(timezone.utc)
+    company = _make_company(db_session, "Stats Co Timeline Daily")
+    _make_signal(db_session, company, created_at=now - timedelta(days=1), published_at=now - timedelta(days=1))
+
+    resp = client.get(f"/api/intelligence/competitors/{company.slug}/signals/stats?days=30")
+    data = resp.json()
+    assert data["granularity"] == "day"
+    assert len(data["timeline"]) == 31
+    buckets = [row["bucket"] for row in data["timeline"]]
+    assert buckets == sorted(buckets)
+    assert sum(row["count"] for row in data["timeline"]) == 1
+
+
+def test_signal_stats_timeline_is_weekly_for_90d(client, db_session):
+    now = datetime.now(timezone.utc)
+    company = _make_company(db_session, "Stats Co Timeline Weekly")
+    _make_signal(db_session, company, created_at=now - timedelta(days=1), published_at=now - timedelta(days=1))
+
+    resp = client.get(f"/api/intelligence/competitors/{company.slug}/signals/stats?days=90")
+    data = resp.json()
+    assert data["granularity"] == "week"
+    assert len(data["timeline"]) == 13
+    assert sum(row["count"] for row in data["timeline"]) == 1
+
+
+def test_signal_stats_falls_back_to_created_at_when_published_at_missing(client, db_session):
+    now = datetime.now(timezone.utc)
+    company = _make_company(db_session, "Stats Co Fallback")
+    _make_signal(db_session, company, created_at=now - timedelta(days=2), published_at=None)
+
+    resp = client.get(f"/api/intelligence/competitors/{company.slug}/signals/stats?days=30")
+    data = resp.json()
+    assert data["total"] == 1
+    assert sum(row["count"] for row in data["timeline"]) == 1

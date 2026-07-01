@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone, timedelta, date
 from typing import Optional, Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -8,7 +8,7 @@ from sqlalchemy import func, case
 
 from app.database import get_db
 from app.models.company import Company, CompanyType
-from app.models.signal import Signal
+from app.models.signal import Signal, SignalType
 from app.models.signal_assessment import SignalAssessment, MovementStrength
 from app.schemas.signal_assessment import AssessSignalRequest
 from app.models.competitor_summary import CompetitorSummary, PeriodType
@@ -468,6 +468,84 @@ def get_competitor_workspace(slug: str, db: Session = Depends(get_db)) -> dict:
             }
             for s in timeline
         ],
+    }
+
+
+@router.get("/competitors/{slug}/signals/stats")
+def get_competitor_signal_stats(
+    slug: str,
+    days: int = Query(30),
+    db: Session = Depends(get_db),
+) -> dict:
+    if days not in (30, 90):
+        raise HTTPException(status_code=422, detail="days must be 30 or 90")
+
+    company = db.query(Company).filter(Company.slug == slug).first()
+    if not company:
+        raise HTTPException(status_code=404, detail="Competitor not found")
+
+    now = datetime.now(timezone.utc)
+    period_start = now - timedelta(days=days)
+    granularity = "day" if days == 30 else "week"
+
+    rows = (
+        db.query(Signal.signal_type, Signal.published_at, Signal.created_at)
+        .filter(Signal.company_id == company.id)
+        .all()
+    )
+
+    def _effective_date(row) -> date:
+        dt = row.published_at or row.created_at
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.date()
+
+    in_range = [row for row in rows if _effective_date(row) >= period_start.date()]
+
+    def _bucket_key(d: date) -> date:
+        if granularity == "day":
+            return d
+        return d - timedelta(days=d.weekday())  # Monday of that ISO week
+
+    bucket_counts: dict[date, int] = {}
+    for row in in_range:
+        key = _bucket_key(_effective_date(row))
+        bucket_counts[key] = bucket_counts.get(key, 0) + 1
+
+    # Build a fixed-length, deterministic bucket list ending at "today"'s bucket,
+    # rather than aligning both ends to week boundaries — aligning both ends
+    # makes the bucket count vary (13 or 14) depending on today's weekday.
+    if granularity == "day":
+        num_buckets = days + 1
+        step = timedelta(days=1)
+    else:
+        num_buckets = -(-days // 7)  # ceil(days / 7) == 13 for days=90
+        step = timedelta(days=7)
+
+    range_end = _bucket_key(now.date())
+    range_start = range_end - step * (num_buckets - 1)
+    timeline = []
+    cursor = range_start
+    while cursor <= range_end:
+        timeline.append({"bucket": cursor.isoformat(), "count": bucket_counts.get(cursor, 0)})
+        cursor += step
+
+    category_counts: dict[str, int] = {t.value: 0 for t in SignalType}
+    for row in in_range:
+        category_counts[row.signal_type.value] += 1
+
+    by_category = sorted(
+        ({"signal_type": k, "count": v} for k, v in category_counts.items()),
+        key=lambda r: r["count"],
+        reverse=True,
+    )
+
+    return {
+        "total": len(in_range),
+        "period_days": days,
+        "granularity": granularity,
+        "timeline": timeline,
+        "by_category": by_category,
     }
 
 
