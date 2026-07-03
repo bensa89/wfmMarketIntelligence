@@ -108,6 +108,50 @@ def test_send_crawl_report_includes_digest_line_when_generated():
         assert "Digest" in msg.get_payload()
 
 
+def test_send_crawl_report_shows_new_documents_and_warns_on_analysis_errors():
+    with patch("smtplib.SMTP") as mock_smtp_cls:
+        mock_server = MagicMock()
+        mock_smtp_cls.return_value.__enter__.return_value = mock_server
+
+        stats = {**STATS, "new_documents": 76, "analysis_errors": 3}
+        send_crawl_report(
+            smtp_host="smtp.example.com",
+            smtp_port=587,
+            smtp_user="",
+            smtp_password="",
+            smtp_from="from@example.com",
+            recipients=["to@example.com"],
+            crawl_stats=stats,
+        )
+
+        msg = mock_server.send_message.call_args[0][0]
+        body = msg.get_payload()
+        assert "76" in body
+        assert "Analyse-Fehler" in body
+        assert "3" in body
+
+
+def test_send_crawl_report_no_warning_when_no_analysis_errors():
+    with patch("smtplib.SMTP") as mock_smtp_cls:
+        mock_server = MagicMock()
+        mock_smtp_cls.return_value.__enter__.return_value = mock_server
+
+        stats = {**STATS, "new_documents": 10, "analysis_errors": 0}
+        send_crawl_report(
+            smtp_host="smtp.example.com",
+            smtp_port=587,
+            smtp_user="",
+            smtp_password="",
+            smtp_from="from@example.com",
+            recipients=["to@example.com"],
+            crawl_stats=stats,
+        )
+
+        msg = mock_server.send_message.call_args[0][0]
+        body = msg.get_payload()
+        assert "Analyse-Fehler" not in body
+
+
 def test_send_crawl_report_skips_login_when_no_credentials():
     with patch("smtplib.SMTP") as mock_smtp_cls:
         mock_server = MagicMock()

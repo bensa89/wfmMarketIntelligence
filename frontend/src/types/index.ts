@@ -274,6 +274,7 @@ export interface CrawlRunList {
   total_new: number;
   total_skipped: number;
   total_errors: number;
+  total_analysis_errors: number;
 }
 
 export interface CrawlRun extends CrawlRunList {
@@ -311,6 +312,7 @@ export interface CrawlStatusRun {
   total_new: number;
   total_skipped: number;
   total_errors: number;
+  total_analysis_errors: number;
   sources: CrawlStatusSource[];
 }
 
@@ -395,6 +397,7 @@ interface LastCrawlRunInfo {
   finished_at: string | null;
   total_sources: number;
   total_errors: number;
+  total_analysis_errors: number;
 }
 
 export interface LastCrawlSummary {

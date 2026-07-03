@@ -50,9 +50,17 @@ def send_crawl_report(
         f"Crawl-Bericht vom {crawl_stats['date']} {crawl_stats['time']}",
         "",
         f"Quellen gecrawlt:  {crawl_stats['sources_total']:>4}",
+        f"Neue Dokumente:    {crawl_stats.get('new_documents', 0):>4}",
         f"Fehler:            {crawl_stats['errors']:>4}",
         f"Dauer:             {crawl_stats['duration']}",
     ]
+    analysis_errors = crawl_stats.get("analysis_errors", 0)
+    if analysis_errors:
+        lines += [
+            "",
+            f"⚠ Analyse-Fehler:  {analysis_errors:>4}  "
+            "— Signale konnten für diese Dokumente nicht extrahiert werden.",
+        ]
     if crawl_stats.get("digest_generated"):
         lines += ["", "Weekly Digest wurde automatisch generiert."]
 

@@ -43,6 +43,7 @@ class CrawlRun(Base):
     total_new = Column(Integer, default=0)
     total_skipped = Column(Integer, default=0)
     total_errors = Column(Integer, default=0)
+    total_analysis_errors = Column(Integer, default=0)
 
     sources = relationship(
         "CrawlRunSource", back_populates="crawl_run", cascade="all, delete-orphan"

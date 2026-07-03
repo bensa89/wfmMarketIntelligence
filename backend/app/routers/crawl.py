@@ -210,6 +210,7 @@ def _run_crawl_background(
                         analysis_needed = True
                         break
 
+            total_analysis_errors = 0
             if analysis_needed:
                 crawl_run = (
                     thread_db.query(CrawlRun).filter(CrawlRun.id == crawl_run_id).first()
@@ -263,16 +264,27 @@ def _run_crawl_background(
                             except Exception:
                                 thread_db.rollback()
 
+                    analysis_errors = analysis_result.get("errors", 0)
+                    total_analysis_errors += analysis_errors
+
                     crs.analyse_ms = analysis_result.get("analyse_ms", 0)
                     crs.analyse_finished_at = datetime.now(timezone.utc)
                     crs.analyse_current_url = None
-                    crs.status = CrawlRunSourceStatus.completed
+                    crs.errors = (crs.errors or 0) + analysis_errors
+                    crs.status = (
+                        CrawlRunSourceStatus.failed
+                        if analysis_errors > 0
+                        else CrawlRunSourceStatus.completed
+                    )
                     thread_db.commit()
 
             crawl_run = thread_db.query(CrawlRun).filter(CrawlRun.id == crawl_run_id).first()
             if crawl_run:
                 crawl_run.status = CrawlRunStatus.completed
                 crawl_run.finished_at = datetime.now(timezone.utc)
+                crawl_run.total_analysis_errors = total_analysis_errors
+                if total_analysis_errors:
+                    crawl_run.total_errors = (crawl_run.total_errors or 0) + total_analysis_errors
                 thread_db.commit()
 
             try:

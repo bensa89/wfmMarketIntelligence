@@ -112,3 +112,21 @@ def test_apply_schedule_no_op_when_scheduler_is_none():
     with patch("app.scheduler._scheduler", None):
         from app.scheduler import apply_schedule
         apply_schedule(config)  # must not raise
+
+
+def test_build_crawl_stats_includes_new_documents_and_analysis_errors():
+    from datetime import datetime, timezone
+    from app.scheduler import _build_crawl_stats
+
+    crawl_run = MagicMock()
+    crawl_run.started_at = datetime(2026, 7, 3, 3, 0, 0, tzinfo=timezone.utc)
+    crawl_run.finished_at = datetime(2026, 7, 3, 3, 13, 30, tzinfo=timezone.utc)
+    crawl_run.total_sources = 68
+    crawl_run.total_new = 76
+    crawl_run.total_errors = 3
+    crawl_run.total_analysis_errors = 3
+
+    stats = _build_crawl_stats(crawl_run)
+
+    assert stats["new_documents"] == 76
+    assert stats["analysis_errors"] == 3

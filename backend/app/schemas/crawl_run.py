@@ -42,6 +42,7 @@ class CrawlRunRead(BaseModel):
     total_new: int = 0
     total_skipped: int = 0
     total_errors: int = 0
+    total_analysis_errors: int = 0
     sources: List[CrawlRunSourceRead] = []
 
 
@@ -56,6 +57,7 @@ class CrawlRunListRead(BaseModel):
     total_new: int = 0
     total_skipped: int = 0
     total_errors: int = 0
+    total_analysis_errors: int = 0
 
 
 class CrawlQueuedRunStatus(BaseModel):

@@ -361,6 +361,23 @@ def test_crawl_run_source_has_analyse_progress_fields(db_session, seed_source):
     assert loaded.analyse_current_url == "https://example.com/page"
 
 
+def test_crawl_run_read_schema_exposes_total_analysis_errors(db_session, seed_source):
+    from app.schemas.crawl_run import CrawlRunRead, CrawlRunListRead
+
+    run = CrawlRun(
+        status=CrawlRunStatus.completed,
+        total_sources=1,
+        total_new=76,
+        total_errors=3,
+        total_analysis_errors=3,
+    )
+    db_session.add(run)
+    db_session.commit()
+
+    assert CrawlRunRead.model_validate(run).total_analysis_errors == 3
+    assert CrawlRunListRead.model_validate(run).total_analysis_errors == 3
+
+
 def test_crawl_status_no_active_run(client):
     response = client.get("/api/crawl/status")
     assert response.status_code == 200
@@ -526,3 +543,60 @@ def test_start_creates_crawl_run_in_db(client, seed_source, db_engine):
 def test_start_nonexistent_source_returns_404(client):
     response = client.post("/api/crawl/start/nonexistent-id")
     assert response.status_code == 404
+
+
+def test_run_crawl_background_surfaces_analysis_errors(seed_source, db_engine):
+    """Analysis-phase errors (e.g. LLM provider down) must not be silently swallowed:
+    they should count toward crawl_run.total_errors and flip the source to failed,
+    even though the crawl phase itself succeeded."""
+    from sqlalchemy.orm import sessionmaker
+    from app.routers.crawl import _create_crawl_run, _run_crawl_background
+
+    TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
+
+    setup_db = TestSessionLocal()
+    try:
+        crawl_run = _create_crawl_run([seed_source.id], setup_db)
+        crawl_run_id = crawl_run.id
+    finally:
+        setup_db.close()
+
+    mock_crawl_result = {
+        "source_id": seed_source.id,
+        "new_documents": 1,
+        "skipped": 0,
+        "errors": 0,
+        "timings": {},
+    }
+    mock_analysis_result = {
+        "source_id": seed_source.id,
+        "analysed": 0,
+        "errors": 3,
+        "analyse_ms": 10,
+    }
+
+    with (
+        patch("app.routers.crawl.SessionLocal", TestSessionLocal),
+        patch("app.routers.crawl.run_crawl_source", return_value=mock_crawl_result),
+        patch(
+            "app.routers.crawl.analyse_unanalysed_for_source",
+            return_value=mock_analysis_result,
+        ),
+    ):
+        _run_crawl_background(crawl_run_id, [seed_source.id], run_post_processing=False)
+
+    verify_db = TestSessionLocal()
+    try:
+        run = verify_db.query(CrawlRun).filter(CrawlRun.id == crawl_run_id).first()
+        assert run.total_errors == 3
+        assert run.total_analysis_errors == 3
+
+        crs = (
+            verify_db.query(CrawlRunSource)
+            .filter(CrawlRunSource.crawl_run_id == crawl_run_id)
+            .first()
+        )
+        assert crs.status == CrawlRunSourceStatus.failed
+        assert crs.errors == 3
+    finally:
+        verify_db.close()

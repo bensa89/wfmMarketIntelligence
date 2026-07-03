@@ -65,7 +65,7 @@ export default function CrawlRunDetailPage() {
     <div className="p-4 md:p-6 max-w-5xl mx-auto">
       <h1 className="text-xl font-semibold text-ink mb-4">Crawl Run Detail</h1>
 
-      <div className="bg-app-card rounded-lg p-4 mb-6 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+      <div className="bg-app-card rounded-lg p-4 mb-6 grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
         <div>
           <span className="text-ink-muted">Status</span>
           <div>
@@ -84,9 +84,20 @@ export default function CrawlRunDetailPage() {
         </div>
         <div>
           <span className="text-ink-muted">Errors</span>
-          <div>{crawlRun.total_errors}</div>
+          <div className={crawlRun.total_errors > 0 ? 'text-red-400' : undefined}>{crawlRun.total_errors}</div>
+        </div>
+        <div>
+          <span className="text-ink-muted">Analysis Errors</span>
+          <div className={crawlRun.total_analysis_errors > 0 ? 'text-red-400' : undefined}>
+            {crawlRun.total_analysis_errors}
+          </div>
         </div>
       </div>
+      {crawlRun.total_new > 0 && crawlRun.total_analysis_errors > 0 && (
+        <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm rounded-lg px-4 py-2 mb-6">
+          {crawlRun.total_analysis_errors} von {crawlRun.total_new} neuen Dokumenten konnten nicht analysiert werden — es wurden keine Signale daraus erzeugt.
+        </div>
+      )}
 
       <h2 className="text-lg font-medium text-ink mb-3">Sources</h2>
       <div className="space-y-2">

@@ -17,7 +17,7 @@ export default function DashboardKPIRow({ overview, lastCrawl }: Props) {
   const { crawl_run } = lastCrawl;
 
   return (
-    <div className={`grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4 mb-6 ${crawl_run ? 'lg:grid-cols-8' : ''}`}>
+    <div className={`grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4 mb-6 ${crawl_run ? 'lg:grid-cols-9' : ''}`}>
       <KPICard label="Signals (30d)" value={totalSignals} accent="bg-blue-500" />
       <KPICard label="Avg Movement Score" value={avgScore} accent="bg-purple-500" />
       <KPICard label="Wichtige neue Signale" value={importantSignalCount} accent="bg-orange-500" />
@@ -30,6 +30,12 @@ export default function DashboardKPIRow({ overview, lastCrawl }: Props) {
             value={crawl_run.total_errors}
             accent={crawl_run.total_errors > 0 ? 'bg-red-500' : 'bg-slate-300'}
             valueClassName={crawl_run.total_errors > 0 ? 'text-red-600' : undefined}
+          />
+          <KPICard
+            label="Analyse-Fehler"
+            value={crawl_run.total_analysis_errors}
+            accent={crawl_run.total_analysis_errors > 0 ? 'bg-red-500' : 'bg-slate-300'}
+            valueClassName={crawl_run.total_analysis_errors > 0 ? 'text-red-600' : undefined}
           />
           <KPICard label="Hochrelevante Signals" value={lastCrawl.high_relevance_signals} accent="bg-purple-500" />
         </>

@@ -78,6 +78,7 @@ def test_last_crawl_summary_with_global_run(client, db_session):
         finished_at=window_end,
         total_sources=2,
         total_errors=3,
+        total_analysis_errors=2,
     )
     db_session.add(crawl_run)
     db_session.flush()
@@ -129,6 +130,7 @@ def test_last_crawl_summary_with_global_run(client, db_session):
     data = response.json()
     assert data["crawl_run"]["id"] == crawl_run.id
     assert data["crawl_run"]["total_errors"] == 3
+    assert data["crawl_run"]["total_analysis_errors"] == 2
     assert data["new_documents"] == 2
     assert data["new_signals"] == 2
     assert data["high_relevance_signals"] == 1

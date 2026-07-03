@@ -255,6 +255,8 @@ def _build_crawl_stats(crawl_run) -> dict:
         "date": started.strftime("%d.%m.%Y") if started else "?",
         "time": started.strftime("%H:%M") if started else "?",
         "sources_total": crawl_run.total_sources or 0,
+        "new_documents": crawl_run.total_new or 0,
         "errors": crawl_run.total_errors or 0,
+        "analysis_errors": crawl_run.total_analysis_errors or 0,
         "duration": duration_str,
     }

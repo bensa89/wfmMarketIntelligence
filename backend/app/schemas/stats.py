@@ -36,6 +36,7 @@ class LastCrawlRunInfo(BaseModel):
     finished_at: Optional[datetime]
     total_sources: int
     total_errors: int
+    total_analysis_errors: int
 
 
 class LastCrawlSummary(BaseModel):

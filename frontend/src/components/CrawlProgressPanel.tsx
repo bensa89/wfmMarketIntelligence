@@ -202,6 +202,8 @@ export function CrawlProgressPanel({ phase, run, queuedRun, onCancel, onDismiss 
       : 'border-accent-blue/40';
 
   const queueSuffix = hasQueue ? ' (1/2)' : '';
+  const analysisErrorSuffix =
+    run.total_analysis_errors > 0 ? `, davon ${run.total_analysis_errors} Analyse-Fehler` : '';
   const headerText =
     phase === 'crawling'
       ? `Crawl läuft…${queueSuffix} (${doneCount}/${total})`
@@ -210,7 +212,7 @@ export function CrawlProgressPanel({ phase, run, queuedRun, onCancel, onDismiss 
           ? `Analyse läuft… (${analysisDone}/${analysisTotal} Docs)`
           : 'Analyse läuft…'
         : hasErrors
-          ? `Fertig — ${total} Sources, ${run.total_new} neue Docs, ${run.total_errors} Fehler`
+          ? `Fertig — ${total} Sources, ${run.total_new} neue Docs, ${run.total_errors} Fehler${analysisErrorSuffix}`
           : `Fertig — ${run.total_new} neue Docs`;
 
   function toggleSource(sourceId: string) {
